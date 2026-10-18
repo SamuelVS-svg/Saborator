@@ -19,26 +19,26 @@
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
     <div class="pg-header">
         <div class="pg-icon">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
         </div>
         <div>
             <div class="pg-title">Historial de Ventas &amp; Facturación</div>
-            <div class="pg-sub">Consulta de comprobantes contables, métricas y exportación financiera</div>
+            <div class="pg-sub">Consulta de comprobantes contables, métricas financieras y exportación ejecutiva</div>
         </div>
     </div>
 
     <div class="d-flex flex-wrap gap-2">
         <a asp-action="ExportarCsv" asp-route-desde="@desde" asp-route-hasta="@hasta" asp-route-buscar="@buscar" asp-route-cajero="@cajeroSeleccionado" 
-           class="btn-ghost" title="Exportar reporte consolidado a Excel / CSV" style="padding:0.45rem 0.85rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
+           class="btn-ghost" title="Exportar reporte consolidado a Excel / CSV" style="padding:0.48rem 0.9rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Exportar Ventas (Excel)</span>
         </a>
         <a asp-action="ExportarDetalladoCsv" asp-route-desde="@desde" asp-route-hasta="@hasta" asp-route-buscar="@buscar" asp-route-cajero="@cajeroSeleccionado" 
-           class="btn-ghost" title="Exportar desglose por plato vendido a Excel" style="padding:0.45rem 0.85rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
+           class="btn-ghost" title="Exportar desglose por plato vendido a Excel" style="padding:0.48rem 0.9rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             <span>Detalle Platos (Excel)</span>
         </a>
-        <a asp-action="Create" class="btn-gold" style="padding:0.45rem 0.95rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
+        <a asp-action="Create" class="btn-gold" style="padding:0.48rem 1rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span>Nueva Factura</span>
         </a>
@@ -48,53 +48,73 @@
 
 <!-- ══ TARJETAS DE KPIS FINANCIEROS ═══════════════════════════════════ -->
 <div class="row g-3 mb-4">
-    <div class="col-6 col-lg-3">
-        <div class="card-pro p-3" style="border-left: 4px solid var(--color-brand, #7A1C28);">
-            <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Total Facturado</div>
-            <div style="font-size:1.35rem;font-weight:800;color:var(--c-dark);margin-top:0.2rem;">$@totalFacturado.ToString("N0") COP</div>
-            <div style="font-size:0.72rem;color:var(--c-muted);">En @totalFacturas factura(s)</div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ventas-kpi-card" style="border-left: 4px solid var(--gold);">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="ventas-kpi-label">Total Facturado</span>
+                <div class="ventas-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+            </div>
+            <div class="ventas-kpi-val">$@totalFacturado.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+            <div class="ventas-kpi-sub">En <strong>@totalFacturas</strong> comprobante(s)</div>
         </div>
     </div>
-    <div class="col-6 col-lg-3">
-        <div class="card-pro p-3" style="border-left: 4px solid #10B981;">
-            <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Ticket Promedio</div>
-            <div style="font-size:1.35rem;font-weight:800;color:#059669;margin-top:0.2rem;">$@ticketPromedio.ToString("N0") COP</div>
-            <div style="font-size:0.72rem;color:var(--c-muted);">Por comprobante emitido</div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ventas-kpi-card" style="border-left: 4px solid #10B981;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="ventas-kpi-label">Ticket Promedio</span>
+                <div class="ventas-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+            </div>
+            <div class="ventas-kpi-val" style="color: #10B981;">$@ticketPromedio.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+            <div class="ventas-kpi-sub">Valor medio por factura emitida</div>
         </div>
     </div>
-    <div class="col-6 col-lg-3">
-        <div class="card-pro p-3" style="border-left: 4px solid #C8973A;">
-            <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">IVA Recaudado</div>
-            <div style="font-size:1.35rem;font-weight:800;color:#B45309;margin-top:0.2rem;">$@totalIva.ToString("N0") COP</div>
-            <div style="font-size:0.72rem;color:var(--c-muted);">Impuesto discriminado</div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ventas-kpi-card" style="border-left: 4px solid #D97706;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="ventas-kpi-label">IVA Recaudado</span>
+                <div class="ventas-kpi-icon" style="background: rgba(217,119,6,0.15); color: #D97706;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+            </div>
+            <div class="ventas-kpi-val" style="color: var(--gold);">$@totalIva.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+            <div class="ventas-kpi-sub">Impuesto al consumo discriminado</div>
         </div>
     </div>
-    <div class="col-6 col-lg-3">
-        <div class="card-pro p-3" style="border-left: 4px solid #3B82F6;">
-            <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Propinas &amp; Domicilios</div>
-            <div style="font-size:1.35rem;font-weight:800;color:#2563EB;margin-top:0.2rem;">$@((totalPropinas + totalDomicilios).ToString("N0")) COP</div>
-            <div style="font-size:0.72rem;color:var(--c-muted);">$@totalPropinas.ToString("N0") prop / $@totalDomicilios.ToString("N0") dom</div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="ventas-kpi-card" style="border-left: 4px solid #3B82F6;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="ventas-kpi-label">Propinas &amp; Domicilios</span>
+                <div class="ventas-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                </div>
+            </div>
+            <div class="ventas-kpi-val" style="color: #3B82F6;">$@((totalPropinas + totalDomicilios).ToString("N0")) <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+            <div class="ventas-kpi-sub">$@totalPropinas.ToString("N0") prop. / $@totalDomicilios.ToString("N0") dom.</div>
         </div>
     </div>
 </div>
 
 <!-- ══ FILTROS DE RANGO Y BÚSQUEDA ═══════════════════════════════════ -->
-<div class="card-pro p-3 mb-4" style="background:var(--color-bg-card, #FFFDF9);">
-    <form method="get" asp-action="Index" id="filtroForm" class="row g-2 align-items-end">
+<div class="card-pro mb-4" style="padding: 1.15rem 1.35rem; background: var(--surface);">
+    <form method="get" asp-action="Index" id="filtroForm" class="row g-3 align-items-end">
         <div class="col-12 col-md-3">
-            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Buscar por N°, Cliente o Cédula</label>
+            <label class="form-label mb-1">Buscar por N°, Cliente o Cédula</label>
             <input type="text" name="buscar" value="@buscar" class="form-control form-control-sm" placeholder="Ej: FAC-0001, Carlos, 1042..." />
         </div>
         <div class="col-6 col-md-2">
-            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Desde</label>
+            <label class="form-label mb-1">Desde</label>
             <input type="date" name="desde" id="inputDesde" value="@desde" class="form-control form-control-sm" />
         </div>
         <div class="col-6 col-md-2">
-            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Hasta</label>
+            <label class="form-label mb-1">Hasta</label>
             <input type="date" name="hasta" id="inputHasta" value="@hasta" class="form-control form-control-sm" />
         </div>
         <div class="col-6 col-md-2">
-            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Cajero</label>
+            <label class="form-label mb-1">Cajero</label>
             <select name="cajero" class="form-select form-select-sm">
                 <option value="">Todos los cajeros</option>
                 @foreach (var c in listaCajeros)
@@ -104,36 +124,37 @@
             </select>
         </div>
         <div class="col-6 col-md-3 d-flex gap-2">
-            <button type="submit" class="btn-brand flex-fill" style="padding:0.38rem 0.75rem;font-size:0.8rem;border-radius:8px;">
-                Filtrar
+            <button type="submit" class="btn-brand flex-fill" style="padding:0.45rem 0.85rem;font-size:0.82rem;border-radius:9px;justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Filtrar</span>
             </button>
-            <a asp-action="Index" class="btn-ghost" style="padding:0.38rem 0.75rem;font-size:0.8rem;border-radius:8px;">
+            <a asp-action="Index" class="btn-ghost" style="padding:0.45rem 0.85rem;font-size:0.82rem;border-radius:9px;">
                 Limpiar
             </a>
         </div>
     </form>
 
     <!-- Botones de Acceso Rápido de Fecha -->
-    <div class="d-flex flex-wrap gap-2 mt-3 pt-2 border-top">
-        <span style="font-size:0.75rem;color:var(--c-muted);align-self:center;margin-right:0.25rem;">Rango rápido:</span>
-        <button type="button" class="btn-ghost" onclick="setRango('hoy')" style="padding:0.2rem 0.6rem;font-size:0.73rem;">Hoy</button>
-        <button type="button" class="btn-ghost" onclick="setRango('semana')" style="padding:0.2rem 0.6rem;font-size:0.73rem;">Últimos 7 días</button>
-        <button type="button" class="btn-ghost" onclick="setRango('mes')" style="padding:0.2rem 0.6rem;font-size:0.73rem;">Este mes</button>
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3" style="border-top: 1px solid var(--border);">
+        <span style="font-size:0.75rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-right:0.25rem;">Rango rápido:</span>
+        <button type="button" class="btn-ghost" onclick="setRango('hoy')" style="padding:0.25rem 0.7rem;font-size:0.75rem;">Hoy</button>
+        <button type="button" class="btn-ghost" onclick="setRango('semana')" style="padding:0.25rem 0.7rem;font-size:0.75rem;">Últimos 7 días</button>
+        <button type="button" class="btn-ghost" onclick="setRango('mes')" style="padding:0.25rem 0.7rem;font-size:0.75rem;">Este mes</button>
     </div>
 </div>
 
 @if (Model == null || !Model.Any())
 {
-    <div class="card-pro text-center py-5" style="color:var(--c-muted);">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" style="margin-bottom:.75rem;opacity:.35;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        <p style="font-weight:600;font-size:1rem;margin-bottom:.25rem;">No se encontraron facturas para los filtros seleccionados.</p>
-        <p style="font-size:.875rem;">Intenta ampliar el rango de fechas o limpiar los filtros.</p>
+    <div class="card-pro text-center py-5" style="color:var(--muted);">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" style="margin-bottom:.75rem;opacity:.4;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        <p style="font-weight:700;font-size:1rem;color:var(--ink);margin-bottom:.25rem;">No se encontraron facturas para los filtros seleccionados.</p>
+        <p style="font-size:.875rem;margin-bottom:0;">Intenta ampliar el rango de fechas o limpiar los filtros.</p>
     </div>
 }
 else
 {
     <div class="tbl-wrap">
-        <table id="tablaFacturas">
+        <table id="tablaFacturas" class="tbl-pro">
             <thead>
                 <tr>
                     <th>N° Factura</th>
@@ -145,7 +166,7 @@ else
                     <th>Total</th>
                     <th>Estado</th>
                     <th>Cajero</th>
-                    <th style="width:120px;text-align:right;">Acciones</th>
+                    <th style="width:125px;text-align:right;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -154,30 +175,33 @@ else
                     decimal ivaFactura = f.Subtotal * f.ImpuestoPorcentaje / 100m;
                     <tr>
                         <td>
-                            <strong style="font-family:monospace;font-size:.85rem;color:var(--color-brand, #7A1C28);">@f.Numero</strong>
+                            <span class="factura-num-pill">@f.Numero</span>
                         </td>
-                        <td style="color:var(--c-muted);font-size:.82rem;">@f.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td style="color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums;">
+                            <strong style="color:var(--text);">@f.FechaCreacion.ToString("dd/MM/yyyy")</strong>
+                            <span class="ms-1">@f.FechaCreacion.ToString("HH:mm")</span>
+                        </td>
                         <td>
                             @if (f.Cliente != null)
                             {
-                                <div style="font-weight:600;">@f.Cliente.Nombre</div>
-                                <div style="font-size:0.75rem;color:var(--c-muted);">Doc: @(f.Cliente.Documento ?? "N/A")</div>
+                                <div style="font-weight:700;color:var(--ink);">@f.Cliente.Nombre</div>
+                                <div style="font-size:0.75rem;color:var(--muted);">Doc: @(f.Cliente.Documento ?? "N/A")</div>
                             }
                             else if (!string.IsNullOrEmpty(f.NombreClienteLibre))
                             {
-                                <div style="font-weight:600;">@f.NombreClienteLibre</div>
-                                <div style="font-size:0.75rem;color:var(--c-muted);">Cliente libre</div>
+                                <div style="font-weight:700;color:var(--ink);">@f.NombreClienteLibre</div>
+                                <div style="font-size:0.75rem;color:var(--muted);">Cliente libre</div>
                             }
                             else
                             {
-                                <span style="color:var(--c-muted);">Consumidor final</span>
+                                <span style="color:var(--muted);">Consumidor final</span>
                             }
                         </td>
-                        <td style="font-size:0.85rem;">$@f.Subtotal.ToString("N0")</td>
-                        <td style="font-size:0.85rem;color:var(--c-muted);">$@ivaFactura.ToString("N0")</td>
-                        <td style="font-size:0.85rem;color:var(--c-muted);">$@f.Propina.ToString("N0")</td>
-                        <td>
-                            <strong style="font-size:0.92rem;color:var(--c-dark);">$@f.Total.ToString("N0")</strong>
+                        <td style="font-size:0.85rem;font-variant-numeric:tabular-nums;color:var(--text);">$@f.Subtotal.ToString("N0")</td>
+                        <td style="font-size:0.85rem;font-variant-numeric:tabular-nums;color:var(--muted);">$@ivaFactura.ToString("N0")</td>
+                        <td style="font-size:0.85rem;font-variant-numeric:tabular-nums;color:var(--muted);">$@f.Propina.ToString("N0")</td>
+                        <td style="font-variant-numeric:tabular-nums;">
+                            <strong style="font-size:0.94rem;color:var(--gold);">$@f.Total.ToString("N0")</strong>
                         </td>
                         <td>
                             @if (f.Estado == "Emitida")
@@ -185,10 +209,10 @@ else
                             else
                             { <span class="badge-anul">Anulada</span> }
                         </td>
-                        <td style="color:var(--c-muted);font-size:.82rem;">@f.UsuarioCajero</td>
+                        <td style="color:var(--text);font-size:.82rem;font-weight:600;">@f.UsuarioCajero</td>
                         <td style="text-align:right;">
                             <a asp-action="Detalle" asp-route-id="@f.Id" class="btn-ghost"
-                               style="padding:.28rem .65rem;font-size:.76rem;gap:.3rem;display:inline-flex;align-items:center;">
+                               style="padding:.3rem .7rem;font-size:.76rem;gap:.3rem;display:inline-flex;align-items:center;">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 Ver / PDF
                             </a>
@@ -198,11 +222,67 @@ else
             </tbody>
         </table>
     </div>
-    <div class="d-flex justify-content-between align-items-center mt-3" style="font-size:.78rem;color:var(--c-muted);">
-        <div>Mostrando <strong>@Model.Count</strong> factura(s)</div>
-        <div>Total consolidado en vista: <strong style="color:var(--c-dark);font-size:0.85rem;">$@totalFacturado.ToString("N0") COP</strong></div>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 px-1" style="font-size:.8rem;color:var(--muted);">
+        <div>Mostrando <strong style="color:var(--ink);">@Model.Count</strong> factura(s)</div>
+        <div>Total consolidado en vista: <strong style="color:var(--gold);font-size:0.92rem;">$@totalFacturado.ToString("N0") COP</strong></div>
     </div>
 }
+
+<style>
+    .ventas-kpi-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.15rem 1.25rem;
+        height: 100%;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .ventas-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+    .ventas-kpi-label {
+        font-size: 0.73rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+    }
+    .ventas-kpi-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .ventas-kpi-val {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.2;
+        margin-bottom: 0.2rem;
+        font-variant-numeric: tabular-nums;
+    }
+    .ventas-kpi-sub {
+        font-size: 0.74rem;
+        color: var(--muted);
+    }
+    .factura-num-pill {
+        font-family: 'Geist Mono', monospace;
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: var(--gold);
+        background: rgba(200, 151, 58, 0.12);
+        border: 1px solid rgba(200, 151, 58, 0.3);
+        padding: 0.22rem 0.55rem;
+        border-radius: 6px;
+        display: inline-block;
+    }
+</style>
 
 <script>
     function setRango(tipo) {

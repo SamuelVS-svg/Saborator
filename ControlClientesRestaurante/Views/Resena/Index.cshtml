@@ -325,7 +325,7 @@
         font-family: var(--font-serif, 'Instrument Serif', serif);
         font-size: 2.85rem;
         font-weight: 400;
-        color: var(--brand, #6B1E2E);
+        color: var(--ink, #2C0B12);
         margin: 0 0 0.5rem;
         line-height: 1.15;
     }
@@ -429,13 +429,13 @@
     .star-label {
         font-size: 0.82rem;
         font-weight: 700;
-        color: #3C2A20;
+        color: var(--text, #3C2A20);
         width: 75px;
     }
     .bar-track {
         flex: 1;
         height: 10px;
-        background: #F2EBE1;
+        background: var(--surface-2, #F2EBE1);
         border-radius: 999px;
         overflow: hidden;
     }
@@ -468,13 +468,13 @@
         flex-wrap: wrap;
     }
     .chip-filter {
-        background: #FFFDF9;
+        background: var(--surface, #FFFDF9);
         border: 1.5px solid var(--line, #E2D7C8);
         padding: 0.45rem 0.95rem;
         border-radius: 999px;
         font-size: 0.82rem;
         font-weight: 700;
-        color: #3C2A20;
+        color: var(--text, #3C2A20);
         cursor: pointer;
         transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
     }
@@ -539,16 +539,16 @@
     .review-author-name {
         font-size: 0.95rem;
         font-weight: 700;
-        color: #200B10;
+        color: var(--ink, #200B10);
         display: flex;
         align-items: center;
         gap: 6px;
     }
     .badge-verificado {
         font-size: 0.68rem;
-        background: #ECFDF5;
-        color: #065F46;
-        border: 1px solid #A7F3D0;
+        background: rgba(16, 185, 129, 0.14);
+        color: #10B981;
+        border: 1px solid rgba(16, 185, 129, 0.35);
         border-radius: 999px;
         padding: 1px 6px;
         font-weight: 700;
@@ -573,8 +573,9 @@
     }
     .review-tag-exp {
         font-size: 0.72rem;
-        background: #F5ECE0;
-        color: #6E5C50;
+        background: var(--surface-2, #F5ECE0);
+        color: var(--text, #6E5C50);
+        border: 1px solid var(--line, transparent);
         padding: 2px 8px;
         border-radius: 6px;
         font-weight: 600;
@@ -584,8 +585,9 @@
     }
     .review-tag-dish {
         font-size: 0.72rem;
-        background: rgba(200, 151, 58, 0.12);
-        color: #92400E;
+        background: rgba(200, 151, 58, 0.14);
+        color: var(--gold, #C8973A);
+        border: 1px solid rgba(200, 151, 58, 0.32);
         padding: 2px 8px;
         border-radius: 6px;
         font-weight: 600;
@@ -595,12 +597,28 @@
     }
 
     .review-body-text {
-        font-size: 0.9rem;
-        color: #3C2A20;
-        line-height: 1.5;
+        font-size: 0.92rem;
+        color: var(--text, #3C2A20) !important;
+        line-height: 1.55;
         margin: 0 0 1rem;
         font-style: italic;
         flex-grow: 1;
+    }
+
+    html[data-theme="dark"] .review-card {
+        background: var(--surface, #1A1316);
+        border-color: rgba(200, 151, 58, 0.25);
+    }
+    html[data-theme="dark"] .review-body-text {
+        color: #F5EFE6 !important;
+    }
+    html[data-theme="dark"] .review-author-name {
+        color: #FFFDF9 !important;
+    }
+    html[data-theme="dark"] .review-tag-exp {
+        background: rgba(255, 253, 249, 0.08);
+        color: #E2D7C8;
+        border-color: rgba(255, 253, 249, 0.15);
     }
 
     .review-admin-actions {
@@ -644,8 +662,8 @@
         to { opacity: 1; }
     }
     .modal-resena-box {
-        background: #FFFDF9;
-        border: 1.5px solid #E2D7C8;
+        background: var(--surface, #FFFDF9);
+        border: 1.5px solid var(--line, #E2D7C8);
         border-radius: 24px;
         padding: 2.25rem;
         max-width: 540px;
@@ -653,6 +671,7 @@
         position: relative;
         box-shadow: 0 20px 50px rgba(0,0,0,0.35);
         animation: scaleInModal 200ms cubic-bezier(0.23, 1, 0.32, 1);
+        color: var(--text);
     }
     @@keyframes scaleInModal {
         from { transform: scale(0.95); opacity: 0; }
@@ -670,7 +689,7 @@
         cursor: pointer;
         transition: transform 120ms ease;
     }
-    .btn-close-modal:hover { color: var(--brand); transform: scale(1.1); }
+    .btn-close-modal:hover { color: var(--gold); transform: scale(1.1); }
     .btn-close-modal:active { transform: scale(0.95); }
 
     .modal-resena-head {
@@ -693,7 +712,7 @@
     .modal-resena-title {
         font-family: var(--font-serif, 'Instrument Serif', serif);
         font-size: 2rem;
-        color: var(--brand, #6B1E2E);
+        color: var(--ink, #6B1E2E);
         margin: 0 0 0.25rem;
     }
     .modal-resena-sub {
@@ -705,8 +724,8 @@
     /* Star Picker */
     .star-picker-wrap {
         text-align: center;
-        background: #FAF6F0;
-        border: 1px dashed #E2D7C8;
+        background: var(--surface-2, #FAF6F0);
+        border: 1px dashed var(--line, #E2D7C8);
         border-radius: 14px;
         padding: 1.15rem;
         margin-bottom: 1.25rem;
@@ -715,7 +734,7 @@
         display: block;
         font-size: 0.78rem;
         font-weight: 800;
-        color: #3C2A20;
+        color: var(--text, #3C2A20);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         margin-bottom: 0.5rem;
@@ -750,7 +769,7 @@
         display: block;
         font-size: 0.82rem;
         font-weight: 700;
-        color: var(--brand, #6B1E2E);
+        color: var(--gold, #C8973A);
         margin-top: 0.5rem;
     }
 
@@ -769,7 +788,7 @@
         display: block;
         font-size: 0.78rem;
         font-weight: 700;
-        color: #3C2A20;
+        color: var(--text, #3C2A20);
         margin-bottom: 0.35rem;
     }
     .input-resena-field {
@@ -778,15 +797,15 @@
         border: 1.5px solid var(--line, #E2D7C8);
         border-radius: 10px;
         font-size: 0.88rem;
-        background: #FFFDF9;
-        color: #200B10;
+        background: var(--surface-2, #FFFDF9);
+        color: var(--text, #200B10);
         box-sizing: border-box;
         transition: border-color 140ms ease, box-shadow 140ms ease;
     }
     .input-resena-field:focus {
-        border-color: var(--brand, #6B1E2E);
+        border-color: var(--gold, #C8973A);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.1);
+        box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.15);
     }
     .input-textarea {
         resize: vertical;

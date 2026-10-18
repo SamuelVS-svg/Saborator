@@ -5,9 +5,15 @@
     Layout = "_Layout";
 
     var _session = HttpContextAccessor.HttpContext?.Session;
-    var _usuario = _session?.GetString("Usuario");
-    var _rol     = _session?.GetString("Rol") ?? "";
-    var _autenticado = !string.IsNullOrEmpty(_usuario);
+    var _usuario = (User.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.Identity.Name))
+        ? User.Identity.Name
+        : _session?.GetString("Usuario");
+    var _rol     = (User.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value))
+        ? User.FindFirst(System.Security.Claims.ClaimTypes.Role)!.Value
+        : (_session?.GetString("Rol") ?? "");
+    var _autenticado = (User.Identity?.IsAuthenticated == true) || !string.IsNullOrEmpty(_usuario);
+    var _esPersonal  = User.IsInRole("Administrador") || User.IsInRole("Cajero") || User.IsInRole("Mesero") || User.IsInRole("Cocinero")
+        || _rol == "Administrador" || _rol == "Cajero" || _rol == "Mesero" || _rol == "Cocinero";
 
     var productos = _productoSvc.ObtenerTodos().Where(p => p.Activo).ToList();
     var resenas = ViewBag.Resenas as List<ControlClientesRestaurante.Models.Resena> ?? new List<ControlClientesRestaurante.Models.Resena>();
@@ -149,10 +155,19 @@
             @if (_autenticado)
             {
                 <a asp-controller="Reserva" asp-action="MisReservas" class="lnav-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.3"><polyline points="20 6 9 17 4 12"/></svg>
                     <span>Mis Reservas</span>
                 </a>
                 <a asp-controller="Pedido" asp-action="MisPedidos" class="lnav-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.3"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
                     <span>Mis Pedidos</span>
+                </a>
+            }
+            @if (_esPersonal)
+            {
+                <a asp-controller="Home" asp-action="Dashboard" class="lnav-item" style="background:rgba(200,151,58,0.16);border:1px solid rgba(200,151,58,0.45);border-radius:8px;padding:0.28rem 0.65rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.3"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                    <span>Dashboard Admin</span>
                 </a>
             }
         </div>
@@ -199,7 +214,11 @@
         <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalModalidad();">🛵 Modalidad / Domicilio</a>
         <a asp-controller="Pedido" asp-action="Rastrear">⏱️ Rastrear Pedido</a>
         <a asp-controller="Pago" asp-action="Checkout">💳 Pagar Cuenta</a>
-        <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--brand, #6B1E2E);font-weight:700;">📅 Reservar Mesa</a>
+        <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--gold, #C8973A);font-weight:700;">📅 Reservar Mesa</a>
+        @if (_esPersonal)
+        {
+            <a asp-controller="Home" asp-action="Dashboard" style="color:var(--gold, #C8973A);font-weight:700;">📊 Dashboard Admin</a>
+        }
         @if (_autenticado)
         {
             <a asp-controller="Reserva" asp-action="MisReservas">📋 Mis Reservas</a>
@@ -820,13 +839,13 @@
                                 </span>
                                 @if (!string.IsNullOrEmpty(r.PlatoRecomendado))
                                 {
-                                    <span style="font-size:0.7rem;background:rgba(200,151,58,0.12);color:#92400E;padding:2px 7px;border-radius:6px;font-weight:600;">
+                                    <span style="font-size:0.7rem;background:rgba(200,151,58,0.14);color:var(--gold);border:1px solid rgba(200,151,58,0.3);padding:2px 7px;border-radius:6px;font-weight:600;">
                                         Recomendó: <strong>@r.PlatoRecomendado</strong>
                                     </span>
                                 }
                             </div>
 
-                            <p style="font-size:0.88rem;color:#3C2A20;line-height:1.5;margin:0;font-style:italic;">
+                            <p style="font-size:0.88rem;color:var(--text);line-height:1.55;margin:0;font-style:italic;">
                                 "@r.Comentario"
                             </p>
                         </div>
@@ -836,7 +855,7 @@
 
             <!-- Botón Ver Todas las Reseñas -->
             <div style="text-align:center;">
-                <a asp-controller="Resena" asp-action="Index" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.6rem;background:#FFFDF9;border:1.5px solid var(--brand);color:var(--brand);border-radius:12px;font-weight:800;font-size:0.9rem;text-decoration:none;transition:all 140ms ease;box-shadow:0 4px 14px rgba(107,30,46,0.08);">
+                <a asp-controller="Resena" asp-action="Index" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.6rem;background:var(--surface);border:1.5px solid var(--gold);color:var(--ink);border-radius:12px;font-weight:800;font-size:0.9rem;text-decoration:none;transition:all 140ms ease;box-shadow:0 4px 14px rgba(0,0,0,0.08);">
                     <span>Ver Todas las Reseñas (@resenaStats.TotalResenas)</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
@@ -1262,13 +1281,14 @@
                     }
 
                     const tagDish = data.resena.platoRecomendado ? `
-                        <span style="font-size:0.7rem;background:rgba(200,151,58,0.12);color:#92400E;padding:2px 7px;border-radius:6px;font-weight:600;">
+                        <span style="font-size:0.7rem;background:rgba(200,151,58,0.14);color:var(--gold);border:1px solid rgba(200,151,58,0.3);padding:2px 7px;border-radius:6px;font-weight:600;">
                             Recomendó: <strong>${data.resena.platoRecomendado}</strong>
                         </span>
                     ` : '';
 
                     const newCard = document.createElement('div');
-                    newCard.style.cssText = "background:#FFFDF9;border:1.5px solid #C8973A;border-radius:18px;padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 22px rgba(200,151,58,0.15);animation:fadeInModal 300ms ease-out;";
+                    newCard.className = 'resena-card-item';
+                    newCard.style.animation = 'fadeInModal 300ms ease-out';
 
                     const initial = data.resena.nombreCliente ? data.resena.nombreCliente.charAt(0).toUpperCase() : 'C';
 
@@ -1280,9 +1300,9 @@
                                         ${initial}
                                     </div>
                                     <div>
-                                        <div style="font-size:0.92rem;font-weight:700;color:#200B10;display:flex;align-items:center;gap:5px;">
+                                        <div style="font-size:0.92rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:5px;">
                                             <span>${data.resena.nombreCliente}</span>
-                                            <span style="font-size:0.65rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:999px;padding:1px 5px;font-weight:700;display:inline-flex;align-items:center;gap:2px;">
+                                            <span style="font-size:0.65rem;background:rgba(16,185,129,0.14);color:#10B981;border:1px solid rgba(16,185,129,0.35);border-radius:999px;padding:1px 5px;font-weight:700;display:inline-flex;align-items:center;gap:2px;">
                                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                                                 Verificado
                                             </span>
@@ -1293,12 +1313,12 @@
                                 <div style="display:flex;gap:2px;">${starsHtml}</div>
                             </div>
                             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;">
-                                <span style="font-size:0.7rem;background:#F5ECE0;color:#6E5C50;padding:2px 7px;border-radius:6px;font-weight:600;">
+                                <span style="font-size:0.7rem;background:var(--surface-2);color:var(--muted);padding:2px 7px;border-radius:6px;font-weight:600;">
                                     ${data.resena.tipoExperiencia}
                                 </span>
                                 ${tagDish}
                             </div>
-                            <p style="font-size:0.88rem;color:#3C2A20;line-height:1.5;margin:0;font-style:italic;">
+                            <p style="font-size:0.88rem;color:var(--text);line-height:1.55;margin:0;font-style:italic;">
                                 "${data.resena.comentario}"
                             </p>
                         </div>

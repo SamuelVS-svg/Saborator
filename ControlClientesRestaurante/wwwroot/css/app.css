@@ -142,7 +142,7 @@ html, body {
     transition: color var(--tr);
 }
 .sidebar.open .sb-section { color: rgba(228, 214, 190, 0.78); } /* Champaña / crema dorado */
-.sb-nav { flex: 1; padding: 0.5rem 0; overflow: hidden; }
+.sb-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
 
 .sb-item {
     display: flex;

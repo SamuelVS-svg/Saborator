@@ -279,16 +279,29 @@
     background: rgba(255, 253, 249, 0.6);
     backdrop-filter: blur(16px);
     transition: transform 180ms ease, background 180ms ease;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.v12-header-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    flex-shrink: 0;
+    display: block;
 }
 
 :root[data-theme="dark"] .v12-header-btn {
-    background: rgba(30, 24, 26, 0.6);
-    border-color: rgba(58, 46, 49, 0.6);
+    background: rgba(30, 24, 26, 0.75);
+    border-color: rgba(200, 151, 58, 0.35);
+    color: var(--gold);
 }
 
 .v12-header-btn:hover {
     transform: translateY(-2px);
     background: rgba(107, 30, 46, 0.08);
+    color: var(--gold);
 }
 
 .v12-user-badge {
@@ -313,6 +326,7 @@
     font-weight: 700;
     font-size: 0.9rem;
     box-shadow: 0 2px 8px rgba(107, 30, 46, 0.25);
+    flex-shrink: 0;
 }
 
 .v12-user-info {
@@ -324,6 +338,7 @@
     font-size: 0.84rem;
     font-weight: 700;
     line-height: 1.1;
+    color: var(--ink);
 }
 
 .v12-user-role {
@@ -364,19 +379,32 @@
 }
 
 .v12-stat-icon-wrap {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(107, 30, 46, 0.08);
+    background: rgba(107, 30, 46, 0.1);
+    border: 1px solid rgba(200, 151, 58, 0.25);
     color: var(--brand);
     transition: transform 200ms ease;
+    flex-shrink: 0;
+}
+
+.v12-stat-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    flex-shrink: 0;
+    display: block;
 }
 
 :root[data-theme="dark"] .v12-stat-icon-wrap {
-    background: rgba(178, 71, 92, 0.16);
+    background: rgba(200, 151, 58, 0.16);
+    border-color: rgba(200, 151, 58, 0.38);
+    color: var(--gold);
 }
 
 .v12-stat-card:hover .v12-stat-icon-wrap {

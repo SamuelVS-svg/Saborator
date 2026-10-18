@@ -43,6 +43,9 @@
 
     var stockBajo = productos.Where(p => p.Activo && p.Stock <= 5).ToList();
     var fechaHoy = DateTime.Now;
+    var fotoPerfil = (User.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.FindFirst("FotoPerfil")?.Value))
+        ? User.FindFirst("FotoPerfil")!.Value
+        : session?.GetString("FotoPerfil");
 }
 
 <div class="v12-dashboard-wrapper">
@@ -51,14 +54,19 @@
         <!-- ══ ÁREA CENTRAL ══════════════════════════════════════════════════ -->
         <main class="v12-main">
 
-            <!-- ══ 2. HEADER CON SALUDO, BUSCADOR EN CRISTAL Y AVATAR ════════ -->
+            <!-- ══ 2. HEADER CON ICONO EJECUTIVO, SALUDO, BUSCADOR Y AVATAR ══ -->
             <header class="v12-header v12-animate-enter v12-stagger-1">
-                <div>
-                    <h1 class="v12-greeting-title">
-                        @saludo, @usuario 
-                        <span style="font-size:1.3rem;">✨</span>
-                    </h1>
-                    <p class="v12-greeting-sub">Aquí tienes el balance operativo y métricas en tiempo real de Saborator</p>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="pg-icon" style="width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="v12-greeting-title">
+                            <span>@saludo, @usuario</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1.5" style="flex-shrink:0;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </h1>
+                        <p class="v12-greeting-sub">Aquí tienes el balance operativo y métricas en tiempo real de Saborator</p>
+                    </div>
                 </div>
 
                 <div class="v12-header-center">
@@ -72,18 +80,25 @@
                     <button type="button" class="v12-header-btn" onclick="toggleModoOscuro()" title="Cambiar tema">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
                     </button>
-                    <a asp-controller="Reserva" asp-action="Admin" class="v12-header-btn" title="Notificaciones">
+                    <a asp-controller="Reserva" asp-action="Admin" class="v12-header-btn" title="Notificaciones de Reservas">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     </a>
-                    <div class="glass-card v12-user-badge">
-                        <div class="v12-avatar">
-                            @(usuario.Length > 0 ? usuario[0].ToString().ToUpper() : "U")
+                    <a asp-controller="Perfil" asp-action="Index" class="glass-card v12-user-badge" style="text-decoration:none;">
+                        <div class="v12-avatar" style="overflow:hidden;">
+                            @if (!string.IsNullOrEmpty(fotoPerfil))
+                            {
+                                <img src="@fotoPerfil" alt="@usuario" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" />
+                            }
+                            else
+                            {
+                                @(usuario.Length > 0 ? usuario[0].ToString().ToUpper() : "U")
+                            }
                         </div>
                         <div class="v12-user-info">
                             <span class="v12-user-name">@usuario</span>
                             <span class="v12-user-role">@rol</span>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </header>
 
@@ -171,10 +186,13 @@
                     <!-- Bento Hero: Destacada con Color Principal Sólido -->
                     <div class="v12-bento-hero v12-animate-enter v12-stagger-4">
                         <div class="v12-bento-hero-bg">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                         </div>
                         <div>
-                            <div class="v12-bento-hero-tag">Centro de Operaciones Gastronómico</div>
+                            <div class="v12-bento-hero-tag">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+                                <span>Centro de Operaciones Gastronómico</span>
+                            </div>
                             <h2 class="v12-bento-hero-title">Rendimiento en Servicio Óptimo</h2>
                             <p class="v12-bento-hero-desc">
                                 La cocina está despachando comandas con un tiempo promedio de 14 minutos. Todas las transacciones de facturación se encuentran sincronizadas atómicamente con el inventario.

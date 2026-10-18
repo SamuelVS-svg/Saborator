@@ -6,210 +6,288 @@
     int canjes = ViewBag.TotalCanjes ?? 0;
 }
 
-<div class="cupones-admin-container" style="max-width:1160px;margin:1.5rem auto;padding:0 1.25rem;">
-
-    <!-- Encabezado -->
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem;">
-        <div>
-            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(200,151,58,0.15);border:1px solid rgba(200,151,58,0.3);padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;color:#C8973A;margin-bottom:6px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                Marketing &amp; Fidelización Comercial
-            </div>
-            <h1 style="margin:0;font-size:1.75rem;font-weight:800;color:var(--brand,#6B1E2E);letter-spacing:-0.02em;">Cupones Promocionales</h1>
-            <p style="margin:4px 0 0;font-size:0.88rem;color:#555;">Crea y administra promociones y descuentos automáticos aplicables al checkout.</p>
+<!-- Encabezado Principal Saborator -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+    <div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
         </div>
-        <div style="display:flex;gap:0.75rem;">
-            <a asp-action="Create" class="btn-create-cupon" style="display:inline-flex;align-items:center;gap:6px;background:var(--brand,#6B1E2E);color:#FFFDF9;padding:0.65rem 1.2rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.85rem;box-shadow:0 3px 10px rgba(107,30,46,0.25);transition:transform 120ms ease;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                <span>Nuevo Cupón</span>
-            </a>
+        <div>
+            <div class="pg-title">Cupones &amp; Promociones Comerciales</div>
+            <div class="pg-sub">Crea y administra campañas de fidelización y descuentos automáticos en el checkout</div>
         </div>
     </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-action="Create" class="btn-gold" style="padding:0.48rem 1rem;font-size:0.82rem;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Nuevo Cupón Promocional</span>
+        </a>
+    </div>
+</div>
+<hr class="div-gold" />
 
-    @if (TempData["Mensaje"] != null)
-    {
-        <div style="background:#ECFDF5;border:1px solid #10B981;color:#065F46;border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:8px;font-size:0.88rem;font-weight:600;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <span>@TempData["Mensaje"]</span>
-        </div>
-    }
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>@TempData["Mensaje"]</span>
+    </div>
+}
 
-    @if (TempData["Error"] != null)
-    {
-        <div style="background:#FEF2F2;border:1px solid #EF4444;color:#991B1B;border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:8px;font-size:0.88rem;font-weight:600;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>@TempData["Error"]</span>
-        </div>
-    }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>@TempData["Error"]</span>
+    </div>
+}
 
-    <!-- ══ TARJETAS DE KPIS DE MARKETING ═══════════════════════════════ -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;margin-bottom:1.75rem;">
-        <div style="background:#FFFDF9;border:1px solid var(--line,#E2D7C8);border-radius:12px;padding:1.15rem 1.25rem;display:flex;align-items:center;gap:1rem;">
-            <div style="width:44px;height:44px;border-radius:10px;background:rgba(107,30,46,0.08);color:var(--brand,#6B1E2E);display:flex;align-items:center;justify-content:center;">
+<!-- ══ TARJETAS DE KPIS DE MARKETING ═══════════════════════════════ -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="cupon-kpi-card" style="border-left: 4px solid var(--gold);">
+            <div class="cupon-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
             </div>
             <div>
-                <span style="font-size:0.75rem;font-weight:700;color:#6B7280;text-transform:uppercase;">Total Cupones</span>
-                <div style="font-size:1.5rem;font-weight:800;color:#18060A;line-height:1.2;">@total</div>
+                <span class="cupon-kpi-label">Total Cupones Creados</span>
+                <div class="cupon-kpi-val">@total</div>
+                <span class="cupon-kpi-sub">Campañas registradas</span>
             </div>
         </div>
+    </div>
 
-        <div style="background:#FFFDF9;border:1px solid var(--line,#E2D7C8);border-radius:12px;padding:1.15rem 1.25rem;display:flex;align-items:center;gap:1rem;">
-            <div style="width:44px;height:44px;border-radius:10px;background:rgba(16,185,129,0.12);color:#059669;display:flex;align-items:center;justify-content:center;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    <div class="col-12 col-md-4">
+        <div class="cupon-kpi-card" style="border-left: 4px solid #10B981;">
+            <div class="cupon-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <div>
-                <span style="font-size:0.75rem;font-weight:700;color:#6B7280;text-transform:uppercase;">Cupones Activos</span>
-                <div style="font-size:1.5rem;font-weight:800;color:#059669;line-height:1.2;">@activos</div>
+                <span class="cupon-kpi-label">Cupones Activos</span>
+                <div class="cupon-kpi-val" style="color: #10B981;">@activos</div>
+                <span class="cupon-kpi-sub">Habilitados para canje hoy</span>
             </div>
         </div>
+    </div>
 
-        <div style="background:#FFFDF9;border:1px solid var(--line,#E2D7C8);border-radius:12px;padding:1.15rem 1.25rem;display:flex;align-items:center;gap:1rem;">
-            <div style="width:44px;height:44px;border-radius:10px;background:rgba(200,151,58,0.15);color:#C8973A;display:flex;align-items:center;justify-content:center;">
+    <div class="col-12 col-md-4">
+        <div class="cupon-kpi-card" style="border-left: 4px solid #3B82F6;">
+            <div class="cupon-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <div>
-                <span style="font-size:0.75rem;font-weight:700;color:#6B7280;text-transform:uppercase;">Total Canjes Clientes</span>
-                <div style="font-size:1.5rem;font-weight:800;color:#B45309;line-height:1.2;">@canjes veces</div>
+                <span class="cupon-kpi-label">Total Canjes Clientes</span>
+                <div class="cupon-kpi-val" style="color: var(--gold);">@canjes veces</div>
+                <span class="cupon-kpi-sub">Redenciones acumuladas</span>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ══ TABLA DE CUPONES ════════════════════════════════════════════ -->
-    <div style="background:#FFFDF9;border:1px solid var(--line,#E2D7C8);border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.03);">
-        <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
-            <thead>
-                <tr style="background:#FAF6F0;border-bottom:1px solid var(--line,#E2D7C8);color:#3C2A20;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;">
-                    <th style="padding:0.85rem 1rem;">Código &amp; Promoción</th>
-                    <th style="padding:0.85rem 1rem;">Beneficio / Descuento</th>
-                    <th style="padding:0.85rem 1rem;">Compra Mínima</th>
-                    <th style="padding:0.85rem 1rem;text-align:center;">Canjes / Límite</th>
-                    <th style="padding:0.85rem 1rem;">Vencimiento</th>
-                    <th style="padding:0.85rem 1rem;text-align:center;">Estado</th>
-                    <th style="padding:0.85rem 1rem;text-align:right;">Acciones</th>
+<!-- ══ TABLA DE CUPONES ════════════════════════════════════════════ -->
+<div class="tbl-wrap">
+    <table class="tbl-pro">
+        <thead>
+            <tr>
+                <th>Código &amp; Promoción</th>
+                <th>Beneficio / Descuento</th>
+                <th>Compra Mínima</th>
+                <th style="text-align:center;">Canjes / Límite</th>
+                <th>Vencimiento</th>
+                <th style="text-align:center;">Estado</th>
+                <th style="text-align:right;width:210px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model == null || Model.Count == 0)
+            {
+                <tr>
+                    <td colspan="7" style="padding:3rem 1rem;text-align:center;color:var(--muted);">
+                        No hay cupones registrados actualmente. ¡Crea el primero para incentivar ventas!
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @if (Model == null || Model.Count == 0)
+            }
+            else
+            {
+                @foreach (var c in Model)
                 {
+                    bool vencido = c.FechaVencimiento.HasValue && DateTime.Today > c.FechaVencimiento.Value.Date;
+                    bool agotado = c.UsosMaximos > 0 && c.UsosActuales >= c.UsosMaximos;
+
                     <tr>
-                        <td colspan="7" style="padding:3rem 1rem;text-align:center;color:#6B7280;">
-                            No hay cupones registrados actualmente. ¡Crea el primero para incentivar ventas!
+                        <td>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="cupon-code-ticket">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                                    @c.Codigo
+                                </span>
+                            </div>
+                            <div style="font-size:0.81rem;color:var(--muted);">@c.Descripcion</div>
+                        </td>
+                        <td>
+                            @if (c.TipoDescuento == "Porcentaje")
+                            {
+                                <span style="font-weight:800;color:#10B981;font-size:1rem;">@c.Valor% OFF</span>
+                                @if (c.TopeMaximoDescuento.HasValue && c.TopeMaximoDescuento.Value > 0)
+                                {
+                                    <div style="font-size:0.74rem;color:var(--muted);">Tope máx: $@c.TopeMaximoDescuento.Value.ToString("N0") COP</div>
+                                }
+                            }
+                            else
+                            {
+                                <span style="font-weight:800;color:#10B981;font-size:1rem;">-$@c.Valor.ToString("N0") COP</span>
+                                <div style="font-size:0.74rem;color:var(--muted);">Monto Fijo</div>
+                            }
+                        </td>
+                        <td style="font-variant-numeric:tabular-nums;">
+                            @if (c.MontoMinimo > 0)
+                            {
+                                <strong style="color:var(--ink);">$@c.MontoMinimo.ToString("N0") COP</strong>
+                            }
+                            else
+                            {
+                                <span style="color:var(--muted);font-style:italic;">Sin mínimo</span>
+                            }
+                        </td>
+                        <td style="text-align:center;min-width:130px;">
+                            <div style="font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;font-size:0.85rem;">
+                                @c.UsosActuales / @c.UsosMaximos
+                            </div>
+                            <div class="cupon-progress-track">
+                                @{
+                                    double pct = c.UsosMaximos > 0 ? Math.Min(100, ((double)c.UsosActuales / c.UsosMaximos) * 100) : 0;
+                                }
+                                <div style="background:@(pct >= 100 ? "#EF4444" : "#10B981");height:100%;width:@pct%;border-radius:999px;"></div>
+                            </div>
+                        </td>
+                        <td style="font-variant-numeric:tabular-nums;">
+                            @if (c.FechaVencimiento.HasValue)
+                            {
+                                <span style="color:@(vencido ? "#EF4444" : "var(--ink)");font-weight:@(vencido ? "700" : "600");">
+                                    @c.FechaVencimiento.Value.ToString("dd/MM/yyyy")
+                                </span>
+                                @if (vencido)
+                                {
+                                    <div style="font-size:0.7rem;color:#EF4444;font-weight:700;">(Expirado)</div>
+                                }
+                            }
+                            else
+                            {
+                                <span style="color:#10B981;font-size:0.82rem;font-weight:700;">Permanente</span>
+                            }
+                        </td>
+                        <td style="text-align:center;">
+                            @if (!c.Activo)
+                            {
+                                <span class="badge-est badge-cancelado" style="opacity:0.8;">Inactivo</span>
+                            }
+                            else if (vencido)
+                            {
+                                <span class="badge-est badge-cancelado">Vencido</span>
+                            }
+                            else if (agotado)
+                            {
+                                <span class="badge-est badge-pendiente">Agotado</span>
+                            }
+                            else
+                            {
+                                <span class="badge-est badge-completado">Activo</span>
+                            }
+                        </td>
+                        <td style="text-align:right;">
+                            <div class="d-inline-flex gap-1 align-items-center justify-content-end">
+                                <form asp-action="ToggleEstado" asp-route-id="@c.Id" method="post" style="display:inline;margin:0;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-ghost" title="@(c.Activo ? "Pausar cupón" : "Activar cupón")" style="padding:0.28rem 0.62rem;font-size:0.75rem;">
+                                        @(c.Activo ? "Pausar" : "Activar")
+                                    </button>
+                                </form>
+
+                                <a asp-action="Edit" asp-route-id="@c.Id" class="btn-ghost" style="padding:0.28rem 0.62rem;font-size:0.75rem;">
+                                    Editar
+                                </a>
+
+                                <form asp-action="Eliminar" asp-route-id="@c.Id" method="post" style="display:inline;margin:0;" onsubmit="return confirm('¿Seguro que deseas eliminar el cupón @c.Codigo?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-danger-pro" title="Eliminar cupón" style="padding:0.28rem 0.52rem;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 }
-                else
-                {
-                    @foreach (var c in Model)
-                    {
-                        bool vencido = c.FechaVencimiento.HasValue && DateTime.Today > c.FechaVencimiento.Value.Date;
-                        bool agotado = c.UsosMaximos > 0 && c.UsosActuales >= c.UsosMaximos;
-
-                        <tr style="border-bottom:1px solid rgba(226,215,200,0.6);transition:background 120ms ease;">
-                            <td style="padding:1rem;">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <span style="font-family:monospace;font-size:0.95rem;font-weight:800;background:rgba(107,30,46,0.08);color:var(--brand,#6B1E2E);padding:3px 8px;border-radius:6px;border:1px dashed var(--brand,#6B1E2E);letter-spacing:1px;">
-                                        @c.Codigo
-                                    </span>
-                                </div>
-                                <div style="font-size:0.8rem;color:#555;margin-top:4px;">@c.Descripcion</div>
-                            </td>
-                            <td style="padding:1rem;">
-                                @if (c.TipoDescuento == "Porcentaje")
-                                {
-                                    <span style="font-weight:800;color:#059669;font-size:1rem;">@c.Valor% OFF</span>
-                                    @if (c.TopeMaximoDescuento.HasValue && c.TopeMaximoDescuento.Value > 0)
-                                    {
-                                        <div style="font-size:0.75rem;color:#6B7280;">Tope máx: $@c.TopeMaximoDescuento.Value.ToString("N0") COP</div>
-                                    }
-                                }
-                                else
-                                {
-                                    <span style="font-weight:800;color:#059669;font-size:1rem;">-$@c.Valor.ToString("N0") COP</span>
-                                    <div style="font-size:0.75rem;color:#6B7280;">Monto Fijo</div>
-                                }
-                            </td>
-                            <td style="padding:1rem;color:#3C2A20;">
-                                @if (c.MontoMinimo > 0)
-                                {
-                                    <strong>$@c.MontoMinimo.ToString("N0") COP</strong>
-                                }
-                                else
-                                {
-                                    <span style="color:#6B7280;font-style:italic;">Sin mínimo</span>
-                                }
-                            </td>
-                            <td style="padding:1rem;text-align:center;">
-                                <div style="font-weight:700;color:#18060A;">
-                                    @c.UsosActuales / @c.UsosMaximos
-                                </div>
-                                <div style="width:100%;background:#E5E7EB;border-radius:999px;height:5px;margin-top:4px;overflow:hidden;">
-                                    @{
-                                        double pct = c.UsosMaximos > 0 ? Math.Min(100, ((double)c.UsosActuales / c.UsosMaximos) * 100) : 0;
-                                    }
-                                    <div style="background:@(pct >= 100 ? "#EF4444" : "#10B981");height:100%;width:@pct%;"></div>
-                                </div>
-                            </td>
-                            <td style="padding:1rem;">
-                                @if (c.FechaVencimiento.HasValue)
-                                {
-                                    <span style="color:@(vencido ? "#DC2626" : "#3C2A20");font-weight:@(vencido ? "700" : "500");">
-                                        @c.FechaVencimiento.Value.ToString("dd/MM/yyyy")
-                                    </span>
-                                    @if (vencido)
-                                    {
-                                        <div style="font-size:0.7rem;color:#DC2626;font-weight:700;">(Expirado)</div>
-                                    }
-                                }
-                                else
-                                {
-                                    <span style="color:#059669;font-size:0.8rem;">Permanente</span>
-                                }
-                            </td>
-                            <td style="padding:1rem;text-align:center;">
-                                @if (!c.Activo)
-                                {
-                                    <span style="background:#F3F4F6;color:#6B7280;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700;">Inactivo</span>
-                                }
-                                else if (vencido)
-                                {
-                                    <span style="background:#FEE2E2;color:#991B1B;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700;">Vencido</span>
-                                }
-                                else if (agotado)
-                                {
-                                    <span style="background:#FEF3C7;color:#92400E;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700;">Agotado</span>
-                                }
-                                else
-                                {
-                                    <span style="background:#ECFDF5;color:#065F46;padding:3px 8px;border-radius:12px;font-size:0.75rem;font-weight:700;">Activo</span>
-                                }
-                            </td>
-                            <td style="padding:1rem;text-align:right;">
-                                <div style="display:inline-flex;gap:6px;align-items:center;">
-                                    <form asp-action="ToggleEstado" asp-route-id="@c.Id" method="post" style="display:inline;">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" title="@(c.Activo ? "Desactivar" : "Activar")" style="background:none;border:1px solid var(--line,#E2D7C8);padding:5px 8px;border-radius:8px;cursor:pointer;color:#3C2A20;font-size:0.75rem;font-weight:600;">
-                                            @(c.Activo ? "Pausar" : "Activar")
-                                        </button>
-                                    </form>
-
-                                    <a asp-action="Edit" asp-route-id="@c.Id" style="background:#F3F4F6;border:1px solid #E5E7EB;color:#374151;padding:5px 8px;border-radius:8px;text-decoration:none;font-size:0.75rem;font-weight:600;">
-                                        Editar
-                                    </a>
-
-                                    <form asp-action="Eliminar" asp-route-id="@c.Id" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar el cupón @c.Codigo?');">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" title="Eliminar" style="background:none;border:none;color:#DC2626;cursor:pointer;padding:4px;">
-                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-
+            }
+        </tbody>
+    </table>
 </div>
+
+<style>
+    .cupon-kpi-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.15rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        height: 100%;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .cupon-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
+    .cupon-kpi-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .cupon-kpi-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        display: block;
+    }
+    .cupon-kpi-val {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.2;
+    }
+    .cupon-kpi-sub {
+        font-size: 0.74rem;
+        color: var(--muted);
+    }
+    .cupon-code-ticket {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.9rem;
+        font-weight: 800;
+        background: rgba(200, 151, 58, 0.14);
+        color: var(--gold);
+        padding: 0.25rem 0.65rem;
+        border-radius: 7px;
+        border: 1px dashed rgba(200, 151, 58, 0.55);
+        letter-spacing: 0.06em;
+    }
+    .cupon-progress-track {
+        width: 100%;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        height: 6px;
+        margin-top: 5px;
+        overflow: hidden;
+    }
+</style>

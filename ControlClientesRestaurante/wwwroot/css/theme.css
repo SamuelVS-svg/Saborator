@@ -493,6 +493,78 @@ html[data-theme="dark"] .section-pad {
   background: var(--bg) !important;
 }
 
+/* ── Salvaguardas globales de contraste para Modo Oscuro en Panel Admin ── */
+html[data-theme="dark"] .card-pro,
+html[data-theme="dark"] .tbl-wrap,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .glass-card,
+html[data-theme="dark"] .mesa-card,
+html[data-theme="dark"] .prod-card,
+html[data-theme="dark"] .kds-card {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .pg-title,
+html[data-theme="dark"] .sec-title,
+html[data-theme="dark"] .stat-value,
+html[data-theme="dark"] .form-lbl {
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .pg-sub,
+html[data-theme="dark"] .stat-label,
+html[data-theme="dark"] .text-muted {
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .pg-icon {
+  background: rgba(229, 198, 135, 0.14) !important;
+  border-color: rgba(229, 198, 135, 0.32) !important;
+  color: var(--gold) !important;
+}
+
+html[data-theme="dark"] .pg-icon svg {
+  stroke: var(--gold) !important;
+}
+
+html[data-theme="dark"] .btn-ghost {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+  border-color: var(--line-2) !important;
+}
+html[data-theme="dark"] .btn-ghost:hover {
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+}
+
+html[data-theme="dark"] .bp-gold {
+  background: rgba(229, 198, 135, 0.16) !important;
+  color: var(--gold) !important;
+  border: 1px solid rgba(229, 198, 135, 0.32);
+}
+
+html[data-theme="dark"] .bp-warn {
+  background: rgba(245, 158, 11, 0.16) !important;
+  color: #FCD34D !important;
+}
+
+html[data-theme="dark"] .bp-ok {
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: #6EE7B7 !important;
+}
+
+html[data-theme="dark"] .bp-danger {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #FCA5A5 !important;
+}
+
+html[data-theme="dark"] .bp-muted {
+  background: var(--surface-2) !important;
+  color: var(--muted) !important;
+}
+
 /* ── BOTÓN TOGGLE DE MODO OSCURO (LUXURY EMIL KOWALSKI STYLE) ───────────── */
 .theme-toggle-btn {
   display: inline-flex;

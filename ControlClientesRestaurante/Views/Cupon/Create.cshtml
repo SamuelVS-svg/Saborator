@@ -3,80 +3,90 @@
     ViewData["Title"] = "Crear Nuevo Cupón Promocional";
 }
 
-<div style="max-width:680px;margin:2rem auto;padding:0 1.25rem;">
-    <div style="margin-bottom:1.5rem;">
-        <a asp-action="Index" style="display:inline-flex;align-items:center;gap:5px;color:#3C2A20;text-decoration:none;font-weight:700;font-size:0.85rem;margin-bottom:0.75rem;">
+<div style="max-width:720px;margin:0.5rem auto;">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div class="pg-header">
+            <div class="pg-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            </div>
+            <div>
+                <div class="pg-title">Crear Nuevo Cupón</div>
+                <div class="pg-sub">Configura las reglas comerciales, límite de canjes y porcentaje o monto del descuento</div>
+            </div>
+        </div>
+        <a asp-action="Index" class="btn-ghost">
             ← Volver a Cupones
         </a>
-        <h1 style="font-size:1.65rem;font-weight:800;color:var(--brand,#6B1E2E);margin:0;">Crear Nuevo Cupón</h1>
-        <p style="font-size:0.88rem;color:#666;margin:4px 0 0;">Configura las reglas comerciales, límite de canjes y porcentaje o monto del descuento.</p>
     </div>
+    <hr class="div-gold" />
 
-    <div style="background:#FFFDF9;border:1px solid var(--line,#E2D7C8);border-radius:14px;padding:2rem;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+    <div class="card-pro">
         <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" style="color:#DC2626;font-size:0.85rem;margin-bottom:1rem;"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
-                <div>
-                    <label asp-for="Codigo" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Código Promocional *</label>
-                    <input asp-for="Codigo" class="input-field" placeholder="EJ: BURGER20" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;text-transform:uppercase;font-weight:800;letter-spacing:1px;font-family:monospace;" required />
-                    <span asp-validation-for="Codigo" style="color:#DC2626;font-size:0.78rem;"></span>
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Codigo" class="form-label">Código Promocional *</label>
+                    <input asp-for="Codigo" class="form-control" placeholder="EJ: BURGER20" style="text-transform:uppercase;font-weight:800;letter-spacing:1px;font-family:'Geist Mono',monospace;" required />
+                    <span asp-validation-for="Codigo" class="text-danger small"></span>
                 </div>
-                <div>
-                    <label asp-for="TipoDescuento" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Tipo de Descuento *</label>
-                    <select asp-for="TipoDescuento" id="selTipoDescuento" class="input-field" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" onchange="ajustarCamposTipo()">
+                <div class="col-12 col-md-6">
+                    <label asp-for="TipoDescuento" class="form-label">Tipo de Descuento *</label>
+                    <select asp-for="TipoDescuento" id="selTipoDescuento" class="form-select" onchange="ajustarCamposTipo()">
                         <option value="Porcentaje">Porcentaje (% sobre subtotal)</option>
                         <option value="Fijo">Monto Fijo ($ COP de descuento)</option>
                     </select>
                 </div>
             </div>
 
-            <div style="margin-bottom:1.25rem;">
-                <label asp-for="Descripcion" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Descripción de la Promoción *</label>
-                <input asp-for="Descripcion" class="input-field" placeholder="Ej: 15% de descuento en pedidos mayores a $30.000 COP" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" required />
-                <span asp-validation-for="Descripcion" style="color:#DC2626;font-size:0.78rem;"></span>
+            <div class="mb-3">
+                <label asp-for="Descripcion" class="form-label">Descripción de la Promoción *</label>
+                <input asp-for="Descripcion" class="form-control" placeholder="Ej: 15% de descuento en pedidos mayores a $30.000 COP" required />
+                <span asp-validation-for="Descripcion" class="text-danger small"></span>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
-                <div>
-                    <label asp-for="Valor" id="lblValor" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Porcentaje (%) *</label>
-                    <input asp-for="Valor" type="number" step="0.01" class="input-field" placeholder="15" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" required />
-                    <span asp-validation-for="Valor" style="color:#DC2626;font-size:0.78rem;"></span>
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Valor" id="lblValor" class="form-label">Porcentaje (%) *</label>
+                    <input asp-for="Valor" type="number" step="0.01" class="form-control" placeholder="15" required />
+                    <span asp-validation-for="Valor" class="text-danger small"></span>
                 </div>
-                <div id="colTopeMaximo">
-                    <label asp-for="TopeMaximoDescuento" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Tope Máximo Descuento ($ COP)</label>
-                    <input asp-for="TopeMaximoDescuento" type="number" class="input-field" placeholder="Ej: 15000 (Opcional)" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" />
-                </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
-                <div>
-                    <label asp-for="MontoMinimo" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Consumo Mínimo de Pedido ($ COP)</label>
-                    <input asp-for="MontoMinimo" type="number" class="input-field" placeholder="Ej: 30000" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" />
-                </div>
-                <div>
-                    <label asp-for="UsosMaximos" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Límite Máximo de Canjes *</label>
-                    <input asp-for="UsosMaximos" type="number" class="input-field" placeholder="100" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" required />
+                <div class="col-12 col-md-6" id="colTopeMaximo">
+                    <label asp-for="TopeMaximoDescuento" class="form-label">Tope Máximo Descuento ($ COP)</label>
+                    <input asp-for="TopeMaximoDescuento" type="number" class="form-control" placeholder="Ej: 15000 (Opcional)" />
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
-                <div>
-                    <label asp-for="FechaVencimiento" style="display:block;font-size:0.8rem;font-weight:700;color:#3C2A20;text-transform:uppercase;margin-bottom:0.35rem;">Fecha de Vencimiento</label>
-                    <input asp-for="FechaVencimiento" type="date" class="input-field" style="width:100%;padding:0.75rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;" />
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="MontoMinimo" class="form-label">Consumo Mínimo de Pedido ($ COP)</label>
+                    <input asp-for="MontoMinimo" type="number" class="form-control" placeholder="Ej: 30000" />
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;padding-top:1.5rem;">
-                    <input asp-for="Activo" type="checkbox" id="chkActivo" style="width:18px;height:18px;accent-color:var(--brand,#6B1E2E);" />
-                    <label for="chkActivo" style="font-weight:700;color:#3C2A20;font-size:0.9rem;cursor:pointer;">Cupón Activo Inmediatamente</label>
+                <div class="col-12 col-md-6">
+                    <label asp-for="UsosMaximos" class="form-label">Límite Máximo de Canjes *</label>
+                    <input asp-for="UsosMaximos" type="number" class="form-control" placeholder="100" required />
                 </div>
             </div>
 
-            <div style="display:flex;justify-content:flex-end;gap:1rem;border-top:1px solid var(--line,#E2D7C8);padding-top:1.25rem;">
-                <a asp-action="Index" style="padding:0.75rem 1.25rem;border:1px solid var(--line,#E2D7C8);border-radius:10px;color:#3C2A20;text-decoration:none;font-weight:700;font-size:0.88rem;">
+            <div class="row g-3 mb-4 align-items-center">
+                <div class="col-12 col-md-6">
+                    <label asp-for="FechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                    <input asp-for="FechaVencimiento" type="date" class="form-control" />
+                </div>
+                <div class="col-12 col-md-6 pt-md-4">
+                    <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="background:var(--surface-2);border:1px solid var(--border);">
+                        <input asp-for="Activo" type="checkbox" id="chkActivo" class="form-check-input mt-0" style="width:18px;height:18px;cursor:pointer;" />
+                        <label for="chkActivo" style="font-weight:700;color:var(--ink);font-size:0.88rem;cursor:pointer;margin:0;">Cupón Activo Inmediatamente</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-3" style="border-top:1px solid var(--border);">
+                <a asp-action="Index" class="btn-ghost">
                     Cancelar
                 </a>
-                <button type="submit" style="background:var(--brand,#6B1E2E);color:#FFFDF9;border:none;padding:0.75rem 1.5rem;border-radius:10px;font-weight:800;font-size:0.88rem;cursor:pointer;box-shadow:0 3px 10px rgba(107,30,46,0.25);">
+                <button type="submit" class="btn-gold">
                     Guardar Cupón
                 </button>
             </div>
