@@ -55,12 +55,18 @@
     }
     .checkout-grid {
         display: grid;
-        grid-template-columns: 1fr 390px;
+        grid-template-columns: minmax(0, 1fr) 390px;
         gap: 2rem;
         align-items: flex-start;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     @@media (max-width: 992px) {
-        .checkout-grid { grid-template-columns: 1fr; }
+        .checkout-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1.25rem;
+        }
     }
 
     /* Tarjeta de Métodos de Pago */
@@ -71,6 +77,11 @@
         padding: 2rem;
         color: var(--text, #1C1416);
         box-shadow: 0 14px 32px -8px rgba(44, 10, 18, 0.06);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        overflow: hidden;
     }
     :root[data-theme="dark"] .payment-card {
         background: rgba(30, 10, 16, 0.85);
@@ -80,19 +91,22 @@
     }
     .methods-nav {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 0.65rem;
         margin-bottom: 1.75rem;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
     @@media (max-width: 900px) {
         .methods-nav {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 0.5rem;
         }
     }
     @@media (max-width: 480px) {
         .methods-nav {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
     .method-tab {
@@ -376,6 +390,50 @@
     .btn-fill-demo:hover {
         background: rgba(200, 151, 58, 0.25);
     }
+    .pago-grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .pago-grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+    .summary-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+    .input-pago {
+        box-sizing: border-box;
+        max-width: 100%;
+        min-width: 0;
+    }
+    @@media (max-width: 600px) {
+        .checkout-hero {
+            padding: 1.25rem 0.85rem 3.5rem;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+        .payment-card,
+        .summary-card {
+            padding: 1.25rem 1rem;
+            border-radius: 14px;
+            position: static;
+        }
+        .pago-grid-2,
+        .pago-grid-3 {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0.75rem;
+        }
+        .cv-number {
+            font-size: 1rem;
+            letter-spacing: 0.08em;
+        }
+    }
 </style>
 
 <div class="checkout-hero">
@@ -469,7 +527,7 @@
                     </div>
 
                     <!-- Datos Generales del Pagador -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                    <div class="pago-grid-2">
                         <div class="form-group-pago">
                             <label for="pNombre">Nombre del Pagador *</label>
                             <input type="text" name="NombreCliente" id="pNombre" class="input-pago" 
@@ -481,7 +539,7 @@
                         </div>
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                    <div class="pago-grid-2">
                         <div class="form-group-pago">
                             <label for="pCorreo">Correo Electrónico *</label>
                             <input type="email" name="Correo" id="pCorreo" class="input-pago" 
@@ -496,7 +554,7 @@
 
                     <!-- 0. PANE WOMPI OFICIAL (BANCOLOMBIA) -->
                     <div class="method-pane active" id="paneWompi">
-                        <div style="background:rgba(200,151,58,0.1);border:1.5px solid #C8973A;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;text-align:center;">
+                        <div style="background:rgba(200,151,58,0.1);border:1.5px solid #C8973A;border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;text-align:center;box-sizing:border-box;max-width:100%;">
                             
                             <!-- Logo oficial de Wompi Bancolombia -->
                             <div style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.5rem;background:#000;border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;margin-bottom:1.25rem;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
@@ -585,7 +643,7 @@
                                    placeholder="4000 1234 5678 9010" oninput="formatearTarjeta(this)" />
                         </div>
 
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                        <div class="pago-grid-3">
                             <div class="form-group-pago">
                                 <label for="cExp">Expira (MM/AA) *</label>
                                 <input type="text" name="ExpiracionTarjeta" id="cExp" class="input-pago" maxlength="5"

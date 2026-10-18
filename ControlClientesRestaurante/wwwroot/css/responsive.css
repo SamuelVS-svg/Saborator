@@ -308,13 +308,25 @@ textarea {
 }
 
 /* ── 12. CHECKOUT / PAGO / KDS ───────────────────────────────────────────── */
-@media (max-width: 480px) {
+@media (max-width: 960px) {
     .checkout-grid,
     .fac-grid,
     .pedido-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: minmax(0, 1fr) !important;
     }
 
+    .checkout-main,
+    .checkout-sidebar,
+    .checkout-card,
+    .payment-card,
+    .summary-card {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 480px) {
     /* Resúmenes de pago con dos columnas (monto + botón) */
     [style*="display:grid;grid-template-columns:1fr auto" i] {
         gap: 0.85rem !important;
