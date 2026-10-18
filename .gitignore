@@ -1,0 +1,16 @@
+node_modules/
+bin/
+obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+**/.vs/
+.idea/
+*.zip
+.env
+*.env
+cookies.txt
+scratch/
+skills-lock.json
