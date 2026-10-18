@@ -93,13 +93,29 @@ export default function HudHeader({ onOpenAuth, currentUser, onLogout }) {
             href={`https://wa.me/${BRAND_CONFIG.whatsappNumber}?text=${encodeURIComponent('Hola Smash // The Sear, deseo ordenar una smash burger de alta precisión.')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-sear text-xs px-4 py-2 flex items-center gap-2"
+            className="btn-sear text-xs px-3 sm:px-4 py-2 flex items-center gap-2"
           >
             <Terminal className="w-3.5 h-3.5" />
-            <span>ORDER HUD</span>
+            <span className="hidden xs:inline">ORDER HUD</span>
           </a>
         </div>
       </div>
+
+      {/* Barra de opciones responsive visible en celular y tablet */}
+      <nav className="flex lg:hidden items-center gap-2 px-4 py-2 bg-[#111111]/95 border-t border-[#1f1f1f] overflow-x-auto no-scrollbar font-mono-telemetry text-[11px] whitespace-nowrap">
+        <a href="#scrolly" className="px-2.5 py-1 bg-[#181818] border border-[#2a2a2a] text-[#cccccc] hover:text-[#ff5500] hover:border-[#ff5500] transition-colors shrink-0">
+          00. PREPARACIÓN
+        </a>
+        <a href="#lineup" className="px-2.5 py-1 bg-[#181818] border border-[#2a2a2a] text-[#cccccc] hover:text-[#ff5500] hover:border-[#ff5500] transition-colors shrink-0">
+          01. THE LINE-UP
+        </a>
+        <a href="#builder" className="px-2.5 py-1 bg-[#181818] border border-[#2a2a2a] text-[#cccccc] hover:text-[#ff5500] hover:border-[#ff5500] transition-colors shrink-0">
+          02. ARMA TU SMASH
+        </a>
+        <a href="#specs" className="px-2.5 py-1 bg-[#181818] border border-[#2a2a2a] text-[#cccccc] hover:text-[#ff5500] hover:border-[#ff5500] transition-colors shrink-0">
+          03. ESPECIFICACIONES
+        </a>
+      </nav>
     </header>
   );
 }

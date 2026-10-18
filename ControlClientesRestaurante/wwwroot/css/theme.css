@@ -791,7 +791,41 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
 .gourmet-mobile-item:last-child { border-bottom: none; }
 
 @media (max-width: 1024px) {
-  .gourmet-links { display: none; }
+  .gourmet-nav-container {
+    height: auto !important;
+    min-height: 60px;
+    padding: 0.55rem 0.9rem !important;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .gourmet-links {
+    display: flex !important;
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-top: 0.4rem;
+    border-top: 1px solid rgba(255, 253, 249, 0.14);
+    gap: 0.35rem;
+  }
+  .gourmet-links::-webkit-scrollbar {
+    display: none;
+  }
+  .gourmet-link {
+    font-size: 0.76rem;
+    padding: 0.32rem 0.65rem;
+    background: rgba(255, 253, 249, 0.08);
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .gourmet-btn-register {
+    display: none;
+  }
+  .gourmet-btn-login {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.76rem;
+  }
   .gourmet-mobile-toggle { display: flex; }
 }
 

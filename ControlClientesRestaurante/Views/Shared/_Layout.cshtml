@@ -564,6 +564,8 @@ else
         if (sb && tog && !sb.contains(e.target) && !tog.contains(e.target)) sb.classList.remove('open');
         var gNav = document.getElementById('gourmetNavbar'), gMenu = document.getElementById('gourmetMobileMenu'), gBtn = document.getElementById('gourmetMobileToggle');
         if (gMenu && gBtn && !gMenu.contains(e.target) && !gBtn.contains(e.target)) gMenu.classList.remove('open');
+        var lMenu = document.getElementById('lnavMobileMenu'), lBtn = document.getElementById('lnavMobileToggle');
+        if (lMenu && lBtn && !lMenu.contains(e.target) && !lBtn.contains(e.target)) lMenu.classList.remove('open');
     });
 
     function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('show'); }

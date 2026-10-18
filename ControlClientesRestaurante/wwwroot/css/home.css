@@ -166,39 +166,60 @@
 }
 .lnav-btn-p:active { transform: scale(0.97); }
 
+.lnav-item-reserva-mobile {
+    display: none !important;
+}
+
 /* Hamburger (mobile) */
 .lnav-toggle {
     display: none;
     flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: none;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 36px;
+    height: 36px;
+    background: var(--surface, #FFFDF9);
+    border: 1px solid var(--cream-line, #D4C6B2);
+    border-radius: 10px;
     cursor: pointer;
     padding: 0.35rem;
+    flex-shrink: 0;
 }
-.lnav-toggle span { display: block; width: 22px; height: 2px; background: var(--text, #1C1416); border-radius: 2px; transition: transform 200ms var(--ease); }
+[data-theme="dark"] .lnav-toggle {
+    background: rgba(255, 253, 249, 0.08);
+    border-color: rgba(200, 151, 58, 0.35);
+}
+.lnav-toggle span { display: block; width: 18px; height: 2px; background: var(--text, #1C1416); border-radius: 2px; transition: transform 200ms var(--ease); }
 
 /* Mobile nav dropdown */
 .lnav-mobile {
     display: none;
     position: fixed;
-    top: 60px; left: 0; right: 0;
+    top: 98px; left: 0; right: 0;
     z-index: 199;
     background: var(--surface, #FFFDF9);
     border-bottom: 1px solid var(--line, #E3D8C8);
-    padding: 1.25rem 1.75rem;
+    padding: 1rem 1.25rem;
     flex-direction: column;
-    gap: 0.85rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    gap: 0.4rem;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+    max-height: calc(100dvh - 98px);
+    overflow-y: auto;
+}
+[data-theme="dark"] .lnav-mobile {
+    background: #1A1316;
+    border-bottom-color: rgba(200, 151, 58, 0.3);
 }
 .lnav-mobile.open { display: flex; }
 .lnav-mobile a {
     color: var(--text, #1C1416);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
-    padding: 0.5rem 0;
+    font-size: 0.92rem;
+    padding: 0.6rem 0.5rem;
     border-bottom: 1px solid var(--line, #E3D8C8);
+    border-radius: 8px;
 }
 .lnav-mobile a:last-child { border: none; }
 
@@ -810,10 +831,71 @@
 @media (max-width: 1040px) {
     .features-grid { grid-template-columns: 1fr; }
     .menu-cards { grid-template-columns: repeat(2, 1fr); }
-    .lnav { padding: 0.75rem 1.25rem; }
-    .lnav-menu-links { display: none !important; }
-    .lnav-toggle { display: flex; }
-    .lnav-actions { display: none; }
+    .lnav {
+        padding: 0.55rem 0.85rem 0.45rem;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    .lnav-name {
+        font-size: 1.25rem;
+    }
+    .lnav-icon {
+        width: 32px;
+        height: 32px;
+    }
+    .lnav-actions {
+        display: flex !important;
+        gap: 0.35rem;
+        margin-left: auto;
+    }
+    .lnav-btn-reserva-desk {
+        display: none !important;
+    }
+    .lnav-btn-login {
+        padding: 0.35rem 0.65rem !important;
+        font-size: 0.76rem !important;
+    }
+    .lnav-toggle {
+        display: flex !important;
+    }
+    .lnav-menu-links {
+        display: flex !important;
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-top: 0.42rem;
+        padding-bottom: 0.15rem;
+        border-top: 1px solid rgba(200, 151, 58, 0.22);
+        gap: 0.4rem !important;
+    }
+    .lnav-menu-links::-webkit-scrollbar {
+        display: none;
+    }
+    .lnav-menu-links a,
+    .lnav-item {
+        padding: 0.28rem 0.68rem !important;
+        border-radius: 999px !important;
+        background: rgba(107, 30, 46, 0.07) !important;
+        border: 1px solid rgba(107, 30, 46, 0.15) !important;
+        font-size: 0.76rem !important;
+    }
+    [data-theme="dark"] .lnav-menu-links a,
+    [data-theme="dark"] .lnav-item {
+        background: rgba(255, 253, 249, 0.07) !important;
+        border-color: rgba(200, 151, 58, 0.28) !important;
+        color: #FFFDF9 !important;
+    }
+    .lnav-item-reserva-mobile {
+        display: inline-flex !important;
+        background: var(--brand, #6B1E2E) !important;
+        color: #FFFDF9 !important;
+        border-color: var(--brand, #6B1E2E) !important;
+    }
+    .hero-minimal {
+        padding-top: 125px;
+    }
 }
 
 @media (max-width: 540px) {

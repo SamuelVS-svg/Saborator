@@ -142,10 +142,17 @@
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 <span>Pagar Cuenta</span>
             </a>
+            <a asp-controller="Reserva" asp-action="Nueva" class="lnav-item lnav-item-reserva-mobile">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Reservar Mesa</span>
+            </a>
             @if (_autenticado)
             {
                 <a asp-controller="Reserva" asp-action="MisReservas" class="lnav-item">
                     <span>Mis Reservas</span>
+                </a>
+                <a asp-controller="Pedido" asp-action="MisPedidos" class="lnav-item">
+                    <span>Mis Pedidos</span>
                 </a>
             }
         </div>
@@ -163,21 +170,49 @@
                 <span class="nav-cart-badge" id="navCartCount" style="display:none;">0</span>
             </button>
 
-            <a asp-controller="Reserva" asp-action="Nueva" class="lnav-btn-p">Reservar Mesa</a>
+            <a asp-controller="Reserva" asp-action="Nueva" class="lnav-btn-p lnav-btn-reserva-desk">Reservar Mesa</a>
             @if (_autenticado)
             {
-                <span class="lnav-user-tag" style="font-size:0.84rem;color:var(--text, #1C1416);font-weight:700;margin-left:0.35rem;display:inline-flex;align-items:center;gap:4px;">
+                <span class="lnav-user-tag" style="font-size:0.84rem;color:var(--text, #1C1416);font-weight:700;margin-left:0.2rem;display:inline-flex;align-items:center;gap:4px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold, #C8973A)" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     <span>@_usuario</span>
                 </span>
-                <a asp-controller="Login" asp-action="Logout" class="lnav-btn-o" style="padding:0.35rem 0.75rem;font-size:0.8rem;">Salir</a>
+                <a asp-controller="Login" asp-action="Logout" class="lnav-btn-o" style="padding:0.35rem 0.65rem;font-size:0.78rem;">Salir</a>
             }
             else
             {
-                <a asp-controller="Login" asp-action="Index" class="lnav-btn-o" style="text-decoration:none;display:inline-flex;align-items:center;">Iniciar Sesión</a>
+                <a asp-controller="Login" asp-action="Index" class="lnav-btn-o lnav-btn-login" style="text-decoration:none;display:inline-flex;align-items:center;">Iniciar Sesión</a>
             }
+
+            <!-- Botón Menú Hamburguesa Móvil -->
+            <button type="button" class="lnav-toggle" id="lnavMobileToggle" onclick="document.getElementById('lnavMobileMenu').classList.toggle('open')" aria-label="Abrir menú de opciones">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </nav>
+
+    <!-- Menú Desplegable Móvil Completo -->
+    <div class="lnav-mobile" id="lnavMobileMenu">
+        <a href="#menu" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')">🍔 La Carta Gourmet</a>
+        <a href="#ubicacion" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')">📍 Sede &amp; Mapa</a>
+        <a href="#resenas" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')">⭐ Reseñas de Clientes</a>
+        <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalModalidad();">🛵 Modalidad / Domicilio</a>
+        <a asp-controller="Pedido" asp-action="Rastrear">⏱️ Rastrear Pedido</a>
+        <a asp-controller="Pago" asp-action="Checkout">💳 Pagar Cuenta</a>
+        <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--brand, #6B1E2E);font-weight:700;">📅 Reservar Mesa</a>
+        @if (_autenticado)
+        {
+            <a asp-controller="Reserva" asp-action="MisReservas">📋 Mis Reservas</a>
+            <a asp-controller="Pedido" asp-action="MisPedidos">🛍️ Mis Pedidos</a>
+            <a asp-controller="Perfil" asp-action="Index">👤 Mi Perfil (@_usuario)</a>
+            <a asp-controller="Login" asp-action="Logout" style="color:#DC2626;font-weight:700;">🚪 Cerrar Sesión</a>
+        }
+        else
+        {
+            <a asp-controller="Login" asp-action="Index">🔑 Iniciar Sesión</a>
+            <a asp-controller="Login" asp-action="Index" asp-route-tab="registro" style="color:var(--gold, #C8973A);font-weight:700;">✨ Crear Cuenta</a>
+        }
+    </div>
 
     <!-- ══ HERO DEL MENÚ GASTRONÓMICO (MINIMALISTA INSPIRADO EN EL VIDEO) ═══════════════════════ -->
     <section class="hero hero-minimal" id="inicio">
