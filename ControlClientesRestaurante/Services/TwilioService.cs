@@ -136,10 +136,16 @@ namespace ControlClientesRestaurante.Services
             var config = ObtenerConfiguracion();
             var destino = NormalizarTelefonoColombiano(telefono);
 
-            // Si hay Twilio Verify configurado, usar Verify API (soporta SMS directo a Colombia)
+            // 1. Si hay Twilio Verify configurado, intentar primero Verify API (soporta SMS directo a Colombia sin número remitente)
             if (!string.IsNullOrWhiteSpace(config.verifyServiceSid) && !string.IsNullOrWhiteSpace(config.accountSid) && !string.IsNullOrWhiteSpace(config.authToken))
             {
-                return await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destino, "sms");
+                var (okVerify, sidVerify, errVerify) = await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destino, "sms");
+                if (okVerify) return (okVerify, sidVerify, errVerify);
+
+                if (string.IsNullOrWhiteSpace(config.phoneNumber))
+                {
+                    return (okVerify, sidVerify, errVerify);
+                }
             }
 
             var cuerpoMensaje = $"🍔 [{config.businessName}] Tu código es: {codigo}. Válido por 5 min.";
@@ -164,16 +170,6 @@ namespace ControlClientesRestaurante.Services
             var config = ObtenerConfiguracion();
             var destinoTel = NormalizarTelefonoColombiano(telefono);
 
-            // Si hay Twilio Verify configurado, intentar canal whatsapp/sms
-            if (!string.IsNullOrWhiteSpace(config.verifyServiceSid) && !string.IsNullOrWhiteSpace(config.accountSid) && !string.IsNullOrWhiteSpace(config.authToken))
-            {
-                var (okVerify, sidVerify, errVerify) = await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destinoTel, "whatsapp");
-                if (okVerify) return (okVerify, sidVerify, errVerify);
-                
-                // Fallback automático a SMS por Verify
-                return await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destinoTel, "sms");
-            }
-
             var destinoWhatsApp = destinoTel.StartsWith("whatsapp:") ? destinoTel : $"whatsapp:{destinoTel}";
             var remitenteWhatsApp = config.whatsappNumber.StartsWith("whatsapp:") ? config.whatsappNumber : $"whatsapp:{config.whatsappNumber}";
             var cuerpoMensaje = $"🍔 Tu código de verificación es *{codigo}* - Expira en 5 min. Gracias por pedir en {config.businessName}";
@@ -184,13 +180,27 @@ namespace ControlClientesRestaurante.Services
                 return (true, "SIMULATED_WHATSAPP_SID", null);
             }
 
-            return await EjecutarTwilioApiAsync(
+            // 1. Intentar envío por WhatsApp API (incluyendo el código exacto generado por el sistema)
+            var (okWa, sidWa, errWa) = await EjecutarTwilioApiAsync(
                 config.accountSid,
                 config.authToken,
                 remitenteWhatsApp,
                 destinoWhatsApp,
                 cuerpoMensaje,
                 "WhatsApp");
+
+            if (okWa) return (okWa, sidWa, errWa);
+
+            // 2. Si WhatsApp API falla (ej. número no unido al Sandbox), usar Twilio Verify (WhatsApp o SMS directo)
+            if (!string.IsNullOrWhiteSpace(config.verifyServiceSid))
+            {
+                var (okVerifyWa, sidVerifyWa, errVerifyWa) = await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destinoTel, "whatsapp");
+                if (okVerifyWa) return (okVerifyWa, sidVerifyWa, errVerifyWa);
+
+                return await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destinoTel, "sms");
+            }
+
+            return (okWa, sidWa, errWa);
         }
 
         public async Task<bool> VerificarCodigoTwilioAsync(string telefono, string codigo)
