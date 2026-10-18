@@ -40,68 +40,63 @@
 <hr class="div-gold" />
 
 <!-- ══ TARJETAS DE KPIS DE RESERVAS ═══════════════════════════════════ -->
-<div class="row g-3 mb-4">
-    <div class="col-12 col-sm-6 col-xl-3">
-        <a asp-action="Admin" asp-route-filtro="hoy" style="text-decoration:none;display:block;height:100%;">
-            <div class="reserva-kpi-card @(filtroSel == "hoy" && string.IsNullOrEmpty(fechaSel) ? "active" : "")" style="border-left: 4px solid var(--gold);">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="reserva-kpi-label">Para Hoy</span>
-                    <div class="reserva-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    </div>
+<div class="reserva-kpi-grid">
+    <a asp-action="Admin" asp-route-filtro="hoy" style="text-decoration:none;display:block;height:100%;">
+        <div class="reserva-kpi-card @(filtroSel == "hoy" && string.IsNullOrEmpty(fechaSel) ? "active" : "")" style="border-left: 4px solid var(--gold);">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="reserva-kpi-label">Para Hoy</span>
+                <div class="reserva-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
-                <div class="reserva-kpi-val">@totalHoy reservas</div>
-                <div class="reserva-kpi-sub">Turnos de almuerzo y cena</div>
             </div>
-        </a>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <a asp-action="Admin" asp-route-filtro="manana" style="text-decoration:none;display:block;height:100%;">
-            <div class="reserva-kpi-card @(filtroSel == "manana" ? "active" : "")" style="border-left: 4px solid #3B82F6;">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="reserva-kpi-label">Para Mañana</span>
-                    <div class="reserva-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    </div>
+            <div class="reserva-kpi-val">@totalHoy reservas</div>
+            <div class="reserva-kpi-sub">Turnos de almuerzo y cena</div>
+        </div>
+    </a>
+
+    <a asp-action="Admin" asp-route-filtro="manana" style="text-decoration:none;display:block;height:100%;">
+        <div class="reserva-kpi-card @(filtroSel == "manana" ? "active" : "")" style="border-left: 4px solid #3B82F6;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="reserva-kpi-label">Para Mañana</span>
+                <div class="reserva-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
-                <div class="reserva-kpi-val" style="color: #3B82F6;">@totalManana reservas</div>
-                <div class="reserva-kpi-sub">Planificación anticipada</div>
             </div>
-        </a>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <a asp-action="Admin" asp-route-filtro="semana" style="text-decoration:none;display:block;height:100%;">
-            <div class="reserva-kpi-card @(filtroSel == "semana" ? "active" : "")" style="border-left: 4px solid #10B981;">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="reserva-kpi-label">Próximos 7 Días</span>
-                    <div class="reserva-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </div>
+            <div class="reserva-kpi-val" style="color: #3B82F6;">@totalManana reservas</div>
+            <div class="reserva-kpi-sub">Planificación anticipada</div>
+        </div>
+    </a>
+
+    <a asp-action="Admin" asp-route-filtro="semana" style="text-decoration:none;display:block;height:100%;">
+        <div class="reserva-kpi-card @(filtroSel == "semana" ? "active" : "")" style="border-left: 4px solid #10B981;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="reserva-kpi-label">Próximos 7 Días</span>
+                <div class="reserva-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 </div>
-                <div class="reserva-kpi-val" style="color: #10B981;">@totalConfirmadas confirmadas</div>
-                <div class="reserva-kpi-sub">Comensales activos</div>
             </div>
-        </a>
-    </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <a asp-action="Admin" asp-route-filtro="" style="text-decoration:none;display:block;height:100%;">
-            <div class="reserva-kpi-card @(string.IsNullOrEmpty(filtroSel) && string.IsNullOrEmpty(fechaSel) ? "active" : "")" style="border-left: 4px solid #D97706;">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="reserva-kpi-label">Total Registradas</span>
-                    <div class="reserva-kpi-icon" style="background: rgba(217,119,6,0.15); color: #D97706;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    </div>
+            <div class="reserva-kpi-val" style="color: #10B981;">@totalConfirmadas confirmadas</div>
+            <div class="reserva-kpi-sub">Comensales activos</div>
+        </div>
+    </a>
+
+    <a asp-action="Admin" asp-route-filtro="" style="text-decoration:none;display:block;height:100%;">
+        <div class="reserva-kpi-card @(string.IsNullOrEmpty(filtroSel) && string.IsNullOrEmpty(fechaSel) ? "active" : "")" style="border-left: 4px solid #D97706;">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="reserva-kpi-label">Total Registradas</span>
+                <div class="reserva-kpi-icon" style="background: rgba(217,119,6,0.15); color: #D97706;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
-                <div class="reserva-kpi-val" style="color: var(--gold);">@totalGeneral en sistema</div>
-                <div class="reserva-kpi-sub">Historial completo</div>
             </div>
-        </a>
-    </div>
+            <div class="reserva-kpi-val" style="color: var(--gold);">@totalGeneral en sistema</div>
+            <div class="reserva-kpi-sub">Historial completo</div>
+        </div>
+    </a>
 </div>
 
 @if (avisos.Any())
 {
-    <div style="background:rgba(200,151,58,0.12);border:1px solid rgba(200,151,58,0.35);border-radius:12px;padding:0.95rem 1.2rem;margin-bottom:1.5rem;">
+    <div style="background:rgba(200,151,58,0.12);border:1px solid rgba(200,151,58,0.35);border-radius:14px;padding:1.1rem 1.35rem;margin-bottom:2rem;">
         <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);margin-bottom:0.35rem;display:flex;align-items:center;gap:0.4rem;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             <span>Avisos de Reservas Recientes</span>
@@ -116,18 +111,18 @@
 }
 
 <!-- ══ FILTROS Y BUSCADOR ═══════════════════════════════════════════════ -->
-<div class="card-pro mb-4" style="padding: 1.15rem 1.35rem; background: var(--surface);">
-    <form method="get" asp-action="Admin" class="row g-3 align-items-end">
+<div class="card-pro" style="padding: 1.5rem 1.75rem; margin-bottom: 2.25rem; background: var(--surface);">
+    <form method="get" asp-action="Admin" class="reserva-filter-grid">
         <input type="hidden" name="filtro" value="@(string.IsNullOrEmpty(fechaSel) ? filtroSel : "")" />
-        <div class="col-12 col-md-4">
+        <div>
             <label class="form-label mb-1">Buscar por Código, Comensal o Teléfono</label>
             <input type="text" name="buscar" value="@buscar" class="form-control form-control-sm" placeholder="Ej: RES-2026..., Valentina, 300..." />
         </div>
-        <div class="col-6 col-md-3">
+        <div>
             <label class="form-label mb-1">Fecha Específica</label>
             <input type="date" name="fecha" value="@fechaSel" class="form-control form-control-sm" />
         </div>
-        <div class="col-6 col-md-2">
+        <div>
             <label class="form-label mb-1">Estado</label>
             <select name="estado" class="form-select form-select-sm">
                 <option value="">Todos</option>
@@ -137,12 +132,12 @@
                 <option value="No Asistio" selected="@(estadoSel == "No Asistio")">No Asistió</option>
             </select>
         </div>
-        <div class="col-12 col-md-3 d-flex gap-2">
-            <button type="submit" class="btn-brand flex-fill" style="padding:0.45rem 0.85rem;font-size:0.82rem;border-radius:9px;justify-content:center;">
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn-brand flex-fill" style="padding:0.48rem 0.95rem;font-size:0.84rem;border-radius:9px;justify-content:center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <span>Filtrar</span>
             </button>
-            <a asp-action="Admin" asp-route-filtro="hoy" class="btn-ghost" style="padding:0.45rem 0.85rem;font-size:0.82rem;border-radius:9px;">
+            <a asp-action="Admin" asp-route-filtro="hoy" class="btn-ghost" style="padding:0.48rem 0.95rem;font-size:0.84rem;border-radius:9px;">
                 Hoy
             </a>
         </div>
@@ -261,19 +256,41 @@ else
 }
 
 <style>
+    .reserva-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+        gap: 1.65rem;
+        margin-bottom: 2.25rem;
+    }
+    .reserva-filter-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr 1fr auto;
+        gap: 1.25rem;
+        align-items: end;
+    }
+    @@media (max-width: 992px) {
+        .reserva-filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    @@media (max-width: 576px) {
+        .reserva-filter-grid {
+            grid-template-columns: 1fr;
+        }
+    }
     .reserva-kpi-card {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 1.15rem 1.25rem;
+        border: 1.5px solid var(--line, #E3D8C8);
+        border-radius: 16px;
+        padding: 1.35rem 1.5rem;
         height: 100%;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow);
         transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
     }
     .reserva-kpi-card:hover, .reserva-kpi-card.active {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow);
-        border-color: rgba(200, 151, 58, 0.45);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(200, 151, 58, 0.55);
     }
     .reserva-kpi-label {
         font-size: 0.73rem;

@@ -116,8 +116,13 @@
 }
 
 @media (max-width: 1250px) {
-    .lnav-item svg { display: none !important; }
-    .lnav-menu-links { gap: 0.65rem !important; }
+    .lnav-item svg {
+        display: inline-block !important;
+        width: 14px !important;
+        height: 14px !important;
+        flex-shrink: 0 !important;
+    }
+    .lnav-menu-links { gap: 0.55rem !important; }
 }
 
 /* Nav botones */

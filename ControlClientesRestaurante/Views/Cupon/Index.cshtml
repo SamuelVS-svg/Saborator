@@ -43,43 +43,37 @@
 }
 
 <!-- ══ TARJETAS DE KPIS DE MARKETING ═══════════════════════════════ -->
-<div class="row g-3 mb-4">
-    <div class="col-12 col-md-4">
-        <div class="cupon-kpi-card" style="border-left: 4px solid var(--gold);">
-            <div class="cupon-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-            </div>
-            <div>
-                <span class="cupon-kpi-label">Total Cupones Creados</span>
-                <div class="cupon-kpi-val">@total</div>
-                <span class="cupon-kpi-sub">Campañas registradas</span>
-            </div>
+<div class="cupon-kpi-grid">
+    <div class="cupon-kpi-card" style="border-left: 4px solid var(--gold);">
+        <div class="cupon-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        </div>
+        <div>
+            <span class="cupon-kpi-label">Total Cupones Creados</span>
+            <div class="cupon-kpi-val">@total</div>
+            <span class="cupon-kpi-sub">Campañas registradas</span>
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
-        <div class="cupon-kpi-card" style="border-left: 4px solid #10B981;">
-            <div class="cupon-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div>
-                <span class="cupon-kpi-label">Cupones Activos</span>
-                <div class="cupon-kpi-val" style="color: #10B981;">@activos</div>
-                <span class="cupon-kpi-sub">Habilitados para canje hoy</span>
-            </div>
+    <div class="cupon-kpi-card" style="border-left: 4px solid #10B981;">
+        <div class="cupon-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+            <span class="cupon-kpi-label">Cupones Activos</span>
+            <div class="cupon-kpi-val" style="color: #10B981;">@activos</div>
+            <span class="cupon-kpi-sub">Habilitados para canje hoy</span>
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
-        <div class="cupon-kpi-card" style="border-left: 4px solid #3B82F6;">
-            <div class="cupon-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <div>
-                <span class="cupon-kpi-label">Total Canjes Clientes</span>
-                <div class="cupon-kpi-val" style="color: var(--gold);">@canjes veces</div>
-                <span class="cupon-kpi-sub">Redenciones acumuladas</span>
-            </div>
+    <div class="cupon-kpi-card" style="border-left: 4px solid #3B82F6;">
+        <div class="cupon-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+            <span class="cupon-kpi-label">Total Canjes Clientes</span>
+            <div class="cupon-kpi-val" style="color: var(--gold);">@canjes veces</div>
+            <span class="cupon-kpi-sub">Redenciones acumuladas</span>
         </div>
     </div>
 </div>
@@ -223,21 +217,27 @@
 </div>
 
 <style>
+    .cupon-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.75rem;
+        margin-bottom: 2.25rem;
+    }
     .cupon-kpi-card {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 1.15rem 1.25rem;
+        border: 1.5px solid var(--line, #E3D8C8);
+        border-radius: 16px;
+        padding: 1.35rem 1.5rem;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.15rem;
         height: 100%;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow);
         transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
     .cupon-kpi-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
     }
     .cupon-kpi-icon {
         width: 46px;

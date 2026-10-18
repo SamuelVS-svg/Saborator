@@ -324,8 +324,13 @@ else if (_logado && !_esCliente)
         <input type="text" id="globalSearch" placeholder="Buscar…" autocomplete="off" />
     </div>
 
+    <!-- Acceso Rápido a Dashboard Admin (especialmente útil en móvil) -->
+    <a asp-controller="Home" asp-action="Dashboard" class="top-bell" title="Ir al Dashboard Ejecutivo" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:var(--surface-2);color:var(--gold, #C8973A);border:1px solid rgba(200,151,58,0.35);text-decoration:none;margin-right:0.35rem;transition:transform 140ms ease;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+    </a>
+
     <!-- Campana de Avisos de Reservas para Staff -->
-    <a asp-controller="Reserva" asp-action="Admin" class="top-bell" title="Ver Reservas de Comensales" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:var(--surface-2);color:var(--text);text-decoration:none;margin-right:0.5rem;transition:transform 140ms ease;">
+    <a asp-controller="Reserva" asp-action="Admin" class="top-bell" title="Ver Reservas de Comensales" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:var(--surface-2);color:var(--text);text-decoration:none;margin-right:0.5rem;transition:transform 140ms ease;flex-shrink:0;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span style="position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);"></span>
     </a>
@@ -341,6 +346,10 @@ else if (_logado && !_esCliente)
             @if (!string.IsNullOrEmpty(_fotoPerfil))
             {
                 <img src="@_fotoPerfil" alt="Avatar de @_usuario" class="top-avatar-img" />
+            }
+            else if (_esAdmin)
+            {
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             }
             else
             {

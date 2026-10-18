@@ -47,73 +47,68 @@
 <hr class="div-gold" />
 
 <!-- ══ TARJETAS DE KPIS FINANCIEROS ═══════════════════════════════════ -->
-<div class="row g-3 mb-4">
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="ventas-kpi-card" style="border-left: 4px solid var(--gold);">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="ventas-kpi-label">Total Facturado</span>
-                <div class="ventas-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
+<div class="ventas-kpi-grid">
+    <div class="ventas-kpi-card" style="border-left: 4px solid var(--gold);">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="ventas-kpi-label">Total Facturado</span>
+            <div class="ventas-kpi-icon" style="background: rgba(200,151,58,0.15); color: var(--gold);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             </div>
-            <div class="ventas-kpi-val">$@totalFacturado.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
-            <div class="ventas-kpi-sub">En <strong>@totalFacturas</strong> comprobante(s)</div>
         </div>
+        <div class="ventas-kpi-val">$@totalFacturado.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+        <div class="ventas-kpi-sub">En <strong>@totalFacturas</strong> comprobante(s)</div>
     </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="ventas-kpi-card" style="border-left: 4px solid #10B981;">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="ventas-kpi-label">Ticket Promedio</span>
-                <div class="ventas-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                </div>
+
+    <div class="ventas-kpi-card" style="border-left: 4px solid #10B981;">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="ventas-kpi-label">Ticket Promedio</span>
+            <div class="ventas-kpi-icon" style="background: rgba(16,185,129,0.15); color: #10B981;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
-            <div class="ventas-kpi-val" style="color: #10B981;">$@ticketPromedio.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
-            <div class="ventas-kpi-sub">Valor medio por factura emitida</div>
         </div>
+        <div class="ventas-kpi-val" style="color: #10B981;">$@ticketPromedio.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+        <div class="ventas-kpi-sub">Valor medio por factura emitida</div>
     </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="ventas-kpi-card" style="border-left: 4px solid #D97706;">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="ventas-kpi-label">IVA Recaudado</span>
-                <div class="ventas-kpi-icon" style="background: rgba(217,119,6,0.15); color: #D97706;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
+
+    <div class="ventas-kpi-card" style="border-left: 4px solid #D97706;">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="ventas-kpi-label">IVA Recaudado</span>
+            <div class="ventas-kpi-icon" style="background: rgba(217,119,6,0.15); color: #D97706;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            <div class="ventas-kpi-val" style="color: var(--gold);">$@totalIva.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
-            <div class="ventas-kpi-sub">Impuesto al consumo discriminado</div>
         </div>
+        <div class="ventas-kpi-val" style="color: var(--gold);">$@totalIva.ToString("N0") <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+        <div class="ventas-kpi-sub">Impuesto al consumo discriminado</div>
     </div>
-    <div class="col-12 col-sm-6 col-xl-3">
-        <div class="ventas-kpi-card" style="border-left: 4px solid #3B82F6;">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="ventas-kpi-label">Propinas &amp; Domicilios</span>
-                <div class="ventas-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                </div>
+
+    <div class="ventas-kpi-card" style="border-left: 4px solid #3B82F6;">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="ventas-kpi-label">Propinas &amp; Domicilios</span>
+            <div class="ventas-kpi-icon" style="background: rgba(59,130,246,0.15); color: #3B82F6;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             </div>
-            <div class="ventas-kpi-val" style="color: #3B82F6;">$@((totalPropinas + totalDomicilios).ToString("N0")) <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
-            <div class="ventas-kpi-sub">$@totalPropinas.ToString("N0") prop. / $@totalDomicilios.ToString("N0") dom.</div>
         </div>
+        <div class="ventas-kpi-val" style="color: #3B82F6;">$@((totalPropinas + totalDomicilios).ToString("N0")) <small style="font-size:0.75rem;font-weight:600;color:var(--muted);">COP</small></div>
+        <div class="ventas-kpi-sub">$@totalPropinas.ToString("N0") prop. / $@totalDomicilios.ToString("N0") dom.</div>
     </div>
 </div>
 
 <!-- ══ FILTROS DE RANGO Y BÚSQUEDA ═══════════════════════════════════ -->
-<div class="card-pro mb-4" style="padding: 1.15rem 1.35rem; background: var(--surface);">
-    <form method="get" asp-action="Index" id="filtroForm" class="row g-3 align-items-end">
-        <div class="col-12 col-md-3">
+<div class="card-pro" style="padding: 1.5rem 1.75rem; margin-bottom: 2.25rem; background: var(--surface);">
+    <form method="get" asp-action="Index" id="filtroForm" class="ventas-filter-grid">
+        <div>
             <label class="form-label mb-1">Buscar por N°, Cliente o Cédula</label>
             <input type="text" name="buscar" value="@buscar" class="form-control form-control-sm" placeholder="Ej: FAC-0001, Carlos, 1042..." />
         </div>
-        <div class="col-6 col-md-2">
+        <div>
             <label class="form-label mb-1">Desde</label>
             <input type="date" name="desde" id="inputDesde" value="@desde" class="form-control form-control-sm" />
         </div>
-        <div class="col-6 col-md-2">
+        <div>
             <label class="form-label mb-1">Hasta</label>
             <input type="date" name="hasta" id="inputHasta" value="@hasta" class="form-control form-control-sm" />
         </div>
-        <div class="col-6 col-md-2">
+        <div>
             <label class="form-label mb-1">Cajero</label>
             <select name="cajero" class="form-select form-select-sm">
                 <option value="">Todos los cajeros</option>
@@ -123,19 +118,19 @@
                 }
             </select>
         </div>
-        <div class="col-6 col-md-3 d-flex gap-2">
-            <button type="submit" class="btn-brand flex-fill" style="padding:0.45rem 0.85rem;font-size:0.82rem;border-radius:9px;justify-content:center;">
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn-brand flex-fill" style="padding:0.48rem 0.95rem;font-size:0.84rem;border-radius:9px;justify-content:center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <span>Filtrar</span>
             </button>
-            <a asp-action="Index" class="btn-ghost" style="padding:0.45rem 0.85rem;font-size:0.82rem;border-radius:9px;">
+            <a asp-action="Index" class="btn-ghost" style="padding:0.48rem 0.95rem;font-size:0.84rem;border-radius:9px;">
                 Limpiar
             </a>
         </div>
     </form>
 
     <!-- Botones de Acceso Rápido de Fecha -->
-    <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3" style="border-top: 1px solid var(--border);">
+    <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-3" style="border-top: 1px solid var(--line);">
         <span style="font-size:0.75rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-right:0.25rem;">Rango rápido:</span>
         <button type="button" class="btn-ghost" onclick="setRango('hoy')" style="padding:0.25rem 0.7rem;font-size:0.75rem;">Hoy</button>
         <button type="button" class="btn-ghost" onclick="setRango('semana')" style="padding:0.25rem 0.7rem;font-size:0.75rem;">Últimos 7 días</button>
@@ -229,18 +224,40 @@ else
 }
 
 <style>
+    .ventas-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+        gap: 1.65rem;
+        margin-bottom: 2.25rem;
+    }
+    .ventas-filter-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr 1fr auto;
+        gap: 1.25rem;
+        align-items: end;
+    }
+    @@media (max-width: 1100px) {
+        .ventas-filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    @@media (max-width: 576px) {
+        .ventas-filter-grid {
+            grid-template-columns: 1fr;
+        }
+    }
     .ventas-kpi-card {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 1.15rem 1.25rem;
+        border: 1.5px solid var(--line, #E3D8C8);
+        border-radius: 16px;
+        padding: 1.35rem 1.5rem;
         height: 100%;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow);
         transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
     .ventas-kpi-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
     }
     .ventas-kpi-label {
         font-size: 0.73rem;

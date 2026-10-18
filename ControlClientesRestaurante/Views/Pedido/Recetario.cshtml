@@ -56,15 +56,13 @@
 </div>
 
 <!-- Barra de Búsqueda y Filtros por Categoría -->
-<div class="card-pro mb-4" style="padding: 1rem 1.25rem;">
-    <div class="row g-3 align-items-center">
-        <div class="col-12 col-lg-4">
-            <div style="position: relative;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="recetarioSearch" class="form-control form-control-sm" style="padding-left: 2.2rem;" placeholder="Buscar plato, ingrediente o categoría..." oninput="filtrarRecetario()" />
-            </div>
+<div class="card-pro" style="padding: 1.25rem 1.5rem; margin-bottom: 2rem;">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem;">
+        <div style="flex: 1 1 280px; max-width: 420px; position: relative;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="recetarioSearch" class="form-control form-control-sm" style="padding-left: 2.2rem;" placeholder="Buscar plato, ingrediente o categoría..." oninput="filtrarRecetario()" />
         </div>
-        <div class="col-12 col-lg-8">
+        <div style="flex: 2 1 360px;">
             <div class="d-flex flex-wrap gap-2 justify-content-lg-end" id="recetarioCategoryFilters">
                 <button type="button" class="receta-cat-btn active" data-cat="TODAS" onclick="seleccionarCategoriaReceta(this, 'TODAS')">
                     Todas (@(Model?.Count ?? 0))
@@ -82,7 +80,7 @@
 </div>
 
 <!-- Grid de Fichas Técnicas -->
-<div class="row g-4" id="recetarioGrid">
+<div class="recetario-grid" id="recetarioGrid">
     @if (Model != null && Model.Any())
     {
         @foreach (var prod in Model)
@@ -107,7 +105,7 @@
 
             int tiempoMin = prod.TiempoCoccionMinutos > 0 ? prod.TiempoCoccionMinutos : (esBebida ? 3 : (esPostre ? 6 : (esEntrada ? 10 : 15)));
 
-            <div class="col-12 col-md-6 col-xl-4 receta-card-item"
+            <div class="receta-card-item"
                  data-cat="@catReal"
                  data-search="@($"{prod.Nombre} {prod.Descripcion} {catReal} {prod.Alergenos} {prod.Ingredientes}".ToLowerInvariant())">
                 <div class="receta-card h-100">
@@ -115,7 +113,8 @@
                     <div class="receta-card-media">
                         @if (!string.IsNullOrEmpty(bgImg))
                         {
-                            <img src="@bgImg" alt="@prod.Nombre" class="receta-card-img" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                            <img src="@bgImg" alt="" aria-hidden="true" class="receta-card-img-ambient" loading="lazy" />
+                            <img src="@bgImg" alt="@prod.Nombre" class="receta-card-img" loading="lazy" onerror="this.style.display='none';this.previousElementSibling.style.display='none';this.nextElementSibling.style.display='flex';" />
                             <div class="receta-card-placeholder" style="display:none;">
                                 <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
                             </div>
@@ -315,33 +314,85 @@
         box-shadow: 0 3px 10px rgba(200, 151, 58, 0.28);
     }
 
+    /* Cuadrícula de Fichas Técnicas con espaciado generoso */
+    .recetario-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(315px, 1fr));
+        gap: 2rem;
+        margin-top: 0.5rem;
+        margin-bottom: 3rem;
+        align-items: stretch;
+    }
+    @@media (max-width: 640px) {
+        .recetario-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+
     /* Tarjeta de Ficha Técnica */
     .receta-card {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
+        border: 1.5px solid var(--line, #E3D8C8);
+        border-radius: 18px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow);
         transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
     }
     .receta-card:hover {
         transform: translateY(-4px);
-        box-shadow: var(--shadow);
-        border-color: rgba(200, 151, 58, 0.45);
+        box-shadow: var(--shadow-md);
+        border-color: rgba(200, 151, 58, 0.55);
     }
     .receta-card-media {
         position: relative;
-        height: 185px;
-        background: #14080C;
+        height: 195px;
+        background: radial-gradient(circle at center, #261218 0%, #12070A 100%);
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .receta-card-img-ambient {
+        display: none;
     }
     .receta-card-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: center;
+        position: relative;
+        z-index: 1;
         transition: transform 0.35s ease;
+    }
+    /* En PC: mostrar la imagen completa sin recortar ni ensanchar */
+    @@media (min-width: 768px) {
+        .receta-card-media {
+            height: 245px;
+            padding: 0.65rem;
+        }
+        .receta-card-img-ambient {
+            display: block;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(18px) brightness(0.38) saturate(1.2);
+            transform: scale(1.15);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .receta-card-img {
+            width: auto;
+            max-width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        }
     }
     .receta-card:hover .receta-card-img {
         transform: scale(1.04);
@@ -361,11 +412,13 @@
         height: 65px;
         background: linear-gradient(to top, rgba(18, 13, 15, 0.85), transparent);
         pointer-events: none;
+        z-index: 2;
     }
     .receta-pill-cat {
         position: absolute;
         top: 12px;
         left: 12px;
+        z-index: 3;
         background: rgba(24, 6, 10, 0.86);
         backdrop-filter: blur(6px);
         border: 1px solid rgba(200, 151, 58, 0.55);
@@ -381,6 +434,7 @@
         position: absolute;
         top: 12px;
         right: 12px;
+        z-index: 3;
         background: rgba(24, 6, 10, 0.86);
         backdrop-filter: blur(6px);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -394,7 +448,7 @@
         gap: 4px;
     }
     .receta-card-body {
-        padding: 1.25rem;
+        padding: 1.5rem;
         display: flex;
         flex-direction: column;
         flex: 1;

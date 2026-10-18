@@ -257,7 +257,9 @@
   --color-shadow:          color-mix(in srgb, var(--text) 16%, transparent);
   --shadow-card:           var(--shadow);
 
-  /* Alias de nombres antiguos (--c-*) */
+  /* Alias de nombres antiguos (--c-*) y bordes */
+  --border:   var(--line);
+  --border-2: var(--line-2);
   --c-dark:   var(--text);
   --c-muted:  var(--muted);
   --c-cream:  var(--bg);
