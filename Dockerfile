@@ -28,6 +28,8 @@ RUN mkdir -p /app/wwwroot/uploads/avatars
 COPY --from=backend-build /app/publish .
 
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_HTTP_PORTS=""
+ENV PORT=8080
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "ControlClientesRestaurante.dll"]

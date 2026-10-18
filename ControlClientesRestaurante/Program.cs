@@ -5,15 +5,21 @@ using ControlClientesRestaurante.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Soporte para puerto dinámico en la nube (Railway / Render / Contenedores)
+// Soporte multi-puerto para Railway / Contenedores (escucha en $PORT y 8080 simultáneamente)
 var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrWhiteSpace(port))
+if (!builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(port))
 {
-    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+    var urls = new HashSet<string> { "http://0.0.0.0:8080" };
+    if (!string.IsNullOrWhiteSpace(port))
+    {
+        urls.Add($"http://0.0.0.0:{port.Trim()}");
+    }
+    builder.WebHost.UseUrls(string.Join(";", urls));
 }
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -28,13 +34,52 @@ builder.Services.AddControllersWithViews(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
 
+// Detectar si SQL Server está disponible o usar SQLite embebido automáticamente en la nube
+var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+bool useSqlite = false;
+
+if (!OperatingSystem.IsWindows() &&
+    (string.IsNullOrWhiteSpace(rawConnStr) ||
+     rawConnStr.Contains("SQLEXPRESS", StringComparison.OrdinalIgnoreCase) ||
+     rawConnStr.Contains("Trusted_Connection=True", StringComparison.OrdinalIgnoreCase)))
+{
+    useSqlite = true;
+    Console.WriteLine("[Saborator] Entorno Linux detectado sin cadena SQL Server remota; activando base de datos SQLite integrada.");
+}
+else if (!OperatingSystem.IsWindows())
+{
+    try
+    {
+        var csb = new SqlConnectionStringBuilder(rawConnStr) { ConnectTimeout = 5 };
+        using var testConn = new SqlConnection(csb.ConnectionString);
+        testConn.Open();
+        Console.WriteLine("[Saborator] Conexión a SQL Server verificada exitosamente.");
+    }
+    catch (Exception ex)
+    {
+        useSqlite = true;
+        Console.WriteLine($"[Saborator] No se pudo conectar a SQL Server ({ex.Message}). Activando SQLite de respaldo automático.");
+    }
+}
+
+var sqliteDbPath = Path.Combine(AppContext.BaseDirectory, "saborator.db");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null)));
+{
+    if (useSqlite)
+    {
+        options.UseSqlite($"Data Source={sqliteDbPath}");
+    }
+    else
+    {
+        options.UseSqlServer(
+            rawConnStr,
+            sqlOptions => sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(5),
+                errorNumbersToAdd: null));
+    }
+});
 
 // Autenticación por Cookies (OWASP & Claims)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -92,10 +137,6 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-    if (string.IsNullOrWhiteSpace(port))
-    {
-        app.UseHttpsRedirection();
-    }
 }
 
 // ── Cabeceras de Seguridad HTTP (OWASP / Producción) ─────────────────────────
@@ -128,13 +169,20 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-// ── Seed ──────────────────────────────────────────────────────────────────────
-using (var scope = app.Services.CreateScope())
+// ── Seed Resiliente (SQL Server + SQLite) ─────────────────────────────────────
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
 
-    db.Database.ExecuteSqlRaw(@"
+    if (useSqlite)
+    {
+        db.Database.EnsureCreated();
+    }
+    else
+    {
+        db.Database.Migrate();
+        db.Database.ExecuteSqlRaw(@"
         IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Reservas')
         BEGIN
             CREATE TABLE [Reservas] (
@@ -407,6 +455,54 @@ using (var scope = app.Services.CreateScope())
             ('admin', 'Administrador', 'INICIALIZACION_SISTEMA', 'Seguridad', 'Sistema Saborator iniciado y verificado con módulos de seguridad, SignalR y facturación.', 'Sistema', '127.0.0.1', GETDATE());
         END
     ");
+    }
+
+    if (!db.Mesas.Any())
+    {
+        for (int i = 1; i <= 30; i++)
+        {
+            db.Mesas.Add(new Mesa { Numero = i, Estado = "Libre", FechaCreacion = DateTime.Now });
+        }
+        db.SaveChanges();
+    }
+
+    if (!db.Resenas.Any())
+    {
+        db.Resenas.AddRange(
+            new Resena { NombreCliente = "Valeria Sarmiento", Correo = "valeria.s@gmail.com", Calificacion = 5, Comentario = "El desgranado especial es simplemente una obra de arte. La salsa de la casa y el queso gratinado tienen un sabor insuperable. El domicilio llegó a Miramar en 28 minutos hirviendo y con empaque térmico impecable.", PlatoRecomendado = "Desgranado Especial", TipoExperiencia = "Domicilio Express", Aprobada = true, Verificado = true, FechaCreacion = DateTime.Now.AddHours(-5) },
+            new Resena { NombreCliente = "Carlos Andrés Meza", Correo = "carlos.meza@hotmail.com", Calificacion = 5, Comentario = "Excelente ambiente en el salón de la Cra 4 Sur. Pedimos la hamburguesa artesanal y la carne tiene un término perfecto con pan brioche fresco. La atención de los meseros fue de 10 estrellas.", PlatoRecomendado = "Hamburguesa Clásica Artesanal", TipoExperiencia = "En Restaurante", Aprobada = true, Verificado = true, FechaCreacion = DateTime.Now.AddDays(-1) },
+            new Resena { NombreCliente = "Daniela Char", Correo = "daniela.char@outlook.com", Calificacion = 5, Comentario = "¡El mejor salchipapa gourmet de Barranquilla! La butifarra y el lomo de cerdo son de altísima calidad. Además el sistema para pedir en línea y elegir la tarifa de domicilio exacta es rapidísimo.", PlatoRecomendado = "Salchipapa Gourmet Suprema", TipoExperiencia = "Domicilio Express", Aprobada = true, Verificado = true, FechaCreacion = DateTime.Now.AddDays(-2) },
+            new Resena { NombreCliente = "Andrés Felipe Rojas", Correo = "rojas.a@gmail.com", Calificacion = 4, Comentario = "Muy buen sabor en las alitas y costillas BBQ. La porción es generosa y la limonada de coco natural es exquisita. Definitivamente volveremos a reservar mesa.", PlatoRecomendado = "Costillas BBQ en Leña", TipoExperiencia = "En Restaurante", Aprobada = true, Verificado = true, FechaCreacion = DateTime.Now.AddDays(-4) },
+            new Resena { NombreCliente = "Mariana Osorio", Correo = "mariana.o@yahoo.com", Calificacion = 5, Comentario = "Pudimos pedir para recoger sin filas con el Pick-up. Todo estaba empacado como si fuera de un restaurante 5 estrellas. 100% recomendado.", PlatoRecomendado = "Perro Caliente Suizo", TipoExperiencia = "Para Llevar", Aprobada = true, Verificado = true, FechaCreacion = DateTime.Now.AddDays(-6) }
+        );
+        db.SaveChanges();
+    }
+
+    if (!db.Cupones.Any())
+    {
+        db.Cupones.AddRange(
+            new Cupon { Codigo = "BURGER15", Descripcion = "15% de descuento en pedidos desde $30.000 COP", TipoDescuento = "Porcentaje", Valor = 15m, MontoMinimo = 30000m, TopeMaximoDescuento = 12000m, FechaVencimiento = DateTime.Now.AddMonths(3), UsosMaximos = 200, UsosActuales = 0, Activo = true, FechaCreacion = DateTime.Now },
+            new Cupon { Codigo = "BIENVENIDA", Descripcion = "Bono de $10.000 COP en compras superiores a $45.000 COP", TipoDescuento = "Fijo", Valor = 10000m, MontoMinimo = 45000m, TopeMaximoDescuento = null, FechaVencimiento = DateTime.Now.AddMonths(6), UsosMaximos = 150, UsosActuales = 0, Activo = true, FechaCreacion = DateTime.Now },
+            new Cupon { Codigo = "ENVIOGRATIS", Descripcion = "Descuento de $5.000 COP equivalente al envío a domicilio", TipoDescuento = "Fijo", Valor = 5000m, MontoMinimo = 25000m, TopeMaximoDescuento = null, FechaVencimiento = DateTime.Now.AddMonths(3), UsosMaximos = 300, UsosActuales = 0, Activo = true, FechaCreacion = DateTime.Now }
+        );
+        db.SaveChanges();
+    }
+
+    if (!db.AuditoriaLogs.Any())
+    {
+        db.AuditoriaLogs.Add(new AuditoriaLog
+        {
+            Usuario = "admin",
+            Rol = "Administrador",
+            Accion = "INICIALIZACION_SISTEMA",
+            Modulo = "Seguridad",
+            Detalle = "Sistema Saborator iniciado y verificado con módulos de seguridad, SignalR y facturación.",
+            EntidadAfectada = "Sistema",
+            IpAddress = "127.0.0.1",
+            FechaCreacion = DateTime.Now
+        });
+        db.SaveChanges();
+    }
 
     var rolAdmin  = db.Roles.FirstOrDefault(r => r.NombreRol == "Administrador");
     if (rolAdmin  == null) { rolAdmin  = new Rol { NombreRol = "Administrador" }; db.Roles.Add(rolAdmin);  db.SaveChanges(); }
@@ -513,54 +609,65 @@ using (var scope = app.Services.CreateScope())
             Nombre = "Salchipapa",          
             Descripcion = "Salchicha clásica, pechuga, lomo de cerdo, chorizo, butifarra, suiza, lechuga, chongo, queso costeño, salsas de la casa, queso gratinado y tocineta.", 
             Precio = 7000m,  
-            Stock = 60  
+            Stock = 60,
+            Categoria = "Salchipapas Gourmet"
         },
         new { 
             Nombre = "Perro Caliente",     
             Descripcion = "Salchicha clásica, pechuga, butifarra, lechuga, chongo, queso costeño, tocineta, queso gratinado, salsa piña y salsa de la casa.", 
             Precio = 8500m,  
-            Stock = 50  
+            Stock = 50,
+            Categoria = "Perros & Especiales"
         },
         new { 
             Nombre = "Hamburguesa",         
             Descripcion = "Pan brioche, carne de 125 g, queso mozzarella, vegetales frescos, salsa de la casa y papas a la francesa.",      
             Precio = 12000m, 
-            Stock = 40  
+            Stock = 40,
+            Categoria = "Hamburguesas & Carnes"
         },
         new { 
             Nombre = "Papas a la Francesa", 
             Descripcion = "Porción de papas a la francesa doradas y crujientes, sazonadas al punto de sal y acompañadas con salsa de la casa.",             
             Precio = 4500m,  
-            Stock = 80  
+            Stock = 80,
+            Categoria = "Acompañamientos"
         },
         new { 
             Nombre = "Coca-Cola",           
             Descripcion = "Refrescante gaseosa Coca-Cola Original (600 ml), servida bien fría con el inconfundible sabor clásico.",                             
             Precio = 3000m,  
-            Stock = 80  
+            Stock = 80,
+            Categoria = "Bebidas"
         },
         new { 
             Nombre = "Pepsi",               
             Descripcion = "Gaseosa Pepsi helada (600 ml), con su balance perfecto de notas refrescantes, burbujas vivas y cuerpo cítrico.",                                 
             Precio = 2800m,  
-            Stock = 80  
+            Stock = 80,
+            Categoria = "Bebidas"
         },
         new { 
             Nombre = "Agua",                
             Descripcion = "Agua mineral Cristal pura (600 ml), hidratación cristalina y natural servida fría de cava.",                                    
             Precio = 2000m,  
-            Stock = 100 
+            Stock = 100,
+            Categoria = "Bebidas"
         },
     };
     foreach (var item in menu)
     {
         var existing = db.Productos.FirstOrDefault(p => p.Nombre == item.Nombre);
         if (existing == null)
-            db.Productos.Add(new Producto { Nombre = item.Nombre, Descripcion = item.Descripcion, Precio = item.Precio, Stock = item.Stock, Activo = true });
+            db.Productos.Add(new Producto { Nombre = item.Nombre, Descripcion = item.Descripcion, Precio = item.Precio, Stock = item.Stock, Categoria = item.Categoria, Activo = true });
         else
             existing.Descripcion = item.Descripcion;
     }
     db.SaveChanges();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[Saborator] Advertencia durante la inicialización de la base de datos: {ex.Message}");
 }
 
 app.Run();
