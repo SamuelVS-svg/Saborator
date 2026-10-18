@@ -1,0 +1,153 @@
+@model List<ControlClientesRestaurante.Models.Producto>
+@{
+    ViewData["Title"] = "Fichas Técnicas y Recetario";
+}
+
+<div class="container-fluid px-3 px-md-4 py-3">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom" style="border-color: rgba(200, 151, 58, 0.2) !important;">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(200,151,58,0.15); border: 1px solid rgba(200,151,58,0.35); display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div>
+                <h1 class="h3 fw-bold mb-0 text-white" style="letter-spacing: -0.5px;">Recetario Estándar de Cocina</h1>
+                <p class="text-white-50 small mb-0">Estandarización de ingredientes, tiempos y protocolo oficial de Saborator</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Cocina" class="btn btn-sm btn-outline-warning fw-semibold px-3 py-2 d-flex align-items-center gap-2" style="border-radius: 10px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+                <span>Ir a Pantalla KDS Cocina</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert / Kitchen Standard Banner -->
+    <div class="card mb-4 border-0 text-white" style="background: linear-gradient(135deg, rgba(200,151,58,0.15) 0%, rgba(24,6,10,0.8) 100%); border: 1px solid rgba(200,151,58,0.25) !important; border-radius: 14px;">
+        <div class="card-body p-3 p-md-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 42px; height: 42px; border-radius: 10px; background: rgba(200,151,58,0.2); display: flex; align-items: center; justify-content: center; color: var(--gold);">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-warning mb-1">Protocolo de Cocción y Calidad Saborator</h5>
+                    <p class="small text-white-50 mb-0">
+                        • Tiempo máximo por comanda caliente: <strong>15 minutos</strong>. <br />
+                        • Cada proteína debe salir sellada al momento. Respetar estrictamente el orden FIFO de la pantalla KDS.
+                    </p>
+                </div>
+            </div>
+            <div class="badge bg-dark text-warning px-3 py-2 border border-warning" style="font-size: 0.85rem; border-radius: 8px; display:inline-flex; align-items:center; gap:6px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>Calidad Garantizada Gourmet</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Recipe Cards Grid -->
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var prod in Model)
+            {
+                bool esBurger = prod.Nombre.Contains("Hamburguesa", StringComparison.OrdinalIgnoreCase);
+                bool esHotDog = prod.Nombre.Contains("Perro", StringComparison.OrdinalIgnoreCase);
+                bool esSalchi = prod.Nombre.Contains("Salchipapa", StringComparison.OrdinalIgnoreCase);
+                bool esPapas  = prod.Nombre.Contains("Papa", StringComparison.OrdinalIgnoreCase);
+                bool esCoca   = prod.Nombre.Contains("Coca", StringComparison.OrdinalIgnoreCase);
+                bool esPepsi  = prod.Nombre.Contains("Pepsi", StringComparison.OrdinalIgnoreCase);
+                bool esAgua   = prod.Nombre.Contains("Agua", StringComparison.OrdinalIgnoreCase);
+                bool esBebida = esCoca || esPepsi || esAgua;
+
+                string categoria = esBurger ? "Hamburguesas" : (esHotDog ? "Perros Calientes" : (esSalchi ? "Salchipapas" : (esPapas ? "Acompañamientos" : "Bebidas")));
+                string bgImg = esSalchi ? "/img/salchipapa.jpg"
+                    : (esBurger ? "/img/hamburguesa.jpg"
+                    : (esHotDog ? "/img/perrocaliente.jpg"
+                    : (esPapas ? "/img/papasfrancesa.jpg"
+                    : (esCoca ? "/img/cocacola.png?v=3"
+                    : (esPepsi ? "/img/pepsi.webp?v=2"
+                    : (esAgua ? "/img/agua.webp?v=2" : ""))))));
+
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card h-100 border-0 shadow-sm" style="background: #1c080e; border: 1px solid rgba(200,151,58,0.2) !important; border-radius: 16px; overflow: hidden; transition: transform 0.2s ease, border-color 0.2s ease;">
+                        <div style="position: relative; height: 180px; background: #0e0306; overflow: hidden;">
+                            @if (!string.IsNullOrEmpty(bgImg))
+                            {
+                                <img src="@bgImg" alt="@prod.Nombre" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;" />
+                            }
+                            else
+                            {
+                                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white-50">
+                                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                                </div>
+                            }
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(to top, #1c080e, transparent);"></div>
+                            <span class="badge position-absolute top-0 end-0 m-3 px-3 py-2 text-uppercase fw-bold" style="background: rgba(24,6,10,0.85); border: 1px solid rgba(200,151,58,0.5); color: #c8973a; border-radius: 20px; font-size: 0.75rem;">
+                                @categoria
+                            </span>
+                        </div>
+
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex align-items-start justify-content-between mb-2">
+                                <h4 class="h5 fw-bold text-white mb-0">@prod.Nombre</h4>
+                                <span class="fw-bold text-warning fs-6">@prod.Precio.ToString("C0")</span>
+                            </div>
+
+                            <p class="small text-white-50 mb-3" style="min-height: 48px;">
+                                @(string.IsNullOrWhiteSpace(prod.Descripcion) ? "Sin descripción específica registrada." : prod.Descripcion)
+                            </p>
+
+                            <hr style="border-color: rgba(200,151,58,0.15);" />
+
+                            <div class="mt-auto">
+                                <h6 class="text-warning text-uppercase fw-bold mb-2" style="font-size: 0.72rem; letter-spacing: 1px; display:flex; align-items:center; gap:6px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                                    <span>Especificación de Preparación</span>
+                                </h6>
+                                <ul class="list-unstyled mb-0 small text-light" style="font-size: 0.82rem; line-height: 1.6;">
+                                    @if (esBurger)
+                                    {
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Pan:</strong> Brioche sellado en plancha con mantequilla.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Carne:</strong> 125gr a término 3/4 (4 min por lado).</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Queso:</strong> Mozzarella fundido sobre la carne caliente.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Vegetales:</strong> Lechuga fresca, tomate en rodajas y salsa especial.</li>
+                                    }
+                                    else if (esSalchi)
+                                    {
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Base:</strong> Papas a la francesa crocantes recién fritas.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Embutidos:</strong> Salchicha clásica y butifarra doradas.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Topping:</strong> Queso costeño rallado, queso gratinado y tocineta crocante.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Salsas:</strong> Salsa tártara de la casa y salsa piña artesanal.</li>
+                                    }
+                                    else if (esHotDog)
+                                    {
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Pan & Salchicha:</strong> Pan suave al vapor y salchicha suiza a la plancha.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Topping:</strong> Queso fundido, tocineta y ripio de papa (chongo).</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Salsas:</strong> Doble salsa de la casa con toque de piña.</li>
+                                    }
+                                    else if (esPapas)
+                                    {
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Aceite:</strong> Temperatura 175°C por 4-5 minutos.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Acabado:</strong> Sal fina y especias de la casa de inmediato.</li>
+                                    }
+                                    else
+                                    {
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Servicio:</strong> Servir frío (4°C - 6°C) en vaso con hielo si aplica.</li>
+                                        <li><svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)" stroke="none" style="margin-right:6px;"><polygon points="12 2 22 12 12 22 2 12"/></svg><strong>Despacho:</strong> Acompañar junto a la comanda caliente.</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <p class="text-white-50">No hay recetas cargadas en la carta actualmente.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,161 @@
+@model ControlClientesRestaurante.Models.Pedido
+@{
+    ViewData["Title"] = "Pedido " + Model.Numero;
+    var esAdminOCajero = (bool)(ViewBag.EsAdminOCajero ?? false);
+}
+
+<div class="d-flex gap-2 mb-3 flex-wrap align-items-center">
+    <button type="button" onclick="history.back()" class="btn-ghost" style="padding:.35rem .8rem;font-size:.8rem;">← Volver</button>
+    @if (Model.Estado != "Facturado" && Model.Estado != "Cancelado")
+    {
+        var wompiKey = (string)(ViewBag.WompiPublicKey ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw");
+        var wompiMontoCentavos = (long)(Model.Total * 100);
+        var wompiRef = Model.Numero;
+
+        <button type="button" onclick="pagarConWompiWidget()" class="btn-gold" style="padding:.4rem 1.1rem;font-size:.84rem;gap:.5rem;display:inline-flex;align-items:center;border:none;cursor:pointer;background:linear-gradient(135deg, #00E5A3, #00B37E);color:#0A1B14;font-weight:800;box-shadow:0 4px 14px rgba(0,229,163,0.3);">
+            <svg viewBox="0 0 100 32" style="width:50px;height:16px;" fill="none">
+                <path d="M6 8 L14 24 L22 8 L30 24 L38 8" stroke="#0A1B14" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="50" cy="16" r="8" fill="#0A1B14"/>
+                <path d="M65 8 L65 24 L75 14 L85 24 L85 8" stroke="#0A1B14" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+            <span>Pagar con Wompi ($@Model.Total.ToString("N0"))</span>
+        </button>
+    }
+    @if (esAdminOCajero && Model.Estado == "Listo")
+    {
+        <a asp-controller="Factura" asp-action="FacturarPedido" asp-route-id="@Model.Id" class="btn-ghost" style="padding:.35rem .9rem;font-size:.8rem;gap:.35rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Cobrar en Caja
+        </a>
+    }
+</div>
+
+<div style="display:flex;justify-content:center;">
+<div class="card-pro p-4" style="max-width:600px;width:100%;">
+
+    <!-- Cabecera -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem;">
+        <div>
+            <div style="font-family:monospace;font-size:1.1rem;font-weight:700;">@Model.Numero</div>
+            <div style="font-size:.78rem;color:var(--muted);">@Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</div>
+        </div>
+        <span class="estado-pill estado-@Model.Estado.ToLower()" style="padding:.3em .8em;font-size:.75rem;">
+            @Model.Estado
+        </span>
+    </div>
+
+    <hr style="border-color:var(--line);margin:.75rem 0;" />
+
+    <!-- Info -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+        <div><div class="lbl">Mesa</div><div style="font-weight:700;">@Model.Mesa</div></div>
+        <div><div class="lbl">Mesero</div><div style="font-weight:600;font-size:.9rem;">@Model.UsuarioMesero</div></div>
+        @if (!string.IsNullOrEmpty(Model.NombreCliente))
+        {
+            <div><div class="lbl">Cliente</div><div style="font-size:.9rem;">@Model.NombreCliente</div></div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Notas))
+        {
+            <div><div class="lbl">Notas</div><div style="font-size:.85rem;color:var(--muted);">@Model.Notas</div></div>
+        }
+    </div>
+
+    <!-- Líneas -->
+    <div class="tbl-wrap" style="margin-bottom:1.25rem;">
+        <table>
+            <thead><tr><th>Producto</th><th>P. Unit.</th><th style="text-align:center;">Cant.</th><th style="text-align:right;">Subtotal</th></tr></thead>
+            <tbody>
+                @foreach (var l in Model.Lineas)
+                {
+                    <tr>
+                        <td>
+                            <div style="font-weight:600;">@l.NombreProducto</div>
+                            @if (!string.IsNullOrEmpty(l.Notas))
+                            { <div style="font-size:.74rem;color:var(--muted);">@l.Notas</div> }
+                        </td>
+                        <td style="color:var(--muted);font-size:.85rem;">$@l.PrecioUnitario.ToString("N0")</td>
+                        <td style="text-align:center;font-weight:600;">@l.Cantidad</td>
+                        <td style="text-align:right;font-weight:700;">$@((l.PrecioUnitario*l.Cantidad).ToString("N0"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;">
+        <div style="min-width:200px;">
+            <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;padding-top:.5rem;border-top:2px solid var(--line);">
+                <span>TOTAL</span>
+                <span style="color:var(--text);">$@Model.Total.ToString("N0")</span>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Factura != null)
+    {
+        <div style="margin-top:1rem;padding:.65rem 1rem;background:var(--color-success-bg);border:1px solid var(--color-success);border-radius:8px;font-size:.85rem;color:var(--color-text);">
+            Facturado como <strong>@Model.Factura.Numero</strong>
+        </div>
+    }
+
+    <!-- Cambiar estado (solo admin/cajero) -->
+    @if (esAdminOCajero && Model.Estado != "Facturado" && Model.Estado != "Cancelado")
+    {
+        <hr style="border-color:var(--line);margin:1.25rem 0;" />
+        <div style="font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.65rem;">Cambiar estado</div>
+        <div class="d-flex gap-2 flex-wrap">
+            @foreach (var estado in new[]{ "Pendiente","EnPreparacion","Listo","Cancelado" })
+            {
+                if (estado != Model.Estado)
+                {
+                    <form asp-controller="Pedido" asp-action="CambiarEstado" method="post" style="margin:0;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id"     value="@Model.Id" />
+                        <input type="hidden" name="estado" value="@estado" />
+                        <button type="submit" class="btn-ghost" style="padding:.35rem .8rem;font-size:.78rem;">@estado</button>
+                    </form>
+                }
+            }
+        </div>
+    }
+
+</div>
+</div>
+
+@if (Model.Estado != "Facturado" && Model.Estado != "Cancelado")
+{
+    var wompiKey = (string)(ViewBag.WompiPublicKey ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw");
+    var wompiMontoCentavos = (long)(Model.Total * 100);
+    var wompiRef = Model.Numero;
+
+    <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+    <script>
+        function pagarConWompiWidget() {
+            try {
+                if (typeof WidgetCheckout === 'undefined') {
+                    alert('El servicio de Wompi está cargando. Por favor intenta nuevamente en unos segundos.');
+                    return;
+                }
+                var checkout = new WidgetCheckout({
+                    currency: 'COP',
+                    amountInCents: @wompiMontoCentavos,
+                    reference: '@wompiRef',
+                    publicKey: '@wompiKey',
+                    redirectUrl: window.location.origin + '/Pago/RetornoWompi'
+                });
+                checkout.open(function (result) {
+                    var transaction = result.transaction;
+                    if (transaction && transaction.status === 'APPROVED') {
+                        window.location.reload();
+                    } else if (transaction && transaction.status) {
+                        alert('Estado de la transacción Wompi: ' + transaction.status);
+                    }
+                });
+            } catch (err) {
+                console.error('Error abriendo Wompi Widget:', err);
+                // Redirigir a checkout como fallback
+                window.location.href = '@Url.Action("Checkout", "Pago", new { tipo = "Pedido", id = Model.Id })';
+            }
+        }
+    </script>
+}

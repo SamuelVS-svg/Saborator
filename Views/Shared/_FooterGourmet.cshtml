@@ -1,0 +1,95 @@
+<!-- ══ FOOTER DE ALTA COCINA (PLANTILLA BORGOÑA Y CREMA) ═══════════════════ -->
+<footer class="gourmet-footer">
+    <div class="gourmet-footer-top">
+        <div class="gourmet-footer-grid">
+            <!-- Columna 1: Marca & Concepto -->
+            <div class="gourmet-col-brand">
+                <div class="gourmet-footer-logo">
+                    <partial name="_LogoBurger" />
+                    <span>Saborator</span>
+                </div>
+                <p class="gourmet-footer-tagline">
+                    Experiencia gastronómica contemporánea de autor. Creaciones culinarias de vanguardia, hamburguesas gourmet y reserva de salón exclusivo en tiempo real.
+                </p>
+                <div class="gourmet-footer-badges">
+                    <span class="gourmet-chip">🍔 Alta Cocina de Autor</span>
+                    <span class="gourmet-chip">🍷 Salón 30 Mesas</span>
+                    <span class="gourmet-chip">🛵 Despacho Seguro</span>
+                </div>
+            </div>
+
+            <!-- Columna 2: Navegación Rápida -->
+            <div class="gourmet-col-links">
+                <h4 class="gourmet-footer-title">Experiencia Gastronómica</h4>
+                <ul class="gourmet-link-list">
+                    <li><a href="/">Carta &amp; Creaciones</a></li>
+                    <li><a asp-controller="Reserva" asp-action="Nueva">Reserva de Mesas Exclusivas</a></li>
+                    <li><a asp-controller="Pedido" asp-action="Menu">Tomar / Hacer Pedido</a></li>
+                    <li><a asp-controller="Pago" asp-action="Checkout">Pasarela de Pago Wompi</a></li>
+                    <li><a asp-controller="Pedido" asp-action="Rastrear">Rastreador de Domicilios</a></li>
+                </ul>
+            </div>
+
+            <!-- Columna 3: Horarios y Servicio -->
+            <div class="gourmet-col-hours">
+                <h4 class="gourmet-footer-title">Horarios de Cocina</h4>
+                <ul class="gourmet-hours-list">
+                    <li>
+                        <strong>Martes a Jueves:</strong>
+                        <span>12:00 m – 10:00 pm</span>
+                    </li>
+                    <li>
+                        <strong>Viernes y Sábados:</strong>
+                        <span>12:00 m – 11:30 pm</span>
+                    </li>
+                    <li>
+                        <strong>Domingos &amp; Festivos:</strong>
+                        <span>12:00 m – 9:30 pm</span>
+                    </li>
+                    <li>
+                        <strong>Lunes:</strong>
+                        <span style="color:var(--gold,#C8973A);font-weight:600;">Mantenimiento Culinario</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Columna 4: Ubicación y Contacto -->
+            <div class="gourmet-col-contact">
+                <h4 class="gourmet-footer-title">Sede Central &amp; Contacto</h4>
+                <p style="margin:0 0 0.5rem;font-size:0.86rem;line-height:1.45;">
+                    Carrera 4 Sur # 50D-107<br />
+                    Barranquilla, Atlántico, Colombia
+                </p>
+                <p style="margin:0 0 0.75rem;font-size:0.86rem;">
+                    Teléfono: <strong style="color:var(--gold,#C8973A);">+57 322 525 4289</strong>
+                </p>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <a href="https://wa.me/573225254289" target="_blank" rel="noopener noreferrer" class="gourmet-btn-wa">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        <span>WhatsApp Concierge</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra Inferior de Derechos -->
+    <div class="gourmet-footer-bottom">
+        <div class="gourmet-footer-bottom-inner">
+            <div class="gourmet-copy">
+                &copy; @DateTime.Now.Year <strong>Saborator Alta Cocina S.A.S.</strong> · Todos los derechos reservados.
+            </div>
+            <div class="gourmet-legal-links">
+                <a asp-controller="Home" asp-action="Terminos">Términos &amp; Condiciones</a>
+                <span>·</span>
+                <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos">Tratamiento de Datos (Habeas Data)</a>
+                <span>·</span>
+                <button type="button" onclick="abrirConfiguracionCookies()" class="gourmet-cookie-link">
+                    Cookies
+                </button>
+                <span>·</span>
+                <a asp-controller="Login" asp-action="Index">Acceso de Personal</a>
+            </div>
+        </div>
+    </div>
+</footer>

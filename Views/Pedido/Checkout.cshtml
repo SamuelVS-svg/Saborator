@@ -1,0 +1,1209 @@
+@{
+    ViewData["Title"] = "Checkout — Domicilio & Pedidos Online";
+    var productos = ViewBag.Productos as List<ControlClientesRestaurante.Models.Producto> ?? new();
+    var mesas = ViewBag.Mesas as List<ControlClientesRestaurante.Models.Mesa> ?? new();
+    string tipoDefecto = ViewBag.TipoEntregaDefecto as string ?? "Domicilio";
+    string usuarioActual = ViewBag.UsuarioActual as string ?? "";
+    string nombreUsuario = ViewBag.NombreUsuario as string ?? "";
+    bool esCajeroOAdmin = ViewBag.EsCajeroOAdmin == true;
+    bool esCliente = ViewBag.EsCliente == true;
+}
+
+<div class="checkout-wrapper">
+
+    <!-- Encabezado Gastronómico estilo KFC -->
+    <div class="checkout-header">
+        <div class="checkout-brand-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Saborator Domicilios &amp; Para Llevar
+        </div>
+        <h1 class="checkout-title">Finalizar Tu Pedido</h1>
+        <p class="checkout-sub">Elige tu modalidad de entrega, ingresa tus datos y disfruta de la mejor alta cocina en tu puerta o en mesa.</p>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="checkout-alert checkout-alert-err">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>@TempData["Error"]</span>
+        </div>
+    }
+
+    <form asp-controller="Pedido" asp-action="ConfirmarCheckout" method="post" id="formCheckout">
+        @Html.AntiForgeryToken()
+
+        <div class="checkout-grid">
+
+            <!-- ══ COLUMNA IZQUIERDA: CONFIGURACIÓN Y DATOS ═════════════ -->
+            <div class="checkout-main">
+
+                <!-- 1. MODALIDAD DE ENTREGA (ESTILO KFC) -->
+                <div class="checkout-card">
+                    <div class="card-step-badge">1</div>
+                    <div class="card-head">
+                        <h3>Modalidad de Entrega</h3>
+                        <p>¿Cómo prefieres recibir tu orden hoy?</p>
+                    </div>
+
+                    <div class="delivery-tabs">
+                        <label class="delivery-tab @(tipoDefecto == "Domicilio" ? "active" : "")" onclick="cambiarTipoEntrega('Domicilio')">
+                            <input type="radio" name="tipoEntrega" value="Domicilio" @(tipoDefecto == "Domicilio" ? "checked" : "") style="display:none;" />
+                            <div class="tab-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                            </div>
+                            <span class="tab-title">Domicilio</span>
+                            <span class="tab-fee">Envío $5.000 COP</span>
+                        </label>
+
+                        <label class="delivery-tab @(tipoDefecto == "ParaLlevar" ? "active" : "")" onclick="cambiarTipoEntrega('ParaLlevar')">
+                            <input type="radio" name="tipoEntrega" value="ParaLlevar" @(tipoDefecto == "ParaLlevar" ? "checked" : "") style="display:none;" />
+                            <div class="tab-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                            </div>
+                            <span class="tab-title">Para Llevar</span>
+                            <span class="tab-fee">Sin costo (Gratis)</span>
+                        </label>
+
+                        @if (!esCliente)
+                        {
+                        <label class="delivery-tab @(tipoDefecto == "EnMesa" ? "active" : "")" onclick="cambiarTipoEntrega('EnMesa')">
+                            <input type="radio" name="tipoEntrega" value="EnMesa" @(tipoDefecto == "EnMesa" ? "checked" : "") style="display:none;" />
+                            <div class="tab-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                            </div>
+                            <span class="tab-title">En Salón / Mesa</span>
+                            <span class="tab-fee">Comer en sitio</span>
+                        </label>
+                        }
+                    </div>
+
+                    <!-- Campos de Domicilio -->
+                    <div id="seccionDomicilio" class="fields-group" style="@(tipoDefecto == "Domicilio" ? "" : "display:none;")">
+                        
+                        <!-- Banner Sede de Despacho en Barranquilla con enlace a Google Maps -->
+                        <div style="background:rgba(200,151,58,0.12);border:1px solid rgba(200,151,58,0.3);border-radius:12px;padding:0.85rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+                            <div style="display:flex;align-items:center;gap:0.6rem;">
+                                <span style="color:#C8973A;display:inline-flex;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </span>
+                                <div>
+                                    <strong style="color:var(--brand);font-size:0.88rem;">Despachamos desde: Cra 4 Sur # 50D-107</strong>
+                                    <div style="font-size:0.78rem;color:var(--muted);">Barranquilla, Atlántico (Sede Central Saborator)</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:0.5rem;align-items:center;">
+                                <button type="button" onclick="toggleMapaCheckout()" style="background:none;border:none;color:var(--text, #1C1416);font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:underline;display:inline-flex;align-items:center;gap:4px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                                    <span id="btnTxtMapaCheckout">Ver Mapa</span>
+                                </button>
+                                <a href="https://www.google.com/maps/search/?api=1&query=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem;color:#C8973A;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:0.3rem 0.65rem;background:var(--surface, #FFFDF9);border:1px solid #C8973A;border-radius:6px;">
+                                    <span>Google Maps</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Iframe de Google Maps colapsable en Checkout -->
+                        <div id="contenedorMapaCheckout" style="display:none;margin-bottom:1.25rem;border-radius:12px;overflow:hidden;border:1px solid #C8973A;height:220px;box-shadow:0 4px 14px rgba(60,42,32,0.08);">
+                            <iframe 
+                                src="https://maps.google.com/maps?q=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-col" style="flex:1;">
+                                <label class="input-label">Sector / Barrio en Barranquilla *</label>
+                                <select id="selectBarrioCheckout" onchange="cambiarBarrioCheckout()" class="input-field" style="font-weight:600;">
+                                    <optgroup label="Zona Sur Cercana — $4.000 COP">
+                                        <option value="4000|Ciudadela 20 de Julio">Ciudadela 20 de Julio ($4.000)</option>
+                                        <option value="4000|La Magdalena">La Magdalena ($4.000)</option>
+                                        <option value="4000|Las Cayenas">Las Cayenas ($4.000)</option>
+                                        <option value="4000|Simón Bolívar">Simón Bolívar ($4.000)</option>
+                                        <option value="4000|Santa María">Santa María ($4.000)</option>
+                                        <option value="4000|Carrizal">Carrizal ($4.000)</option>
+                                        <option value="4000|Buenos Aires">Buenos Aires ($4.000)</option>
+                                        <option value="4000|Las Palmas">Las Palmas ($4.000)</option>
+                                        <option value="4000|Los Robles">Los Robles ($4.000)</option>
+                                    </optgroup>
+                                    <optgroup label="Zona Centro / Suroccidente / Soledad — $6.000 COP">
+                                        <option value="6000|San Roque">San Roque ($6.000)</option>
+                                        <option value="6000|Rebolo">Rebolo ($6.000)</option>
+                                        <option value="6000|Chiquinquirá">Chiquinquirá ($6.000)</option>
+                                        <option value="6000|San Felipe">San Felipe ($6.000)</option>
+                                        <option value="6000|Bostón">Bostón ($6.000)</option>
+                                        <option value="6000|Lucero">Lucero ($6.000)</option>
+                                        <option value="6000|Los Pinos">Los Pinos ($6.000)</option>
+                                        <option value="6000|El Valle">El Valle ($6.000)</option>
+                                        <option value="6000|Cevillar">Cevillar ($6.000)</option>
+                                        <option value="6000|Soledad Centro">Soledad Centro / Hipódromo ($6.000)</option>
+                                    </optgroup>
+                                    <optgroup label="Zona Norte / Riomar / Prado — $9.000 COP (Límite 12 km)">
+                                        <option value="9000|El Prado">El Prado ($9.000)</option>
+                                        <option value="9000|Alto Prado">Alto Prado ($9.000)</option>
+                                        <option value="9000|Riomar">Riomar ($9.000)</option>
+                                        <option value="9000|Miramar">Miramar ($9.000)</option>
+                                        <option value="9000|Buenavista">Buenavista ($9.000)</option>
+                                        <option value="9000|Villa Campestre">Villa Campestre ($9.000)</option>
+                                        <option value="9000|Villa Santos">Villa Santos ($9.000)</option>
+                                        <option value="9000|Paraíso">Paraíso ($9.000)</option>
+                                    </optgroup>
+                                    @if (esCajeroOAdmin)
+                                    {
+                                        <option value="custom|Personalizado">Tarifa o Barrio personalizado...</option>
+                                    }
+                                </select>
+                                <input type="hidden" name="barrio" id="inputBarrio" value="Ciudadela 20 de Julio" />
+                                <input type="hidden" name="costoEnvio" id="inputCostoEnvio" value="4000" />
+                            </div>
+
+                            @if (esCajeroOAdmin)
+                            {
+                                <div class="input-col" id="colCustomFeeCheckout" style="display:none;flex:1;">
+                                    <label class="input-label">Tarifa acordada (COP) *</label>
+                                    <input type="number" id="inputCustomFeeCheckout" class="input-field" placeholder="5000" min="0" step="500" value="5000" oninput="cambiarBarrioCheckout()" />
+                                </div>
+                            }
+                        </div>
+
+                        @if (esCajeroOAdmin)
+                        {
+                            <!-- PANEL DE TARIFA EDITABLE EXCLUSIVO PARA CAJERO / ADMINISTRADOR -->
+                            <div style="background:rgba(200,151,58,0.08);border:1.5px solid rgba(200,151,58,0.3);border-radius:12px;padding:0.9rem 1.1rem;margin-bottom:1.25rem;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.45rem;flex-wrap:wrap;gap:0.5rem;">
+                                    <span style="font-size:0.78rem;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:0.5px;display:inline-flex;align-items:center;gap:5px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                                        Control de Tarifa (Autorizado Cajero / Admin)
+                                    </span>
+                                    <span id="txtTarifaSugeridaBadge" style="font-size:0.75rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;padding:2px 8px;border-radius:20px;font-weight:700;">
+                                        Zona Sur: $4.000 COP
+                                    </span>
+                                </div>
+                                
+                                <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+                                    <div style="display:flex;align-items:center;background:#FFFDF9;border:1.5px solid #E2D7C8;border-radius:8px;padding:0 0.6rem;height:38px;">
+                                        <span style="color:#C8973A;font-weight:800;margin-right:4px;">$</span>
+                                        <input type="number" id="inputFeeManualCheckout" value="4000" min="0" step="500" 
+                                               style="border:none;background:transparent;width:85px;font-weight:700;font-size:0.95rem;color:var(--brand);outline:none;" 
+                                               oninput="modificarTarifaManualCheckout(this.value)" />
+                                        <span style="font-size:0.75rem;color:#888;font-weight:600;">COP</span>
+                                    </div>
+
+                                    <!-- Botones de Ajuste Rápido para el Cajero -->
+                                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                                        <button type="button" class="btn-chip-tarifa" onclick="fijarTarifaManualCheckout(0)">$0 Cortesía</button>
+                                        <button type="button" class="btn-chip-tarifa" onclick="fijarTarifaManualCheckout(4000)">$4k Sur</button>
+                                        <button type="button" class="btn-chip-tarifa" onclick="fijarTarifaManualCheckout(6000)">$6k Centro</button>
+                                        <button type="button" class="btn-chip-tarifa" onclick="fijarTarifaManualCheckout(9000)">$9k Norte</button>
+                                    </div>
+                                    <span style="font-size:0.73rem;color:#666;font-style:italic;">(Tarifa editable sólo por personal de caja)</span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- PANEL DE TARIFA OFICIAL FIJA PARA CLIENTE COMENSAL -->
+                            <div style="background:rgba(200,151,58,0.06);border:1px solid rgba(200,151,58,0.25);border-radius:12px;padding:0.85rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.6rem;">
+                                <div style="display:flex;align-items:center;gap:0.5rem;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8973A" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                    <div>
+                                        <strong style="color:var(--brand);font-size:0.85rem;display:block;">Tarifa Oficial por Zona</strong>
+                                        <span style="font-size:0.76rem;color:var(--muted);">Calculada según el sector de Barranquilla (tarifa auditada y protegida).</span>
+                                    </div>
+                                </div>
+                                <span id="txtTarifaSugeridaBadge" style="font-size:0.85rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;padding:4px 10px;border-radius:20px;font-weight:700;">
+                                    Zona Sur: $4.000 COP
+                                </span>
+                            </div>
+                        }
+
+                        <div class="input-row">
+                            <div class="input-col" style="flex:2;">
+                                <label class="input-label">Dirección exacta de entrega *</label>
+                                <input type="text" name="direccion" id="inputDireccion" class="input-field" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" />
+                            </div>
+                            <div class="input-col" style="flex:1;">
+                                <label class="input-label">Detalles de acceso (Torre, Apto, Timbre)</label>
+                                <input type="text" name="notas" class="input-field" placeholder="Ej: Torre 2 Apto 401" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos de En Mesa -->
+                    <div id="seccionMesa" class="fields-group" style="@(tipoDefecto == "EnMesa" ? "" : "display:none;")">
+                        <div class="input-row">
+                            <div class="input-col">
+                                <label class="input-label">Selecciona tu Mesa *</label>
+                                <select name="mesa" id="selectMesa" class="input-field">
+                                    @for (int i = 1; i <= 30; i++)
+                                    {
+                                        var mObj = mesas.FirstOrDefault(m => m.Numero == i);
+                                        string estado = mObj?.Estado ?? "Libre";
+                                        <option value="Mesa @i">Mesa @i — (@estado)</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. DATOS DE CONTACTO -->
+                <div class="checkout-card">
+                    <div class="card-step-badge">2</div>
+                    <div class="card-head">
+                        <h3>Datos del Comensal</h3>
+                        <p>Para contactarte con novedades de tu orden y llegada del domiciliario.</p>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-col">
+                            <label class="input-label">Nombre completo *</label>
+                            <input type="text" name="nombreCliente" id="inputNombre" class="input-field" value="@nombreUsuario" placeholder="Tu nombre" required />
+                        </div>
+                        <div class="input-col">
+                            <label class="input-label">Teléfono celular (WhatsApp) *</label>
+                            <input type="tel" name="telefono" id="inputTelefono" class="input-field" placeholder="300 123 4567" required />
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-col">
+                            <label class="input-label">Correo electrónico (Opcional)</label>
+                            <input type="email" name="correo" class="input-field" placeholder="tucorreo@ejemplo.com" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. MÉTODO DE PAGO ESTILO KFC -->
+                <div class="checkout-card">
+                    <div class="card-step-badge">3</div>
+                    <div class="card-head">
+                        <h3>Método de Pago</h3>
+                        <p>Elige tu forma de pago favorita.</p>
+                    </div>
+
+                    <div class="payment-methods">
+                        <label class="payment-box active" onclick="seleccionarPago('Wompi')">
+                            <input type="radio" name="metodoPago" value="Wompi" checked style="display:none;" />
+                            <div class="pay-icon" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;background:#000;border-radius:10px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+                                <svg viewBox="0 0 100 32" style="width:100%;height:100%;" fill="none">
+                                    <path d="M6 8 L14 24 L22 8 L30 24 L38 8" stroke="#00E5A3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="50" cy="16" r="8" fill="#FFF"/>
+                                    <path d="M65 8 L65 24 L75 14 L85 24 L85 8" stroke="#FFF" stroke-width="4" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="pay-info">
+                                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                    <span class="pay-title" style="font-size:1rem;color:var(--text, #1C1416);font-weight:800;">Pasarela Oficial Wompi</span>
+                                    <span style="background:rgba(0,229,163,0.18);color:#059669;font-size:0.7rem;font-weight:800;padding:2px 8px;border-radius:10px;border:1px solid #00E5A3;">Única Pasarela Oficial</span>
+                                </div>
+                                <span class="pay-desc" style="font-size:0.8rem;color:var(--muted, #6E5C50);margin-top:2px;">
+                                    Paga al instante con Nequi, PSE, Tarjetas de Crédito/Débito o Botón Bancolombia.
+                                </span>
+                                <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                                    <!-- Nequi badge -->
+                                    <span style="display:inline-flex;align-items:center;gap:4px;background:#200020;color:#FFF;padding:2px 6px;border-radius:5px;font-size:0.7rem;font-weight:700;">
+                                        <svg viewBox="0 0 24 24" style="width:12px;height:12px;"><rect width="24" height="24" fill="#200020"/><path d="M6 18V6h3.2l5.6 7.8V6H18v12h-3.2L9.2 10.2V18H6z" fill="#FF2772"/><circle cx="17.5" cy="6.5" r="1.5" fill="#FF2772"/></svg>
+                                        Nequi
+                                    </span>
+                                    <!-- PSE badge -->
+                                    <span style="display:inline-flex;align-items:center;gap:4px;background:#003366;color:#FFCC00;padding:2px 6px;border-radius:5px;font-size:0.7rem;font-weight:700;">
+                                        PSE
+                                    </span>
+                                    <!-- Tarjetas badge -->
+                                    <span style="display:inline-flex;align-items:center;gap:4px;background:#18060A;color:#FFF;padding:2px 6px;border-radius:5px;font-size:0.7rem;font-weight:700;">
+                                        Visa / Mastercard
+                                    </span>
+                                    <span style="display:inline-flex;align-items:center;gap:4px;background:#FDDA24;color:#000;padding:2px 6px;border-radius:5px;font-size:0.7rem;font-weight:800;">
+                                        Bancolombia
+                                    </span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="payment-box" onclick="seleccionarPago('Efectivo')">
+                            <input type="radio" name="metodoPago" value="Efectivo" style="display:none;" />
+                            <div class="pay-icon" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;background:rgba(42,115,72,0.15);border-radius:10px;border:1px solid #4CAF50;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2A7348" stroke-width="2.2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/></svg>
+                            </div>
+                            <div class="pay-info">
+                                <span class="pay-title" style="font-weight:700;color:var(--text, #1C1416);">Efectivo Contraentrega</span>
+                                <span class="pay-desc" style="font-size:0.8rem;color:var(--muted, #6E5C50);">Pagas en mano al repartidor o al personal del restaurante al recibir tu orden.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div id="cajaCambioEfectivo" class="input-row" style="margin-top:1rem;display:none;">
+                        <div class="input-col">
+                            <label class="input-label">¿Con cuánto vas a pagar? (Para llevarte cambio exacto)</label>
+                            <input type="number" name="pagaCon" class="input-field" placeholder="Ej: 50000" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ══ COLUMNA DERECHA: RESUMEN DE LA ORDEN ═════════════════ -->
+            <div class="checkout-sidebar">
+                <div class="summary-card">
+                    <h3 class="summary-title">Resumen de tu Orden</h3>
+
+                    <!-- Contenedor dinámico de items sincronizados con localStorage -->
+                    <div id="checkoutItemsList" class="summary-items">
+                        <!-- Rellenado por JS desde carrito -->
+                    </div>
+
+                    <!-- Campos ocultos que se enviarán en el Form POST -->
+                    <div id="hiddenFormInputs"></div>
+
+                    <!-- Tarjeta de Cupón de Descuento Promocional -->
+                    <div class="coupon-box-card" style="background:var(--surface-2, #FAF6F0);border:1.5px dashed var(--gold, #C8973A);border-radius:12px;padding:0.85rem 1rem;margin:1rem 0;">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text, #1C1416);text-transform:uppercase;margin-bottom:0.4rem;display:flex;align-items:center;gap:6px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C8973A" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            ¿Tienes un Cupón Promocional?
+                        </label>
+                        <div id="cuponInputContainer" style="display:flex;gap:0.5rem;">
+                            <input type="text" id="inputCodigoCupon" class="input-field" placeholder="Ej: BURGER15" style="padding:0.55rem 0.75rem;font-size:0.88rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;" />
+                            <button type="button" id="btnAplicarCupon" onclick="aplicarCuponCheckout()" style="background:var(--brand, #6B1E2E);color:#FFFDF9;border:none;padding:0.55rem 1rem;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:background 150ms ease;">
+                                Aplicar
+                            </button>
+                        </div>
+                        <div id="cuponFeedback" style="display:none;margin-top:0.5rem;font-size:0.8rem;line-height:1.3;"></div>
+                    </div>
+
+                    <div class="summary-breakdown">
+                        <div class="summary-row">
+                            <span>Subtotal Productos</span>
+                            <span id="subtotalVal">$0 COP</span>
+                        </div>
+                        <div class="summary-row discount" id="filaDescuentoCupon" style="display:none;color:#16A34A;font-weight:700;">
+                            <span id="lblDescuentoCupon">Descuento Promocional</span>
+                            <span id="descuentoVal">-$0 COP</span>
+                        </div>
+                        <div class="summary-row" id="filaCostoEnvio">
+                            <span>Costo de Domicilio</span>
+                            <span id="envioVal">$5.000 COP</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total a Pagar</span>
+                            <span id="totalFinalVal">$0 COP</span>
+                        </div>
+                    </div>
+
+                    <!-- Alerta de Límite Mínimo para Domicilio ($20.000 COP) -->
+                    <div id="alertaMinimoCheckout" style="display:none;background:#FEF2F2;border:1.5px solid #FCA5A5;color:#991B1B;padding:0.75rem 1rem;border-radius:10px;font-size:0.82rem;margin-bottom:1rem;line-height:1.4;gap:0.6rem;align-items:flex-start;">
+                    </div>
+
+                    <button type="submit" id="btnConfirmarPedido" class="btn-confirm-order">
+                        <span>Confirmar &amp; Enviar Pedido</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+
+                    <div class="summary-guarantee">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span>Garantía de frescura y empaque térmico sellado.</span>
+                    </div>
+
+                    <div style="margin-top:0.75rem;font-size:0.72rem;color:rgba(255,253,249,0.65);text-align:center;line-height:1.4;">
+                        Al enviar tu pedido aceptas nuestros <a asp-controller="Home" asp-action="Terminos" target="_blank" style="color:var(--gold);text-decoration:underline;">Términos, Condiciones &amp; Políticas de Domicilio</a>.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<!-- Estilos Avanzados del Checkout -->
+<style>
+    .checkout-wrapper {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 5rem;
+    }
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .checkout-brand-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(200, 151, 58, 0.12);
+        color: var(--gold, #C8973A);
+        border: 1px solid rgba(200, 151, 58, 0.35);
+        padding: 0.3rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+    }
+    .checkout-title {
+        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-size: 2.75rem;
+        font-weight: 400;
+        color: var(--brand, #6B1E2E);
+        margin: 0 0 0.5rem;
+        line-height: 1.15;
+    }
+    .checkout-sub {
+        font-size: 0.95rem;
+        color: var(--muted, #6E5C50);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .checkout-alert {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.85rem 1.25rem;
+        border-radius: 12px;
+        margin-bottom: 1.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .checkout-alert-err {
+        background: #FEE2E2;
+        border: 1px solid #FCA5A5;
+        color: #991B1B;
+    }
+
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr 390px;
+        gap: 2rem;
+        align-items: start;
+    }
+    @@media (max-width: 960px) {
+        .checkout-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .checkout-card {
+        background: var(--surface, #FFFDF9);
+        border: 1px solid var(--line, #E2D7C8);
+        border-radius: 16px;
+        padding: 1.75rem;
+        margin-bottom: 1.75rem;
+        position: relative;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    .card-step-badge {
+        position: absolute;
+        top: 1.75rem;
+        right: 1.75rem;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(107, 30, 46, 0.08);
+        color: var(--brand, #6B1E2E);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.9rem;
+    }
+    .card-head { margin-bottom: 1.35rem; }
+    .card-head h3 {
+        font-size: 1.25rem;
+        color: var(--brand, #6B1E2E);
+        margin: 0 0 0.25rem;
+        font-weight: 700;
+    }
+    .card-head p {
+        font-size: 0.85rem;
+        color: var(--muted, #6E5C50);
+        margin: 0;
+    }
+
+    /* Tabs de modalidad estilo KFC */
+    .delivery-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    @@media (max-width: 600px) {
+        .delivery-tabs { grid-template-columns: 1fr; }
+    }
+    .delivery-tab {
+        border: 2px solid var(--line, #E2D7C8);
+        border-radius: 14px;
+        padding: 1rem 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+        background: var(--surface-2, #FAF6F0);
+    }
+    .delivery-tab:hover {
+        border-color: var(--gold, #C8973A);
+        background: var(--surface, #FFFDF9);
+    }
+    .delivery-tab.active {
+        border-color: var(--brand, #6B1E2E);
+        background: var(--surface, #FFFDF9);
+        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.12);
+    }
+    .delivery-tab:active {
+        transform: scale(0.97);
+    }
+    .tab-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(107, 30, 46, 0.08);
+        color: var(--brand, #6B1E2E);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.2rem;
+    }
+    .delivery-tab.active .tab-icon {
+        background: var(--brand, #6B1E2E);
+        color: #FFFDF9;
+    }
+    .tab-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text, #18060A);
+    }
+    .tab-fee {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--gold, #C8973A);
+    }
+
+    /* Inputs */
+    .input-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    @@media (max-width: 600px) {
+        .input-row { flex-direction: column; gap: 0.75rem; }
+    }
+    .input-col { flex: 1; }
+    .input-label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text, #3C2A20);
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .input-field {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid var(--line, #E2D7C8);
+        border-radius: 10px;
+        background: var(--surface, #FFFDF9);
+        font-size: 0.95rem;
+        color: var(--text, #18060A);
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+    .input-field:focus {
+        border-color: var(--brand, #6B1E2E);
+        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.1);
+    }
+
+    /* Métodos de Pago */
+    .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .payment-box {
+        border: 1.5px solid var(--line, #E2D7C8);
+        border-radius: 12px;
+        padding: 0.85rem 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+        background: var(--surface-2, #FAF6F0);
+    }
+    .payment-box:hover {
+        border-color: var(--gold, #C8973A);
+        background: var(--surface, #FFFDF9);
+    }
+    .payment-box.active {
+        border-color: var(--brand, #6B1E2E);
+        background: var(--surface, #FFFDF9);
+        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.1);
+    }
+    .payment-box:active {
+        transform: scale(0.98);
+    }
+    .pay-icon { font-size: 1.5rem; }
+    .pay-info { display: flex; flex-direction: column; }
+    .pay-title { font-size: 0.92rem; font-weight: 700; color: var(--text, #18060A); }
+    .pay-desc { font-size: 0.78rem; color: var(--muted, #6E5C50); }
+
+    /* Sidebar Resumen */
+    .summary-card {
+        background: #18060A;
+        border: 1px solid rgba(200, 151, 58, 0.35);
+        border-radius: 20px;
+        padding: 2rem 1.75rem;
+        color: #FFFDF9;
+        position: sticky;
+        top: 90px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+    }
+    .summary-title {
+        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-size: 1.9rem;
+        color: #FFFDF9;
+        margin: 0 0 1.25rem;
+        font-weight: 400;
+        border-bottom: 1px solid rgba(255, 253, 249, 0.12);
+        padding-bottom: 0.85rem;
+    }
+    .summary-items {
+        max-height: 280px;
+        overflow-y: auto;
+        margin-bottom: 1.25rem;
+        padding-right: 0.35rem;
+    }
+    .summary-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid rgba(255, 253, 249, 0.08);
+        font-size: 0.88rem;
+    }
+    .summary-item-info { display: flex; flex-direction: column; gap: 0.15rem; }
+    .summary-item-name { font-weight: 600; color: #FFFDF9; }
+    .summary-item-qty { font-size: 0.75rem; color: rgba(255, 253, 249, 0.6); }
+    .summary-item-price { font-weight: 700; color: var(--gold, #C8973A); }
+
+    .summary-breakdown {
+        border-top: 1px solid rgba(255, 253, 249, 0.15);
+        padding-top: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.88rem;
+        color: rgba(255, 253, 249, 0.75);
+    }
+    .summary-row.total {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #FFFDF9;
+        border-top: 1px dashed rgba(200, 151, 58, 0.4);
+        padding-top: 0.75rem;
+        margin-top: 0.35rem;
+    }
+    .summary-row.total span:last-child {
+        color: var(--gold, #C8973A);
+        font-size: 1.35rem;
+    }
+
+    .btn-confirm-order {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #C8973A 0%, #DFB460 100%);
+        border: none;
+        border-radius: 12px;
+        color: #18060A;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        box-shadow: 0 8px 24px rgba(200, 151, 58, 0.35);
+        transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+    .btn-confirm-order:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(200, 151, 58, 0.45);
+    }
+    .btn-confirm-order:active { transform: scale(0.98); }
+
+    .summary-guarantee {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: rgba(255, 253, 249, 0.55);
+        text-align: center;
+        justify-content: center;
+    }
+
+    .btn-chip-tarifa {
+        background: #FFFDF9;
+        border: 1px solid #C8973A;
+        color: #6B1E2E;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 120ms ease;
+    }
+    .btn-chip-tarifa:hover {
+        background: #C8973A;
+        color: #FFF;
+    }
+
+    [data-theme="dark"] .checkout-card {
+        background: var(--surface, #1A1416);
+        border-color: rgba(200, 151, 58, 0.2);
+    }
+    [data-theme="dark"] .delivery-tab {
+        background: #241D20;
+        border-color: rgba(200, 151, 58, 0.2);
+    }
+    [data-theme="dark"] .delivery-tab:hover {
+        background: #2D2327;
+        border-color: var(--gold, #C8973A);
+    }
+    [data-theme="dark"] .delivery-tab.active {
+        background: #331A24;
+        border-color: #E08295;
+        box-shadow: 0 0 0 3px rgba(224, 130, 149, 0.25);
+    }
+    [data-theme="dark"] .tab-icon {
+        background: rgba(224, 130, 149, 0.15);
+        color: #E08295;
+    }
+    [data-theme="dark"] .delivery-tab.active .tab-icon {
+        background: #A62D43;
+        color: #FFFDF9;
+    }
+    [data-theme="dark"] .input-field {
+        background: #241D20;
+        color: #FAF4EB;
+        border-color: rgba(200, 151, 58, 0.25);
+    }
+    [data-theme="dark"] .input-field:focus {
+        border-color: var(--gold, #C8973A);
+        background: #2A2225;
+    }
+    [data-theme="dark"] .payment-box {
+        background: #241D20;
+        border-color: rgba(200, 151, 58, 0.2);
+    }
+    [data-theme="dark"] .payment-box:hover {
+        background: #2D2327;
+        border-color: var(--gold, #C8973A);
+    }
+    [data-theme="dark"] .payment-box.active {
+        background: #331A24;
+        border-color: #E08295;
+        box-shadow: 0 0 0 3px rgba(224, 130, 149, 0.25);
+    }
+    [data-theme="dark"] .coupon-box-card {
+        background: #241D20 !important;
+        border-color: rgba(200, 151, 58, 0.45) !important;
+    }
+    [data-theme="dark"] .btn-chip-tarifa {
+        background: #241D20;
+        color: #FAF4EB;
+        border-color: rgba(200, 151, 58, 0.35);
+    }
+    [data-theme="dark"] .btn-chip-tarifa:hover {
+        background: var(--gold, #C8973A);
+        color: #18060A;
+    }
+</style>
+
+<!-- Script de Sincronización del Carrito con Checkout -->
+<script>
+    const esCajeroOAdmin = @(esCajeroOAdmin ? "true" : "false");
+    let tipoEntregaActual = '@tipoDefecto';
+    let costoEnvio = 4000;
+
+    function toggleMapaCheckout() {
+        const box = document.getElementById('contenedorMapaCheckout');
+        const txt = document.getElementById('btnTxtMapaCheckout');
+        if (box.style.display === 'none' || !box.style.display) {
+            box.style.display = 'block';
+            txt.textContent = 'Ocultar Mapa';
+        } else {
+            box.style.display = 'none';
+            txt.textContent = 'Ver Mapa';
+        }
+    }
+
+    function fijarTarifaManualCheckout(tarifa) {
+        if (!esCajeroOAdmin) return;
+        const inp = document.getElementById('inputFeeManualCheckout');
+        if (inp) inp.value = tarifa;
+        modificarTarifaManualCheckout(tarifa);
+    }
+
+    function modificarTarifaManualCheckout(val) {
+        if (!esCajeroOAdmin) return;
+        const tarifa = Math.max(0, parseInt(val) || 0);
+        document.getElementById('inputCostoEnvio').value = tarifa;
+        costoEnvio = (tipoEntregaActual === 'Domicilio') ? tarifa : 0;
+
+        const badge = document.getElementById('txtTarifaSugeridaBadge');
+        if (badge) {
+            badge.textContent = `Tarifa Cajero: $${tarifa.toLocaleString('es-CO')} COP`;
+            badge.style.background = '#FEF3C7';
+            badge.style.color = '#92400E';
+            badge.style.borderColor = '#FCD34D';
+        }
+
+        const barrio = document.getElementById('inputBarrio').value || 'Domicilio';
+        if (tipoEntregaActual === 'Domicilio') {
+            document.getElementById('envioVal').textContent = `$${tarifa.toLocaleString('es-CO')} COP (${barrio})`;
+        } else {
+            document.getElementById('envioVal').textContent = 'Gratis ($0)';
+        }
+
+        localStorage.setItem('saborator_costo_envio', tarifa);
+        renderCheckoutCart();
+    }
+
+    function cambiarBarrioCheckout() {
+        const sel = document.getElementById('selectBarrioCheckout').value;
+        const colCustom = document.getElementById('colCustomFeeCheckout');
+        let tarifa = 4000;
+        let barrio = 'Ciudadela 20 de Julio';
+        let zonaTxt = 'Zona Sur';
+
+        if (esCajeroOAdmin && sel.startsWith('custom')) {
+            if (colCustom) colCustom.style.display = 'block';
+            tarifa = parseInt(document.getElementById('inputCustomFeeCheckout')?.value) || 5000;
+            barrio = 'Sector Personalizado';
+            zonaTxt = 'Personalizada';
+        } else {
+            if (colCustom) colCustom.style.display = 'none';
+            const parts = sel.split('|');
+            tarifa = parseInt(parts[0]) || 4000;
+            barrio = parts[1] || 'Ciudadela 20 de Julio';
+            zonaTxt = tarifa === 4000 ? 'Zona Sur' : (tarifa === 6000 ? 'Zona Centro' : 'Zona Norte');
+        }
+
+        document.getElementById('inputBarrio').value = barrio;
+        document.getElementById('inputCostoEnvio').value = tarifa;
+        const inpManual = document.getElementById('inputFeeManualCheckout');
+        if (inpManual) inpManual.value = tarifa;
+
+        const badge = document.getElementById('txtTarifaSugeridaBadge');
+        if (badge) {
+            badge.textContent = `${zonaTxt}: $${tarifa.toLocaleString('es-CO')} COP`;
+            badge.style.background = '#ECFDF5';
+            badge.style.color = '#065F46';
+            badge.style.borderColor = '#A7F3D0';
+        }
+
+        if (tipoEntregaActual === 'Domicilio') {
+            costoEnvio = tarifa;
+            document.getElementById('envioVal').textContent = `$${tarifa.toLocaleString('es-CO')} COP (${barrio})`;
+        } else {
+            costoEnvio = 0;
+            document.getElementById('envioVal').textContent = 'Gratis ($0)';
+        }
+
+        localStorage.setItem('saborator_costo_envio', tarifa);
+        localStorage.setItem('saborator_barrio', barrio);
+
+        renderCheckoutCart();
+    }
+
+    // Cambiar tipo de entrega
+    function cambiarTipoEntrega(tipo) {
+        tipoEntregaActual = tipo;
+        document.querySelectorAll('.delivery-tab').forEach(el => el.classList.remove('active'));
+        const tab = document.querySelector(`input[name="tipoEntrega"][value="${tipo}"]`).closest('.delivery-tab');
+        if (tab) tab.classList.add('active');
+        document.querySelector(`input[name="tipoEntrega"][value="${tipo}"]`).checked = true;
+
+        document.getElementById('seccionDomicilio').style.display = tipo === 'Domicilio' ? 'block' : 'none';
+        document.getElementById('seccionMesa').style.display = tipo === 'EnMesa' ? 'block' : 'none';
+
+        if (tipo === 'Domicilio') {
+            cambiarBarrioCheckout();
+        } else {
+            costoEnvio = 0;
+            document.getElementById('inputCostoEnvio').value = 0;
+            document.getElementById('inputBarrio').value = '';
+            document.getElementById('envioVal').textContent = 'Gratis ($0)';
+            localStorage.setItem('saborator_costo_envio', 0);
+            renderCheckoutCart();
+        }
+        
+        localStorage.setItem('saborator_tipo_entrega', tipo);
+    }
+
+    // Seleccionar método de pago
+    function seleccionarPago(metodo) {
+        document.querySelectorAll('.payment-box').forEach(el => el.classList.remove('active'));
+        const box = document.querySelector(`input[name="metodoPago"][value="${metodo}"]`).closest('.payment-box');
+        if (box) box.classList.add('active');
+        document.querySelector(`input[name="metodoPago"][value="${metodo}"]`).checked = true;
+
+        const cajaCambio = document.getElementById('cajaCambioEfectivo');
+        if (cajaCambio) {
+            cajaCambio.style.display = metodo === 'Efectivo' ? 'block' : 'none';
+        }
+    }
+
+    // Renderizar carrito en Checkout
+    function renderCheckoutCart() {
+        const cart = JSON.parse(localStorage.getItem('saborator_cart') || '[]');
+        const container = document.getElementById('checkoutItemsList');
+        const inputsContainer = document.getElementById('hiddenFormInputs');
+        const alertaMin = document.getElementById('alertaMinimoCheckout');
+        const btnConfirmar = document.getElementById('btnConfirmarPedido');
+
+        if (cart.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:2rem 0;color:rgba(255,253,249,0.5);">
+                    <p style="margin:0 0 0.5rem;font-size:0.95rem;">Tu carrito está vacío</p>
+                    <a href="/#menu" style="color:var(--gold);text-decoration:none;font-weight:700;font-size:0.85rem;">← Ver Carta Gastronómica</a>
+                </div>
+            `;
+            document.getElementById('subtotalVal').textContent = '$0 COP';
+            document.getElementById('totalFinalVal').textContent = '$0 COP';
+            if (alertaMin) alertaMin.style.display = 'none';
+            btnConfirmar.disabled = true;
+            btnConfirmar.style.opacity = '0.5';
+            btnConfirmar.style.cursor = 'not-allowed';
+            return;
+        }
+
+        let subtotal = 0;
+        let htmlItems = '';
+        let htmlInputs = '';
+
+        cart.forEach((item, index) => {
+            const itemTotal = item.precio * item.cantidad;
+            subtotal += itemTotal;
+
+            htmlItems += `
+                <div class="summary-item-row">
+                    <div class="summary-item-info">
+                        <span class="summary-item-name">${item.nombre}</span>
+                        <span class="summary-item-qty">${item.cantidad} x $${item.precio.toLocaleString('es-CO')}</span>
+                    </div>
+                    <span class="summary-item-price">$${itemTotal.toLocaleString('es-CO')}</span>
+                </div>
+            `;
+
+            htmlInputs += `
+                <input type="hidden" name="productoIds" value="${item.id}" />
+                <input type="hidden" name="cantidades" value="${item.cantidad}" />
+                <input type="hidden" name="notasLineas" value="" />
+            `;
+        });
+
+        // Cálculo de Descuento de Cupón Promocional
+        let descuento = 0;
+        const cuponGuardado = JSON.parse(localStorage.getItem('saborator_cupon') || 'null');
+        const filaDescuento = document.getElementById('filaDescuentoCupon');
+        const lblDescuento = document.getElementById('lblDescuentoCupon');
+        const descuentoVal = document.getElementById('descuentoVal');
+        const cuponInputBox = document.getElementById('cuponInputContainer');
+        const cuponFeedback = document.getElementById('cuponFeedback');
+
+        if (cuponGuardado && cuponGuardado.codigo) {
+            if (cuponGuardado.tipoDescuento === 'Porcentaje') {
+                descuento = Math.round(subtotal * (cuponGuardado.valor / 100));
+                if (cuponGuardado.topeMaximo && descuento > cuponGuardado.topeMaximo) {
+                    descuento = cuponGuardado.topeMaximo;
+                }
+            } else {
+                descuento = Math.min(cuponGuardado.valor, subtotal);
+            }
+
+            if (subtotal < (cuponGuardado.montoMinimo || 0)) {
+                descuento = 0;
+                if (filaDescuento) filaDescuento.style.display = 'none';
+                if (cuponFeedback) {
+                    cuponFeedback.style.display = 'block';
+                    cuponFeedback.style.color = '#B45309';
+                    cuponFeedback.innerHTML = `⚠️ El cupón <strong>${cuponGuardado.codigo}</strong> requiere un pedido mínimo de $${(cuponGuardado.montoMinimo).toLocaleString('es-CO')} COP.`;
+                }
+            } else {
+                if (filaDescuento) {
+                    filaDescuento.style.display = 'flex';
+                    if (lblDescuento) lblDescuento.innerHTML = `Descuento (<span style="font-family:monospace;letter-spacing:1px;">${cuponGuardado.codigo}</span>)`;
+                    if (descuentoVal) descuentoVal.textContent = `-$${descuento.toLocaleString('es-CO')} COP`;
+                }
+
+                htmlInputs += `<input type="hidden" name="codigoCupon" value="${cuponGuardado.codigo}" />`;
+
+                if (cuponInputBox) {
+                    cuponInputBox.innerHTML = `
+                        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;background:#ECFDF5;border:1px solid #10B981;border-radius:10px;padding:0.5rem 0.85rem;">
+                            <div style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:#065F46;font-weight:700;">
+                                <span>🎉 Cupón <strong>${cuponGuardado.codigo}</strong> (-$${descuento.toLocaleString('es-CO')} COP)</span>
+                            </div>
+                            <button type="button" onclick="quitarCuponCheckout()" style="background:none;border:none;color:#DC2626;font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:underline;">Quitar</button>
+                        </div>
+                    `;
+                }
+                if (cuponFeedback) {
+                    cuponFeedback.style.display = 'none';
+                }
+            }
+        } else {
+            if (filaDescuento) filaDescuento.style.display = 'none';
+            if (cuponInputBox && !document.getElementById('inputCodigoCupon')) {
+                cuponInputBox.innerHTML = `
+                    <input type="text" id="inputCodigoCupon" class="input-field" placeholder="Ej: BURGER15" style="padding:0.55rem 0.75rem;font-size:0.88rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;" />
+                    <button type="button" id="btnAplicarCupon" onclick="aplicarCuponCheckout()" style="background:var(--brand, #6B1E2E);color:#FFFDF9;border:none;padding:0.55rem 1rem;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:background 150ms ease;">
+                        Aplicar
+                    </button>
+                `;
+            }
+        }
+
+        container.innerHTML = htmlItems;
+        inputsContainer.innerHTML = htmlInputs;
+
+        const totalFinal = Math.max(0, subtotal - descuento) + (tipoEntregaActual === 'Domicilio' ? costoEnvio : 0);
+        document.getElementById('subtotalVal').textContent = `$${subtotal.toLocaleString('es-CO')} COP`;
+        document.getElementById('totalFinalVal').textContent = `$${totalFinal.toLocaleString('es-CO')} COP`;
+
+        // Validación de Pedido Mínimo para Domicilio ($20.000 COP)
+        const MINIMO_DOMICILIO = 20000;
+        if (tipoEntregaActual === 'Domicilio' && subtotal < MINIMO_DOMICILIO) {
+            const falta = MINIMO_DOMICILIO - subtotal;
+            if (alertaMin) {
+                alertaMin.style.display = 'flex';
+                alertaMin.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <div>
+                        <div style="font-weight:700;margin-bottom:2px;">Mínimo de entrega no alcanzado</div>
+                        <div style="font-size:0.78rem;opacity:0.95;">Para envíos a domicilio el pedido mínimo es de <strong>$20.000 COP</strong>. Te faltan <strong>$${falta.toLocaleString('es-CO')} COP</strong>.</div>
+                        <a href="/#menu" style="display:inline-block;margin-top:4px;color:#7F1D1D;font-weight:800;text-decoration:underline;font-size:0.78rem;">+ Agregar más productos</a>
+                    </div>
+                `;
+            }
+            btnConfirmar.disabled = true;
+            btnConfirmar.style.opacity = '0.5';
+            btnConfirmar.style.cursor = 'not-allowed';
+        } else {
+            if (alertaMin) alertaMin.style.display = 'none';
+            btnConfirmar.disabled = false;
+            btnConfirmar.style.opacity = '1';
+            btnConfirmar.style.cursor = 'pointer';
+        }
+    }
+
+    async function aplicarCuponCheckout() {
+        const inp = document.getElementById('inputCodigoCupon');
+        const feedback = document.getElementById('cuponFeedback');
+        const btn = document.getElementById('btnAplicarCupon');
+        if (!inp || !feedback) return;
+
+        const codigo = inp.value.trim().toUpperCase();
+        if (!codigo) {
+            feedback.style.display = 'block';
+            feedback.style.color = '#DC2626';
+            feedback.textContent = 'Por favor escribe un código de cupón.';
+            return;
+        }
+
+        const cart = JSON.parse(localStorage.getItem('saborator_cart') || '[]');
+        let subtotal = 0;
+        cart.forEach(item => subtotal += (item.precio * item.cantidad));
+
+        if (btn) { btn.disabled = true; btn.textContent = '...'; }
+
+        try {
+            const resp = await fetch('/Cupon/Validar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigo: codigo, subtotal: subtotal })
+            });
+            const data = await resp.json();
+
+            if (data.ok) {
+                localStorage.setItem('saborator_cupon', JSON.stringify({
+                    codigo: data.codigo,
+                    tipoDescuento: data.tipoDescuento,
+                    valor: data.valor,
+                    descuento: data.descuento,
+                    descripcion: data.descripcion
+                }));
+                feedback.style.display = 'block';
+                feedback.style.color = '#059669';
+                feedback.textContent = data.mensaje;
+                renderCheckoutCart();
+            } else {
+                feedback.style.display = 'block';
+                feedback.style.color = '#DC2626';
+                feedback.textContent = data.mensaje || 'Cupón inválido.';
+            }
+        } catch (err) {
+            feedback.style.display = 'block';
+            feedback.style.color = '#DC2626';
+            feedback.textContent = 'Error al comunicarse con el servidor.';
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = 'Aplicar'; }
+        }
+    }
+
+    function quitarCuponCheckout() {
+        localStorage.removeItem('saborator_cupon');
+        const feedback = document.getElementById('cuponFeedback');
+        if (feedback) feedback.style.display = 'none';
+        renderCheckoutCart();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Cargar barrio y costo guardados
+        const savedBarrio = localStorage.getItem('saborator_barrio');
+        const sel = document.getElementById('selectBarrioCheckout');
+        if (savedBarrio && sel) {
+            for (let i = 0; i < sel.options.length; i++) {
+                if (sel.options[i].value.includes(savedBarrio)) {
+                    sel.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // Cargar datos previos si existen
+        const savedTipo = localStorage.getItem('saborator_tipo_entrega');
+        if (savedTipo) {
+            cambiarTipoEntrega(savedTipo);
+        } else {
+            cambiarBarrioCheckout();
+        }
+
+        const savedDir = localStorage.getItem('saborator_direccion');
+        if (savedDir) document.getElementById('inputDireccion').value = savedDir;
+
+        const savedTel = localStorage.getItem('saborator_telefono');
+        if (savedTel) document.getElementById('inputTelefono').value = savedTel;
+
+        renderCheckoutCart();
+
+        // Al enviar formulario, guardar datos en storage y limpiar carrito
+        document.getElementById('formCheckout').addEventListener('submit', () => {
+            const dir = document.getElementById('inputDireccion').value;
+            const bar = document.getElementById('inputBarrio').value;
+            const tel = document.getElementById('inputTelefono').value;
+            if (dir) localStorage.setItem('saborator_direccion', dir);
+            if (bar) localStorage.setItem('saborator_barrio', bar);
+            if (tel) localStorage.setItem('saborator_telefono', tel);
+            localStorage.removeItem('saborator_cart');
+        });
+    });
+</script>

@@ -1,0 +1,341 @@
+@model ControlClientesRestaurante.Models.Factura
+@{
+    ViewData["Title"] = "Factura " + Model.Numero;
+    decimal ivaCalculado = Model.Subtotal * Model.ImpuestoPorcentaje / 100m;
+}
+
+<div class="d-flex flex-wrap gap-2 mb-4 no-print justify-content-between align-items-center">
+    <div class="d-flex gap-2">
+        <button type="button" onclick="history.back()" class="btn-ghost" style="padding:.4rem .9rem;font-size:.82rem;">
+            ← Volver
+        </button>
+        <a asp-action="Index" class="btn-ghost" style="padding:.4rem .9rem;font-size:.82rem;">
+            Historial de Ventas
+        </a>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <!-- Botón de Descarga Nativa PDF -->
+        <button type="button" id="btnDescargarPdf" onclick="descargarFacturaPdf()" class="btn-brand" style="padding:.4rem .95rem;font-size:.82rem;gap:.4rem;display:inline-flex;align-items:center;background:var(--color-brand, #7A1C28);border-color:var(--color-brand, #7A1C28);color:#FFF;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span id="btnPdfTexto">Descargar Factura PDF</span>
+        </button>
+
+        <!-- Botón de Tirilla Térmica POS -->
+        <button type="button" onclick="imprimirTicketTermico()" class="btn-gold" style="padding:.4rem .95rem;font-size:.82rem;gap:.4rem;display:inline-flex;align-items:center;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span>Tirilla Térmica POS (80mm)</span>
+        </button>
+
+        <!-- Botón de Imprimir Estándar -->
+        <button type="button" onclick="imprimirCarta()" class="btn-ghost" style="padding:.4rem .95rem;font-size:.82rem;gap:.4rem;display:inline-flex;align-items:center;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span>Imprimir Hoja A4</span>
+        </button>
+    </div>
+</div>
+
+<style>
+    /* Estilos del contenedor de la factura */
+    .factura-card-wrapper {
+        background: #FFFFFF;
+        color: #1A1A1A;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 1px solid #E5E7EB;
+        max-width: 680px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2.25rem 2.5rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .factura-brand-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: #7A1C28;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .factura-meta-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6B7280;
+        font-weight: 700;
+        margin-bottom: 2px;
+    }
+
+    .factura-meta-val {
+        font-size: 0.92rem;
+        color: #111827;
+        font-weight: 600;
+    }
+
+    .table-factura {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.25rem 0;
+    }
+    .table-factura th {
+        border-bottom: 2px solid #111827;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #374151;
+        padding: 8px 6px;
+    }
+    .table-factura td {
+        border-bottom: 1px solid #E5E7EB;
+        padding: 9px 6px;
+        font-size: 0.88rem;
+        color: #1F2937;
+    }
+
+    /* Modos de impresión */
+    @@media print {
+        .no-print, .sidebar, .topbar, .v12-sidebar { display: none !important; }
+        .main-content { margin-left: 0 !important; margin: 0 !important; padding: 0 !important; }
+        body { background: #FFFFFF !important; color: #000000 !important; }
+        .factura-card-wrapper {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
+
+        /* Estilo específico para tirilla térmica */
+        body.modo-termico .factura-card-wrapper {
+            max-width: 80mm !important;
+            width: 80mm !important;
+            font-size: 11px !important;
+            margin: 0 auto !important;
+            padding: 2mm !important;
+        }
+        body.modo-termico .table-factura td,
+        body.modo-termico .table-factura th {
+            padding: 4px 2px !important;
+            font-size: 10.5px !important;
+        }
+    }
+</style>
+
+<div style="display:flex;justify-content:center;">
+    <div id="comprobanteFactura" class="factura-card-wrapper">
+
+        <!-- ══ CABECERA FISCAL DEL RESTAURANTE ═══════════════════════════ -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;border-bottom:1.5px solid #F3F4F6;padding-bottom:1.5rem;">
+            <div>
+                <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem;">
+                    <div style="width:38px;height:38px;background:#7A1C28;color:#C8973A;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                        <partial name="_LogoBurger" />
+                    </div>
+                    <div>
+                        <h1 class="factura-brand-title">SABORATOR</h1>
+                    </div>
+                </div>
+                <div style="font-size:.78rem;color:#4B5563;line-height:1.4;">
+                    <strong>Saborator Restaurante Gourmet S.A.S.</strong><br />
+                    NIT: 901.458.789-2 · Régimen Simple de Tributación<br />
+                    Cra 4 Sur # 43-12, Barranquilla, Atlántico<br />
+                    Teléfono: (605) 320-9988 · contacto@saborator.co
+                </div>
+            </div>
+
+            <div style="text-align:right;">
+                <div style="display:inline-block;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:6px 14px;margin-bottom:6px;">
+                    <span style="font-size:0.75rem;color:#6B7280;font-weight:700;display:block;">FACTURA DE VENTA</span>
+                    <strong style="font-family:monospace;font-size:1.15rem;color:#7A1C28;">@Model.Numero</strong>
+                </div>
+                <div style="font-size:.78rem;color:#6B7280;">
+                    Fecha: <strong>@Model.FechaCreacion.ToString("dd/MM/yyyy")</strong><br />
+                    Hora: <strong>@Model.FechaCreacion.ToString("HH:mm:ss")</strong>
+                </div>
+                <div style="margin-top:.4rem;">
+                    @if (Model.Estado == "Emitida")
+                    {
+                        <span style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:999px;">
+                            PAGADA / EMITIDA
+                        </span>
+                    }
+                    else
+                    {
+                        <span style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:999px;">
+                            ANULADA
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ INFORMACIÓN DEL CLIENTE Y EXPEDICIÓN ═══════════════════════ -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:1.25rem 0;border-bottom:1px solid #F3F4F6;">
+            <div>
+                <div class="factura-meta-label">Datos del Cliente</div>
+                @if (Model.Cliente != null)
+                {
+                    <div class="factura-meta-val">@Model.Cliente.Nombre</div>
+                    <div style="font-size:.8rem;color:#4B5563;">
+                        Documento / NIT: <strong>@(Model.Cliente.Documento ?? "N/A")</strong><br />
+                        @(Model.Cliente.Telefono ?? "") @(Model.Cliente.Correo != null ? "· " + Model.Cliente.Correo : "")
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(Model.NombreClienteLibre))
+                {
+                    <div class="factura-meta-val">@Model.NombreClienteLibre</div>
+                    <div style="font-size:.8rem;color:#6B7280;">Cliente en punto de venta</div>
+                }
+                else
+                {
+                    <div class="factura-meta-val">Consumidor Final (222222222222)</div>
+                }
+            </div>
+
+            <div style="text-align:right;">
+                <div class="factura-meta-label">Estación de Pago</div>
+                <div class="factura-meta-val">Cajero: @Model.UsuarioCajero</div>
+                <div style="font-size:.8rem;color:#4B5563;">
+                    Terminal: <strong>Caja Principal 01</strong><br />
+                    Resolución DIAN N° 187640001
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ DETALLE DE PRODUCTOS CONSUMIDOS ═══════════════════════════ -->
+        <table class="table-factura">
+            <thead>
+                <tr>
+                    <th style="text-align:left;">Descripción del Producto</th>
+                    <th style="text-align:center;width:60px;">Cant.</th>
+                    <th style="text-align:right;width:110px;">Precio Unit.</th>
+                    <th style="text-align:right;width:110px;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model.Lineas)
+                {
+                    decimal subtotalLinea = l.PrecioUnitario * l.Cantidad;
+                    <tr>
+                        <td>
+                            <strong>@l.NombreProducto</strong>
+                        </td>
+                        <td style="text-align:center;font-weight:600;">@l.Cantidad</td>
+                        <td style="text-align:right;color:#4B5563;">$@l.PrecioUnitario.ToString("N0")</td>
+                        <td style="text-align:right;font-weight:700;">$@subtotalLinea.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- ══ LIQUIDACIÓN DE TOTALES E IMPUESTOS ═════════════════════════ -->
+        <div style="display:flex;justify-content:flex-end;margin-top:.75rem;">
+            <div style="min-width:300px;width:100%;max-width:340px;">
+                <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
+                    <span>Subtotal de Productos:</span>
+                    <strong style="color:#111827;">$@Model.Subtotal.ToString("N0") COP</strong>
+                </div>
+
+                @if (Model.Descuento > 0)
+                {
+                    <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#059669;">
+                        <span>Descuento Promocional @(!string.IsNullOrWhiteSpace(Model.CodigoCupon) ? $"({Model.CodigoCupon})" : ""):</span>
+                        <strong style="color:#059669;">-$@Model.Descuento.ToString("N0") COP</strong>
+                    </div>
+                }
+
+                @if (Model.CostoEnvio > 0)
+                {
+                    <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
+                        <span>Servicio Domicilio Express:</span>
+                        <strong style="color:#C8973A;">$@Model.CostoEnvio.ToString("N0") COP</strong>
+                    </div>
+                }
+
+                @if (Model.ImpuestoPorcentaje > 0)
+                {
+                    <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
+                        <span>IVA (@Model.ImpuestoPorcentaje%):</span>
+                        <strong style="color:#111827;">$@ivaCalculado.ToString("N0") COP</strong>
+                    </div>
+                }
+
+                @if (Model.Propina > 0)
+                {
+                    <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
+                        <span>Propina Voluntaria (10%):</span>
+                        <strong style="color:#111827;">$@Model.Propina.ToString("N0") COP</strong>
+                    </div>
+                }
+
+                <div style="border-top:2px solid #111827;margin:.6rem 0;padding-top:.6rem;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:1.05rem;font-weight:800;color:#111827;">TOTAL A PAGAR:</span>
+                    <span style="font-size:1.35rem;font-weight:800;color:#7A1C28;">$@Model.Total.ToString("N0") COP</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ PIE DE PÁGINA FISCAL Y LEGAL ═══════════════════════════════ -->
+        <div style="border-top:1px dashed #D1D5DB;margin-top:2rem;padding-top:1.25rem;text-align:center;font-size:.74rem;color:#6B7280;line-height:1.5;">
+            <div>Esta factura electrónica de venta constituye título valor según la Ley 1231 de 2008.</div>
+            <div style="font-weight:600;color:#374151;margin-top:2px;">¡Gracias por su visita y preferencia en Saborator!</div>
+            <div style="font-size:.68rem;color:#9CA3AF;margin-top:4px;">Software de Gestión Saborator V12 · Copia para el cliente</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Scripts de Generación de PDF y Modos de Impresión -->
+<script src="~/lib/html2pdf/html2pdf.bundle.min.js"></script>
+<script>
+    // Generación de Factura en PDF nativo
+    function descargarFacturaPdf() {
+        const btn = document.getElementById('btnDescargarPdf');
+        const txt = document.getElementById('btnPdfTexto');
+        const element = document.getElementById('comprobanteFactura');
+
+        if (!element || typeof html2pdf === 'undefined') {
+            window.print();
+            return;
+        }
+
+        btn.disabled = true;
+        txt.textContent = "Generando PDF...";
+
+        const opt = {
+            margin:       [8, 8, 8, 8],
+            filename:     'Factura_@(Model.Numero).pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save()
+            .then(() => {
+                txt.textContent = "Descargar Factura PDF";
+                btn.disabled = false;
+            })
+            .catch(err => {
+                console.error("Error al generar PDF:", err);
+                txt.textContent = "Descargar Factura PDF";
+                btn.disabled = false;
+                window.print();
+            });
+    }
+
+    // Impresión en Tirilla Térmica POS 80mm
+    function imprimirTicketTermico() {
+        document.body.classList.add('modo-termico');
+        window.print();
+        setTimeout(() => {
+            document.body.classList.remove('modo-termico');
+        }, 1000);
+    }
+
+    // Impresión en Formato Carta / A4
+    function imprimirCarta() {
+        document.body.classList.remove('modo-termico');
+        window.print();
+    }
+</script>

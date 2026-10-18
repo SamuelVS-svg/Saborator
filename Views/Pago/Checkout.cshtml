@@ -1,0 +1,1248 @@
+@model ControlClientesRestaurante.Controllers.CheckoutRequestViewModel
+@{
+    ViewData["Title"] = "Pasarela de Pagos Segura — Saborator";
+    Layout = "_Layout";
+}
+
+<style>
+    .checkout-hero {
+        background: var(--bg, #F5EFE6);
+        background-image: radial-gradient(circle at 1px 1px, rgba(107, 30, 46, 0.045) 1px, transparent 0);
+        background-size: 24px 24px;
+        padding: 2.5rem 1rem 3.5rem;
+        color: var(--text, #1C1416);
+        min-height: 90vh;
+    }
+    :root[data-theme="dark"] .checkout-hero {
+        background: radial-gradient(circle at 50% 20%, rgba(107, 30, 46, 0.45) 0%, rgba(24, 6, 10, 0.98) 75%);
+        color: #FFFDF9;
+    }
+    .checkout-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .checkout-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .checkout-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 1rem;
+        background: rgba(200, 151, 58, 0.15);
+        border: 1px solid rgba(200, 151, 58, 0.35);
+        border-radius: 999px;
+        color: var(--brand, #6B1E2E);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.75rem;
+    }
+    :root[data-theme="dark"] .checkout-tag { color: #F0E2D2; }
+    .checkout-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(2.2rem, 4vw, 3rem);
+        font-weight: 400;
+        margin: 0 0 0.5rem;
+        color: var(--brand, #6B1E2E);
+    }
+    :root[data-theme="dark"] .checkout-title { color: #FFFDF9; }
+    .checkout-title span {
+        color: #C8973A;
+        font-style: italic;
+    }
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr 390px;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+    @@media (max-width: 992px) {
+        .checkout-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Tarjeta de Métodos de Pago */
+    .payment-card {
+        background: var(--surface, #FFFDF9);
+        border: 1.5px solid var(--line, #E3D8C8);
+        border-radius: 18px;
+        padding: 2rem;
+        color: var(--text, #1C1416);
+        box-shadow: 0 14px 32px -8px rgba(44, 10, 18, 0.06);
+    }
+    :root[data-theme="dark"] .payment-card {
+        background: rgba(30, 10, 16, 0.85);
+        border-color: rgba(200, 151, 58, 0.25);
+        color: #FFFDF9;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+    .methods-nav {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.65rem;
+        margin-bottom: 1.75rem;
+    }
+    @@media (max-width: 900px) {
+        .methods-nav {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+    }
+    @@media (max-width: 480px) {
+        .methods-nav {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    .method-tab {
+        background: var(--surface-2, #EFE6D8);
+        border: 1.5px solid var(--line-2, #D4C6B2);
+        color: var(--text, #1C1416);
+        padding: 0.75rem 0.35rem;
+        border-radius: 14px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        text-align: center;
+        min-height: 82px;
+    }
+    :root[data-theme="dark"] .method-tab {
+        background: rgba(255, 253, 249, 0.05);
+        border-color: rgba(255, 253, 249, 0.12);
+        color: #FFFDF9;
+    }
+    .method-tab:hover {
+        background: rgba(200, 151, 58, 0.15);
+        border-color: #C8973A;
+        transform: translateY(-2px);
+    }
+    .method-tab.active {
+        background: linear-gradient(135deg, rgba(200, 151, 58, 0.18), rgba(107, 30, 46, 0.25));
+        border-color: #C8973A;
+        color: var(--brand, #6B1E2E);
+        box-shadow: 0 4px 18px rgba(200, 151, 58, 0.28);
+        outline: 2px solid #C8973A;
+    }
+    :root[data-theme="dark"] .method-tab.active {
+        color: #FFFDF9;
+        background: linear-gradient(135deg, rgba(200, 151, 58, 0.25), rgba(107, 30, 46, 0.5));
+    }
+    .method-tab svg,
+    .method-tab-logo {
+        height: 26px;
+        max-width: 48px;
+        display: block;
+        transition: transform 0.2s ease;
+    }
+    .method-tab:hover svg,
+    .method-tab:hover .method-tab-logo {
+        transform: scale(1.08);
+    }
+
+    /* Formularios de método */
+    .method-pane {
+        display: none;
+        animation: fadeInPane 0.25s ease forwards;
+    }
+    .method-pane.active {
+        display: block;
+    }
+    @@keyframes fadeInPane {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Visualización interactiva de tarjeta */
+    .card-visual {
+        background: linear-gradient(135deg, #1C050B 0%, #4A121F 50%, #150307 100%);
+        border: 1px solid rgba(200, 151, 58, 0.45);
+        border-radius: 14px;
+        padding: 1.5rem;
+        color: #FFFDF9;
+        margin-bottom: 1.75rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+    .card-visual::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(200, 151, 58, 0.25) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .cv-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.75rem;
+    }
+    .cv-chip {
+        width: 38px;
+        height: 28px;
+        background: linear-gradient(135deg, #FFD700, #DAA520);
+        border-radius: 6px;
+        border: 1px solid rgba(0,0,0,0.3);
+    }
+    .cv-brand {
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: 0.05em;
+        color: #C8973A;
+    }
+    .cv-number {
+        font-family: 'Geist Mono', monospace;
+        font-size: 1.25rem;
+        letter-spacing: 0.15em;
+        margin-bottom: 1.25rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    }
+    .cv-bottom {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255, 253, 249, 0.85);
+    }
+
+    .form-group-pago {
+        margin-bottom: 1.2rem;
+    }
+    .form-group-pago label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--brand, #6B1E2E);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    :root[data-theme="dark"] .form-group-pago label { color: #F0E2D2; }
+    .input-pago {
+        width: 100%;
+        background: var(--surface-2, #EFE6D8);
+        border: 1.5px solid var(--line-2, #D4C6B2);
+        color: var(--text, #1C1416);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.92rem;
+        transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    :root[data-theme="dark"] .input-pago {
+        background: rgba(255, 253, 249, 0.07);
+        border-color: rgba(255, 253, 249, 0.2);
+        color: #FFFDF9;
+    }
+    .input-pago:focus {
+        outline: none;
+        border-color: var(--brand, #6B1E2E);
+        background: #FFFDF9;
+        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.18);
+    }
+    :root[data-theme="dark"] .input-pago:focus {
+        border-color: #C8973A;
+        background: rgba(255, 253, 249, 0.12);
+        box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.25);
+    }
+    .input-pago option {
+        background: var(--surface, #FFFDF9);
+        color: var(--text, #1C1416);
+    }
+    :root[data-theme="dark"] .input-pago option {
+        background: #18060A;
+        color: #FFFDF9;
+    }
+
+    /* Resumen de orden */
+    .summary-card {
+        background: var(--surface, #FFFDF9);
+        border: 1.5px solid var(--line, #E3D8C8);
+        border-radius: 18px;
+        padding: 1.75rem;
+        box-shadow: 0 14px 32px -8px rgba(44, 10, 18, 0.06);
+        position: sticky;
+        top: 24px;
+        color: var(--text, #1C1416);
+    }
+    :root[data-theme="dark"] .summary-card {
+        background: rgba(30, 10, 16, 0.85);
+        border-color: rgba(200, 151, 58, 0.25);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        color: #FFFDF9;
+    }
+    .summary-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: 1.6rem;
+        font-weight: 400;
+        margin: 0 0 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--line, #E3D8C8);
+        color: var(--brand, #6B1E2E);
+    }
+    :root[data-theme="dark"] .summary-title {
+        border-bottom-color: rgba(200, 151, 58, 0.2);
+        color: #FFFDF9;
+    }
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0.6rem 0;
+        font-size: 0.88rem;
+        border-bottom: 1px dashed var(--line, #E3D8C8);
+    }
+    :root[data-theme="dark"] .summary-item {
+        border-bottom-color: rgba(255, 253, 249, 0.1);
+    }
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+    .summary-total {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 2px solid #C8973A;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    .summary-total .val {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: 2rem;
+        color: #C8973A;
+        font-weight: 700;
+    }
+
+    .btn-pagar-now {
+        width: 100%;
+        background: linear-gradient(135deg, #C8973A, #A67520);
+        color: #18060A;
+        font-size: 1rem;
+        font-weight: 700;
+        padding: 0.95rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+        box-shadow: 0 8px 25px rgba(200, 151, 58, 0.35);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        margin-top: 1.5rem;
+    }
+    .btn-pagar-now:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(200, 151, 58, 0.5);
+    }
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--muted, #6E5D53);
+        font-size: 0.75rem;
+        margin-top: 1.25rem;
+        text-align: center;
+    }
+    :root[data-theme="dark"] .security-badge { color: rgba(255, 253, 249, 0.65); }
+
+    .btn-fill-demo {
+        background: rgba(200, 151, 58, 0.12);
+        border: 1px dashed #C8973A;
+        color: var(--brand, #6B1E2E);
+        padding: 0.35rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 1rem;
+        transition: all 0.16s ease;
+    }
+    :root[data-theme="dark"] .btn-fill-demo { color: #F0E2D2; }
+    .btn-fill-demo:hover {
+        background: rgba(200, 151, 58, 0.25);
+    }
+</style>
+
+<div class="checkout-hero">
+    <div class="checkout-container">
+
+        <div class="checkout-header">
+            <div class="checkout-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Pasarela Cifrada SSL 256-Bit
+            </div>
+            <h1 class="checkout-title">Completar <span>Pago Seguro</span></h1>
+            <p style="color:var(--muted, #6E5D53);font-size:0.95rem;margin:0;">
+                Elige tu método de preferencia. Aceptamos Pasarela Wompi Bancolombia, Nequi, PSE, Tarjetas y Cobro en Mesa.
+            </p>
+        </div>
+
+        <form asp-controller="Pago" asp-action="Procesar" method="post" id="formPasarela" onsubmit="return animarProcesamientoPago(event)">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="TipoOrigen" value="@Model.TipoOrigen" />
+            <input type="hidden" name="OrigenId" value="@Model.OrigenId" />
+            <input type="hidden" name="Monto" value="@Model.Monto" />
+            <input type="hidden" name="Concepto" value="@Model.Concepto" />
+            <input type="hidden" name="MetodoPago" id="hiddenMetodoPago" value="Wompi" />
+
+            <div class="checkout-grid">
+
+                <!-- Columna Izquierda: Métodos de Pago y Datos -->
+                <div class="payment-card">
+
+                    <!-- Navegación de Métodos de Pago con Logos Oficiales -->
+                    <div class="methods-nav">
+                        <button type="button" class="method-tab active" onclick="seleccionarMetodo('Wompi', this)">
+                            <svg viewBox="0 0 52 28" class="method-tab-logo" fill="none">
+                                <rect width="52" height="28" rx="6" fill="#120A21"/>
+                                <path d="M7 8.5 L12 20 C12.6 21.5 14.4 21.5 15 20 L18.5 12.5 L22 20 C22.6 21.5 24.4 21.5 25 20 L30 8.5" stroke="#00E5A3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="34" cy="9.5" r="2.2" fill="#FF4F81"/>
+                                <text x="35.5" y="20.5" font-family="'Geist', 'Segoe UI', Arial, sans-serif" font-weight="900" font-size="8.5" fill="#FFFFFF" letter-spacing="-0.4">wompi</text>
+                            </svg>
+                            <span>Wompi Oficial</span>
+                        </button>
+                        <button type="button" class="method-tab" onclick="seleccionarMetodo('Tarjeta', this)">
+                            <svg viewBox="0 0 48 28" class="method-tab-logo" fill="none">
+                                <rect width="48" height="28" rx="6" fill="#141124"/>
+                                <circle cx="16" cy="14" r="7.5" fill="#EB001B"/>
+                                <circle cx="26" cy="14" r="7.5" fill="#F79E1B" fill-opacity="0.92"/>
+                                <path d="M21 9 A7.5 7.5 0 0 1 21 19 A7.5 7.5 0 0 1 21 9 Z" fill="#FF5F00"/>
+                                <path d="M34 10 L36.5 18 H38.5 L41 10 H39.5 L37.5 16 L35.5 10 Z" fill="#1A73E8"/>
+                            </svg>
+                            <span>Tarjeta</span>
+                        </button>
+                        <button type="button" class="method-tab" onclick="seleccionarMetodo('Nequi', this)">
+                            <svg viewBox="0 0 44 28" class="method-tab-logo" fill="none">
+                                <rect width="44" height="28" rx="6" fill="#1A0328"/>
+                                <path d="M10 7.5 H14.5 L23.5 18 V7.5 H27.5 V20.5 H23 L14 10 V20.5 H10 V7.5 Z" fill="#FFFFFF"/>
+                                <rect x="29" y="8" width="4.5" height="4.5" rx="1" fill="#FF2772"/>
+                            </svg>
+                            <span>Nequi</span>
+                        </button>
+                        <button type="button" class="method-tab" onclick="seleccionarMetodo('PSE', this)">
+                            <svg viewBox="0 0 50 28" class="method-tab-logo" fill="none">
+                                <rect width="50" height="28" rx="6" fill="#0B2341"/>
+                                <path d="M8 8 C15 5 21 5 28 8" stroke="#FCD116" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 10.5 C15 8 21 8 27 10.5" stroke="#003893" stroke-width="1.6" stroke-linecap="round"/>
+                                <path d="M10 12.5 C15 10.5 21 10.5 26 12.5" stroke="#CE1126" stroke-width="1.6" stroke-linecap="round"/>
+                                <text x="18" y="22" font-family="'Arial Black', sans-serif" font-weight="900" font-size="9" fill="#FFFFFF" text-anchor="middle" letter-spacing="-0.3">pse</text>
+                                <line x1="32" y1="6" x2="32" y2="22" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+                                <path d="M37 9 C41 7 45 7 47 9 L44 14 C42 12 39 12 37 14 Z" fill="#FDDA24"/>
+                                <path d="M37 15 C39 13 42 13 44 15 L47 20 C45 22 41 22 37 20 Z" fill="#FFFFFF"/>
+                            </svg>
+                            <span>Bancolombia / PSE</span>
+                        </button>
+                        <button type="button" class="method-tab" onclick="seleccionarMetodo('Daviplata', this)">
+                            <svg viewBox="0 0 44 28" class="method-tab-logo" fill="none">
+                                <rect width="44" height="28" rx="6" fill="#ED1C24"/>
+                                <path d="M22 6 L14 13 H17 V21 H27 V13 H30 Z" fill="#FFFFFF"/>
+                                <path d="M20 15 H24 V21 H20 Z" fill="#ED1C24"/>
+                                <circle cx="22" cy="10" r="1.5" fill="#FFD100"/>
+                            </svg>
+                            <span>Daviplata</span>
+                        </button>
+                        <button type="button" class="method-tab" onclick="seleccionarMetodo('Efectivo', this)">
+                            <svg viewBox="0 0 44 28" class="method-tab-logo" fill="none">
+                                <rect width="44" height="28" rx="6" fill="#201115"/>
+                                <rect x="8" y="6" width="28" height="16" rx="3" stroke="#C8973A" stroke-width="1.8" fill="rgba(200,151,58,0.12)"/>
+                                <circle cx="22" cy="14" r="3.5" stroke="#C8973A" stroke-width="1.6"/>
+                                <path d="M12 10V10.1M32 18V18.1" stroke="#C8973A" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>En Mesa</span>
+                        </button>
+                    </div>
+
+                    <!-- Datos Generales del Pagador -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                        <div class="form-group-pago">
+                            <label for="pNombre">Nombre del Pagador *</label>
+                            <input type="text" name="NombreCliente" id="pNombre" class="input-pago" 
+                                   value="@(Model.NombreCliente ?? "Comensal Saborator")" required placeholder="Tu nombre completo" />
+                        </div>
+                        <div class="form-group-pago">
+                            <label for="pDoc">Documento / C.C. *</label>
+                            <input type="text" name="Documento" id="pDoc" class="input-pago" value="1020304050" required placeholder="Ej: 1020304050" />
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                        <div class="form-group-pago">
+                            <label for="pCorreo">Correo Electrónico *</label>
+                            <input type="email" name="Correo" id="pCorreo" class="input-pago" 
+                                   value="@(Model.Correo ?? "cliente@saborator.com")" required placeholder="Para tu comprobante digital" />
+                        </div>
+                        <div class="form-group-pago">
+                            <label for="pTel">Teléfono / Celular *</label>
+                            <input type="tel" name="Telefono" id="pTel" class="input-pago" 
+                                   value="@(Model.Telefono ?? "3201234567")" required placeholder="3201234567" />
+                        </div>
+                    </div>
+
+                    <!-- 0. PANE WOMPI OFICIAL (BANCOLOMBIA) -->
+                    <div class="method-pane active" id="paneWompi">
+                        <div style="background:rgba(200,151,58,0.1);border:1.5px solid #C8973A;border-radius:16px;padding:1.75rem;margin-bottom:1.25rem;text-align:center;">
+                            
+                            <!-- Logo oficial de Wompi Bancolombia -->
+                            <div style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.5rem;background:#000;border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;margin-bottom:1.25rem;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+                                <svg viewBox="0 0 100 32" style="width:120px;height:38px;" fill="none">
+                                    <path d="M6 8 L14 24 L22 8 L30 24 L38 8" stroke="#00E5A3" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="50" cy="16" r="8" fill="#FFF"/>
+                                    <path d="M65 8 L65 24 L75 14 L85 24 L85 8" stroke="#FFF" stroke-width="3.5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+
+                            <h3 style="font-size:1.3rem;font-weight:800;margin:0 0 0.4rem;color:var(--brand, #6B1E2E);">Pasarela Oficial Wompi Bancolombia</h3>
+                            <p style="font-size:0.9rem;max-width:520px;margin:0 auto 1.25rem;line-height:1.5;color:var(--muted, #6E5D53);">
+                                Conéctate con la pasarela oficial para procesar transacciones seguras con Nequi, PSE, Tarjetas y Botón Bancolombia:
+                            </p>
+
+                            <!-- Logos de medios de pago integrados -->
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));gap:0.75rem;margin-bottom:1.5rem;">
+                                <div style="background:#200020;border:1px solid #FF2772;border-radius:10px;padding:0.6rem 0.4rem;display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+                                    <span style="font-size:0.8rem;font-weight:800;color:#FF2772;">Nequi</span>
+                                    <small style="font-size:0.68rem;color:#FFF;">Notificación push</small>
+                                </div>
+                                <div style="background:#002244;border:1px solid #FFCC00;border-radius:10px;padding:0.6rem 0.4rem;display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+                                    <span style="font-size:0.8rem;font-weight:800;color:#FFCC00;">PSE Bancos</span>
+                                    <small style="font-size:0.68rem;color:#FFF;">Débito de cuenta</small>
+                                </div>
+                                <div style="background:#101830;border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:0.6rem 0.4rem;display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+                                    <span style="font-size:0.8rem;font-weight:800;color:#FFF;">Tarjetas</span>
+                                    <small style="font-size:0.68rem;color:rgba(255,255,255,0.7);">Visa / Master / Amex</small>
+                                </div>
+                                <div style="background:#2A2500;border:1px solid #FDDA24;border-radius:10px;padding:0.6rem 0.4rem;display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+                                    <span style="font-size:0.8rem;font-weight:800;color:#FDDA24;">Bancolombia</span>
+                                    <small style="font-size:0.68rem;color:#FFF;">Botón directo</small>
+                                </div>
+                            </div>
+
+                            <!-- Botón de apertura Wompi con spinner de estado -->
+                            <button type="button" id="btnWompiLauncher" onclick="ejecutarWidgetWompiCheckout()" class="btn-pagar-now" style="margin:0 auto;max-width:440px;background:linear-gradient(135deg, #00E5A3, #00B37E);color:#0A1B14;font-weight:900;font-size:1.05rem;box-shadow:0 8px 25px rgba(0,229,163,0.35);">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                <span id="btnWompiTexto">Pagar $@Model.Monto.ToString("N0") con Wompi</span>
+                            </button>
+
+                            <!-- Banner de fallback inteligente en caso de demora o adblocker -->
+                            <div id="wompiFallbackNotice" style="display:none;margin-top:1.25rem;background:rgba(200,151,58,0.15);border:1px dashed #C8973A;border-radius:10px;padding:0.9rem;text-align:center;">
+                                <div style="font-size:0.85rem;font-weight:700;color:var(--brand,#6B1E2E);margin-bottom:0.35rem;">
+                                    ¿Wompi está tardando en abrir o tu navegador bloquea popups?
+                                </div>
+                                <p style="font-size:0.8rem;color:var(--muted,#6E5D53);margin:0 0 0.6rem;">
+                                    Puedes realizar el pago directamente con nuestra pasarela interna sin intermediarios:
+                                </p>
+                                <button type="button" onclick="conmutarAPasarelaDirecta()" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border-color:#C8973A;color:var(--brand,#6B1E2E);">
+                                    Pagar con Pasarela Directa (Tarjeta / Nequi / PSE) &rarr;
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 1. PANE TARJETA DIRECTA -->
+                    <div class="method-pane" id="paneTarjeta">
+                        <button type="button" class="btn-fill-demo" onclick="demoLlenarTarjeta()">
+                            🪄 Llenar datos de tarjeta demo (1 clic)
+                        </button>
+
+                        <!-- Tarjeta interactiva en vivo -->
+                        <div class="card-visual">
+                            <div class="cv-top">
+                                <div class="cv-chip"></div>
+                                <div class="cv-brand" id="visualCardBrand">VISA / MC</div>
+                            </div>
+                            <div class="cv-number" id="visualCardNumber">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;</div>
+                            <div class="cv-bottom">
+                                <div>
+                                    <div style="font-size:0.65rem;opacity:0.7;">Titular</div>
+                                    <div id="visualCardHolder" style="font-weight:600;">@(Model.NombreCliente?.ToUpper() ?? "TU NOMBRE")</div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="font-size:0.65rem;opacity:0.7;">Expira</div>
+                                    <div id="visualCardExpiry" style="font-weight:600;">MM/AA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-pago">
+                            <label for="cNumero">Número de Tarjeta (16 Dígitos) *</label>
+                            <input type="text" name="NumeroTarjeta" id="cNumero" class="input-pago" maxlength="19"
+                                   placeholder="4000 1234 5678 9010" oninput="formatearTarjeta(this)" />
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                            <div class="form-group-pago">
+                                <label for="cExp">Expira (MM/AA) *</label>
+                                <input type="text" name="ExpiracionTarjeta" id="cExp" class="input-pago" maxlength="5"
+                                       placeholder="12/28" oninput="formatearExpira(this)" />
+                            </div>
+                            <div class="form-group-pago">
+                                <label for="cCvv">CVV / CVC *</label>
+                                <input type="password" name="CvvTarjeta" id="cCvv" class="input-pago" maxlength="4" placeholder="123" />
+                            </div>
+                            <div class="form-group-pago">
+                                <label for="cCuotas">Cuotas *</label>
+                                <select name="Cuotas" id="cCuotas" class="input-pago">
+                                    <option value="1">1 cuota (Sin interés)</option>
+                                    <option value="2">2 cuotas</option>
+                                    <option value="3">3 cuotas</option>
+                                    <option value="6">6 cuotas</option>
+                                    <option value="12">12 cuotas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. PANE NEQUI DIRECTO (TRANSFERENCIA 100% FUNCIONAL) -->
+                    <div class="method-pane" id="paneNequi">
+                        <div style="background:#1A0328;border:1.5px solid #FF2772;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFDF9;box-shadow:0 8px 30px rgba(255,39,114,0.18);">
+                            
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <svg viewBox="0 0 44 28" style="width:44px;height:28px;" fill="none">
+                                        <rect width="44" height="28" rx="6" fill="#200020" stroke="#FF2772" stroke-width="1.2"/>
+                                        <path d="M10 7.5 H14.5 L23.5 18 V7.5 H27.5 V20.5 H23 L14 10 V20.5 H10 V7.5 Z" fill="#FFFFFF"/>
+                                        <rect x="29" y="8" width="4.5" height="4.5" rx="1" fill="#FF2772"/>
+                                    </svg>
+                                    <div>
+                                        <div style="font-weight:900;font-size:1.1rem;color:#FF2772;letter-spacing:-0.02em;">Transferencia Oficial Nequi</div>
+                                        <small style="color:rgba(255,255,255,0.75);font-size:0.78rem;">Cuenta autorizada de Saborator Gourmet S.A.S.</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-fill-demo" onclick="demoLlenarNequi()" style="margin:0;background:rgba(255,39,114,0.2);border-color:#FF2772;color:#FFF;">
+                                    🪄 Llenar comprobante demo Nequi
+                                </button>
+                            </div>
+
+                            <!-- Caja con datos bancarios y QR Nequi -->
+                            <div style="display:grid;grid-template-columns:1fr auto;gap:1.25rem;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,39,114,0.3);border-radius:12px;padding:1.15rem;margin-bottom:1.25rem;">
+                                <div>
+                                    <div style="font-size:0.75rem;text-transform:uppercase;color:rgba(255,255,255,0.65);letter-spacing:0.06em;font-weight:700;">Número de Cuenta Nequi</div>
+                                    <div style="display:flex;align-items:center;gap:0.75rem;margin:0.25rem 0 0.6rem;">
+                                        <span id="nequiNumRestaurante" style="font-family:'Geist Mono',monospace;font-size:1.45rem;font-weight:800;color:#FFF;letter-spacing:0.05em;">320 890 1234</span>
+                                        <button type="button" onclick="copiarTexto('3208901234', this)" style="background:#FF2772;color:#FFF;border:none;border-radius:6px;padding:0.3rem 0.65rem;font-size:0.75rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.16s ease;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.4;">
+                                        <strong>Titular:</strong> Saborator Gourmet S.A.S.<br />
+                                        <strong>Valor Exacto:</strong> <span style="color:#FF2772;font-weight:800;">$@Model.Monto.ToString("N0") COP</span>
+                                    </div>
+                                </div>
+
+                                <!-- QR Oficial Nequi Vectorial -->
+                                <div style="text-align:center;">
+                                    <div style="background:#FFF;padding:6px;border-radius:10px;display:inline-block;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+                                        <svg width="86" height="86" viewBox="0 0 100 100" fill="none">
+                                            <rect x="5" y="5" width="28" height="28" rx="4" stroke="#1A0328" stroke-width="4"/>
+                                            <rect x="11" y="11" width="16" height="16" rx="2" fill="#FF2772"/>
+                                            <rect x="67" y="5" width="28" height="28" rx="4" stroke="#1A0328" stroke-width="4"/>
+                                            <rect x="73" y="11" width="16" height="16" rx="2" fill="#FF2772"/>
+                                            <rect x="5" y="67" width="28" height="28" rx="4" stroke="#1A0328" stroke-width="4"/>
+                                            <rect x="11" y="73" width="16" height="16" rx="2" fill="#FF2772"/>
+                                            <rect x="42" y="8" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="52" y="8" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="42" y="24" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="52" y="16" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="8" y="42" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="16" y="50" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="24" y="42" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="70" y="42" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="86" y="50" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="78" y="58" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="42" y="70" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="52" y="78" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="70" y="78" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="86" y="86" width="6" height="6" fill="#1A0328"/>
+                                            <rect x="36" y="36" width="28" height="28" rx="6" fill="#1A0328"/>
+                                            <path d="M42 42 H45 L52 52 V42 H55 V58 H52 L45 48 V58 H42 Z" fill="#FFF"/>
+                                            <rect x="55.5" y="42" width="3" height="3" fill="#FF2772"/>
+                                        </svg>
+                                    </div>
+                                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.7);margin-top:4px;">Escanear QR Nequi</div>
+                                </div>
+                            </div>
+
+                            <div style="font-size:0.82rem;color:rgba(255,255,255,0.85);margin-bottom:1.25rem;line-height:1.5;">
+                                <strong>Instrucciones:</strong><br />
+                                1. Envía los <strong>$@Model.Monto.ToString("N0")</strong> desde tu app Nequi al <strong>320 890 1234</strong>.<br />
+                                2. Al completar el envío, copia el <strong>Número de Comprobante / Movimiento</strong> (ej: M0849201).<br />
+                                3. Escríbelo aquí abajo para que el sistema valide tu transferencia de inmediato:
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+                                <div class="form-group-pago" style="margin-bottom:0;">
+                                    <label for="nequiComprobante" style="color:#FFF;">Número de Comprobante Nequi *</label>
+                                    <input type="text" name="ComprobanteTransferencia" id="nequiComprobante" class="input-pago" 
+                                           placeholder="Ej: M1234567 o 987654" style="background:rgba(255,255,255,0.12);color:#FFF;border-color:rgba(255,39,114,0.5);" />
+                                </div>
+                                <div class="form-group-pago" style="margin-bottom:0;">
+                                    <label for="nequiCelularEmisor" style="color:#FFF;">Celular Nequi desde el que envías *</label>
+                                    <input type="tel" name="CuentaOrigenTransferencia" id="nequiCelularEmisor" class="input-pago" 
+                                           placeholder="300 123 4567" value="@Model.Telefono" style="background:rgba(255,255,255,0.12);color:#FFF;border-color:rgba(255,39,114,0.5);" />
+                                </div>
+                            </div>
+
+                            <div style="text-align:center;margin-top:0.9rem;font-size:0.8rem;">
+                                <a href="javascript:void(0)" onclick="seleccionarMetodo('Wompi', document.querySelector('.method-tab:first-child'))" style="color:#FF2772;text-decoration:underline;font-weight:600;">
+                                    ¿Prefieres pagar con Nequi automático en línea sin transferir manualmente? Pagar con Wompi &rarr;
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 3. PANE BANCOLOMBIA / PSE (TRANSFERENCIA DIRECTA) -->
+                    <div class="method-pane" id="panePSE">
+                        <div style="background:#0B2341;border:1.5px solid #FFCC00;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFDF9;box-shadow:0 8px 30px rgba(0,34,68,0.25);">
+                            
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <svg viewBox="0 0 50 28" style="width:50px;height:28px;" fill="none">
+                                        <rect width="50" height="28" rx="6" fill="#07192C"/>
+                                        <path d="M8 8 C15 5 21 5 28 8" stroke="#FCD116" stroke-width="2"/>
+                                        <path d="M9 10.5 C15 8 21 8 27 10.5" stroke="#003893" stroke-width="1.6"/>
+                                        <path d="M10 12.5 C15 10.5 21 10.5 26 12.5" stroke="#CE1126" stroke-width="1.6"/>
+                                        <text x="18" y="22" font-family="'Arial Black', sans-serif" font-weight="900" font-size="9" fill="#FFFFFF" text-anchor="middle">pse</text>
+                                        <line x1="32" y1="6" x2="32" y2="22" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+                                        <path d="M37 9 C41 7 45 7 47 9 L44 14 C42 12 39 12 37 14 Z" fill="#FDDA24"/>
+                                        <path d="M37 15 C39 13 42 13 44 15 L47 20 C45 22 41 22 37 20 Z" fill="#FFFFFF"/>
+                                    </svg>
+                                    <div>
+                                        <div style="font-weight:900;font-size:1.1rem;color:#FFCC00;">Transferencia Bancolombia / PSE</div>
+                                        <small style="color:rgba(255,255,255,0.75);font-size:0.78rem;">Cuenta de Ahorros empresarial de Saborator</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-fill-demo" onclick="demoLlenarPSE()" style="margin:0;background:rgba(255,204,0,0.2);border-color:#FFCC00;color:#FFF;">
+                                    🪄 Llenar comprobante demo Bancolombia
+                                </button>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr auto;gap:1.25rem;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,204,0,0.3);border-radius:12px;padding:1.15rem;margin-bottom:1.25rem;">
+                                <div>
+                                    <div style="font-size:0.75rem;text-transform:uppercase;color:rgba(255,255,255,0.65);letter-spacing:0.06em;font-weight:700;">Cuenta de Ahorros Bancolombia</div>
+                                    <div style="display:flex;align-items:center;gap:0.75rem;margin:0.25rem 0 0.6rem;">
+                                        <span style="font-family:'Geist Mono',monospace;font-size:1.45rem;font-weight:800;color:#FFF;letter-spacing:0.05em;">512-894721-03</span>
+                                        <button type="button" onclick="copiarTexto('51289472103', this)" style="background:#FFCC00;color:#0B2341;border:none;border-radius:6px;padding:0.3rem 0.65rem;font-size:0.75rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.4;">
+                                        <strong>Titular:</strong> Saborator Gourmet S.A.S.<br />
+                                        <strong>NIT:</strong> 901.458.912-3<br />
+                                        <strong>Total a Transferir:</strong> <span style="color:#FFCC00;font-weight:800;">$@Model.Monto.ToString("N0") COP</span>
+                                    </div>
+                                </div>
+
+                                <div style="text-align:center;">
+                                    <div style="background:#FFF;padding:6px;border-radius:10px;display:inline-block;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+                                        <svg width="86" height="86" viewBox="0 0 100 100" fill="none">
+                                            <rect x="5" y="5" width="28" height="28" rx="4" stroke="#0B2341" stroke-width="4"/>
+                                            <rect x="11" y="11" width="16" height="16" rx="2" fill="#0B2341"/>
+                                            <rect x="67" y="5" width="28" height="28" rx="4" stroke="#0B2341" stroke-width="4"/>
+                                            <rect x="73" y="11" width="16" height="16" rx="2" fill="#0B2341"/>
+                                            <rect x="5" y="67" width="28" height="28" rx="4" stroke="#0B2341" stroke-width="4"/>
+                                            <rect x="11" y="73" width="16" height="16" rx="2" fill="#0B2341"/>
+                                            <rect x="42" y="10" width="6" height="6" fill="#0B2341"/>
+                                            <rect x="52" y="18" width="6" height="6" fill="#0B2341"/>
+                                            <rect x="18" y="44" width="6" height="6" fill="#0B2341"/>
+                                            <rect x="80" y="44" width="6" height="6" fill="#0B2341"/>
+                                            <rect x="74" y="76" width="6" height="6" fill="#0B2341"/>
+                                            <rect x="48" y="76" width="6" height="6" fill="#0B2341"/>
+                                            <rect x="36" y="36" width="28" height="28" rx="6" fill="#0B2341"/>
+                                            <path d="M40 46 C45 42 55 42 60 46 L57 52 C54 49 46 49 43 52 Z" fill="#FDDA24"/>
+                                            <path d="M40 53 C45 50 55 50 60 53 L57 58 C54 56 46 56 43 58 Z" fill="#FFF"/>
+                                        </svg>
+                                    </div>
+                                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.7);margin-top:4px;">QR Bancolombia</div>
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+                                <div class="form-group-pago" style="margin-bottom:0;">
+                                    <label for="pseComprobante" style="color:#FFF;">Número de Aprobación / Comprobante *</label>
+                                    <input type="text" name="ComprobanteTransferencia" id="pseComprobante" class="input-pago" 
+                                           placeholder="Ej: BC-987654 o 8761234" style="background:rgba(255,255,255,0.12);color:#FFF;border-color:rgba(255,204,0,0.5);" />
+                                </div>
+                                <div class="form-group-pago" style="margin-bottom:0;">
+                                    <label for="pseBanco" style="color:#FFF;">Banco Emisor *</label>
+                                    <select name="BancoPse" id="pseBanco" class="input-pago" style="background:#07192C;color:#FFF;border-color:rgba(255,204,0,0.5);">
+                                        <option value="Bancolombia">Bancolombia</option>
+                                        <option value="Banco de Bogota">Banco de Bogotá</option>
+                                        <option value="Davivienda">Davivienda</option>
+                                        <option value="BBVA Colombia">BBVA Colombia</option>
+                                        <option value="Banco de Occidente">Banco de Occidente</option>
+                                        <option value="Banco Popular">Banco Popular</option>
+                                        <option value="Scotiabank Colpatria">Scotiabank Colpatria</option>
+                                        <option value="Nu Colombia (Cuenta Nu)">Nu Colombia</option>
+                                        <option value="Lulo Bank">Lulo Bank</option>
+                                        <option value="Dale">Dale</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="text-align:center;margin-top:0.9rem;font-size:0.8rem;">
+                                <a href="javascript:void(0)" onclick="seleccionarMetodo('Wompi', document.querySelector('.method-tab:first-child'))" style="color:#FFCC00;text-decoration:underline;font-weight:600;">
+                                    ¿Prefieres pagar con débito automático PSE en línea? Pagar con Wompi &rarr;
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 4. PANE DAVIPLATA (TRANSFERENCIA DIRECTA) -->
+                    <div class="method-pane" id="paneDaviplata">
+                        <div style="background:#ED1C24;border:1.5px solid #FFD100;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFDF9;box-shadow:0 8px 30px rgba(237,28,36,0.25);">
+                            
+                            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <svg viewBox="0 0 44 28" style="width:44px;height:28px;" fill="none">
+                                        <rect width="44" height="28" rx="6" fill="#B30006"/>
+                                        <path d="M22 6 L14 13 H17 V21 H27 V13 H30 Z" fill="#FFFFFF"/>
+                                        <path d="M20 15 H24 V21 H20 Z" fill="#ED1C24"/>
+                                        <circle cx="22" cy="10" r="1.5" fill="#FFD100"/>
+                                    </svg>
+                                    <div>
+                                        <div style="font-weight:900;font-size:1.1rem;color:#FFF;">Transferencia Daviplata</div>
+                                        <small style="color:rgba(255,255,255,0.85);font-size:0.78rem;">Daviplata oficial de Saborator Gourmet</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-fill-demo" onclick="demoLlenarDaviplata()" style="margin:0;background:rgba(255,255,255,0.2);border-color:#FFF;color:#FFF;">
+                                    🪄 Llenar comprobante demo Daviplata
+                                </button>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr auto;gap:1.25rem;align-items:center;background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.25);border-radius:12px;padding:1.15rem;margin-bottom:1.25rem;">
+                                <div>
+                                    <div style="font-size:0.75rem;text-transform:uppercase;color:rgba(255,255,255,0.75);letter-spacing:0.06em;font-weight:700;">Celular Daviplata</div>
+                                    <div style="display:flex;align-items:center;gap:0.75rem;margin:0.25rem 0 0.6rem;">
+                                        <span style="font-family:'Geist Mono',monospace;font-size:1.45rem;font-weight:800;color:#FFF;letter-spacing:0.05em;">320 890 1234</span>
+                                        <button type="button" onclick="copiarTexto('3208901234', this)" style="background:#FFF;color:#ED1C24;border:none;border-radius:6px;padding:0.3rem 0.65rem;font-size:0.75rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                            Copiar
+                                        </button>
+                                    </div>
+                                    <div style="font-size:0.8rem;color:rgba(255,255,255,0.9);line-height:1.4;">
+                                        <strong>Titular:</strong> Saborator Gourmet S.A.S.<br />
+                                        <strong>Valor:</strong> <span style="color:#FFD100;font-weight:800;">$@Model.Monto.ToString("N0") COP</span>
+                                    </div>
+                                </div>
+
+                                <div style="text-align:center;">
+                                    <div style="background:#FFF;padding:6px;border-radius:10px;display:inline-block;box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+                                        <svg width="86" height="86" viewBox="0 0 100 100" fill="none">
+                                            <rect x="5" y="5" width="28" height="28" rx="4" stroke="#ED1C24" stroke-width="4"/>
+                                            <rect x="11" y="11" width="16" height="16" rx="2" fill="#ED1C24"/>
+                                            <rect x="67" y="5" width="28" height="28" rx="4" stroke="#ED1C24" stroke-width="4"/>
+                                            <rect x="73" y="11" width="16" height="16" rx="2" fill="#ED1C24"/>
+                                            <rect x="5" y="67" width="28" height="28" rx="4" stroke="#ED1C24" stroke-width="4"/>
+                                            <rect x="11" y="73" width="16" height="16" rx="2" fill="#ED1C24"/>
+                                            <rect x="44" y="12" width="6" height="6" fill="#ED1C24"/>
+                                            <rect x="52" y="20" width="6" height="6" fill="#ED1C24"/>
+                                            <rect x="16" y="44" width="6" height="6" fill="#ED1C24"/>
+                                            <rect x="80" y="44" width="6" height="6" fill="#ED1C24"/>
+                                            <rect x="76" y="78" width="6" height="6" fill="#ED1C24"/>
+                                            <rect x="46" y="78" width="6" height="6" fill="#ED1C24"/>
+                                            <rect x="36" y="36" width="28" height="28" rx="6" fill="#ED1C24"/>
+                                            <path d="M50 42 L42 49 H45 V57 H55 V49 H58 Z" fill="#FFF"/>
+                                            <circle cx="50" cy="46" r="1.5" fill="#FFD100"/>
+                                        </svg>
+                                    </div>
+                                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.85);margin-top:4px;">QR Daviplata</div>
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+                                <div class="form-group-pago" style="margin-bottom:0;">
+                                    <label for="daviComprobante" style="color:#FFF;">Número de Aprobación Daviplata *</label>
+                                    <input type="text" name="ComprobanteTransferencia" id="daviComprobante" class="input-pago" 
+                                           placeholder="Ej: DP-548912 o 6 dígitos" style="background:rgba(255,255,255,0.15);color:#FFF;border-color:rgba(255,255,255,0.5);" />
+                                </div>
+                                <div class="form-group-pago" style="margin-bottom:0;">
+                                    <label for="daviCelularEmisor" style="color:#FFF;">Celular Daviplata del emisor *</label>
+                                    <input type="tel" name="CuentaOrigenTransferencia" id="daviCelularEmisor" class="input-pago" 
+                                           placeholder="310 987 6543" value="@Model.Telefono" style="background:rgba(255,255,255,0.15);color:#FFF;border-color:rgba(255,255,255,0.5);" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- 5. PANE EFECTIVO / EN MESA -->
+                    <div class="method-pane" id="paneEfectivo">
+                        <div style="background:rgba(42,115,72,0.1);border:1.5px solid rgba(42,115,72,0.35);border-radius:16px;padding:2rem 1.5rem;text-align:center;">
+                            <div style="width:60px;height:60px;margin:0 auto 1.25rem;background:rgba(42,115,72,0.22);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#4CAF50;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                            </div>
+                            <h3 style="font-size:1.25rem;font-weight:800;color:var(--text,#1C1416);margin:0 0 0.5rem;">Pago Directo en Sala / Con Datáfono en Mesa</h3>
+                            <p style="font-size:0.9rem;color:var(--muted,#6E5D53);max-width:480px;margin:0 auto 1.5rem;line-height:1.5;">
+                                Registraremos tu solicitud de inmediato. Tu mesero asignado se acercará a tu mesa con el datáfono inalámbrico para tarjeta o el recibo oficial para cobro en efectivo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Envío del Formulario (visible en métodos directos) -->
+                    <div id="seccionSubmitDirecto" style="display:none;">
+                        <button type="submit" class="btn-pagar-now" id="btnPagarSubmit">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span id="btnPagarTexto">Pagar $@Model.Monto.ToString("N0") con Seguridad</span>
+                        </button>
+                    </div>
+
+                    <div class="security-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span>Transacciones protegidas con certificación bancaria SSL y facturación DIAN en tiempo real.</span>
+                    </div>
+
+                </div>
+
+                <!-- Columna Derecha: Resumen de Orden y Monto -->
+                <div class="summary-card">
+                    <h2 class="summary-title">Resumen de la Cuenta</h2>
+
+                    <div style="font-size:0.82rem;color:#C8973A;margin-bottom:1rem;font-weight:700;">
+                        @Model.Concepto
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Mesa))
+                    {
+                        <div style="background:rgba(200,151,58,0.12);border:1px solid rgba(200,151,58,0.3);padding:0.5rem 0.8rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:flex;justify-content:space-between;">
+                            <span>Ubicación</span>
+                            <strong style="color:#C8973A;">Mesa #@Model.Mesa</strong>
+                        </div>
+                    }
+
+                    <div class="summary-items-list">
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="summary-item">
+                                <div>
+                                    <div style="font-weight:700;">@item.Nombre</div>
+                                    <small style="color:var(--muted,#6E5D53);">@item.Cantidad x $@item.Precio.ToString("N0")</small>
+                                </div>
+                                <div style="font-weight:700;color:#C8973A;">$@item.Subtotal.ToString("N0")</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="summary-total">
+                        <div>
+                            <span style="display:block;font-size:0.8rem;text-transform:uppercase;color:var(--muted,#6E5D53);letter-spacing:0.08em;font-weight:700;">Total a Pagar</span>
+                            <small style="font-size:0.75rem;color:var(--muted,#6E5D53);">Impuestos incluidos</small>
+                        </div>
+                        <div class="val">$@Model.Monto.ToString("N0")</div>
+                    </div>
+
+                    <div style="margin-top:1.5rem;font-size:0.78rem;color:var(--muted,#6E5D53);line-height:1.5;">
+                        Al completar la transacción, se emite automáticamente la factura electrónica oficial y se libera la comanda en cocina.
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
+<script>
+    var wompiKey = '@(ViewBag.WompiPublicKey ?? "pub_test_Q5yDA9xoKdePium1amu0Bush320D4HfR")';
+    var wompiMontoCentavos = @((ViewBag.MontoEnCentavos ?? (long)(Model.Monto * 100)));
+    var wompiRef = '@(ViewBag.ReferenciaPago ?? (Model.TipoOrigen == "Pedido" && Model.OrigenId.HasValue ? "PED-" + Model.OrigenId.Value : "REF-" + DateTime.Now.ToString("yyyyMMddHHmmss")))';
+    var wompiIntegrity = '@(ViewBag.WompiIntegrity ?? "")';
+    var wompiRedirect = window.location.origin + '/Pago/RetornoWompi';
+
+    var watchdogTimer = null;
+
+    async function ejecutarWidgetWompiCheckout() {
+        var btn = document.getElementById('btnWompiLauncher');
+        var btnTexto = document.getElementById('btnWompiTexto');
+        var fallback = document.getElementById('wompiFallbackNotice');
+
+        // Indicar estado de carga visual
+        if (btn) {
+            btn.disabled = true;
+            btn.style.opacity = '0.85';
+            btnTexto.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:inline-block;width:1.1rem;height:1.1rem;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:8px;vertical-align:text-bottom;"></span> Generando sesión segura Wompi...';
+        }
+
+        // Watchdog de 4.5 segundos: Si el popup no abre o hay bloqueo por adblock/CORS
+        if (watchdogTimer) clearTimeout(watchdogTimer);
+        watchdogTimer = setTimeout(function () {
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btnTexto.textContent = 'Reintentar Wompi o Pagar Directo';
+            }
+            if (fallback) {
+                fallback.style.display = 'block';
+            }
+        }, 4500);
+
+        try {
+            // 1. Obtener sesión firmada desde el servidor (Blindaje: el cliente NO puede manipular montos ni referencias)
+            var requestPayload = {
+                tipoOrigen: '@Model.TipoOrigen',
+                origenId: @(Model.OrigenId.HasValue ? Model.OrigenId.Value : "null"),
+                nombreCliente: document.getElementById('pNombre')?.value || '@Model.NombreCliente',
+                correo: document.getElementById('pCorreo')?.value || '@Model.Correo',
+                telefono: document.getElementById('pTel')?.value || '@Model.Telefono'
+            };
+
+            var res = await fetch('/api/pagos/wompi-iniciar-sesion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestPayload)
+            });
+
+            if (!res.ok) {
+                var errObj = await res.json();
+                throw new Error(errObj.error || 'Error al comunicarse con el servidor para iniciar la transacción.');
+            }
+
+            var sesion = await res.json();
+
+            // 2. Verificar que el script oficial de Wompi esté cargado en la ventana
+            if (typeof WidgetCheckout === 'undefined') {
+                clearTimeout(watchdogTimer);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btnTexto.textContent = 'Pagar con Wompi';
+                }
+                alert('El script de Wompi está cargando o fue bloqueado por una extensión de navegador. Conmutando a pasarela directa integrada.');
+                conmutarAPasarelaDirecta();
+                return;
+            }
+
+            // 3. Inicializar Widget oficial Wompi con parámetros certificados por el backend
+            var configWompi = {
+                currency: sesion.currency,
+                amountInCents: sesion.amountInCents,
+                reference: sesion.reference,
+                publicKey: sesion.publicKey,
+                redirectUrl: sesion.redirectUrl
+            };
+
+            if (sesion.integritySignature && sesion.integritySignature.trim().length > 0) {
+                configWompi.signature = { integrity: sesion.integritySignature };
+            }
+
+            if (sesion.customerData) {
+                configWompi.customerData = sesion.customerData;
+            }
+
+            var checkout = new WidgetCheckout(configWompi);
+            checkout.open(function (result) {
+                clearTimeout(watchdogTimer);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btnTexto.textContent = 'Pagar $' + Number(sesion.montoPesos).toLocaleString('es-CO') + ' con Wompi';
+                }
+                var transaction = result.transaction;
+                if (transaction && transaction.status === 'APPROVED') {
+                    window.location.href = '/Pago/RetornoWompi?id=' + encodeURIComponent(transaction.id);
+                } else if (transaction && transaction.status) {
+                    alert('Resultado de transacción Wompi: ' + transaction.status);
+                    if (transaction.status === 'DECLINED') {
+                        conmutarAPasarelaDirecta();
+                    }
+                }
+            });
+        } catch (e) {
+            clearTimeout(watchdogTimer);
+            console.error('Error al iniciar Wompi:', e);
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btnTexto.textContent = 'Pagar con Wompi';
+            }
+            if (fallback) fallback.style.display = 'block';
+            conmutarAPasarelaDirecta();
+        }
+    }
+
+    function copiarTexto(texto, btn) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(texto).then(function() {
+                var originalHtml = btn.innerHTML;
+                btn.innerHTML = '✅ Copiado!';
+                btn.style.filter = 'brightness(1.2)';
+                setTimeout(function() {
+                    btn.innerHTML = originalHtml;
+                    btn.style.filter = '';
+                }, 2200);
+            }).catch(function() {
+                copiarFallback(texto, btn);
+            });
+        } else {
+            copiarFallback(texto, btn);
+        }
+    }
+
+    function copiarFallback(texto, btn) {
+        var temp = document.createElement('input');
+        temp.value = texto;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        var originalHtml = btn.innerHTML;
+        btn.innerHTML = '✅ Copiado!';
+        setTimeout(function() {
+            btn.innerHTML = originalHtml;
+        }, 2200);
+    }
+
+    function conmutarAPasarelaDirecta() {
+        var tabTarjeta = document.querySelector(".method-tab:nth-child(2)");
+        if (tabTarjeta) {
+            seleccionarMetodo('Tarjeta', tabTarjeta);
+        }
+    }
+
+    function seleccionarMetodo(metodo, btn) {
+        document.getElementById('hiddenMetodoPago').value = metodo;
+
+        document.querySelectorAll('.method-tab').forEach(function(t) { t.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+
+        document.querySelectorAll('.method-pane').forEach(function(p) { p.classList.remove('active'); });
+        var targetPane = document.getElementById('pane' + metodo);
+        if (targetPane) targetPane.classList.add('active');
+
+        var secSubmitDirecto = document.getElementById('seccionSubmitDirecto');
+        var btnTexto = document.getElementById('btnPagarTexto');
+
+        if (metodo === 'Wompi') {
+            if (secSubmitDirecto) secSubmitDirecto.style.display = 'none';
+        } else {
+            if (secSubmitDirecto) secSubmitDirecto.style.display = 'block';
+            if (metodo === 'Efectivo') {
+                btnTexto.textContent = 'Confirmar Solicitud de Cobro en Mesa';
+            } else if (metodo === 'Nequi' || metodo === 'Daviplata' || metodo === 'PSE') {
+                btnTexto.textContent = 'Confirmar Transferencia ' + (metodo === 'PSE' ? 'Bancaria' : metodo) + ' ($@Model.Monto.ToString("N0"))';
+            } else {
+                btnTexto.textContent = 'Autorizar Pago con ' + metodo + ' ($@Model.Monto.ToString("N0"))';
+            }
+        }
+    }
+
+    function formatearTarjeta(input) {
+        var v = input.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        var matches = v.match(/\d{4,16}/g);
+        var match = matches && matches[0] || '';
+        var parts = [];
+        for (var i = 0, len = match.length; i < len; i += 4) {
+            parts.push(match.substring(i, i + 4));
+        }
+        input.value = parts.length ? parts.join(' ') : v;
+
+        // Reflejar en tarjeta visual
+        var numVisual = document.getElementById('visualCardNumber');
+        if (numVisual) numVisual.textContent = input.value || '•••• •••• •••• ••••';
+
+        var brandVisual = document.getElementById('visualCardBrand');
+        if (brandVisual) {
+            if (v.startsWith('4')) { brandVisual.textContent = 'VISA'; }
+            else if (v.startsWith('5')) { brandVisual.textContent = 'MASTERCARD'; }
+            else if (v.startsWith('3')) { brandVisual.textContent = 'AMEX'; }
+            else { brandVisual.textContent = 'CRÉDITO / DÉBITO'; }
+        }
+    }
+
+    function formatearExpira(input) {
+        var v = input.value.replace(/[^0-9]/g, '');
+        if (v.length >= 2) {
+            input.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+        } else {
+            input.value = v;
+        }
+        var expVisual = document.getElementById('visualCardExpiry');
+        if (expVisual) expVisual.textContent = input.value || 'MM/AA';
+    }
+
+    var pNom = document.getElementById('pNombre');
+    if (pNom) {
+        pNom.addEventListener('input', function() {
+            var el = document.getElementById('visualCardHolder');
+            if (el) el.textContent = this.value.toUpperCase() || 'TU NOMBRE';
+        });
+    }
+
+    function demoLlenarTarjeta() {
+        var num = document.getElementById('cNumero');
+        var exp = document.getElementById('cExp');
+        var cvv = document.getElementById('cCvv');
+        if (num) { num.value = '4242 4242 4242 4242'; formatearTarjeta(num); }
+        if (exp) { exp.value = '12/28'; formatearExpira(exp); }
+        if (cvv) { cvv.value = '888'; }
+    }
+
+    function demoLlenarNequi() {
+        var comp = document.getElementById('nequiComprobante');
+        var cel = document.getElementById('nequiCelularEmisor');
+        if (comp) comp.value = 'M' + Math.floor(1000000 + Math.random() * 9000000);
+        if (cel) cel.value = '3001234567';
+    }
+
+    function demoLlenarDaviplata() {
+        var comp = document.getElementById('daviComprobante');
+        var cel = document.getElementById('daviCelularEmisor');
+        if (comp) comp.value = 'DP-' + Math.floor(100000 + Math.random() * 900000);
+        if (cel) cel.value = '3109876543';
+    }
+
+    function demoLlenarPSE() {
+        var comp = document.getElementById('pseComprobante');
+        if (comp) comp.value = 'BC-' + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    function animarProcesamientoPago(e) {
+        var metodoActual = document.getElementById('hiddenMetodoPago').value;
+        if (metodoActual === 'Wompi') {
+            e.preventDefault();
+            ejecutarWidgetWompiCheckout();
+            return false;
+        }
+
+        // Validación de comprobante para transferencias directas
+        if (metodoActual === 'Nequi' || metodoActual === 'Daviplata' || metodoActual === 'PSE') {
+            var inputComp = metodoActual === 'Nequi' ? document.getElementById('nequiComprobante') :
+                            (metodoActual === 'Daviplata' ? document.getElementById('daviComprobante') : document.getElementById('pseComprobante'));
+            if (inputComp && !inputComp.value.trim()) {
+                e.preventDefault();
+                alert('Por favor ingresa el número de comprobante o referencia de tu transferencia ' + (metodoActual === 'PSE' ? 'Bancolombia' : metodoActual) + '.');
+                inputComp.focus();
+                return false;
+            }
+        }
+
+        var btn = document.getElementById('btnPagarSubmit');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:inline-block;width:1.2rem;height:1.2rem;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:10px;vertical-align:text-bottom;"></span> Verificando transferencia y registrando comprobante...';
+            btn.style.opacity = '0.85';
+            btn.style.pointerEvents = 'none';
+        }
+        return true;
+    }
+</script>

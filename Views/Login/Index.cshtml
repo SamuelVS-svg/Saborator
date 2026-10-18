@@ -1,0 +1,1092 @@
+@{
+    ViewData["Title"] = "Acceso & Registro — Saborator";
+    Layout = "_Layout";
+    var activeTab = (ViewBag.Tab as string) ?? "login";
+    var isRegistro = activeTab == "registro";
+}
+
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<canvas id="authBurstCanvas" class="auth-burst-canvas" aria-hidden="true"></canvas>
+
+<div class="login-center-wrapper">
+
+    <!-- ══ FONDO BISTRO ATMOSFÉRICO DE ALTA GASTRONOMÍA ═══════════════════════ -->
+    <div class="bistro-bg" aria-hidden="true">
+        <!-- Resplandor ambiental cálido de restaurante gourmet -->
+        <div class="bistro-ambient-glow"></div>
+
+        <!-- Lámparas colgantes bistro con luz cálida -->
+        <div class="bistro-pendant-lamp lamp-left">
+            <div class="lamp-cord"></div>
+            <div class="lamp-shade"></div>
+            <div class="lamp-glow"></div>
+        </div>
+        <div class="bistro-pendant-lamp lamp-right">
+            <div class="lamp-cord"></div>
+            <div class="lamp-shade"></div>
+            <div class="lamp-glow"></div>
+        </div>
+    </div>
+
+    <!-- ══ BOTÓN FLOTANTE REGRESAR A LA CARTA ══════════════════════════════════ -->
+    <a asp-controller="Home" asp-action="Index" class="gastro-back-pill" title="Regresar al inicio" aria-label="Volver a la carta principal">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        <span>Volver a la carta</span>
+    </a>
+
+    <!-- ══ TARJETA CENTRAL DE LOGIN & REGISTRO ═════════════════════════════════ -->
+    <main class="gastro-card-wrapper" role="main">
+
+        <!-- ══ MUÑECO INTERACTIVO REFERENTE AL PROYECTO: CHEF BURGUI (SABORATOR) ══ -->
+        <div class="chef-mascot-stage" id="chefMascotContainer" aria-label="Chef Saborator Mascota Interactiva">
+            <!-- Burbuja de diálogo interactiva del chef -->
+            <div class="chef-speech-bubble" id="chefBubble">
+                <span id="chefBubbleText">¡Hola! Bienvenido a Saborator 👨‍🍳</span>
+            </div>
+
+            <!-- SVG del Muñeco Interactivo: Chef Gourmet de Hamburguesa -->
+            <svg id="chefMascotSvg" class="chef-mascot-svg" viewBox="0 0 220 200" width="190" height="175" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chef Gourmet Saborator">
+                <defs>
+                    <filter id="chefGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#140307" flood-opacity="0.32"/>
+                    </filter>
+                    
+                    <linearGradient id="bunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#F6B865"/>
+                        <stop offset="55%" stop-color="#E2872A"/>
+                        <stop offset="100%" stop-color="#C26A18"/>
+                    </linearGradient>
+
+                    <linearGradient id="hatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFFFF"/>
+                        <stop offset="85%" stop-color="#FAF6F0"/>
+                        <stop offset="100%" stop-color="#EBE3D3"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="pattyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#5C1B26"/>
+                        <stop offset="100%" stop-color="#3A0D15"/>
+                    </linearGradient>
+
+                    <linearGradient id="goldRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#C8973A"/>
+                        <stop offset="50%" stop-color="#F3D179"/>
+                        <stop offset="100%" stop-color="#C8973A"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- CUERPO Y CABEZA DEL CHEF -->
+                <g id="chefHeadGroup" class="chef-head-group">
+                    
+                    <!-- Gorro de Chef (Toque Blanche) -->
+                    <g id="chefHat" class="chef-hat">
+                        <path d="M 68 80 C 50 48, 62 20, 85 24 C 95 10, 125 10, 135 24 C 158 20, 170 48, 152 80 Z" fill="url(#hatGrad)" filter="url(#chefGlow)" stroke="#E5DCB8" stroke-width="2"/>
+                        <path d="M 92 24 C 98 45, 100 68, 102 79" stroke="#E5DCB8" stroke-width="1.8" fill="none" opacity="0.6"/>
+                        <path d="M 128 24 C 122 45, 120 68, 118 79" stroke="#E5DCB8" stroke-width="1.8" fill="none" opacity="0.6"/>
+                        <path d="M 68 78 Q 110 84 152 78 L 152 88 Q 110 94 68 88 Z" fill="url(#goldRibbon)" stroke="#A07220" stroke-width="1.2"/>
+                        <circle cx="110" cy="85" r="4.5" fill="#FFFDF9" stroke="#A07220" stroke-width="1"/>
+                        <path d="M 108 83 L 112 87 M 112 83 L 108 87" stroke="#6B1E2E" stroke-width="1.2"/>
+                    </g>
+
+                    <!-- Cabeza / Pan Superior de Hamburguesa -->
+                    <g id="chefFace" class="chef-face">
+                        <path d="M 46 112 C 46 76, 174 76, 174 112 C 174 125, 46 125, 46 112 Z" fill="url(#bunGrad)" stroke="#A65510" stroke-width="2.5" filter="url(#chefGlow)"/>
+
+                        <!-- Semillas de sésamo -->
+                        <ellipse cx="78" cy="88" rx="2.2" ry="1.2" transform="rotate(-15 78 88)" fill="#FFF4D9"/>
+                        <ellipse cx="110" cy="82" rx="2.2" ry="1.2" transform="rotate(5 110 82)" fill="#FFF4D9"/>
+                        <ellipse cx="142" cy="88" rx="2.2" ry="1.2" transform="rotate(20 142 88)" fill="#FFF4D9"/>
+                        <ellipse cx="94" cy="94" rx="2.2" ry="1.2" transform="rotate(-8 94 94)" fill="#FFF4D9"/>
+                        <ellipse cx="128" cy="94" rx="2.2" ry="1.2" transform="rotate(12 128 94)" fill="#FFF4D9"/>
+
+                        <!-- Mejillas sonrosadas (Blush) -->
+                        <ellipse id="blushLeft" cx="68" cy="116" rx="9" ry="6" fill="#FF5252" opacity="0.32"/>
+                        <ellipse id="blushRight" cx="152" cy="116" rx="9" ry="6" fill="#FF5252" opacity="0.32"/>
+
+                        <!-- Cejas animadas -->
+                        <path id="chefBrowLeft" class="chef-brow" d="M 76 96 Q 88 91 100 96" stroke="#5E2C0C" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+                        <path id="chefBrowRight" class="chef-brow" d="M 120 96 Q 132 91 144 96" stroke="#5E2C0C" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+
+                        <!-- Ojos Blancos y Expresiones -->
+                        <g id="chefEyes" class="chef-eyes">
+                            <ellipse id="eyeBgLeft" cx="88" cy="108" rx="14" ry="15" fill="#FFFFFF" stroke="#4A1E08" stroke-width="2.6"/>
+                            <ellipse id="eyeBgRight" cx="132" cy="108" rx="14" ry="15" fill="#FFFFFF" stroke="#4A1E08" stroke-width="2.6"/>
+
+                            <!-- Ojos Felices (Cerrados en arco para celebracion) -->
+                            <path id="eyeHappyLeft" d="M 75 109 Q 88 98 101 109" stroke="#4A1E08" stroke-width="3.5" stroke-linecap="round" fill="none" style="display:none;"/>
+                            <path id="eyeHappyRight" d="M 119 109 Q 132 98 145 109" stroke="#4A1E08" stroke-width="3.5" stroke-linecap="round" fill="none" style="display:none;"/>
+
+                            <!-- Ojos de Error (X de confusión) -->
+                            <g id="eyesError" style="display:none;">
+                                <path d="M 80 101 L 96 115 M 96 101 L 80 115" stroke="#DC2626" stroke-width="3.2" stroke-linecap="round"/>
+                                <path d="M 124 101 L 140 115 M 140 101 L 124 115" stroke="#DC2626" stroke-width="3.2" stroke-linecap="round"/>
+                            </g>
+
+                            <!-- Pupila Izquierda Móvil -->
+                            <g id="chefPupilLeft" class="chef-pupil">
+                                <circle cx="88" cy="108" r="7.5" fill="#1E0E05"/>
+                                <circle cx="85.5" cy="105" r="2.8" fill="#FFFFFF"/>
+                                <circle cx="90.5" cy="111" r="1.3" fill="#FFFFFF"/>
+                            </g>
+
+                            <!-- Pupila Derecha Móvil -->
+                            <g id="chefPupilRight" class="chef-pupil">
+                                <circle cx="132" cy="108" r="7.5" fill="#1E0E05"/>
+                                <circle cx="129.5" cy="105" r="2.8" fill="#FFFFFF"/>
+                                <circle cx="134.5" cy="111" r="1.3" fill="#FFFFFF"/>
+                            </g>
+                        </g>
+
+                        <!-- Bigote Gourmet y Boca -->
+                        <path id="chefMustache" d="M 110 118 Q 100 114 92 119 Q 87 122 93 125 Q 104 123 110 120 Q 116 123 127 125 Q 133 122 128 119 Q 120 114 110 118 Z" fill="#6B1E2E"/>
+                        <path id="chefMouth" d="M 102 124 Q 110 131 118 124" stroke="#4A1E08" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+                        
+                        <!-- Gota de sudor animada para estado de error -->
+                        <path id="chefSweatDrop" d="M 154 90 C 154 90 160 97 160 100 A 4 4 0 0 1 152 100 C 152 97 154 90 154 90 Z" fill="#60A5FA" opacity="0"/>
+                    </g>
+
+                    <!-- Capas de la Hamburguesa Gourmet -->
+                    <g id="chefBurgerLayers">
+                        <path d="M 46 124 Q 60 132 76 124 Q 94 133 110 124 Q 126 133 144 124 Q 160 132 174 124" fill="none" stroke="#48BB78" stroke-width="5.5" stroke-linecap="round"/>
+                        <polygon points="62,125 72,136 82,125" fill="#ECC94B"/>
+                        <polygon points="138,125 148,137 158,125" fill="#ECC94B"/>
+                        <rect x="48" y="128" width="124" height="11" rx="5.5" fill="url(#pattyGrad)"/>
+                    </g>
+
+                    <!-- Uniforme de Chef Blanco -->
+                    <g id="chefTorso">
+                        <path d="M 62 139 L 52 186 Q 110 194 168 186 L 158 139 Z" fill="#FAF6F0" stroke="#E5DCB8" stroke-width="2"/>
+                        <polygon points="96,139 110,154 124,139 116,137 110,143 104,137" fill="#6B1E2E"/>
+                        <circle cx="102" cy="162" r="2.5" fill="#C8973A"/>
+                        <circle cx="118" cy="162" r="2.5" fill="#C8973A"/>
+                        <circle cx="102" cy="174" r="2.5" fill="#C8973A"/>
+                        <circle cx="118" cy="174" r="2.5" fill="#C8973A"/>
+                    </g>
+                </g>
+
+                <!-- BRAZOS Y MANOS INTERACTIVAS QUE SE APOYAN O CUBREN LOS OJOS -->
+                <g id="chefArmLeft" class="chef-arm chef-arm-left">
+                    <path id="armLimbLeft" d="M 60 148 Q 38 166 48 186" stroke="#FAF6F0" stroke-width="12" stroke-linecap="round" fill="none"/>
+                    <g id="chefHandLeft" class="chef-hand" transform="translate(48, 186)">
+                        <ellipse cx="0" cy="0" rx="14" ry="11" fill="#FFFFFF" stroke="#E5DCB8" stroke-width="2"/>
+                        <path d="M -5 -3 Q -2 4 4 1" stroke="#E5DCB8" stroke-width="1.5" fill="none"/>
+                    </g>
+                </g>
+
+                <g id="chefArmRight" class="chef-arm chef-arm-right">
+                    <path id="armLimbRight" d="M 160 148 Q 182 166 172 186" stroke="#FAF6F0" stroke-width="12" stroke-linecap="round" fill="none"/>
+                    <g id="chefHandRight" class="chef-hand" transform="translate(172, 186)">
+                        <ellipse cx="0" cy="0" rx="14" ry="11" fill="#FFFFFF" stroke="#E5DCB8" stroke-width="2"/>
+                        <path d="M 5 -3 Q 2 4 -4 1" stroke="#E5DCB8" stroke-width="1.5" fill="none"/>
+                    </g>
+                </g>
+            </svg>
+        </div>
+
+        <div class="form-card" id="authFormCard">
+
+            <!-- Marca en Cabecera -->
+            <div class="form-logo">
+                <div class="form-logo-icon" aria-hidden="true">
+                    <partial name="_LogoBurger" />
+                </div>
+                <div>
+                    <span class="form-logo-name">Saborator</span>
+                    <span class="form-logo-tag">Portal Gastronómico Saborator</span>
+                </div>
+            </div>
+
+            <!-- Selector de Pestañas: Iniciar Sesión / Registrarse -->
+            <div class="auth-tabs" role="tablist" aria-label="Opciones de acceso">
+                <button type="button" class="auth-tab @(!isRegistro ? "active" : "")" id="tabBtnLogin" onclick="switchAuthTab('login')" role="tab" aria-selected="@(!isRegistro ? "true" : "false")" aria-controls="formSectionLogin">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    <span>Iniciar sesión</span>
+                </button>
+                <button type="button" class="auth-tab @(isRegistro ? "active" : "")" id="tabBtnRegistro" onclick="switchAuthTab('registro')" role="tab" aria-selected="@(isRegistro ? "true" : "false")" aria-controls="formSectionRegistro">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                    <span>Crear cuenta</span>
+                </button>
+            </div>
+
+            <!-- ════════ FORMULARIO: INICIAR SESIÓN ════════ -->
+            <section id="formSectionLogin" class="auth-section @(!isRegistro ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnLogin">
+                <h2 class="form-title">Bienvenido</h2>
+                <p class="form-sub">Ingresa tus credenciales para acceder</p>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="form-error" id="serverLoginError" role="alert">
+                        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>@ViewBag.Error</span>
+                    </div>
+
+                    @if (ViewBag.RequiereVerificacion == true)
+                    {
+                        <div style="margin:-0.5rem 0 1rem; padding:0.8rem 1rem; background:rgba(200,151,58,0.12); border:1px solid rgba(200,151,58,0.3); border-radius:10px; font-size:0.83rem; text-align:left;">
+                            <span style="color:var(--color-accent); font-weight:700;">¿No recibiste el correo de validación?</span>
+                            <form asp-action="ReenviarVerificacion" method="post" style="margin-top:0.35rem;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="usuarioOCorreo" value="@ViewBag.Usuario" />
+                                <button type="submit" class="link-btn" style="font-weight:700; text-decoration:underline; font-size:0.83rem; color:var(--color-accent);">
+                                    ✉️ Haz clic aquí para reenviar el enlace de validación
+                                </button>
+                            </form>
+                        </div>
+                    }
+                }
+
+                @if (TempData["Mensaje"] != null)
+                {
+                    <div class="form-success" role="status">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>@TempData["Mensaje"]</span>
+                    </div>
+                }
+
+                <form asp-action="Index" method="post" autocomplete="on" id="formLogin" onsubmit="return validateAndSubmitAuth(event, this, 'btnSubmitLogin', 'Ingresando...', 'login')" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div class="f-group">
+                        <label class="f-label" for="txtUsuarioLogin">Usuario</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                            <input type="text" id="txtUsuarioLogin" name="usuario" class="f-input" value="@ViewBag.Usuario" placeholder="Ej: admin, cajero o tu usuario" required autocomplete="username" />
+                        </div>
+                    </div>
+
+                    <div class="f-group">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">
+                            <label class="f-label" for="pwdLogin" style="margin-bottom:0;">Contraseña</label>
+                            <button type="button" class="link-btn" style="font-size:.74rem;" onclick="abrirModalRecuperar()">
+                                ¿Olvidaste tu contraseña?
+                            </button>
+                        </div>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+                            <input type="password" name="contraseña" id="pwdLogin" class="f-input" placeholder="••••••••" required autocomplete="current-password" />
+                            <button type="button" class="f-pwd-toggle" onclick="togglePasswordVisibility('pwdLogin', this)" aria-label="Mostrar contraseña" title="Mostrar u ocultar contraseña">
+                                <svg class="icon-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="icon-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-entrar" id="btnSubmitLogin">
+                        <span>Ingresar al sistema</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    ¿Eres comensal y no tienes cuenta?
+                    <button type="button" class="link-btn" onclick="switchAuthTab('registro')">
+                        Regístrate aquí gratis
+                    </button>
+                </div>
+            </section>
+
+            <!-- ════════ FORMULARIO: REGISTRO DE CLIENTES ════════ -->
+            <section id="formSectionRegistro" class="auth-section @(isRegistro ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnRegistro">
+                <h2 class="form-title">Crea tu cuenta</h2>
+                <p class="form-sub">Regístrate como cliente para ordenar en mesa</p>
+
+                @if (ViewBag.ErrorRegistro != null)
+                {
+                    <div class="form-error" id="serverRegError" role="alert">
+                        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>@ViewBag.ErrorRegistro</span>
+                    </div>
+                }
+
+                <form asp-action="Registro" method="post" autocomplete="on" id="formRegistro" onsubmit="return validateAndSubmitAuth(event, this, 'btnSubmitReg', 'Creando cuenta...', 'registro')" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div class="f-group">
+                        <label class="f-label" for="regNombreCompleto">Nombre completo *</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                            <input type="text" id="regNombreCompleto" name="nombreCompleto" class="f-input" value="@ViewBag.RegNombreCompleto" placeholder="Ej: Carlos Ramírez" required />
+                        </div>
+                    </div>
+
+                    <div class="f-row-2">
+                        <div class="f-group" style="flex:1.1;">
+                            <label class="f-label" for="regTipoDoc">Tipo de Doc. (Solo mayores) *</label>
+                            <div class="f-input-wrap">
+                                <select id="regTipoDoc" name="tipoDocumento" class="f-input" required style="padding-left:0.75rem;">
+                                    <option value="CC" selected>CC - Cédula de Ciudadanía</option>
+                                    <option value="CE">CE - Cédula de Extranjería</option>
+                                    <option value="PA">PA - Pasaporte</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="f-group" style="flex:1.2;">
+                            <label class="f-label" for="regDocumento">Número de Documento *</label>
+                            <div class="f-input-wrap">
+                                <input type="text" id="regDocumento" name="documento" class="f-input" value="@ViewBag.RegDocumento" placeholder="Ej: 1023456789" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="f-row-2">
+                        <div class="f-group">
+                            <label class="f-label" for="regFechaNac">Fecha de nacimiento (18+ años) *</label>
+                            <div class="f-input-wrap">
+                                <input type="date" id="regFechaNac" name="fechaNacimiento" class="f-input" value="@ViewBag.RegFechaNacimiento" max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" required />
+                            </div>
+                            <span style="font-size:0.72rem; color:var(--color-accent); margin-top:2px; display:block;">🔞 Solo mayores de edad. Nada de TI.</span>
+                        </div>
+
+                        <div class="f-group">
+                            <label class="f-label" for="regTelefono">Teléfono celular (+57 Colombia) *</label>
+                            <div class="f-input-wrap">
+                                <span class="f-icon" style="font-weight:700; font-size:0.8rem; color:var(--color-accent);">+57</span>
+                                <input type="tel" id="regTelefono" name="telefono" class="f-input" value="@ViewBag.RegTelefono" placeholder="3001234567" required maxlength="10" style="padding-left:2.5rem;" />
+                            </div>
+                            <span style="font-size:0.72rem; color:var(--color-text-muted); margin-top:2px; display:block;">10 dígitos colombianos sin espacios.</span>
+                        </div>
+                    </div>
+
+                    <!-- Canal para Enviar Código de Verificación OTP -->
+                    <div class="f-group" style="margin-top:-0.2rem; margin-bottom:0.9rem;">
+                        <label class="f-label">¿Por dónde prefieres recibir tu código de 6 dígitos? *</label>
+                        <input type="hidden" id="canalVerificacion" name="canalVerificacion" value="@(ViewBag.RegCanal ?? "whatsapp")" />
+                        <div style="display:flex; gap:10px; margin-top:4px;">
+                            <button type="button" class="btn-channel" id="btnChannelWhatsApp" onclick="selectOtpChannel('whatsapp')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px; border:1.5px solid #25D366; background:rgba(37,211,102,0.18); color:#25D366; font-size:0.84rem; font-weight:700; cursor:pointer; transition:all 0.2s;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                                <span>Por WhatsApp</span>
+                            </button>
+                            <button type="button" class="btn-channel" id="btnChannelSms" onclick="selectOtpChannel('sms')" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:10px; border:1px solid var(--color-border); background:rgba(255,255,255,0.03); color:var(--color-text-muted); font-size:0.84rem; font-weight:700; cursor:pointer; transition:all 0.2s;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                <span>Por SMS</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="f-group">
+                        <label class="f-label" for="regDireccion">Dirección y Barrio en Soledad / Barranquilla (Opcional para domicilios)</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </span>
+                            <input type="text" id="regDireccion" name="direccion" class="f-input" value="@ViewBag.RegDireccion" placeholder="Ej: Cra 15 # 45-20, Las Moras, Soledad" />
+                        </div>
+                    </div>
+
+                    <div class="f-group">
+                        <label class="f-label" for="regCorreo">Correo electrónico de contacto y facturación *</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </span>
+                            <input type="email" id="regCorreo" name="correo" class="f-input" value="@ViewBag.RegCorreo" placeholder="carlos@ejemplo.com" required />
+                        </div>
+                        <span style="font-size:0.72rem; color:var(--color-text-muted); margin-top:2px; display:block;">Te enviaremos también el respaldo de tu código y confirmaciones de pedidos.</span>
+                    </div>
+
+                    <div class="f-group">
+                        <label class="f-label" for="regUsuario">Nombre de usuario deseado *</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+                            </span>
+                            <input type="text" id="regUsuario" name="usuario" class="f-input" value="@ViewBag.RegUsuario" placeholder="Ej: carlosr" required minlength="3" autocomplete="username" />
+                        </div>
+                    </div>
+
+                    <div class="f-row-2">
+                        <div class="f-group">
+                            <label class="f-label" for="pwdReg">Contraseña *</label>
+                            <div class="f-input-wrap">
+                                <input type="password" name="contraseña" id="pwdReg" class="f-input" placeholder="Mín. 6 car." required minlength="6" autocomplete="new-password" />
+                                <button type="button" class="f-pwd-toggle" onclick="togglePasswordVisibility('pwdReg', this)" aria-label="Mostrar contraseña" title="Mostrar u ocultar contraseña">
+                                    <svg class="icon-eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg class="icon-eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="f-group">
+                            <label class="f-label" for="pwdRegConf">Confirmar *</label>
+                            <div class="f-input-wrap">
+                                <input type="password" name="confirmarContraseña" id="pwdRegConf" class="f-input" placeholder="Repite cont." required minlength="6" autocomplete="new-password" />
+                                <button type="button" class="f-pwd-toggle" onclick="togglePasswordVisibility('pwdRegConf', this)" aria-label="Mostrar contraseña" title="Mostrar u ocultar contraseña">
+                                    <svg class="icon-eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg class="icon-eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-entrar" id="btnSubmitReg" style="margin-top:.8rem;">
+                        <span>Crear cuenta y recibir código de verificación</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    ¿Ya tienes una cuenta creada?
+                    <button type="button" class="link-btn" onclick="switchAuthTab('login')">
+                        Inicia sesión aquí
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- ══ MODAL: RECUPERAR CONTRASEÑA CON ESCAPE Y CLICK OUTSIDE ══════════════ -->
+<div class="rec-overlay" id="recModal" onclick="handleModalBackdropClick(event)" role="dialog" aria-modal="true" aria-labelledby="recTitle">
+    <div class="rec-box" onclick="event.stopPropagation()">
+        <h3 id="recTitle">Recuperar acceso</h3>
+        <p>Ingresa tu usuario y el personal administrativo te asistirá para restablecer tus credenciales.</p>
+        <label class="rec-label" for="txtRecUsuario">Tu usuario</label>
+        <input type="text" id="txtRecUsuario" class="rec-input" placeholder="Ej: cajero o tu usuario" />
+        <label class="rec-label" for="txtRecContacto">Correo o Teléfono de contacto</label>
+        <input type="text" id="txtRecContacto" class="rec-input" placeholder="correo@ejemplo.com o 3001234567" />
+        <button class="btn-entrar" type="button" onclick="cerrarModalRecuperar(); alert('Tu solicitud ha sido enviada al administrador del restaurante.');">
+            Enviar solicitud
+        </button>
+        <div class="rec-note">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            El personal de caja o administración verificará tu identidad y restablecerá tu acceso.
+        </div>
+        <button class="rec-cancel" type="button" onclick="cerrarModalRecuperar()">
+            Cancelar
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+// ── TRANSICIÓN FLUIDA ENTRE PESTAÑAS (CROSSFADE EMIL KOWALSKI) ───────────────
+function switchAuthTab(tab) {
+    var isReg = tab === 'registro';
+    var loginSec = document.getElementById('formSectionLogin');
+    var regSec = document.getElementById('formSectionRegistro');
+    var btnLogin = document.getElementById('tabBtnLogin');
+    var btnReg = document.getElementById('tabBtnRegistro');
+
+    if (!loginSec || !regSec) return;
+
+    if (isReg) {
+        btnLogin.classList.remove('active');
+        btnReg.classList.add('active');
+        btnLogin.setAttribute('aria-selected', 'false');
+        btnReg.setAttribute('aria-selected', 'true');
+
+        loginSec.classList.remove('active');
+        setTimeout(function() {
+            loginSec.style.display = 'none';
+            regSec.style.display = 'block';
+            requestAnimationFrame(function() {
+                regSec.classList.add('active');
+            });
+        }, 120);
+    } else {
+        btnReg.classList.remove('active');
+        btnLogin.classList.add('active');
+        btnLogin.setAttribute('aria-selected', 'true');
+        btnReg.setAttribute('aria-selected', 'false');
+
+        regSec.classList.remove('active');
+        setTimeout(function() {
+            regSec.style.display = 'none';
+            loginSec.style.display = 'block';
+            requestAnimationFrame(function() {
+                loginSec.classList.add('active');
+            });
+        }, 120);
+    }
+}
+
+// ── SELECCIÓN DE CANAL OTP (WHATSAPP / SMS) ─────────────────────────────────
+function selectOtpChannel(channel) {
+    var input = document.getElementById('canalVerificacion');
+    var btnWa = document.getElementById('btnChannelWhatsApp');
+    var btnSms = document.getElementById('btnChannelSms');
+    if (input) input.value = channel;
+
+    if (channel === 'whatsapp') {
+        if (btnWa) {
+            btnWa.style.background = 'rgba(37,211,102,0.18)';
+            btnWa.style.borderColor = '#25D366';
+            btnWa.style.color = '#25D366';
+        }
+        if (btnSms) {
+            btnSms.style.background = 'rgba(255,255,255,0.03)';
+            btnSms.style.borderColor = 'var(--color-border)';
+            btnSms.style.color = 'var(--color-text-muted)';
+        }
+    } else {
+        if (btnSms) {
+            btnSms.style.background = 'rgba(200,151,58,0.18)';
+            btnSms.style.borderColor = 'var(--color-accent)';
+            btnSms.style.color = 'var(--color-accent)';
+        }
+        if (btnWa) {
+            btnWa.style.background = 'rgba(255,255,255,0.03)';
+            btnWa.style.borderColor = 'var(--color-border)';
+            btnWa.style.color = 'var(--color-text-muted)';
+        }
+    }
+}
+
+// ── REVELADOR DE CONTRASEÑA CON SWAP DE ICONOS Y REACCIÓN DEL CHEF ─────────
+function togglePasswordVisibility(inputId, btn) {
+    var input = document.getElementById(inputId);
+    if (!input || !btn) return;
+
+    var eyeOpen = btn.querySelector('.icon-eye-open');
+    var eyeClosed = btn.querySelector('.icon-eye-closed');
+    var isRevealed = false;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.classList.add('active');
+        btn.setAttribute('aria-label', 'Ocultar contraseña');
+        if (eyeOpen) eyeOpen.style.display = 'none';
+        if (eyeClosed) eyeClosed.style.display = 'block';
+        isRevealed = true;
+    } else {
+        input.type = 'password';
+        btn.classList.remove('active');
+        btn.setAttribute('aria-label', 'Mostrar contraseña');
+        if (eyeOpen) eyeOpen.style.display = 'block';
+        if (eyeClosed) eyeClosed.style.display = 'none';
+        isRevealed = false;
+    }
+
+    // Reacción del muñeco interactivo al revelar/ocultar contraseña
+    var mascot = document.getElementById('chefMascotContainer');
+    if (mascot && mascot.classList.contains('chef-cover-eyes')) {
+        if (isRevealed) {
+            mascot.classList.add('chef-peeking');
+            setChefBubble('¡Ajá! Te vi mostrando la clave 👀');
+        } else {
+            mascot.classList.remove('chef-peeking');
+            setChefBubble('¡Shhh! ¡No miro tu contraseña! 🙈');
+        }
+    }
+}
+
+// ── CONTROL DE LA BURBUJA DE DIÁLOGO DEL CHEF ──────────────────────────────
+var bubbleTimer = null;
+function setChefBubble(text, duration) {
+    var bubbleText = document.getElementById('chefBubbleText');
+    var bubble = document.getElementById('chefBubble');
+    if (!bubbleText || !bubble) return;
+
+    bubbleText.textContent = text;
+    bubble.style.animation = 'none';
+    void bubble.offsetWidth;
+    bubble.style.animation = 'bubble-pop 280ms cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+    if (bubbleTimer) clearTimeout(bubbleTimer);
+    if (duration) {
+        bubbleTimer = setTimeout(function() {
+            bubbleText.textContent = '¡Hola! Bienvenido a Saborator 👨‍🍳';
+        }, duration);
+    }
+}
+
+// ── FEEDBACK Y ANIMACIONES INTERACTIVAS DE ACCESO ──────────────────────────
+var isSubmittingAuth = false;
+
+function validateAndSubmitAuth(event, form, btnId, loadingText, type) {
+    if (event) {
+        event.preventDefault();
+    }
+    if (isSubmittingAuth) return false;
+
+    var card = document.getElementById('authFormCard');
+    var invalidInputs = [];
+    var errorMessage = '';
+
+    // Limpiar errores previos
+    form.querySelectorAll('.input-error').forEach(function(el) {
+        el.classList.remove('input-error');
+    });
+
+    if (type === 'login') {
+        var usuario = form.querySelector('#txtUsuarioLogin');
+        var clave = form.querySelector('#pwdLogin');
+
+        if (!usuario || !usuario.value.trim()) {
+            invalidInputs.push(usuario);
+        }
+        if (!clave || !clave.value) {
+            invalidInputs.push(clave);
+        }
+    } else if (type === 'registro') {
+        var nombre = form.querySelector('#regNombreCompleto');
+        var tipoDoc = form.querySelector('#regTipoDoc');
+        var doc = form.querySelector('#regDocumento');
+        var fechaNac = form.querySelector('#regFechaNac');
+        var tel = form.querySelector('#regTelefono');
+        var correo = form.querySelector('#regCorreo');
+        var usuarioReg = form.querySelector('#regUsuario');
+        var pwdReg = form.querySelector('#pwdReg');
+        var pwdConf = form.querySelector('#pwdRegConf');
+
+        if (!nombre || !nombre.value.trim()) invalidInputs.push(nombre);
+        if (!tipoDoc || !tipoDoc.value) invalidInputs.push(tipoDoc);
+        if (!doc || !doc.value.trim()) invalidInputs.push(doc);
+
+        if (!fechaNac || !fechaNac.value) {
+            invalidInputs.push(fechaNac);
+        } else {
+            // Validar mayoría de edad (18+ años exactos)
+            var bDate = new Date(fechaNac.value);
+            var today = new Date();
+            var age = today.getFullYear() - bDate.getFullYear();
+            var m = today.getMonth() - bDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                age--;
+            }
+            if (age < 18) {
+                invalidInputs.push(fechaNac);
+                errorMessage = 'Solo se admiten personas mayores de edad (18 años o más).';
+            }
+        }
+
+        if (!tel || !tel.value.trim()) invalidInputs.push(tel);
+
+        var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        if (!correo || !correo.value.trim() || !emailRegex.test(correo.value.trim())) {
+            invalidInputs.push(correo);
+        }
+
+        if (!usuarioReg || usuarioReg.value.trim().length < 3) {
+            invalidInputs.push(usuarioReg);
+        }
+
+        if (!pwdReg || pwdReg.value.length < 6) {
+            invalidInputs.push(pwdReg);
+        }
+
+        if (!pwdConf || pwdConf.value !== (pwdReg ? pwdReg.value : '')) {
+            invalidInputs.push(pwdConf);
+            if (!errorMessage) errorMessage = 'Las contraseñas no coinciden.';
+        }
+    }
+
+    // Si hay datos inválidos: Sacudida háptica y reacción del chef
+    if (invalidInputs.length > 0) {
+        if (card) {
+            card.classList.remove('shake-error');
+            void card.offsetWidth;
+            card.classList.add('shake-error');
+            setTimeout(function() {
+                card.classList.remove('shake-error');
+            }, 450);
+        }
+
+        triggerChefError(errorMessage || '¡Revisa los datos marcados en rojo!');
+
+        invalidInputs.forEach(function(input, idx) {
+            if (input) {
+                input.classList.add('input-error');
+                var clearError = function() {
+                    input.classList.remove('input-error');
+                    input.removeEventListener('input', clearError);
+                    input.removeEventListener('change', clearError);
+                };
+                input.addEventListener('input', clearError);
+                input.addEventListener('change', clearError);
+
+                if (idx === 0) {
+                    input.focus();
+                }
+            }
+        });
+
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+        return false;
+    }
+
+    // Datos válidos: Lanzar celebración y feedback de éxito antes de despachar
+    isSubmittingAuth = true;
+    var btn = document.getElementById(btnId);
+
+    triggerChefSuccess();
+
+    triggerAuthCelebration(btn, loadingText, function() {
+        form.submit();
+    });
+
+    return false;
+}
+
+// ── REACCIONES EMOCIONALES DEL CHEF (ERROR Y CELEBRACIÓN) ──────────────────
+function triggerChefError(msg) {
+    var mascot = document.getElementById('chefMascotContainer');
+    var eyesError = document.getElementById('eyesError');
+    var eyeBgLeft = document.getElementById('eyeBgLeft');
+    var eyeBgRight = document.getElementById('eyeBgRight');
+    var pupilLeft = document.getElementById('chefPupilLeft');
+    var pupilRight = document.getElementById('chefPupilRight');
+
+    if (!mascot) return;
+
+    mascot.classList.add('chef-worried');
+    setChefBubble(msg || '¡Uy! Revisa los campos en rojo 😅', 2800);
+
+    if (eyesError && pupilLeft && pupilRight) {
+        eyesError.style.display = 'block';
+        pupilLeft.style.display = 'none';
+        pupilRight.style.display = 'none';
+    }
+
+    setTimeout(function() {
+        mascot.classList.remove('chef-worried');
+        if (eyesError && pupilLeft && pupilRight) {
+            eyesError.style.display = 'none';
+            pupilLeft.style.display = 'block';
+            pupilRight.style.display = 'block';
+        }
+    }, 1600);
+}
+
+function triggerChefSuccess() {
+    var mascot = document.getElementById('chefMascotContainer');
+    var eyeHappyLeft = document.getElementById('eyeHappyLeft');
+    var eyeHappyRight = document.getElementById('eyeHappyRight');
+    var pupilLeft = document.getElementById('chefPupilLeft');
+    var pupilRight = document.getElementById('chefPupilRight');
+
+    if (!mascot) return;
+
+    mascot.classList.add('chef-celebrating');
+    setChefBubble('¡Excelente! Bienvenido a Saborator 🍽️🎉', 4000);
+
+    if (eyeHappyLeft && eyeHappyRight && pupilLeft && pupilRight) {
+        eyeHappyLeft.style.display = 'block';
+        eyeHappyRight.style.display = 'block';
+        pupilLeft.style.display = 'none';
+        pupilRight.style.display = 'none';
+    }
+}
+
+// ── CELEBRACIÓN Y EFECTO DE ÉXITO CON PARTICULAS ────────────────────────────
+function triggerAuthCelebration(btn, text, callback) {
+    if (btn) {
+        btn.disabled = true;
+        btn.classList.add('btn-success-state');
+        btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" style="display:inline-block;vertical-align:middle;margin-right:6px;"><polyline points="20 6 9 17 4 12"/></svg> <span>' + text + '</span>';
+    }
+
+    var burstCanvas = document.getElementById('authBurstCanvas');
+    if (!burstCanvas) {
+        setTimeout(callback, 260);
+        return;
+    }
+
+    var bCtx = burstCanvas.getContext('2d');
+    var w = burstCanvas.width = window.innerWidth;
+    var h = burstCanvas.height = window.innerHeight;
+
+    var btnRect = btn ? btn.getBoundingClientRect() : { left: w / 2, top: h / 2, width: 0, height: 0 };
+    var originX = btnRect.left + btnRect.width / 2;
+    var originY = btnRect.top + btnRect.height / 2;
+
+    var particles = [];
+    var particleCount = 65;
+    var colors = ['#D4AF37', '#C8973A', '#6B1E2E', '#10B981', '#FAF6F0', '#E5DCB8'];
+
+    for (var i = 0; i < particleCount; i++) {
+        var angle = (Math.PI * 2 * (i / particleCount)) + (Math.random() - 0.5) * 0.4;
+        var speed = Math.random() * 8 + 3;
+        particles.push({
+            x: originX,
+            y: originY,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - Math.random() * 4,
+            size: Math.random() * 4 + 2,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            alpha: 1,
+            decay: Math.random() * 0.025 + 0.015,
+            gravity: 0.18,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 12
+        });
+    }
+
+    var startTime = performance.now();
+    function animateBurst(now) {
+        var elapsed = now - startTime;
+        bCtx.clearRect(0, 0, w, h);
+
+        var alive = false;
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+            if (p.alpha <= 0.01) continue;
+            alive = true;
+
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += p.gravity;
+            p.alpha -= p.decay;
+            p.rotation += p.rotSpeed;
+
+            bCtx.save();
+            bCtx.translate(p.x, p.y);
+            bCtx.rotate((p.rotation * Math.PI) / 180);
+            bCtx.globalAlpha = Math.max(0, p.alpha);
+            bCtx.fillStyle = p.color;
+            bCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.4);
+            bCtx.restore();
+        }
+
+        if (alive && elapsed < 800) {
+            requestAnimationFrame(animateBurst);
+        } else {
+            bCtx.clearRect(0, 0, w, h);
+        }
+    }
+
+    requestAnimationFrame(animateBurst);
+    setTimeout(callback, 280);
+}
+
+// ── INTERACCIÓN 3D DE LA TARJETA CON EL CURSOR Y SPOTLIGHT DINÁMICO ─────────
+(function initCardTiltAndCursor() {
+    var card = document.getElementById('authFormCard');
+    if (!card) return;
+
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    var ticking = false;
+    var mouseX = 0, mouseY = 0;
+
+    window.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+        if (!ticking) {
+            requestAnimationFrame(function() {
+                var rect = card.getBoundingClientRect();
+                var relX = mouseX - rect.left;
+                var relY = mouseY - rect.top;
+                card.style.setProperty('--mouse-x', relX + 'px');
+                card.style.setProperty('--mouse-y', relY + 'px');
+                card.style.setProperty('--mouse-active', '1');
+
+                var cardCenterX = rect.left + rect.width / 2;
+                var cardCenterY = rect.top + rect.height / 2;
+                var normX = (mouseX - cardCenterX) / (window.innerWidth / 2);
+                var normY = (mouseY - cardCenterY) / (window.innerHeight / 2);
+
+                normX = Math.max(-1, Math.min(1, normX));
+                normY = Math.max(-1, Math.min(1, normY));
+
+                var rotateX = (-normY * 4.8).toFixed(2);
+                var rotateY = (normX * 4.8).toFixed(2);
+
+                card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    window.addEventListener('mouseleave', function() {
+        card.style.setProperty('--mouse-active', '0');
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    });
+})();
+
+// ── MUÑECO INTERACTIVO: SEGUIMIENTO DE MIRADA, MANOS Y REACCIONES ───────────
+(function initChefMascot() {
+    var mascot = document.getElementById('chefMascotContainer');
+    var svg = document.getElementById('chefMascotSvg');
+    var pupilLeft = document.getElementById('chefPupilLeft');
+    var pupilRight = document.getElementById('chefPupilRight');
+    var headGroup = document.getElementById('chefHeadGroup');
+
+    if (!mascot || !svg || !pupilLeft || !pupilRight) return;
+
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Seguimiento del cursor con los ojos y ligera inclinación de cabeza
+    var eyeTicking = false;
+    window.addEventListener('mousemove', function(e) {
+        if (prefersReduced) return;
+        if (mascot.classList.contains('chef-cover-eyes')) return;
+
+        if (!eyeTicking) {
+            requestAnimationFrame(function() {
+                var rect = svg.getBoundingClientRect();
+
+                // Centro aproximado de los ojos del chef en el viewport
+                var leftEyeX = rect.left + (rect.width * (88 / 220));
+                var leftEyeY = rect.top + (rect.height * (108 / 200));
+
+                var rightEyeX = rect.left + (rect.width * (132 / 220));
+                var rightEyeY = rect.top + (rect.height * (108 / 200));
+
+                // Ojo izquierdo
+                var dxL = e.clientX - leftEyeX;
+                var dyL = e.clientY - leftEyeY;
+                var distL = Math.sqrt(dxL * dxL + dyL * dyL);
+                var angleL = Math.atan2(dyL, dxL);
+                var offsetL = Math.min(distL * 0.04, 5.5);
+
+                pupilLeft.style.transform = 'translate(' + (Math.cos(angleL) * offsetL).toFixed(2) + 'px, ' + (Math.sin(angleL) * offsetL).toFixed(2) + 'px)';
+
+                // Ojo derecho
+                var dxR = e.clientX - rightEyeX;
+                var dyR = e.clientY - rightEyeY;
+                var distR = Math.sqrt(dxR * dxR + dyR * dyR);
+                var angleR = Math.atan2(dyR, dxR);
+                var offsetR = Math.min(distR * 0.04, 5.5);
+
+                pupilRight.style.transform = 'translate(' + (Math.cos(angleR) * offsetR).toFixed(2) + 'px, ' + (Math.sin(angleR) * offsetR).toFixed(2) + 'px)';
+
+                // Suave inclinación de cabeza hacia el cursor
+                if (headGroup && !mascot.classList.contains('chef-looking-down')) {
+                    var normX = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
+                    headGroup.style.transform = 'rotate(' + (normX * 2.8).toFixed(2) + 'deg)';
+                }
+
+                eyeTicking = false;
+            });
+            eyeTicking = true;
+        }
+    });
+
+    // Reacción a campos de entrada de texto (el chef mira hacia abajo como anotando orden)
+    var textInputs = document.querySelectorAll('#txtUsuarioLogin, #regNombreCompleto, #regTipoDoc, #regDocumento, #regFechaNac, #regTelefono, #regCorreo, #regUsuario');
+    textInputs.forEach(function(inp) {
+        inp.addEventListener('focus', function() {
+            if (mascot.classList.contains('chef-cover-eyes')) return;
+            mascot.classList.add('chef-looking-down');
+
+            // Mirada hacia abajo fija en el formulario
+            pupilLeft.style.transform = 'translate(0px, 4.5px)';
+            pupilRight.style.transform = 'translate(0px, 4.5px)';
+
+            if (inp.id === 'txtUsuarioLogin' || inp.id === 'regUsuario') {
+                setChefBubble('¿Cuál es tu usuario de comensal? 🧐');
+            } else if (inp.id === 'regNombreCompleto') {
+                setChefBubble('¡Un gusto! ¿Cómo te llamas? 👨‍🍳');
+            } else if (inp.id === 'regFechaNac') {
+                setChefBubble('Recuerda: Solo mayores de 18 años 🔞');
+            } else if (inp.id === 'regCorreo') {
+                setChefBubble('Te enviaremos la confirmación aquí ✉️');
+            } else {
+                setChefBubble('Anotando tu pedido con atención ✍️');
+            }
+        });
+
+        inp.addEventListener('blur', function() {
+            mascot.classList.remove('chef-looking-down');
+            pupilLeft.style.transform = 'translate(0px, 0px)';
+            pupilRight.style.transform = 'translate(0px, 0px)';
+        });
+    });
+
+    // Reacción a campos de contraseña (el chef se tapa los ojos con las manos)
+    var passwordInputs = document.querySelectorAll('#pwdLogin, #pwdReg, #pwdRegConf');
+    passwordInputs.forEach(function(pInput) {
+        pInput.addEventListener('focus', function() {
+            mascot.classList.remove('chef-looking-down');
+            mascot.classList.add('chef-cover-eyes');
+
+            if (pInput.type === 'text') {
+                mascot.classList.add('chef-peeking');
+                setChefBubble('¡Ajá! Te vi mostrando tu contraseña 👀');
+            } else {
+                mascot.classList.remove('chef-peeking');
+                setChefBubble('¡Shhh! ¡No miro tu contraseña secreta! 🙈');
+            }
+        });
+
+        pInput.addEventListener('blur', function() {
+            mascot.classList.remove('chef-cover-eyes');
+            mascot.classList.remove('chef-peeking');
+            setChefBubble('¡Tus datos están protegidos! 🛡️', 2500);
+        });
+    });
+
+    // Clic en la mascota: frases gourmet y guiño juguetón
+    var chefQuotes = [
+        '¡Las mejores hamburguesas de autor están aquí! 🍔',
+        '¡El secreto es el amor y la sazón de alta cocina! ✨',
+        '¡Bienvenido a Saborator! Tu mesa te espera 🍽️',
+        '¡Cada platillo preparado al instante con pasión! 👨‍🍳'
+    ];
+    var quoteIdx = 0;
+
+    svg.addEventListener('click', function() {
+        quoteIdx = (quoteIdx + 1) % chefQuotes.length;
+        setChefBubble(chefQuotes[quoteIdx], 3500);
+
+        // Micro rebote
+        svg.style.transform = 'scale(1.08) translateY(-6px)';
+        setTimeout(function() {
+            svg.style.transform = '';
+        }, 220);
+    });
+})();
+
+// ── AUTO-SACUDIDA Y REACCIÓN SI EL SERVIDOR DEVUELVE ERROR ───────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    @if (ViewBag.Error != null || ViewBag.ErrorRegistro != null)
+    {
+        <text>
+        setTimeout(function() {
+            var card = document.getElementById('authFormCard');
+            if (card) {
+                card.classList.remove('shake-error');
+                void card.offsetWidth;
+                card.classList.add('shake-error');
+                setTimeout(function() { card.classList.remove('shake-error'); }, 480);
+            }
+            triggerChefError('Hubo un error con tus credenciales');
+        }, 120);
+        </text>
+    }
+});
+
+// ── MODAL DE RECUPERACIÓN CON ESCAPE Y BACKDROP CLICK ────────────────────────
+function abrirModalRecuperar() {
+    var m = document.getElementById('recModal');
+    if (!m) return;
+    m.classList.add('show');
+    setTimeout(function() {
+        var inp = document.getElementById('txtRecUsuario');
+        if (inp) inp.focus();
+    }, 150);
+}
+
+function cerrarModalRecuperar() {
+    var m = document.getElementById('recModal');
+    if (m) m.classList.remove('show');
+}
+
+function handleModalBackdropClick(e) {
+    if (e.target && e.target.id === 'recModal') {
+        cerrarModalRecuperar();
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModalRecuperar();
+    }
+});
+</script>
+}

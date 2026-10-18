@@ -1,0 +1,106 @@
+@model List<ControlClientesRestaurante.Models.Reserva>
+@{
+    ViewData["Title"] = "Mis Reservas — Saborator";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
+
+<div class="reserva-page">
+
+
+
+    <div style="max-width:980px;margin:2.5rem auto 4rem;padding:0 1.5rem;">
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <h1 style="font-family:var(--font-serif);font-size:2.4rem;font-weight:400;margin:0 0 0.35rem;color:var(--brand, #6B1E2E);">
+                    Mis Reservas <em style="color:var(--gold, #C8973A);">Gastronómicas</em>
+                </h1>
+                <p style="color:var(--muted, #6E5C50);font-size:0.92rem;margin:0;">
+                    Historial de veladas y mesas reservadas en Saborator.
+                </p>
+            </div>
+            <a asp-controller="Reserva" asp-action="Nueva" class="btn-gold" style="text-decoration:none;padding:0.65rem 1.25rem;">
+                + Nueva Reserva
+            </a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="mis-reservas-empty" style="text-align:center;padding:4rem 2rem;background:var(--surface, #FFFDF9);border:1.5px dashed var(--line, #E2D7C8);border-radius:18px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gold, #C8973A)" stroke-width="1.5" style="margin-bottom:1rem;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <h3 style="font-family:var(--font-serif);font-size:1.5rem;color:var(--brand, #6B1E2E);margin-bottom:0.5rem;">Aún no tienes reservas</h3>
+                <p style="color:var(--muted, #6E5C50);font-size:0.88rem;max-width:420px;margin:0 auto 1.5rem;">
+                    Elige tu fecha preferida, consulta la disponibilidad de nuestras 30 mesas y asegura tu velada gastronómica.
+                </p>
+                <a asp-controller="Reserva" asp-action="Nueva" class="btn-gold" style="text-decoration:none;">
+                    Reservar una Mesa Ahora
+                </a>
+            </div>
+        }
+        else
+        {
+            <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(300px, 100%), 1fr));gap:1.5rem;">
+                @foreach (var r in Model)
+                {
+                    <div class="mis-reserva-card" style="background:var(--surface, #FFFDF9);color:var(--text, #1C1416);border:1px solid var(--line, #E2D7C8);border-radius:16px;padding:1.5rem;box-shadow:0 8px 24px rgba(0,0,0,0.06);position:relative;">
+                        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:1rem;">
+                            <div>
+                                <span style="font-family:'Geist Mono';font-size:0.85rem;font-weight:700;color:var(--brand);background:rgba(107,30,46,0.08);padding:0.2rem 0.5rem;border-radius:6px;">
+                                    @r.Codigo
+                                </span>
+                                <h3 style="font-family:var(--font-serif);font-size:1.4rem;margin:0.5rem 0 0;color:var(--text, #1C1416);">
+                                    Mesa #@r.NumeroMesa
+                                </h3>
+                            </div>
+                            <span class="estado-pill @(r.Estado.ToLower())" style="font-size:0.75rem;">
+                                @r.Estado
+                            </span>
+                        </div>
+
+                        <div style="font-size:0.85rem;display:flex;flex-direction:column;gap:0.45rem;margin-bottom:1.25rem;color:var(--muted, #5E5357);">
+                            <div><strong>Fecha:</strong> @r.Fecha.ToString("dd/MM/yyyy")</div>
+                            <div><strong>Horario:</strong> @r.Hora</div>
+                            <div><strong>Personas:</strong> @r.NumeroPersonas comensales</div>
+                            @if (!string.IsNullOrEmpty(r.Notas))
+                            {
+                                <div style="font-style:italic;color:var(--muted);">“@r.Notas”</div>
+                            }
+                        </div>
+
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px dashed var(--line, #E2D7C8);">
+                            <a asp-controller="Reserva" asp-action="Confirmacion" asp-route-id="@r.Id" style="font-size:0.82rem;font-weight:600;color:var(--brand);text-decoration:none;">
+                                Ver Boleto &rarr;
+                            </a>
+
+                            @if (r.Estado == "Confirmada" && r.Fecha.Date >= DateTime.Today)
+                            {
+                                <form asp-controller="Reserva" asp-action="Cancelar" method="post" style="margin:0;" onsubmit="return confirm('¿Seguro que deseas cancelar esta reserva?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" style="background:none;border:none;color:#DC2626;font-size:0.8rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;">
+                                        Cancelar
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<style>
+    [data-theme="dark"] .mis-reservas-empty,
+    [data-theme="dark"] .mis-reserva-card {
+        background: #1A070D !important;
+        border-color: rgba(200, 151, 58, 0.3) !important;
+    }
+    [data-theme="dark"] h1 {
+        color: #FFFDF9 !important;
+    }
+</style>

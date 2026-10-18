@@ -1,0 +1,466 @@
+@model List<ControlClientesRestaurante.Models.Pedido>
+@{
+    ViewData["Title"] = "Panel de Domicilios & Envíos — Saborator";
+    int pendientes = Model.Count(p => p.Estado == "Pendiente");
+    int enCocina = Model.Count(p => p.Estado == "EnPreparacion");
+    int enCamino = Model.Count(p => p.Estado == "EnCamino");
+    int entregados = Model.Count(p => p.Estado == "Listo" || p.Estado == "Entregado");
+}
+
+<div class="pg-header">
+    <div class="pg-icon">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+    </div>
+    <div>
+        <div class="pg-title">Despacho de Domicilios &amp; Para Llevar</div>
+        <div class="pg-sub" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;">
+            <span class="pg-sub-pill"><span class="txt-err">@pendientes por aceptar</span></span>
+            <span class="pg-sub-pill" style="color:#B45309;"><span style="color:#F59E0B;">●</span> @enCocina en cocina</span>
+            <span class="pg-sub-pill" style="color:#0369A1;"><span style="color:#0EA5E9;">●</span> @enCamino en camino</span>
+            <span class="pg-sub-pill"><span class="txt-ok">@entregados entregados</span></span>
+        </div>
+    </div>
+</div>
+<hr class="div-gold" />
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alerta alerta-ok" style="margin-bottom:1.25rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>@TempData["Mensaje"]</span>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alerta alerta-err" style="margin-bottom:1.25rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="tbl-empty" style="padding:3rem 1.5rem;text-align:center;">
+        <p style="font-size:1.1rem;font-weight:600;margin:0 0 0.5rem;">No hay pedidos de domicilio o para llevar registrados.</p>
+        <p style="color:var(--muted);font-size:0.9rem;margin:0;">Los nuevos pedidos de la tienda online aparecerán aquí en tiempo real.</p>
+    </div>
+}
+else
+{
+    <div class="domicilios-cards-grid">
+        @foreach (var p in Model)
+        {
+            string estadoClase = p.Estado switch
+            {
+                "Pendiente" => "st-pendiente",
+                "EnPreparacion" => "st-cocina",
+                "EnCamino" => "st-camino",
+                "Listo" or "Entregado" => "st-entregado",
+                "Facturado" => "st-facturado",
+                _ => ""
+            };
+
+            string estadoTexto = p.Estado switch
+            {
+                "Pendiente" => "Por Aceptar",
+                "EnPreparacion" => "En Cocina",
+                "EnCamino" => "En Camino",
+                "Listo" or "Entregado" => "Entregado",
+                "Facturado" => "Facturado",
+                "Cancelado" => "Cancelado",
+                _ => p.Estado
+            };
+
+            <div class="dom-card @estadoClase">
+                <div class="dom-card-header">
+                    <div class="dom-id-wrap">
+                        <span class="dom-code">@p.Numero</span>
+                        <span class="dom-type-pill @(p.TipoEntrega == "Domicilio" ? "pill-dom" : "pill-llevar")">
+                            @if (p.TipoEntrega == "Domicilio") {
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px;"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                                <text>Domicilio</text>
+                            } else {
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                <text>Para Llevar</text>
+                            }
+                        </span>
+                    </div>
+                    <span class="badge-estado @estadoClase">@estadoTexto</span>
+                </div>
+
+                <div class="dom-card-body">
+                    <!-- Cliente & Contacto -->
+                    <div class="dom-info-row">
+                        <strong>@p.NombreCliente</strong>
+                        <a href="tel:@p.Telefono" class="dom-phone-link">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            @p.Telefono
+                        </a>
+                    </div>
+
+                    @if (p.TipoEntrega == "Domicilio")
+                    {
+                        <div class="dom-address-box">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <div style="flex:1;">
+                                <div class="dom-address">@p.Direccion</div>
+                                @if (!string.IsNullOrEmpty(p.Barrio))
+                                {
+                                    <div class="dom-barrio">Barrio: @p.Barrio</div>
+                                }
+                            </div>
+                            <a href="https://www.google.com/maps/dir/?api=1&origin=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&destination=@Uri.EscapeDataString($"{p.Direccion}, {p.Barrio}, Barranquilla")" 
+                               target="_blank" rel="noopener noreferrer" 
+                               title="Abrir ruta GPS en Google Maps" 
+                               style="padding:0.35rem 0.6rem;background:#FFFDF9;border:1px solid #C8973A;border-radius:6px;font-size:0.75rem;font-weight:700;color:#C8973A;text-decoration:none;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span>Ruta Maps</span>
+                            </a>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(p.Notas))
+                    {
+                        <div class="dom-notes-box">
+                            <strong>Nota:</strong> @p.Notas
+                        </div>
+                    }
+
+                    <!-- Lista de platos -->
+                    <div class="dom-dishes-box">
+                        @foreach (var l in p.Lineas)
+                        {
+                            <div class="dom-dish-row">
+                                <span><strong>@(l.Cantidad)x</strong> @l.NombreProducto</span>
+                                <span>$@((l.PrecioUnitario * l.Cantidad).ToString("N0"))</span>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Fila de Costo de Envío y Ajuste Rápido para Cajero -->
+                    @if (p.TipoEntrega == "Domicilio")
+                    {
+                        <div class="dom-fee-control-box" id="boxTarifa_@p.Id">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                                <span style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">
+                                    Tarifa Envío:
+                                </span>
+                                <strong id="lblFee_@p.Id" style="color:var(--brand);font-size:0.88rem;">$@p.CostoEnvio.ToString("N0") COP</strong>
+                            </div>
+
+                            <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+                                <input type="number" id="inpFee_@p.Id" value="@((int)p.CostoEnvio)" min="0" step="500" 
+                                       style="width:75px;padding:3px 6px;font-size:0.8rem;border:1px solid #E2D7C8;border-radius:6px;font-weight:700;color:var(--brand);outline:none;" />
+                                
+                                <button type="button" onclick="guardarTarifaDomicilio(@p.Id)" title="Guardar valor personalizado"
+                                        style="background:var(--brand);color:#FFF;border:none;border-radius:6px;padding:4px 8px;font-size:0.75rem;font-weight:700;cursor:pointer;">
+                                    Guardar
+                                </button>
+
+                                <div style="display:inline-flex;gap:3px;">
+                                    <button type="button" class="btn-micro-chip" title="Cortesía" onclick="aplicarTarifaRapida(@p.Id, 0)">$0</button>
+                                    <button type="button" class="btn-micro-chip" title="Sur ($4k)" onclick="aplicarTarifaRapida(@p.Id, 4000)">$4k</button>
+                                    <button type="button" class="btn-micro-chip" title="Centro ($6k)" onclick="aplicarTarifaRapida(@p.Id, 6000)">$6k</button>
+                                    <button type="button" class="btn-micro-chip" title="Norte ($9k)" onclick="aplicarTarifaRapida(@p.Id, 9000)">$9k</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="dom-total-row">
+                        <span>Pago: <strong>@p.MetodoPago @(p.PagaCon.HasValue ? $"(Paga con ${p.PagaCon.Value:N0})" : "")</strong></span>
+                        <span class="dom-total-val" id="lblTotal_@p.Id">$@p.Total.ToString("N0") COP</span>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción de Estado -->
+                <div class="dom-card-actions">
+                    @if (p.Estado == "Pendiente")
+                    {
+                        <form asp-action="ActualizarEstadoDomicilio" method="post" style="flex:1;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <input type="hidden" name="nuevoEstado" value="EnPreparacion" />
+                            <button type="submit" class="btn-action btn-cocina">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+                                <span>Aceptar &amp; Cocinar</span>
+                            </button>
+                        </form>
+                    }
+                    else if (p.Estado == "EnPreparacion")
+                    {
+                        <form asp-action="ActualizarEstadoDomicilio" method="post" style="flex:1;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <input type="hidden" name="nuevoEstado" value="EnCamino" />
+                            <button type="submit" class="btn-action btn-camino">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                                <span>Despachar Repartidor</span>
+                            </button>
+                        </form>
+                    }
+                    else if (p.Estado == "EnCamino")
+                    {
+                        <form asp-action="ActualizarEstadoDomicilio" method="post" style="flex:1;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <input type="hidden" name="nuevoEstado" value="Entregado" />
+                            <button type="submit" class="btn-action btn-entregar">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Marcar Entregado</span>
+                            </button>
+                        </form>
+                    }
+                    else if (p.Estado == "Listo" || p.Estado == "Entregado")
+                    {
+                        <a asp-controller="Factura" asp-action="FacturarPedido" asp-route-id="@p.Id" class="btn-action btn-facturar" title="Emitir Factura y Cobrar">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            <span>Cobrar Factura</span>
+                        </a>
+                    }
+
+                    <a asp-action="Seguimiento" asp-route-id="@p.Numero" target="_blank" class="btn-ver-tracker" title="Ver Tracker en vivo">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .domicilios-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    .dom-card {
+        background: var(--surface, #FFFDF9);
+        border: 1px solid var(--line, #E2D7C8);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+    .dom-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+    .dom-card.st-pendiente { border-left: 5px solid #EF4444; }
+    .dom-card.st-cocina    { border-left: 5px solid #F59E0B; }
+    .dom-card.st-camino    { border-left: 5px solid #0EA5E9; }
+    .dom-card.st-entregado { border-left: 5px solid #10B981; }
+
+    .dom-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.85rem;
+        border-bottom: 1px solid var(--line, #E2D7C8);
+        padding-bottom: 0.75rem;
+    }
+    .dom-id-wrap { display: flex; align-items: center; gap: 0.5rem; }
+    .dom-code { font-weight: 800; font-size: 1.05rem; color: var(--brand, #6B1E2E); }
+    .dom-type-pill {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+    }
+    .pill-dom { background: rgba(107, 30, 46, 0.1); color: var(--brand, #6B1E2E); }
+    .pill-llevar { background: rgba(200, 151, 58, 0.15); color: #B45309; }
+
+    .badge-estado {
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .badge-estado.st-pendiente { background: #FEE2E2; color: #991B1B; }
+    .badge-estado.st-cocina    { background: #FEF3C7; color: #92400E; }
+    .badge-estado.st-camino    { background: #E0F2FE; color: #075985; }
+    .badge-estado.st-entregado { background: #D1FAE5; color: #065F46; }
+
+    .dom-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.92rem;
+        margin-bottom: 0.5rem;
+    }
+    .dom-phone-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: var(--brand, #6B1E2E);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .dom-address-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.45rem;
+        background: #FAF6F0;
+        padding: 0.55rem 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.65rem;
+        font-size: 0.84rem;
+        color: #3C2A20;
+    }
+    .dom-address-box svg { color: var(--brand, #6B1E2E); margin-top: 2px; flex-shrink: 0; }
+    .dom-address { font-weight: 600; }
+    .dom-barrio { font-size: 0.75rem; color: var(--muted, #6E5C50); }
+
+    .dom-notes-box {
+        font-size: 0.8rem;
+        color: #6E5C50;
+        background: #FFFBEB;
+        border: 1px dashed #FDE68A;
+        padding: 0.4rem 0.65rem;
+        border-radius: 6px;
+        margin-bottom: 0.65rem;
+    }
+
+    .dom-dishes-box {
+        border-top: 1px dashed var(--line, #E2D7C8);
+        border-bottom: 1px dashed var(--line, #E2D7C8);
+        padding: 0.65rem 0;
+        margin-bottom: 0.75rem;
+        max-height: 120px;
+        overflow-y: auto;
+    }
+    .dom-dish-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.84rem;
+        padding: 0.2rem 0;
+    }
+
+    .dom-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.88rem;
+        margin-bottom: 1rem;
+    }
+    .dom-total-val {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--brand, #6B1E2E);
+    }
+
+    .dom-card-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    .btn-action {
+        width: 100%;
+        padding: 0.65rem 0.85rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        transition: transform 120ms ease;
+    }
+    .btn-action:hover { transform: translateY(-1px); }
+    .btn-cocina   { background: #F59E0B; color: #FFF; }
+    .btn-camino   { background: #0EA5E9; color: #FFF; }
+    .btn-entregar { background: #10B981; color: #FFF; }
+
+    .btn-ver-tracker {
+        padding: 0.65rem;
+        border: 1px solid var(--line, #E2D7C8);
+        border-radius: 8px;
+        color: var(--muted, #6E5C50);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 120ms ease;
+    }
+    .btn-ver-tracker:hover {
+        background: var(--surface-2);
+        color: var(--brand);
+    }
+
+    .dom-fee-control-box {
+        background: rgba(200, 151, 58, 0.08);
+        border: 1px solid rgba(200, 151, 58, 0.3);
+        border-radius: 8px;
+        padding: 0.5rem 0.65rem;
+        margin-bottom: 0.75rem;
+    }
+    .btn-micro-chip {
+        background: #FFFDF9;
+        border: 1px solid #C8973A;
+        color: #6B1E2E;
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 120ms ease;
+    }
+    .btn-micro-chip:hover {
+        background: #C8973A;
+        color: #FFF;
+    }
+    .btn-facturar {
+        background: #6B1E2E;
+        color: #FFF;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        text-decoration: none;
+    }
+    .btn-facturar:hover {
+        background: #86273A;
+    }
+</style>
+
+<script>
+    async function guardarTarifaDomicilio(pedidoId) {
+        const inp = document.getElementById(`inpFee_${pedidoId}`);
+        if (!inp) return;
+        const tarifa = Math.max(0, parseInt(inp.value) || 0);
+
+        try {
+            const resp = await fetch('/Pedido/AsignarValorDomicilioApi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pedidoId: pedidoId, nuevoCostoEnvio: tarifa })
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                const lblFee = document.getElementById(`lblFee_${pedidoId}`);
+                if (lblFee) lblFee.textContent = `$${data.nuevoCostoEnvio.toLocaleString('es-CO')} COP`;
+
+                const lblTotal = document.getElementById(`lblTotal_${pedidoId}`);
+                if (lblTotal) lblTotal.textContent = `$${data.nuevoTotal.toLocaleString('es-CO')} COP`;
+
+                inp.style.borderColor = '#10B981';
+                setTimeout(() => { inp.style.borderColor = '#E2D7C8'; }, 1000);
+            } else {
+                alert(data.mensaje || 'Error al actualizar tarifa');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Error al comunicarse con el servidor');
+        }
+    }
+
+    function aplicarTarifaRapida(pedidoId, tarifa) {
+        const inp = document.getElementById(`inpFee_${pedidoId}`);
+        if (inp) inp.value = tarifa;
+        guardarTarifaDomicilio(pedidoId);
+    }
+</script>

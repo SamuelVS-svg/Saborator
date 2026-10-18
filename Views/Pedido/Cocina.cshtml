@@ -1,0 +1,784 @@
+@model List<ControlClientesRestaurante.Models.Pedido>
+@{
+    ViewData["Title"] = "Pantalla de Cocina (KDS) — Saborator";
+    var pedidosListos = ViewBag.PedidosListos as List<ControlClientesRestaurante.Models.Pedido> ?? new();
+    int pendientes = Model.Count(p => p.Estado == "Pendiente");
+    int enCoccion = Model.Count(p => p.Estado == "EnPreparacion");
+    int totalActivos = Model.Count;
+}
+
+<div class="kds-wrapper">
+
+    <!-- Header del KDS con métricas en tiempo real -->
+    <div class="kds-header">
+        <div class="kds-brand-block">
+            <div class="kds-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+            </div>
+            <div>
+                <h1 class="kds-title">Comandas de Cocina &amp; KDS</h1>
+                <div class="kds-sub">Estación del Chef &bull; Sistema de producción gastronómica en tiempo real</div>
+            </div>
+        </div>
+
+        <div class="kds-metrics">
+            <div class="kds-metric-pill metric-pendientes">
+                <span class="dot-live red"></span>
+                <span class="m-val" id="metricPendientes">@pendientes</span>
+                <span class="m-lbl">Por Iniciar</span>
+            </div>
+            <div class="kds-metric-pill metric-coccion">
+                <span class="dot-live amber"></span>
+                <span class="m-val" id="metricCoccion">@enCoccion</span>
+                <span class="m-lbl">En Fuego</span>
+            </div>
+            <div class="kds-metric-pill" id="kdsSignalRStatus" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.08);" title="Conexión WebSockets en tiempo real">
+                <span class="dot-live green" id="kdsSignalRDot" style="background:#10B981;"></span>
+                <span class="m-lbl" id="kdsSignalRText" style="color:#10B981;font-weight:700;">SignalR Activo</span>
+            </div>
+            <div class="kds-clock-box">
+                <span id="kdsClock">--:--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Filtros y Herramientas -->
+    <div class="kds-toolbar">
+        <div class="kds-filter-tabs">
+            <button type="button" class="kds-tab active" onclick="filtrarComandas('todas')">Todas Activas (@totalActivos)</button>
+            <button type="button" class="kds-tab" onclick="filtrarComandas('Pendiente')">Pendientes (@pendientes)</button>
+            <button type="button" class="kds-tab" onclick="filtrarComandas('EnPreparacion')">En Cocción (@enCoccion)</button>
+            <button type="button" class="kds-tab" onclick="filtrarComandas('Listos')">Despachadas Hoy (@pedidosListos.Count)</button>
+        </div>
+
+        <div class="kds-tools">
+            <a asp-action="Recetario" class="btn-recetario-link" title="Consultar recetas e ingredientes">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <span>Fichas Técnicas</span>
+            </a>
+            <button type="button" id="btnAudioToggle" class="btn-audio-toggle" onclick="toggleAudioChime()" title="Alerta sonora de comanda">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span>Sonido Activo</span>
+            </button>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alerta alerta-ok" style="margin-bottom:1rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>@TempData["Mensaje"]</span>
+        </div>
+    }
+
+    <!-- ══ CONTENEDOR DE COMANDAS ACTIVAS ═══════════════════════════ -->
+    <div id="seccionActivas">
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="kds-empty-state">
+                <div class="empty-chef-icon" style="color:var(--gold);display:flex;align-items:center;justify-content:center;">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+                </div>
+                <h2>¡Cocina al día! Sin comandas pendientes</h2>
+                <p>Todas las órdenes han sido despachadas. Nuevos pedidos de mesas o domicilios aparecerán aquí automáticamente.</p>
+            </div>
+        }
+        else
+        {
+            <div class="kds-tickets-grid" id="kdsTicketsGrid">
+                @foreach (var p in Model)
+                {
+                    int minutos = (int)(DateTime.Now - p.FechaCreacion).TotalMinutes;
+                    string tiempoClase = minutos switch
+                    {
+                        < 10 => "time-ok",
+                        < 20 => "time-warn",
+                        _ => "time-danger"
+                    };
+
+                    bool esPendiente = p.Estado == "Pendiente";
+                    bool esCoccion   = p.Estado == "EnPreparacion";
+
+                    <div class="kds-ticket-card @(esPendiente ? "card-pendiente" : "card-coccion")" data-estado="@p.Estado">
+                        
+                        <!-- Encabezado del Ticket -->
+                        <div class="ticket-header">
+                            <div>
+                                <div class="ticket-dest-wrap">
+                                    <span class="ticket-number">@p.Numero</span>
+                                    <span class="ticket-dest-badge @(p.TipoEntrega == "Domicilio" ? "dest-domicilio" : (p.TipoEntrega == "ParaLlevar" ? "dest-llevar" : "dest-mesa"))">
+                                        @if (p.TipoEntrega == "Domicilio") {
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px;"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                                            <text>Domicilio</text>
+                                        }
+                                        else if (p.TipoEntrega == "ParaLlevar") {
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                            <text>Llevar</text>
+                                        }
+                                        else {
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;vertical-align:-1px;"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+                                            <text>@p.Mesa</text>
+                                        }
+                                    </span>
+                                </div>
+                                <div class="ticket-client">@p.NombreCliente</div>
+                            </div>
+
+                            <div class="ticket-timer @tiempoClase">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>@(minutos)m</span>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Platos para Cocinar -->
+                        <div class="ticket-dishes-body">
+                            @foreach (var l in p.Lineas)
+                            {
+                                <div class="ticket-dish-item">
+                                    <div class="dish-qty-badge">@(l.Cantidad)x</div>
+                                    <div class="dish-info-block">
+                                        <div class="dish-name">@l.NombreProducto</div>
+                                        @if (!string.IsNullOrEmpty(l.Notas))
+                                        {
+                                            <div class="dish-instruction-alert">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px;vertical-align:-1px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                                @l.Notas
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(p.Notas))
+                        {
+                            <div class="ticket-general-note">
+                                <strong>Nota general:</strong> @p.Notas
+                            </div>
+                        }
+
+                        <!-- Botón de Acción del Cocinero -->
+                        <div class="ticket-actions">
+                            @if (esPendiente)
+                            {
+                                <form asp-action="CocinaCambiarEstado" method="post" style="width:100%;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <input type="hidden" name="nuevoEstado" value="EnPreparacion" />
+                                    <button type="submit" class="btn-ticket btn-start-cooking">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                                        <span>Iniciar Preparación</span>
+                                    </button>
+                                </form>
+                            }
+                            else if (esCoccion)
+                            {
+                                <form asp-action="CocinaCambiarEstado" method="post" style="width:100%;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <input type="hidden" name="nuevoEstado" value="Listo" />
+                                    <button type="submit" class="btn-ticket btn-mark-ready">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        <span>¡Comanda Lista! (Despachar)</span>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- ══ CONTENEDOR DE COMANDAS LISTAS / FINALIZADAS ═══════════════ -->
+    <div id="seccionListas" style="display:none;margin-top:1.5rem;">
+        <h3 style="color:#FFFDF9;font-size:1.2rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Comandas Despachadas Hoy</span>
+            <span style="font-size:0.85rem;color:var(--gold);font-weight:600;">(@pedidosListos.Count órdenes)</span>
+        </h3>
+
+        @if (pedidosListos.Count == 0)
+        {
+            <div class="kds-empty-state" style="padding:2rem;">
+                <p>Aún no se han despachado comandas en este turno.</p>
+            </div>
+        }
+        else
+        {
+            <div class="kds-tickets-grid">
+                @foreach (var pl in pedidosListos)
+                {
+                    <div class="kds-ticket-card card-despachada">
+                        <div class="ticket-header">
+                            <div>
+                                <span class="ticket-number">@pl.Numero</span>
+                                <span class="ticket-dest-badge dest-mesa">@pl.Mesa</span>
+                                <div class="ticket-client">@pl.NombreCliente</div>
+                            </div>
+                            <span class="badge-ready">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px;vertical-align:-1px;"><polyline points="20 6 9 17 4 12"/></svg>
+                                LISTO
+                            </span>
+                        </div>
+                        <div class="ticket-dishes-body" style="padding:0.75rem 0;">
+                            @foreach (var l in pl.Lineas)
+                            {
+                                <div style="display:flex;justify-content:space-between;font-size:0.86rem;padding:0.25rem 0;color:rgba(255,253,249,0.85);">
+                                    <span><strong>@(l.Cantidad)x</strong> @l.NombreProducto</span>
+                                </div>
+                            }
+                        </div>
+                        <div style="font-size:0.75rem;color:rgba(255,253,249,0.5);text-align:right;">
+                            Hora: @pl.FechaCreacion.ToString("hh:mm tt")
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+</div>
+
+<!-- Estilos Avanzados del KDS (Pantalla de Cocina) -->
+<style>
+    .kds-wrapper {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 1.5rem 1.25rem 5rem;
+    }
+
+    /* Header KDS */
+    .kds-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #18060A;
+        border: 1px solid rgba(200, 151, 58, 0.35);
+        border-radius: 18px;
+        padding: 1.25rem 1.75rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+    .kds-brand-block {
+        display: flex;
+        align-items: center;
+        gap: 0.95rem;
+    }
+    .kds-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--gold, #C8973A) 0%, #DFB460 100%);
+        color: #18060A;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .kds-title {
+        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-size: 2rem;
+        color: #FFFDF9;
+        margin: 0;
+        line-height: 1.1;
+    }
+    .kds-sub {
+        font-size: 0.82rem;
+        color: rgba(255, 253, 249, 0.65);
+    }
+
+    .kds-metrics {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex-wrap: wrap;
+    }
+    .kds-metric-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+    .metric-pendientes {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #F87171;
+    }
+    .metric-coccion {
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        color: #FBBF24;
+    }
+    .m-val { font-size: 1.15rem; font-weight: 800; color: #FFFDF9; }
+    .m-lbl { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .dot-live {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        animation: pulseLive 1.5s infinite;
+    }
+    .dot-live.red { background: #EF4444; box-shadow: 0 0 8px #EF4444; }
+    .dot-live.amber { background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+    @@keyframes pulseLive {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.5; }
+    }
+
+    .kds-clock-box {
+        background: rgba(255, 253, 249, 0.08);
+        border: 1px solid rgba(255, 253, 249, 0.15);
+        padding: 0.5rem 1.15rem;
+        border-radius: 999px;
+        color: var(--gold, #C8973A);
+        font-family: monospace;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* Toolbar de Cocina */
+    .kds-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .kds-filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .kds-tab {
+        background: var(--surface, #FFFDF9);
+        border: 1.5px solid var(--line, #E2D7C8);
+        padding: 0.55rem 1.15rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #3C2A20;
+        transition: all 140ms ease;
+    }
+    .kds-tab:hover {
+        border-color: var(--gold, #C8973A);
+    }
+    .kds-tab.active {
+        background: var(--brand, #6B1E2E);
+        border-color: var(--brand, #6B1E2E);
+        color: #FFFDF9;
+        box-shadow: 0 4px 12px rgba(107, 30, 46, 0.25);
+    }
+
+    .kds-tools { display: flex; gap: 0.65rem; align-items: center; }
+    .btn-recetario-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--surface, #FFFDF9);
+        border: 1.5px solid var(--gold, #C8973A);
+        color: var(--brand, #6B1E2E);
+        padding: 0.55rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 140ms ease;
+    }
+    .btn-recetario-link:hover {
+        background: var(--gold, #C8973A);
+        color: #18060A;
+    }
+    .btn-audio-toggle {
+        background: rgba(200, 151, 58, 0.15);
+        border: 1.5px solid var(--gold, #C8973A);
+        color: var(--brand, #6B1E2E);
+        padding: 0.55rem 0.95rem;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    /* Grid de Tickets de Cocina */
+    .kds-tickets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+        gap: 1.35rem;
+    }
+
+    /* Tarjeta de Comanda KDS */
+    .kds-ticket-card {
+        background: #18060A;
+        border-radius: 16px;
+        border: 2px solid rgba(255, 253, 249, 0.15);
+        color: #FFFDF9;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.35rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .kds-ticket-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+    }
+    .kds-ticket-card.card-pendiente {
+        border-color: #EF4444;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+    }
+    .kds-ticket-card.card-coccion {
+        border-color: #F59E0B;
+        box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+    }
+    .kds-ticket-card.card-despachada {
+        border-color: rgba(16, 185, 129, 0.4);
+        opacity: 0.85;
+    }
+
+    .ticket-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 1px solid rgba(255, 253, 249, 0.12);
+        padding-bottom: 0.85rem;
+        margin-bottom: 0.85rem;
+    }
+    .ticket-dest-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .ticket-number {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #FFFDF9;
+        font-family: monospace;
+    }
+    .ticket-dest-badge {
+        font-size: 0.76rem;
+        font-weight: 800;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .dest-mesa { background: rgba(200, 151, 58, 0.25); color: var(--gold, #C8973A); }
+    .dest-domicilio { background: rgba(239, 68, 68, 0.25); color: #FCA5A5; }
+    .dest-llevar { background: rgba(59, 130, 246, 0.25); color: #93C5FD; }
+
+    .ticket-client {
+        font-size: 0.85rem;
+        color: rgba(255, 253, 249, 0.7);
+        font-weight: 600;
+    }
+
+    .ticket-timer {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.3rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 800;
+    }
+    .time-ok { background: rgba(16, 185, 129, 0.2); color: #34D399; }
+    .time-warn { background: rgba(245, 158, 11, 0.25); color: #FBBF24; }
+    .time-danger { background: rgba(239, 68, 68, 0.3); color: #F87171; animation: pulseLive 1.2s infinite; }
+
+    /* Cuerpo con Platos */
+    .ticket-dishes-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.4rem 0;
+    }
+    .ticket-dish-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        background: rgba(255, 253, 249, 0.05);
+        padding: 0.65rem 0.75rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 253, 249, 0.06);
+    }
+    .dish-qty-badge {
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--gold, #C8973A);
+        min-width: 28px;
+    }
+    .dish-info-block { flex: 1; }
+    .dish-name {
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: #FFFDF9;
+        line-height: 1.2;
+    }
+    .dish-instruction-alert {
+        margin-top: 0.35rem;
+        background: #FEF3C7;
+        color: #92400E;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .ticket-general-note {
+        margin-top: 0.75rem;
+        padding: 0.45rem 0.65rem;
+        background: rgba(255, 253, 249, 0.06);
+        border-left: 3px solid var(--gold, #C8973A);
+        font-size: 0.8rem;
+        color: rgba(255, 253, 249, 0.8);
+        border-radius: 0 6px 6px 0;
+    }
+
+    /* Botones KDS */
+    .ticket-actions {
+        margin-top: 1.15rem;
+        padding-top: 0.85rem;
+        border-top: 1px solid rgba(255, 253, 249, 0.1);
+    }
+    .btn-ticket {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 800;
+        cursor: pointer;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: transform 120ms ease, box-shadow 140ms ease;
+    }
+    .btn-ticket:hover { transform: translateY(-1px); }
+    .btn-ticket:active { transform: scale(0.98); }
+
+    .btn-start-cooking {
+        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        color: #FFF;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    }
+    .btn-mark-ready {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        color: #FFF;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+    }
+
+    .badge-ready {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34D399;
+        font-weight: 800;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.65rem;
+        border-radius: 999px;
+    }
+
+    /* Empty state */
+    .kds-empty-state {
+        background: #18060A;
+        border: 1px solid rgba(200, 151, 58, 0.3);
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #FFFDF9;
+    }
+    .empty-chef-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .kds-empty-state h2 { font-family: var(--font-serif); font-size: 2.2rem; margin: 0 0 0.5rem; }
+    .kds-empty-state p { color: rgba(255, 253, 249, 0.6); max-width: 500px; margin: 0 auto; }
+</style>
+
+<!-- Script de SignalR en Tiempo Real y Reloj KDS -->
+<script src="~/lib/signalr/signalr.min.js"></script>
+<script>
+    let audioHabilitado = true;
+    let ultimoTotal = @totalActivos;
+
+    // Reloj digital en vivo
+    function actualizarReloj() {
+        const ahora = new Date();
+        const str = ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const el = document.getElementById('kdsClock');
+        if (el) el.textContent = str;
+    }
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
+
+    // Filtros de Comandas
+    function filtrarComandas(filtro) {
+        document.querySelectorAll('.kds-tab').forEach(t => t.classList.remove('active'));
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
+
+        if (filtro === 'Listos') {
+            document.getElementById('seccionActivas').style.display = 'none';
+            document.getElementById('seccionListas').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('seccionActivas').style.display = 'block';
+        document.getElementById('seccionListas').style.display = 'none';
+
+        const cards = document.querySelectorAll('.kds-ticket-card');
+        cards.forEach(card => {
+            const st = card.getAttribute('data-estado');
+            if (filtro === 'todas') {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = (st === filtro) ? 'flex' : 'none';
+            }
+        });
+    }
+
+    function toggleAudioChime() {
+        audioHabilitado = !audioHabilitado;
+        const btn = document.getElementById('btnAudioToggle');
+        btn.innerHTML = audioHabilitado 
+            ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> <span>Sonido Activo</span>'
+            : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/><line x1="1" y1="1" x2="23" y2="23"/></svg> <span>Sonido Mudo</span>';
+        btn.style.opacity = audioHabilitado ? '1' : '0.6';
+    }
+
+    // Sonido sintetizado de campana de cocina (AudioContext web sin archivo externo)
+    function playKitchenChime() {
+        if (!audioHabilitado) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(880, ctx.currentTime); // La5
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.6);
+        } catch(e) {}
+    }
+
+    // Toast flotante para eventos del KDS
+    function mostrarNotificacionKds(texto, tipo = 'info') {
+        const existente = document.getElementById('kdsToast');
+        if (existente) existente.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'kdsToast';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '24px';
+        toast.style.right = '24px';
+        toast.style.zIndex = '99999';
+        toast.style.padding = '12px 20px';
+        toast.style.borderRadius = '12px';
+        toast.style.fontSize = '0.9rem';
+        toast.style.fontWeight = '600';
+        toast.style.color = '#FFFDF9';
+        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+        toast.style.transition = 'opacity 300ms ease';
+        toast.style.background = tipo === 'success' 
+            ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
+            : 'linear-gradient(135deg, #C8973A 0%, #9B2C3B 100%)';
+        toast.textContent = texto;
+
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 400);
+        }, 3500);
+    }
+
+    // ── Conexión WebSockets SignalR con reconexión automática ──
+    if (typeof signalR !== 'undefined') {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/cocina")
+            .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+            .build();
+
+        connection.on("NuevaComanda", function (data) {
+            playKitchenChime();
+            mostrarNotificacionKds(`🔔 ¡Nueva comanda #${data.numero || ''} recibida!`, 'success');
+            // Refrescar para renderizar el ticket con su estructura completa
+            setTimeout(() => window.location.reload(), 900);
+        });
+
+        connection.on("ComandaActualizada", function (data) {
+            mostrarNotificacionKds(`⚡ Comanda #${data.numero || data.id} actualizada: ${data.nuevoEstado}`);
+            setTimeout(() => window.location.reload(), 900);
+        });
+
+        connection.onreconnecting(() => {
+            const dot = document.getElementById('kdsSignalRDot');
+            const lbl = document.getElementById('kdsSignalRText');
+            if (dot) dot.style.background = '#F59E0B';
+            if (lbl) { lbl.textContent = 'Reconectando...'; lbl.style.color = '#F59E0B'; }
+        });
+
+        connection.onreconnected(() => {
+            const dot = document.getElementById('kdsSignalRDot');
+            const lbl = document.getElementById('kdsSignalRText');
+            if (dot) dot.style.background = '#10B981';
+            if (lbl) { lbl.textContent = 'SignalR Activo'; lbl.style.color = '#10B981'; }
+            connection.invoke("UnirseACocina").catch(err => console.error(err));
+        });
+
+        connection.onclose(() => {
+            const dot = document.getElementById('kdsSignalRDot');
+            const lbl = document.getElementById('kdsSignalRText');
+            if (dot) dot.style.background = '#EF4444';
+            if (lbl) { lbl.textContent = 'Desconectado'; lbl.style.color = '#EF4444'; }
+        });
+
+        connection.start()
+            .then(function () {
+                console.log("[SignalR] Cocina conectada en tiempo real");
+                connection.invoke("UnirseACocina").catch(err => console.error(err));
+            })
+            .catch(function (err) {
+                console.warn("[SignalR] No se pudo conectar directamente, el respaldo de sondeo continuará:", err);
+                const dot = document.getElementById('kdsSignalRDot');
+                const lbl = document.getElementById('kdsSignalRText');
+                if (dot) dot.style.background = '#F59E0B';
+                if (lbl) { lbl.textContent = 'Modo Respaldo'; lbl.style.color = '#F59E0B'; }
+            });
+    }
+
+    // ── Sondeo de Respaldo por si hay desconexión o red lenta (cada 15s) ──
+    function pollKds() {
+        fetch('/Pedido/CocinaApi')
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    const elPend = document.getElementById('metricPendientes');
+                    const elCocc = document.getElementById('metricCoccion');
+                    if (elPend) elPend.textContent = data.pendientes;
+                    if (elCocc) elCocc.textContent = data.enPreparacion;
+
+                    if (data.total > ultimoTotal) {
+                        playKitchenChime();
+                        setTimeout(() => window.location.reload(), 800);
+                    }
+                    ultimoTotal = data.total;
+                }
+            })
+            .catch(err => console.log('KDS polling:', err));
+    }
+
+    setInterval(pollKds, 15000);
+</script>

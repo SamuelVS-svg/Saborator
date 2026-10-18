@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGradCoffee" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2C1A1D" />
+      <stop offset="100%" stop-color="#12080A" />
+    </linearGradient>
+    <linearGradient id="cremaCoffee" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4A373" />
+      <stop offset="50%" stop-color="#A98467" />
+      <stop offset="100%" stop-color="#6F4E37" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="60" fill="url(#bgGradCoffee)" />
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#D4A373" stroke-width="2.5" stroke-dasharray="3 3" opacity="0.6" />
+
+  <g transform="translate(28, 25)">
+    <!-- Vapores de aroma suave -->
+    <path d="M 24 16 Q 20 8 24 2 Q 28 -4 24 -10" fill="none" stroke="#D4A373" stroke-width="2" stroke-linecap="round" opacity="0.75" />
+    <path d="M 34 14 Q 38 7 34 0 Q 30 -6 34 -12" fill="none" stroke="#D4A373" stroke-width="2" stroke-linecap="round" opacity="0.75" />
+
+    <!-- Taza de Porcelana Fina -->
+    <path d="M 10 20 L 50 20 C 50 44, 44 54, 30 54 C 16 54, 10 44, 10 20 Z" fill="#FFFDF9" stroke="#E6DACE" stroke-width="2" />
+
+    <!-- Superficie Espresso Crema -->
+    <ellipse cx="30" cy="22" rx="18" ry="4" fill="url(#cremaCoffee)" />
+    <!-- Arte latte: corazón sutil -->
+    <path d="M 30 22 C 28 20, 25 21, 26 23 C 27 24, 30 26, 30 26 C 30 26, 33 24, 34 23 C 35 21, 32 20, 30 22 Z" fill="#FFFDF9" opacity="0.9" />
+
+    <!-- Asa de la taza -->
+    <path d="M 49 26 C 60 26, 60 42, 47 44" fill="none" stroke="#FFFDF9" stroke-width="4.5" stroke-linecap="round" />
+    <path d="M 49 26 C 60 26, 60 42, 47 44" fill="none" stroke="#E6DACE" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Platillo inferior -->
+    <path d="M 4 58 C 4 54, 56 54, 56 58 C 56 63, 4 63, 4 58 Z" fill="#FFFDF9" stroke="#E6DACE" stroke-width="1.8" />
+  </g>
+</svg>

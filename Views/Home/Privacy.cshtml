@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "Políticas de Privacidad & Tratamiento de Datos";
+    Layout = "_Layout";
+}
+
+<div class="legal-wrapper" style="max-width:980px;margin:2rem auto 4rem;padding:0 1.5rem;">
+    <!-- Encabezado de Privacidad -->
+    <div style="background:#FFFDF9;border:1px solid var(--line,#E3D8C8);border-radius:18px;padding:2rem 2.5rem;margin-bottom:2rem;box-shadow:0 4px 16px rgba(44,10,18,0.03);">
+        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(200,151,58,0.15);border:1px solid rgba(200,151,58,0.35);color:#92400E;padding:3px 10px;border-radius:999px;font-size:0.75rem;font-weight:800;text-transform:uppercase;margin-bottom:0.75rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Habeas Data · Ley 1581 de 2012</span>
+        </div>
+        <h1 style="font-family:var(--font-serif);font-size:2.4rem;font-weight:700;color:var(--brand,#6B1E2E);margin:0 0 0.5rem;letter-spacing:-0.02em;">
+            Política de Privacidad &amp; Protección de Datos
+        </h1>
+        <p style="color:#5E5357;font-size:0.95rem;line-height:1.6;margin:0;">
+            En <strong>Saborator Alta Cocina S.A.S.</strong> valoramos la confianza de nuestros comensales y garantizamos la seguridad, confidencialidad e integridad de la información que nos suministras al reservar mesa o solicitar pedidos a domicilio.
+        </p>
+    </div>
+
+    <!-- Contenido en Tarjetas Crema & Marfil -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div style="background:#FFFDF9;border:1px solid var(--line,#E3D8C8);border-radius:16px;padding:1.75rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+            <h3 style="font-size:1.15rem;font-weight:800;color:var(--brand,#6B1E2E);margin:0 0 0.75rem;">1. Responsable del Tratamiento</h3>
+            <p style="color:#4B5563;font-size:0.9rem;line-height:1.6;margin:0;">
+                Saborator Alta Cocina S.A.S., identificada con NIT registrado ante la DIAN, domiciliada en Carrera 4 Sur # 50D-107, Barranquilla, Atlántico, Colombia. Canales oficiales: <strong>contacto@saborator.com</strong> y línea WhatsApp Concierge <strong>+57 322 525 4289</strong>.
+            </p>
+        </div>
+
+        <div style="background:#FFFDF9;border:1px solid var(--line,#E3D8C8);border-radius:16px;padding:1.75rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+            <h3 style="font-size:1.15rem;font-weight:800;color:var(--brand,#6B1E2E);margin:0 0 0.75rem;">2. Finalidad de la Recolección de Datos</h3>
+            <ul style="color:#4B5563;font-size:0.9rem;line-height:1.7;margin:0;padding-left:1.25rem;">
+                <li>Gestionar turnos y confirmación de reservas en el salón exclusivo de 30 mesas.</li>
+                <li>Despachar órdenes a domicilio mediante georreferenciación y cálculo seguro de tarifa por zonas.</li>
+                <li>Procesar pagos electrónicos a través de la pasarela certificada Wompi (Bancolombia) sin almacenar números de tarjeta en nuestros servidores.</li>
+                <li>Enviar comprobantes electrónicos de facturación DIAN y bitácora de seguimiento.</li>
+            </ul>
+        </div>
+
+        <div style="background:#FFFDF9;border:1px solid var(--line,#E3D8C8);border-radius:16px;padding:1.75rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,0.02);">
+            <h3 style="font-size:1.15rem;font-weight:800;color:var(--brand,#6B1E2E);margin:0 0 0.75rem;">3. Derechos del Titular (Habeas Data)</h3>
+            <p style="color:#4B5563;font-size:0.9rem;line-height:1.6;margin:0;">
+                Tienes derecho en cualquier momento a conocer, actualizar, rectificar y suprimir tus datos personales mediante tu panel de comensal en <strong>Mi Perfil</strong> o remitiendo una solicitud a nuestro canal de soporte.
+            </p>
+        </div>
+
+        <div style="background:#FAF6F0;border:1px dashed var(--line,#E3D8C8);border-radius:16px;padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <strong style="color:var(--brand,#6B1E2E);font-size:0.95rem;display:block;">¿Deseas consultar todos los Términos y Condiciones?</strong>
+                <span style="color:#6B7280;font-size:0.82rem;">Revisa las políticas comerciales de pedidos y reservas en detalle.</span>
+            </div>
+            <a asp-controller="Home" asp-action="Terminos" class="btn-brand" style="text-decoration:none;">
+                Ver Términos &amp; Condiciones
+            </a>
+        </div>
+    </div>
+</div>

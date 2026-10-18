@@ -1,0 +1,534 @@
+@{
+    ViewData["Title"] = "Verifica tu Cuenta — Saborator";
+    Layout = "_Layout";
+    var email = (ViewBag.Email as string) ?? "";
+    var usuario = (ViewBag.Usuario as string) ?? "";
+    var telefono = (ViewBag.Telefono as string) ?? "";
+    var canal = (ViewBag.Canal as string) ?? "WhatsApp";
+}
+
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<style>
+    .otp-card {
+        text-align: center;
+        padding: 2.2rem 2rem;
+        position: relative;
+    }
+    .otp-header-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 1.25rem;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(200, 151, 58, 0.25));
+        border: 2px solid #25D366;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #25D366;
+        box-shadow: 0 0 25px rgba(37, 211, 102, 0.3);
+    }
+    .otp-channel-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.45rem 1.1rem;
+        background: rgba(37, 211, 102, 0.12);
+        border: 1px solid rgba(37, 211, 102, 0.35);
+        border-radius: 30px;
+        font-weight: 700;
+        color: #25D366;
+        font-size: 0.88rem;
+        margin-bottom: 0.75rem;
+    }
+    .otp-email-sub {
+        font-size: 0.82rem;
+        color: var(--color-text-muted);
+        margin-bottom: 1.5rem;
+        word-break: break-all;
+    }
+    .otp-inputs-wrap {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 1.6rem 0 1.25rem;
+    }
+    .otp-digit {
+        width: 52px;
+        height: 62px;
+        border-radius: 12px;
+        border: 2px solid var(--color-border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--color-accent);
+        font-size: 1.8rem;
+        font-weight: 800;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        outline: none;
+    }
+    .otp-digit:focus {
+        border-color: var(--color-accent);
+        background: rgba(200, 151, 58, 0.12);
+        box-shadow: 0 0 0 4px rgba(200, 151, 58, 0.22);
+        transform: translateY(-2px);
+    }
+    .otp-digit.filled {
+        border-color: #25D366;
+        background: rgba(37, 211, 102, 0.08);
+    }
+    .otp-timer {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.84rem;
+        color: var(--color-text-muted);
+        margin-bottom: 1.25rem;
+    }
+    .otp-timer strong {
+        color: var(--color-accent);
+        font-weight: 700;
+        font-family: monospace;
+        font-size: 0.95rem;
+    }
+    .otp-resend-grid {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 1.25rem;
+    }
+    .btn-resend {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border: 1px solid var(--color-border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--color-text);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-resend:hover {
+        background: rgba(200, 151, 58, 0.12);
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+    }
+    .btn-resend.whatsapp-resend:hover {
+        background: rgba(37, 211, 102, 0.12);
+        border-color: #25D366;
+        color: #25D366;
+    }
+    .shake-error {
+        animation: shake-error 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    @@keyframes shake-error {
+        10%, 90% { transform: translate3d(-2px, 0, 0); }
+        20%, 80% { transform: translate3d(4px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+        40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+    .otp-confetti-canvas {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+    }
+</style>
+
+<canvas id="otpBurstCanvas" class="otp-confetti-canvas"></canvas>
+
+<div class="login-center-wrapper" style="min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+
+    <!-- Fondo Culinario Animado (Fixed, nunca empuja la tarjeta hacia abajo) -->
+    <div class="gastro-bg" aria-hidden="true" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:0; overflow:hidden;">
+        <div class="gastro-gradient-mesh" style="position:absolute; inset:0;"></div>
+        <div class="gastro-radial-ember-glow" style="position:absolute; inset:0;"></div>
+        <canvas id="gastroEmbersCanvas" class="gastro-canvas" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;"></canvas>
+    </div>
+
+    <!-- Botón Regresar al Inicio -->
+    <a asp-controller="Home" asp-action="Index" class="gastro-back-pill" title="Regresar al inicio" aria-label="Volver a la carta principal">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        <span>Volver al inicio</span>
+    </a>
+
+    <!-- Tarjeta Central de Validación OTP -->
+    <main class="gastro-card-wrapper" role="main" style="max-width:540px;">
+        <div class="form-card otp-card" id="otpCard">
+
+            <!-- Icono Dinámico según Canal -->
+            <div class="otp-header-icon" id="otpHeaderIcon">
+                @if (canal == "SMS")
+                {
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                }
+                else
+                {
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                    </svg>
+                }
+            </div>
+
+            <h1 class="form-title" style="font-size:1.6rem; margin-bottom:0.4rem;">Ingresa tu código de verificación</h1>
+            <p class="form-sub" style="font-size:0.92rem; margin-bottom:0.75rem;">
+                Digita el código de 6 dígitos que te enviamos para activar tu cuenta:
+            </p>
+
+            <div class="otp-channel-badge" id="channelBadge">
+                <span>@(canal == "SMS" ? "📱 Código enviado por SMS al celular:" : "💬 Código enviado por WhatsApp al celular:")</span>
+                <strong>+57 @telefono</strong>
+            </div>
+
+            @if (!string.IsNullOrEmpty(email))
+            {
+                <div class="otp-email-sub">
+                    ✉️ También enviamos una copia a: <strong>@email</strong>
+                </div>
+            }
+
+            <!-- Mensajes de Estado en Vivo -->
+            <div id="otpFeedbackAlert" style="display:none; margin-bottom:1.2rem; text-align:left;"></div>
+
+            <!-- Fila Interactiva de 6 Dígitos -->
+            <div class="otp-inputs-wrap" id="otpInputsWrap">
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" class="otp-digit" data-idx="0" autocomplete="one-time-code" autofocus />
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" class="otp-digit" data-idx="1" />
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" class="otp-digit" data-idx="2" />
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" class="otp-digit" data-idx="3" />
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" class="otp-digit" data-idx="4" />
+                <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" class="otp-digit" data-idx="5" />
+            </div>
+
+            <input type="hidden" id="otpUsuarioId" value="@usuario" />
+
+            <!-- Contador de Expiración -->
+            <div class="otp-timer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Tu código expira en: <strong id="otpTimerDisplay">05:00</strong></span>
+            </div>
+
+            <!-- Indicador de Validación Automática -->
+            <div id="otpAutoStatus" style="display:none; align-items:center; justify-content:center; gap:8px; margin: 0.8rem 0 1.25rem; color: var(--gold-bright, #D4AF37); font-size:0.92rem; font-weight:600;">
+                <svg class="gastro-spinner-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 0.9s linear infinite;">
+                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                    <path d="M12 2a10 10 0 0 1 10 10"/>
+                </svg>
+                <span>Validando tu código automáticamente...</span>
+            </div>
+
+            <!-- Opciones para Reenviar Código por SMS o WhatsApp -->
+            <div style="border-top:1px solid var(--color-border); padding-top:1.25rem;">
+                <p style="font-size:0.82rem; color:var(--color-text-muted); margin-bottom:0.75rem;">
+                    ¿No te llegó el código o necesitas otro?
+                </p>
+                <div class="otp-resend-grid">
+                    <button type="button" class="btn-resend whatsapp-resend" onclick="solicitarReenvioOtp('whatsapp')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        <span>Reenviar por WhatsApp</span>
+                    </button>
+                    <button type="button" class="btn-resend" onclick="solicitarReenvioOtp('sms')">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <span>Reenviar por SMS</span>
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top:1.5rem;">
+                <a asp-action="Index" class="link-btn" style="font-size:0.82rem; color:var(--color-text-muted);">
+                    ← Volver a la pantalla de acceso
+                </a>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script src="~/js/intro.js" asp-append-version="true"></script>
+
+<script>
+    var otpInputs = document.querySelectorAll('.otp-digit');
+    var usuarioVal = document.getElementById('otpUsuarioId').value;
+    var isVerificando = false;
+    var segundosRestantes = 300; // 5 minutos
+    var timerInterval = null;
+
+    // ── GESTIÓN DE ENTRADA, AVANCE Y TECLAS DE LOS 6 DÍGITOS ──────────
+    otpInputs.forEach(function(input, index) {
+        input.addEventListener('input', function(e) {
+            var val = input.value.replace(/[^0-9]/g, '');
+            input.value = val ? val[0] : '';
+
+            if (input.value) {
+                input.classList.add('filled');
+                if (index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            } else {
+                input.classList.remove('filled');
+            }
+
+            // Comprobar si se completaron los 6 dígitos para validación automática
+            verificarSiCompletoYValidar();
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && !input.value && index > 0) {
+                otpInputs[index - 1].focus();
+                otpInputs[index - 1].value = '';
+                otpInputs[index - 1].classList.remove('filled');
+            }
+        });
+
+        // Soporte completo para Pegar (Paste)
+        input.addEventListener('paste', function(e) {
+            e.preventDefault();
+            var clipData = (e.clipboardData || window.clipboardData).getData('text');
+            var cleanDigits = clipData.replace(/[^0-9]/g, '');
+            if (cleanDigits.length >= 6) {
+                for (var i = 0; i < 6; i++) {
+                    if (otpInputs[i]) {
+                        otpInputs[i].value = cleanDigits[i];
+                        otpInputs[i].classList.add('filled');
+                    }
+                }
+                otpInputs[5].focus();
+                verificarSiCompletoYValidar();
+            }
+        });
+    });
+
+    function obtenerCodigoCompleto() {
+        var cod = '';
+        otpInputs.forEach(function(input) {
+            cod += (input.value || '').trim();
+        });
+        return cod;
+    }
+
+    function verificarSiCompletoYValidar() {
+        var cod = obtenerCodigoCompleto();
+        if (cod.length === 6 && !isVerificando) {
+            enviarCodigoOtp();
+        }
+    }
+
+    // ── ENVÍO Y VALIDACIÓN AUTOMÁTICA DEL CÓDIGO MEDIANTE AJAX ────────
+    async function enviarCodigoOtp() {
+        var codigo = obtenerCodigoCompleto();
+        if (codigo.length < 6) {
+            mostrarAlertaOtp('error', 'Por favor ingresa los 6 dígitos completos.');
+            return;
+        }
+
+        if (isVerificando) return;
+        isVerificando = true;
+
+        var autoStatus = document.getElementById('otpAutoStatus');
+        if (autoStatus) autoStatus.style.display = 'inline-flex';
+
+        // Deshabilitar temporalmente inputs mientras se valida
+        otpInputs.forEach(function(i) { i.disabled = true; });
+
+        try {
+            var response = await fetch('/Login/VerificarOtp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    usuario: usuarioVal,
+                    codigo: codigo
+                })
+            });
+
+            var res = await response.json();
+
+            if (res.ok) {
+                if (autoStatus) autoStatus.style.display = 'none';
+                mostrarAlertaOtp('success', '¡Código verificado con éxito! Cuenta activada. Entrando al restaurante...');
+                lanzarCelebracionOtp();
+                setTimeout(function() {
+                    window.location.href = res.redirectUrl || '/Pedido/Menu';
+                }, 1400);
+            } else {
+                if (autoStatus) autoStatus.style.display = 'none';
+                otpInputs.forEach(function(i) { i.disabled = false; });
+                mostrarAlertaOtp('error', res.mensaje || 'Código incorrecto o vencido.');
+                sacudirCajasOtp();
+                isVerificando = false;
+            }
+        } catch (err) {
+            if (autoStatus) autoStatus.style.display = 'none';
+            otpInputs.forEach(function(i) { i.disabled = false; });
+            mostrarAlertaOtp('error', 'Hubo un inconveniente de conexión. Intenta de nuevo.');
+            isVerificando = false;
+        }
+    }
+
+    // ── REENVÍO DEL CÓDIGO OTP ────────────────────────────────────────
+    async function solicitarReenvioOtp(canal) {
+        mostrarAlertaOtp('info', 'Reenviando nuevo código por ' + canal.toUpperCase() + '...');
+
+        try {
+            var response = await fetch('/Login/ReenviarOtp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    usuario: usuarioVal,
+                    canal: canal
+                })
+            });
+
+            var res = await response.json();
+
+            if (res.ok) {
+                mostrarAlertaOtp('success', res.mensaje);
+                segundosRestantes = res.expiraSegundos || 300;
+                limpiarCajasOtp();
+            } else {
+                mostrarAlertaOtp('error', res.mensaje || 'No se pudo reenviar el código.');
+            }
+        } catch (err) {
+            mostrarAlertaOtp('error', 'Error al solicitar el reenvío del código.');
+        }
+    }
+
+    function limpiarCajasOtp() {
+        otpInputs.forEach(function(i) {
+            i.value = '';
+            i.classList.remove('filled');
+        });
+        if (otpInputs[0]) otpInputs[0].focus();
+    }
+
+    function sacudirCajasOtp() {
+        var card = document.getElementById('otpCard');
+        if (card) {
+            card.classList.remove('shake-error');
+            void card.offsetWidth;
+            card.classList.add('shake-error');
+            setTimeout(function() {
+                card.classList.remove('shake-error');
+            }, 500);
+        }
+        limpiarCajasOtp();
+    }
+
+    function mostrarAlertaOtp(tipo, mensaje) {
+        var alertEl = document.getElementById('otpFeedbackAlert');
+        if (!alertEl) return;
+
+        alertEl.style.display = 'block';
+        if (tipo === 'success') {
+            alertEl.className = 'form-success';
+            alertEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span>' + mensaje + '</span>';
+        } else if (tipo === 'error') {
+            alertEl.className = 'form-error';
+            alertEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>' + mensaje + '</span>';
+        } else {
+            alertEl.className = 'form-card';
+            alertEl.style.padding = '0.75rem 1rem';
+            alertEl.style.background = 'rgba(200, 151, 58, 0.12)';
+            alertEl.style.border = '1px solid rgba(200, 151, 58, 0.35)';
+            alertEl.style.color = 'var(--color-accent)';
+            alertEl.innerHTML = '<span>' + mensaje + '</span>';
+        }
+    }
+
+    // ── TEMPORIZADOR REGRESIVO (5 MINUTOS) ─────────────────────────────
+    function iniciarTemporizador() {
+        var display = document.getElementById('otpTimerDisplay');
+        if (timerInterval) clearInterval(timerInterval);
+
+        timerInterval = setInterval(function() {
+            if (segundosRestantes <= 0) {
+                clearInterval(timerInterval);
+                if (display) display.textContent = 'Expirado';
+                mostrarAlertaOtp('error', 'El código ha expirado. Por favor solicita uno nuevo con los botones de abajo.');
+                return;
+            }
+
+            segundosRestantes--;
+            var mins = Math.floor(segundosRestantes / 60);
+            var secs = segundosRestantes % 60;
+            if (display) {
+                display.textContent = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+            }
+        }, 1000);
+    }
+
+    // ── CELEBRACIÓN DE ÉXITO CON PARTÍCULAS DORADAS Y BURGUNDY ──────────
+    function lanzarCelebracionOtp() {
+        var canvas = document.getElementById('otpBurstCanvas');
+        if (!canvas) return;
+
+        var ctx = canvas.getContext('2d');
+        var w = canvas.width = window.innerWidth;
+        var h = canvas.height = window.innerHeight;
+
+        var particles = [];
+        var count = 90;
+        var colors = ['#25D366', '#D4AF37', '#C8973A', '#FAF6F0', '#6B1E2E'];
+
+        for (var i = 0; i < count; i++) {
+            var angle = (Math.PI * 2 * (i / count)) + (Math.random() - 0.5) * 0.4;
+            var speed = Math.random() * 9 + 4;
+            particles.push({
+                x: w / 2,
+                y: h / 2,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed - Math.random() * 5,
+                size: Math.random() * 5 + 3,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                alpha: 1,
+                decay: Math.random() * 0.02 + 0.012,
+                gravity: 0.16,
+                rotation: Math.random() * 360,
+                rotSpeed: (Math.random() - 0.5) * 10
+            });
+        }
+
+        var startTime = performance.now();
+        function frame(now) {
+            ctx.clearRect(0, 0, w, h);
+            var alive = false;
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                if (p.alpha <= 0.01) continue;
+                alive = true;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += p.gravity;
+                p.alpha -= p.decay;
+                p.rotation += p.rotSpeed;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.globalAlpha = Math.max(0, p.alpha);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.4);
+                ctx.restore();
+            }
+            if (alive) {
+                requestAnimationFrame(frame);
+            } else {
+                ctx.clearRect(0, 0, w, h);
+            }
+        }
+        requestAnimationFrame(frame);
+    }
+
+    iniciarTemporizador();
+</script>

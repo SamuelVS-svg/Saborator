@@ -1,0 +1,203 @@
+@model ControlClientesRestaurante.Models.Cliente
+@{
+    ViewData["Title"] = "Editar cliente";
+    bool esCajero = (bool)(ViewBag.EsCajero ?? false);
+}
+
+<div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+    <div>
+        <div class="pg-title">Editar cliente</div>
+        <div class="pg-sub">
+            @if (esCajero)
+            { <span style="color:var(--color-brand);font-weight:600;">Cajero: puedes editar teléfono, dirección y correo</span> }
+            else
+            { <span>Modifica los datos del cliente</span> }
+        </div>
+    </div>
+</div>
+<hr class="div-gold" />
+
+<div style="display:flex;justify-content:center;">
+<div class="card-pro p-4" style="max-width:600px;width:100%;">
+    <form asp-action="Edit" method="post" id="formCliente" novalidate>
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Codigo" />
+        <div asp-validation-summary="All" class="alert-err" style="display:@(ViewData.ModelState.IsValid?"none":"block")"></div>
+
+        <!-- Nombre: readonly para cajero -->
+        <div class="mb-3">
+            <label class="lbl">Nombre completo @if(esCajero){<span style="color:var(--c-muted);text-transform:none;font-weight:400;">(no editable)</span>}</label>
+            @if (esCajero)
+            {
+                <input asp-for="Nombre" id="campoNombre" class="form-control" readonly />
+            }
+            else
+            {
+                <input asp-for="Nombre" id="campoNombre" class="form-control" />
+            }
+        </div>
+
+        <!-- Documento: readonly para cajero -->
+        <div class="mb-3">
+            <label class="lbl">Documento @if(esCajero){<span style="color:var(--c-muted);text-transform:none;font-weight:400;">(no editable)</span>}</label>
+            @if (esCajero)
+            {
+                <input type="text" class="form-control" value="@Model.Documento" readonly />
+                <input type="hidden" asp-for="Documento" id="Documento" />
+            }
+            else
+            {
+                <div class="d-flex gap-2 flex-wrap">
+                    <select id="tipoDoc" class="form-select" style="max-width:200px;flex:0 0 auto;">
+                        <option value="CC">Cédula ciudadanía</option>
+                        <option value="TI">Tarjeta identidad</option>
+                        <option value="CE">Cédula extranjería</option>
+                        <option value="PA">Pasaporte</option>
+                    </select>
+                    <input type="text" id="numDoc" class="form-control" style="flex:1;min-width:120px;"
+                           inputmode="numeric" maxlength="10" placeholder="6 a 10 dígitos" />
+                </div>
+                <input type="hidden" asp-for="Documento" id="Documento" />
+                <span asp-validation-for="Documento" class="text-danger" style="font-size:.76rem;"></span>
+            }
+        </div>
+
+        <!-- Teléfono: editable para todos -->
+        <div class="mb-3">
+            <label class="lbl">Teléfono</label>
+            <div class="d-flex gap-2 flex-wrap">
+                <select id="codigoPais" class="form-select" style="max-width:175px;flex:0 0 auto;">
+                    <option value="+57">CO +57 Colombia</option>
+                    <option value="+1">US +1 EE.UU.</option>
+                    <option value="+52">MX +52 México</option>
+                    <option value="+54">AR +54 Argentina</option>
+                    <option value="+56">CL +56 Chile</option>
+                    <option value="+51">PE +51 Perú</option>
+                    <option value="+593">EC +593 Ecuador</option>
+                    <option value="+58">VE +58 Venezuela</option>
+                    <option value="+34">ES +34 España</option>
+                </select>
+                <input type="text" id="numTel" class="form-control" style="flex:1;min-width:120px;"
+                       inputmode="numeric" maxlength="10" placeholder="Ej: 3001234567" />
+            </div>
+            <input type="hidden" asp-for="Telefono" id="Telefono" />
+            <span asp-validation-for="Telefono" class="text-danger" style="font-size:.76rem;"></span>
+        </div>
+
+        <!-- Correo: editable para todos (cajero también) -->
+        <div class="mb-3">
+            <label class="lbl">Correo electrónico</label>
+            <input asp-for="Correo" class="form-control" type="email" placeholder="correo@ejemplo.com" />
+            <span asp-validation-for="Correo" class="text-danger" style="font-size:.76rem;"></span>
+        </div>
+
+        <!-- Dirección: editable para todos -->
+        <div class="mb-3">
+            <label class="lbl">Dirección</label>
+            <input asp-for="Direccion" class="form-control" placeholder="Ej: Cra 45 #12-34, Barranquilla" />
+        </div>
+
+        <!-- Fecha: solo admin -->
+        @if (!esCajero)
+        {
+            <div class="mb-4">
+                <label class="lbl">Fecha de nacimiento</label>
+                <input asp-for="FechaNacimiento" class="form-control" type="date" id="fechaNac"
+                       max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" />
+                <div id="errEdad" class="txt-err" style="font-size:.76rem;display:none;">El cliente debe ser mayor de edad (18+).</div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="FechaNacimiento" />
+        }
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn-brand" style="gap:.4rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar cambios
+            </button>
+            <a asp-action="Index" class="btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+</div>
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var esCajero = @(esCajero ? "true" : "false");
+
+    // Poblar teléfono
+    var telVal = document.getElementById('Telefono').value || '';
+    var tp = telVal.split(' ');
+    if (tp.length >= 2) {
+        document.getElementById('codigoPais').value = tp[0];
+        document.getElementById('numTel').value = tp.slice(1).join(' ');
+    }
+
+    if (!esCajero) {
+        var docVal = document.getElementById('Documento').value || '';
+        var dp = docVal.split('-');
+        if (dp.length >= 2) {
+            document.getElementById('tipoDoc').value = dp[0];
+            document.getElementById('numDoc').value = dp.slice(1).join('-');
+        }
+        document.getElementById('numDoc').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);
+        });
+        document.getElementById('campoNombre').addEventListener('input', function() {
+            var p = this.selectionStart;
+            this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
+            try { this.setSelectionRange(p,p); } catch(e){}
+        });
+    }
+
+    document.getElementById('numTel').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);
+    });
+});
+
+document.getElementById('formCliente').addEventListener('submit', function(e) {
+    var esCajero = @(esCajero ? "true" : "false");
+
+    if (!esCajero) {
+        var tipo = document.getElementById('tipoDoc').value;
+        var num  = document.getElementById('numDoc').value.trim();
+        if (num.length < 6 || num.length > 10) {
+            e.preventDefault(); alert('El documento debe tener entre 6 y 10 dígitos.'); return;
+        }
+        document.getElementById('Documento').value = tipo + '-' + num;
+    }
+
+    var cod = document.getElementById('codigoPais').value;
+    var tel = document.getElementById('numTel').value.trim();
+    if (tel.length !== 10) {
+        e.preventDefault(); alert('El teléfono debe tener 10 dígitos.'); return;
+    }
+    if (cod === '+57' && tel[0] !== '3') {
+        e.preventDefault(); alert('Celulares colombianos deben iniciar con 3.'); return;
+    }
+    document.getElementById('Telefono').value = cod + ' ' + tel;
+
+    if (!esCajero) {
+        var fn = document.getElementById('fechaNac');
+        if (fn && fn.value) {
+            var hoy = new Date(), nac = new Date(fn.value);
+            var edad = hoy.getFullYear() - nac.getFullYear();
+            var m = hoy.getMonth() - nac.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+            if (edad < 18) {
+                e.preventDefault();
+                document.getElementById('errEdad').style.display = 'block';
+                fn.focus(); return;
+            }
+        }
+    }
+});
+</script>
+}

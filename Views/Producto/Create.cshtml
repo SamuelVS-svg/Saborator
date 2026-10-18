@@ -1,0 +1,99 @@
+@model ControlClientesRestaurante.Models.Producto
+@{ ViewData["Title"] = "Nuevo producto"; }
+
+<div class="d-flex gap-2 mb-4">
+    <button type="button" onclick="history.back()" class="btn-muted" style="padding:.3rem .8rem;font-size:.8rem;">⟵ Regresar</button>
+</div>
+
+<div class="ph mb-0">
+    <div class="ph-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <div><h1 class="ph-title">Nuevo producto</h1><p class="ph-sub">Agrega un producto al inventario</p></div>
+</div>
+<hr class="div-gold" />
+
+<div class="card-rest p-4" style="max-width:540px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="alert-err mb-3"></div>
+
+        <div class="mb-3">
+            <label class="lbl">Nombre del producto</label>
+            <input asp-for="Nombre" class="form-control" placeholder="Ej: Bandeja Paisa" />
+            <span asp-validation-for="Nombre" class="text-danger" style="font-size:.78rem;"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Descripción (opcional)</label>
+            <textarea asp-for="Descripcion" class="form-control" rows="2" placeholder="Descripción breve del producto"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Categoría</label>
+            <select asp-for="Categoria" class="form-select">
+                <option value="Hamburguesas & Carnes">Hamburguesas &amp; Carnes</option>
+                <option value="Salchipapas Gourmet">Salchipapas Gourmet</option>
+                <option value="Perros & Especiales">Perros &amp; Especiales</option>
+                <option value="Acompañamientos">Acompañamientos</option>
+                <option value="Bebidas">Bebidas</option>
+                <option value="Postres">Postres</option>
+                <option value="Especiales del Chef">Especiales del Chef</option>
+            </select>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <label class="lbl">Precio ($ COP)</label>
+                <div class="input-group">
+                    <span class="input-group-text" style="background:var(--brand-cream);border:1.5px solid var(--brand-border);border-right:none;border-radius:8px 0 0 8px;">$</span>
+                    <input asp-for="Precio" class="form-control" type="number" step="100" min="0.01" placeholder="0"
+                           style="border-radius:0 8px 8px 0;" />
+                </div>
+                <span asp-validation-for="Precio" class="text-danger" style="font-size:.78rem;"></span>
+            </div>
+            <div class="col-6">
+                <label class="lbl">Stock inicial</label>
+                <input asp-for="Stock" class="form-control" type="number" min="0" placeholder="0" />
+                <span asp-validation-for="Stock" class="text-danger" style="font-size:.78rem;"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Alérgenos Comunes (Separados por coma)</label>
+            <input asp-for="Alergenos" class="form-control" placeholder="Ej: Gluten, Lácteos, Huevos, Mariscos..." />
+            <div style="font-size:.73rem;color:var(--brand-muted);margin-top:.2rem;">Advertencia visual en la carta y ticket de cocina.</div>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Ingredientes y Ficha Técnica</label>
+            <textarea asp-for="Ingredientes" class="form-control" rows="2" placeholder="Ej: Carne angus 200g, queso cheddar fundido, tocineta ahumada..."></textarea>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <label class="lbl">Tiempo Cocción (Minutos)</label>
+                <input asp-for="TiempoCoccionMinutos" type="number" min="1" max="120" value="15" class="form-control" />
+            </div>
+            <div class="col-6 d-flex align-items-center gap-3 pt-3">
+                <label class="d-flex align-items-center gap-1" style="font-size:0.82rem;font-weight:600;cursor:pointer;">
+                    <input asp-for="EsVegetariano" type="checkbox" style="accent-color:var(--brand);" />
+                    🌱 Veg
+                </label>
+                <label class="d-flex align-items-center gap-1" style="font-size:0.82rem;font-weight:600;cursor:pointer;">
+                    <input asp-for="EsLibreGluten" type="checkbox" style="accent-color:var(--brand);" />
+                    🌾 Sin TACC
+                </label>
+            </div>
+        </div>
+
+        <hr style="border-color:var(--brand-border);margin:1.25rem 0;" />
+        <div class="d-flex gap-3 flex-wrap">
+            <button type="submit" class="btn-brand">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:-2px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar producto
+            </button>
+            <a asp-action="Index" class="btn-muted">Cancelar</a>
+        </div>
+    </form>
+</div>

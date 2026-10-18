@@ -1,0 +1,298 @@
+@model ControlClientesRestaurante.Controllers.ComprobantePagoViewModel
+@{
+    ViewData["Title"] = $"Comprobante de Pago {Model.ReferenciaTransaccion} — Saborator";
+    Layout = "_Layout";
+}
+
+<style>
+    .comprobante-wrapper {
+        min-height: 90vh;
+        background: radial-gradient(circle at 50% 20%, rgba(107, 30, 46, 0.45) 0%, rgba(24, 6, 10, 0.98) 75%);
+        padding: 3rem 1.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #FFFDF9;
+    }
+    .comprobante-card {
+        max-width: 650px;
+        width: 100%;
+        background: rgba(30, 10, 16, 0.88);
+        border: 1px solid rgba(200, 151, 58, 0.35);
+        border-radius: 22px;
+        backdrop-filter: blur(16px);
+        padding: 3rem 2.5rem;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+        position: relative;
+    }
+    .comp-seal {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2A7348, #184D30);
+        border: 2px solid #52C41A;
+        box-shadow: 0 0 30px rgba(82, 196, 26, 0.4);
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #FFFFFF;
+    }
+    .comp-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .comp-status {
+        display: inline-block;
+        padding: 0.35rem 1rem;
+        background: rgba(42, 115, 72, 0.25);
+        border: 1px solid rgba(82, 196, 26, 0.5);
+        border-radius: 999px;
+        color: #52C41A;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.75rem;
+    }
+    .comp-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: 2.6rem;
+        font-weight: 400;
+        margin: 0 0 0.5rem;
+        color: #FFFDF9;
+    }
+    .comp-title span {
+        color: #C8973A;
+        font-style: italic;
+    }
+    .comp-box {
+        background: rgba(255, 253, 249, 0.05);
+        border: 1px solid rgba(200, 151, 58, 0.2);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.75rem;
+    }
+    .comp-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+        border-bottom: 1px dashed rgba(255, 253, 249, 0.1);
+    }
+    .comp-row:last-child {
+        border-bottom: none;
+    }
+    .comp-row .lbl {
+        color: rgba(255, 253, 249, 0.7);
+    }
+    .comp-row .val {
+        font-weight: 600;
+        color: #FFFDF9;
+        text-align: right;
+    }
+    .comp-row .val.gold {
+        color: #C8973A;
+    }
+    .comp-items-table {
+        width: 100%;
+        margin-top: 1rem;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+    .comp-items-table th {
+        text-align: left;
+        color: #C8973A;
+        padding: 0.4rem 0;
+        border-bottom: 1px solid rgba(200, 151, 58, 0.25);
+    }
+    .comp-items-table td {
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed rgba(255, 253, 249, 0.08);
+    }
+    .comp-total-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-top: 1.25rem;
+        margin-top: 0.75rem;
+        border-top: 2px solid rgba(200, 151, 58, 0.4);
+    }
+    .comp-total-line .amount {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: 2.2rem;
+        color: #C8973A;
+        font-weight: 700;
+    }
+    .comp-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    .btn-comp-print {
+        flex: 1;
+        min-width: 180px;
+        background: transparent;
+        border: 1px solid rgba(200, 151, 58, 0.4);
+        color: #FFFDF9;
+        font-weight: 600;
+        padding: 0.8rem;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    .btn-comp-print:hover {
+        background: rgba(200, 151, 58, 0.15);
+        color: #C8973A;
+    }
+    .btn-comp-gold {
+        flex: 1;
+        min-width: 180px;
+        background: linear-gradient(135deg, #C8973A, #A67520);
+        color: #18060A;
+        font-weight: 700;
+        padding: 0.8rem;
+        border-radius: 12px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 6px 20px rgba(200, 151, 58, 0.35);
+    }
+    .btn-comp-gold:hover {
+        color: #18060A;
+        transform: translateY(-2px);
+    }
+    @@media print {
+        body * { visibility: hidden; }
+        .comprobante-card, .comprobante-card * { visibility: visible; }
+        .comprobante-card { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: 1px solid #000; color: #000; background: #fff; }
+        .comp-actions { display: none !important; }
+    }
+</style>
+
+<div class="comprobante-wrapper">
+    <div class="comprobante-card">
+
+        <div class="comp-seal">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+        </div>
+
+        <div class="comp-header">
+            <div class="comp-status">Transacción Aprobada Exitosamente</div>
+            <h1 class="comp-title">Comprobante <span>de Pago</span></h1>
+            <p style="color:rgba(255,253,249,0.75);font-size:0.9rem;margin:0;">
+                Restaurante Saborator &bull; Operación financiera procesada con éxito
+            </p>
+        </div>
+
+        <div class="comp-box">
+            <div class="comp-row">
+                <span class="lbl">Referencia de Pago</span>
+                <span class="val gold" style="font-family:'Geist Mono',monospace;">@Model.ReferenciaTransaccion</span>
+            </div>
+            <div class="comp-row">
+                <span class="lbl">Código de Autorización</span>
+                <span class="val" style="font-family:'Geist Mono',monospace;">#@Model.CodigoAprobacion</span>
+            </div>
+            <div class="comp-row">
+                <span class="lbl">Fecha y Hora</span>
+                <span class="val">@Model.FechaHora.ToString("dd/MM/yyyy HH:mm:ss")</span>
+            </div>
+            <div class="comp-row">
+                <span class="lbl">Titular / Pagador</span>
+                <span class="val">@Model.NombreCliente</span>
+            </div>
+            <div class="comp-row">
+                <span class="lbl">Método Utilizado</span>
+                <span class="val">@Model.DetalleMetodo</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.NumeroPedido))
+            {
+                <div class="comp-row">
+                    <span class="lbl">Pedido Asociado</span>
+                    <span class="val">@Model.NumeroPedido</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.NumeroFactura))
+            {
+                <div class="comp-row">
+                    <span class="lbl">Factura Electrónica Emitida</span>
+                    <span class="val gold">@Model.NumeroFactura</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.CodigoReserva))
+            {
+                <div class="comp-row">
+                    <span class="lbl">Boleto de Reserva</span>
+                    <span class="val gold">@Model.CodigoReserva</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Mesa))
+            {
+                <div class="comp-row">
+                    <span class="lbl">Mesa</span>
+                    <span class="val">Mesa #@Model.Mesa</span>
+                </div>
+            }
+
+            @if (Model.Items.Any())
+            {
+                <table class="comp-items-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th style="text-align:center;">Cant.</th>
+                            <th style="text-align:right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.Nombre</td>
+                                <td style="text-align:center;">@item.Cantidad</td>
+                                <td style="text-align:right;">$@item.Subtotal.ToString("N0")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            <div class="comp-total-line">
+                <div>
+                    <span style="font-size:0.85rem;text-transform:uppercase;color:rgba(255,253,249,0.7);letter-spacing:0.06em;display:block;">Total Pagado</span>
+                    <small style="color:#52C41A;font-weight:600;">Estado: APROBADO</small>
+                </div>
+                <div class="amount">$@Model.Monto.ToString("N0")</div>
+            </div>
+        </div>
+
+        <div class="comp-actions">
+            <button type="button" onclick="window.print()" class="btn-comp-print">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Imprimir Recibo
+            </button>
+            <a asp-controller="Pedido" asp-action="MisPedidos" class="btn-comp-gold">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                Ir a Mis Pedidos
+            </a>
+            <a href="/" class="btn-comp-print" style="flex:100%;text-align:center;justify-content:center;text-decoration:none;">
+                Volver a la Carta del Restaurante
+            </a>
+        </div>
+
+    </div>
+</div>

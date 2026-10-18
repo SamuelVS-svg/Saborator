@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "Validación de Cuenta — Saborator";
+    Layout = "_Layout";
+    bool exito = (ViewBag.Exito as bool?) ?? false;
+    string mensaje = (ViewBag.Mensaje as string) ?? "";
+    string usuario = (ViewBag.Usuario as string) ?? "";
+}
+
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<div class="login-center-wrapper" style="min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+
+    <!-- Fondo Culinario Animado (Fixed, nunca empuja la tarjeta hacia abajo) -->
+    <div class="gastro-bg" aria-hidden="true" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:0; overflow:hidden;">
+        <div class="gastro-gradient-mesh" style="position:absolute; inset:0;"></div>
+        <div class="gastro-radial-ember-glow" style="position:absolute; inset:0;"></div>
+        <canvas id="gastroEmbersCanvas" class="gastro-canvas" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;"></canvas>
+    </div>
+
+    <!-- Botón Regresar al Inicio -->
+    <a asp-controller="Home" asp-action="Index" class="gastro-back-pill" title="Regresar al inicio" aria-label="Volver a la carta principal">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        <span>Volver a la carta</span>
+    </a>
+
+    <!-- Tarjeta Central de Validación -->
+    <main class="gastro-card-wrapper" role="main" style="max-width:540px;">
+        <div class="form-card" style="text-align:center; padding: 2.5rem 2rem;">
+
+            @if (exito)
+            {
+                <!-- Icono de Éxito -->
+                <div style="width:76px; height:76px; margin:0 auto 1.25rem; border-radius:50%; background:linear-gradient(135deg, rgba(42,115,72,0.2), rgba(16,185,129,0.3)); border:2px solid #10B981; display:flex; align-items:center; justify-content:center; color:#10B981; box-shadow:0 0 30px rgba(16,185,129,0.3);">
+                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+
+                <h1 class="form-title" style="font-size:1.7rem; color:#10B981; margin-bottom:0.5rem;">
+                    ¡Cuenta Validada!
+                </h1>
+
+                <p style="font-size:0.95rem; color:var(--color-text); line-height:1.6; margin-bottom:1.5rem;">
+                    @mensaje
+                </p>
+
+                <div style="background:var(--color-surface-2, rgba(255,255,255,0.03)); border:1px solid var(--color-border); border-radius:14px; padding:1.25rem; text-align:left; margin-bottom:1.8rem;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
+                        <span style="color:#10B981; font-size:1.1rem;">✓</span>
+                        <span style="font-size:0.88rem; font-weight:700; color:var(--color-text);">Identidad mayor de edad verificada</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.6rem;">
+                        <span style="color:#10B981; font-size:1.1rem;">✓</span>
+                        <span style="font-size:0.88rem; font-weight:700; color:var(--color-text);">Correo electrónico confirmado y seguro</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="color:#10B981; font-size:1.1rem;">✓</span>
+                        <span style="font-size:0.88rem; font-weight:700; color:var(--color-text);">Sesión iniciada automáticamente</span>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <a asp-controller="Perfil" asp-action="Index" class="btn-entrar" style="text-decoration:none; display:flex; justify-content:center; align-items:center; gap:8px;">
+                        <span>Ir a mi Perfil de Comensal</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </a>
+
+                    <a asp-controller="Reserva" asp-action="Nueva" class="link-btn" style="font-size:0.88rem; font-weight:600; padding:0.5rem;">
+                        🍽️ Reservar una mesa ahora
+                    </a>
+                </div>
+            }
+            else
+            {
+                <!-- Icono de Error -->
+                <div style="width:76px; height:76px; margin:0 auto 1.25rem; border-radius:50%; background:linear-gradient(135deg, rgba(220,38,38,0.15), rgba(107,30,46,0.3)); border:2px solid #EF4444; display:flex; align-items:center; justify-content:center; color:#EF4444; box-shadow:0 0 25px rgba(239,68,68,0.25);">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                </div>
+
+                <h1 class="form-title" style="font-size:1.6rem; color:#EF4444; margin-bottom:0.5rem;">
+                    Validación no completada
+                </h1>
+
+                <p style="font-size:0.92rem; color:var(--color-text); line-height:1.6; margin-bottom:1.5rem;">
+                    @mensaje
+                </p>
+
+                <div style="background:var(--color-surface-2, rgba(255,255,255,0.03)); border:1px solid var(--color-border); border-radius:14px; padding:1.25rem; margin-bottom:1.5rem; text-align:left;">
+                    <p style="font-size:0.85rem; color:var(--color-text-muted); margin:0 0 0.8rem;">
+                        Los enlaces de verificación son de un solo uso y expiran en 24 horas por seguridad. Si tu enlace ha caducado, puedes generar uno nuevo aquí:
+                    </p>
+
+                    <form asp-action="ReenviarVerificacion" method="post" style="display:flex; gap:8px;">
+                        @Html.AntiForgeryToken()
+                        <input type="text" name="usuarioOCorreo" value="@usuario" placeholder="Tu usuario o correo" class="f-input" style="font-size:0.88rem; padding:0.6rem 0.8rem;" required />
+                        <button type="submit" class="btn-entrar" style="width:auto; white-space:nowrap; padding:0.6rem 1rem; font-size:0.85rem;">
+                            Reenviar
+                        </button>
+                    </form>
+                </div>
+
+                <a asp-action="Index" class="link-btn" style="font-size:0.85rem;">
+                    ← Volver a la pantalla de acceso
+                </a>
+            }
+
+        </div>
+    </main>
+</div>
+
+<script src="~/js/intro.js" asp-append-version="true"></script>

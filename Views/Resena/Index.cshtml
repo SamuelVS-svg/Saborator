@@ -1,0 +1,1081 @@
+@model List<ControlClientesRestaurante.Models.Resena>
+@{
+    ViewData["Title"] = "Reseñas & Opiniones de Comensales — Saborator";
+    var stats = ViewBag.Stats as ControlClientesRestaurante.Services.ResenaEstadisticasDto ?? new ControlClientesRestaurante.Services.ResenaEstadisticasDto();
+    bool esStaff = ViewBag.EsStaff == true;
+    bool esAdmin = ViewBag.EsAdmin == true;
+    var platos = ViewBag.Platos as List<ControlClientesRestaurante.Models.Producto> ?? new List<ControlClientesRestaurante.Models.Producto>();
+}
+
+<div class="resenas-pg-wrapper">
+    <!-- Header de Reseñas -->
+    <div class="resenas-header-box">
+        <div class="resenas-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>Experiencias Auténticas</span>
+        </div>
+        <h1 class="resenas-title">Opiniones de Nuestros Comensales</h1>
+        <p class="resenas-sub">
+            Descubre las vivencias de quienes han disfrutado nuestra cocina artesanal en salón y a domicilio en Barranquilla.
+        </p>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alerta alerta-ok" style="max-width:650px;margin:1.25rem auto 0;text-align:left;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>@TempData["Mensaje"]</span>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alerta alerta-err" style="max-width:650px;margin:1.25rem auto 0;text-align:left;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>@TempData["Error"]</span>
+            </div>
+        }
+    </div>
+
+    <!-- Panel de Calificación General y Desglose -->
+    <div class="resenas-stats-grid">
+        <!-- Tarjeta Promedio -->
+        <div class="resenas-score-card">
+            <div class="score-large" id="mainScoreDisplay">@stats.Promedio.ToString("0.0")</div>
+            <div class="stars-gold-row" id="mainStarsRow">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <svg class="star-icon @(i <= Math.Round(stats.Promedio) ? "star-fill" : "star-empty")" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                }
+            </div>
+            <div class="score-total-txt" id="mainTotalReviewsTxt">Basado en <strong>@stats.TotalResenas</strong> comensales verificados</div>
+            
+            <button type="button" onclick="abrirModalResena()" class="btn-nueva-resena">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                <span>Compartir Mi Opinión</span>
+            </button>
+        </div>
+
+        <!-- Tarjeta Barras de Distribución -->
+        <div class="resenas-bars-card">
+            <h3 style="font-size:1.1rem;font-weight:700;color:var(--brand);margin:0 0 1rem;">Distribución de Calificaciones</h3>
+            
+            <div class="rating-bar-row">
+                <span class="star-label">5 estrellas</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: @(stats.Porcentaje5)%;"></div>
+                </div>
+                <span class="bar-count">@stats.Estrellas5 (@(stats.Porcentaje5)%)</span>
+            </div>
+
+            <div class="rating-bar-row">
+                <span class="star-label">4 estrellas</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: @(stats.Porcentaje4)%;"></div>
+                </div>
+                <span class="bar-count">@stats.Estrellas4 (@(stats.Porcentaje4)%)</span>
+            </div>
+
+            <div class="rating-bar-row">
+                <span class="star-label">3 estrellas</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: @(stats.Porcentaje3)%;"></div>
+                </div>
+                <span class="bar-count">@stats.Estrellas3 (@(stats.Porcentaje3)%)</span>
+            </div>
+
+            <div class="rating-bar-row">
+                <span class="star-label">2 estrellas</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: @(stats.Porcentaje2)%;"></div>
+                </div>
+                <span class="bar-count">@stats.Estrellas2 (@(stats.Porcentaje2)%)</span>
+            </div>
+
+            <div class="rating-bar-row">
+                <span class="star-label">1 estrella</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: @(stats.Porcentaje1)%;"></div>
+                </div>
+                <span class="bar-count">@stats.Estrellas1 (@(stats.Porcentaje1)%)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros de Reseñas -->
+    <div class="resenas-filter-bar">
+        <div class="filter-chips">
+            <button type="button" class="chip-filter active" onclick="filtrarResenas('todas', this)">Todas (@Model.Count)</button>
+            <button type="button" class="chip-filter" onclick="filtrarResenas('5estrellas', this)">5 Estrellas (@stats.Estrellas5)</button>
+            <button type="button" class="chip-filter" onclick="filtrarResenas('Domicilio Express', this)">Domicilios</button>
+            <button type="button" class="chip-filter" onclick="filtrarResenas('En Restaurante', this)">En Restaurante</button>
+        </div>
+    </div>
+
+    <!-- Lista / Grid de Tarjetas de Reseñas -->
+    <div class="resenas-grid" id="resenasGridContainer">
+        @if (Model.Count == 0)
+        {
+            <div class="resena-vacia" style="grid-column:1/-1;text-align:center;padding:3rem 1.5rem;">
+                <p style="font-size:1.15rem;font-weight:600;margin:0 0 0.5rem;color:var(--brand);">Sé el primero en compartir tu experiencia</p>
+                <p style="color:var(--muted);font-size:0.9rem;margin:0 0 1.25rem;">Tu opinión nos ayuda a perfeccionar cada sabor y detalle del servicio.</p>
+                <button type="button" onclick="abrirModalResena()" class="btn-nueva-resena" style="margin:0 auto;">Escribir Primera Reseña</button>
+            </div>
+        }
+        else
+        {
+            @foreach (var r in Model)
+            {
+                <div class="review-card" data-rating="@r.Calificacion" data-exp="@r.TipoExperiencia">
+                    <div class="review-head">
+                        <div class="review-author-wrap">
+                            <div class="review-avatar">
+                                @(string.IsNullOrEmpty(r.NombreCliente) ? "C" : r.NombreCliente.Substring(0, 1).ToUpper())
+                            </div>
+                            <div>
+                                <div class="review-author-name">
+                                    <span>@r.NombreCliente</span>
+                                    @if (r.Verificado)
+                                    {
+                                        <span class="badge-verificado" title="Comensal con orden verificada">
+                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                            Verificado
+                                        </span>
+                                    }
+                                </div>
+                                <div class="review-date-txt">@r.FechaCreacion.ToString("dd MMM yyyy · HH:mm")</div>
+                            </div>
+                        </div>
+
+                        <!-- Estrellas -->
+                        <div class="review-stars-wrap">
+                            @for (int s = 1; s <= 5; s++)
+                            {
+                                <svg class="star-icon @(s <= r.Calificacion ? "star-fill" : "star-empty")" width="16" height="16" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="review-tags-row">
+                        <span class="review-tag-exp">
+                            @if (r.TipoExperiencia == "Domicilio Express")
+                            {
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                            }
+                            else if (r.TipoExperiencia == "Para Llevar")
+                            {
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                            }
+                            else
+                            {
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+                            }
+                            <span>@r.TipoExperiencia</span>
+                        </span>
+
+                        @if (!string.IsNullOrEmpty(r.PlatoRecomendado))
+                        {
+                            <span class="review-tag-dish">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                                Recomendó: <strong>@r.PlatoRecomendado</strong>
+                            </span>
+                        }
+                    </div>
+
+                    <p class="review-body-text">"@r.Comentario"</p>
+
+                    @if (esStaff)
+                    {
+                        <div class="review-admin-actions">
+                            <form asp-action="CambiarAprobacion" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <input type="hidden" name="aprobada" value="@(r.Aprobada ? "false" : "true")" />
+                                <button type="submit" class="btn-micro-admin @(r.Aprobada ? "btn-warn" : "btn-ok")">
+                                    @(r.Aprobada ? "Ocultar" : "Aprobar")
+                                </button>
+                            </form>
+
+                            @if (esAdmin)
+                            {
+                                <form asp-action="Eliminar" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta reseña permanentemente?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button type="submit" class="btn-micro-admin btn-danger">Eliminar</button>
+                                </form>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Modal para Dejar Nueva Reseña (AJAX + Animación Pulida) -->
+<div class="modal-resena-overlay" id="modalResenaOverlay" onclick="clickOverlayResena(event)">
+    <div class="modal-resena-box">
+        <button type="button" class="btn-close-modal" onclick="cerrarModalResena()" aria-label="Cerrar">&times;</button>
+        
+        <div class="modal-resena-head">
+            <span class="modal-badge-gold">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Tu Experiencia Cuenta
+            </span>
+            <h2 class="modal-resena-title">Comparte tu Opinión</h2>
+            <p class="modal-resena-sub">Califica la calidad de la comida, el servicio y la puntualidad del envío.</p>
+        </div>
+
+        <form id="formNuevaResena" onsubmit="enviarResenaAjax(event)">
+            @Html.AntiForgeryToken()
+            <div id="resenaFeedbackBox" class="resena-feedback-box" style="display:none;"></div>
+
+            <!-- Selector Interactivo de Estrellas -->
+            <div class="star-picker-wrap">
+                <label class="star-picker-label">Tu Calificación General *</label>
+                <div class="star-picker-icons" id="starPickerIcons">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <button type="button" class="btn-pick-star active" data-star="@i" onclick="seleccionarEstrella(@i)" onmouseenter="hoverEstrella(@i)" onmouseleave="resetEstrellas()" aria-label="@i estrellas">
+                            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </button>
+                    }
+                </div>
+                <span class="star-picker-feedback" id="starPickerTxt">Excelente (5 de 5 estrellas)</span>
+                <input type="hidden" id="inputRatingValue" value="5" />
+            </div>
+
+            <div class="input-resena-row">
+                <div class="input-resena-col">
+                    <label class="input-resena-label">Tu Nombre Completo *</label>
+                    <input type="text" id="resenaNombre" required placeholder="Ej: Marcela Gómez" class="input-resena-field" maxlength="150" />
+                </div>
+                <div class="input-resena-col">
+                    <label class="input-resena-label">Correo electrónico (Opcional)</label>
+                    <input type="email" id="resenaCorreo" placeholder="marcela@ejemplo.com" class="input-resena-field" maxlength="150" />
+                </div>
+            </div>
+
+            <div class="input-resena-row">
+                <div class="input-resena-col">
+                    <label class="input-resena-label">Tipo de Experiencia *</label>
+                    <select id="resenaTipoExp" class="input-resena-field">
+                        <option value="En Restaurante">En Mesa / Restaurante</option>
+                        <option value="Domicilio Express">Domicilio Express</option>
+                        <option value="Para Llevar">Para Llevar / Pick-up</option>
+                    </select>
+                </div>
+                <div class="input-resena-col">
+                    <label class="input-resena-label">Plato Recomendado (Opcional)</label>
+                    <input type="text" id="resenaPlato" placeholder="Ej: Desgranado Especial, Hamburguesa..." list="listadoPlatos" class="input-resena-field" maxlength="150" />
+                    <datalist id="listadoPlatos">
+                        @foreach (var p in platos)
+                        {
+                            <option value="@p.Nombre" />
+                        }
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="input-resena-group">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                    <label class="input-resena-label" style="margin:0;">Tu Reseña &amp; Comentario *</label>
+                    <span id="charCounterTxt" style="font-size:0.75rem;color:var(--muted);">0 / 1000</span>
+                </div>
+                <textarea id="resenaComentario" required rows="4" maxlength="1000" 
+                          placeholder="Describe qué tal estuvo el sabor, la temperatura de llegada, la textura de la carne, el trato de los meseros..." 
+                          class="input-resena-field input-textarea" oninput="actualizarContador(this)"></textarea>
+            </div>
+
+            <div class="modal-resena-actions">
+                <button type="button" onclick="cerrarModalResena()" class="btn-cancelar-modal">Cancelar</button>
+                <button type="submit" id="btnEnviarResena" class="btn-submit-resena">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <span>Publicar Reseña</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .resenas-pg-wrapper {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 5rem;
+    }
+    .resenas-header-box {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+    .resenas-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(200, 151, 58, 0.12);
+        color: var(--gold, #C8973A);
+        border: 1px solid rgba(200, 151, 58, 0.35);
+        padding: 0.3rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+    }
+    .resenas-title {
+        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-size: 2.85rem;
+        font-weight: 400;
+        color: var(--brand, #6B1E2E);
+        margin: 0 0 0.5rem;
+        line-height: 1.15;
+    }
+    .resenas-sub {
+        font-size: 0.95rem;
+        color: var(--muted, #6E5C50);
+        max-width: 620px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    /* Stats Grid */
+    .resenas-stats-grid {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+    @@media (max-width: 860px) {
+        .resenas-stats-grid { grid-template-columns: 1fr; }
+    }
+
+    .resenas-score-card {
+        background: #18060A;
+        border: 1.5px solid rgba(200, 151, 58, 0.35);
+        border-radius: 20px;
+        padding: 2rem;
+        color: #FFFDF9;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 12px 35px rgba(24, 6, 10, 0.25);
+    }
+    .score-large {
+        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-size: 4.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--gold, #C8973A);
+        margin-bottom: 0.5rem;
+    }
+    .stars-gold-row {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 0.75rem;
+    }
+    .star-icon {
+        width: 22px;
+        height: 22px;
+        transition: transform 120ms ease;
+    }
+    .star-fill { fill: #F59E0B; stroke: #D97706; }
+    .star-empty { fill: rgba(255,253,249,0.15); stroke: rgba(255,253,249,0.3); }
+
+    .score-total-txt {
+        font-size: 0.85rem;
+        color: rgba(255, 253, 249, 0.75);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-nueva-resena {
+        background: linear-gradient(135deg, #C8973A 0%, #DFB460 100%);
+        border: none;
+        border-radius: 10px;
+        color: #18060A;
+        font-weight: 800;
+        font-size: 0.88rem;
+        padding: 0.75rem 1.4rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 16px rgba(200, 151, 58, 0.3);
+        transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease;
+    }
+    .btn-nueva-resena:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(200, 151, 58, 0.45);
+    }
+    .btn-nueva-resena:active { transform: scale(0.97); }
+
+    .resenas-bars-card {
+        background: var(--surface, #FFFDF9);
+        border: 1px solid var(--line, #E2D7C8);
+        border-radius: 20px;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    .rating-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-bottom: 0.65rem;
+    }
+    .rating-bar-row:last-child { margin-bottom: 0; }
+    .star-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #3C2A20;
+        width: 75px;
+    }
+    .bar-track {
+        flex: 1;
+        height: 10px;
+        background: #F2EBE1;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #F59E0B 0%, #C8973A 100%);
+        border-radius: 999px;
+        transition: width 400ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .bar-count {
+        font-size: 0.78rem;
+        color: var(--muted, #6E5C50);
+        width: 75px;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    /* Filtros */
+    .resenas-filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .filter-chips {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .chip-filter {
+        background: #FFFDF9;
+        border: 1.5px solid var(--line, #E2D7C8);
+        padding: 0.45rem 0.95rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #3C2A20;
+        cursor: pointer;
+        transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+    }
+    .chip-filter:hover {
+        border-color: var(--gold, #C8973A);
+    }
+    .chip-filter.active {
+        background: var(--brand, #6B1E2E);
+        color: #FFFDF9;
+        border-color: var(--brand, #6B1E2E);
+    }
+    .chip-filter:active { transform: scale(0.97); }
+
+    /* Grid de Reseñas */
+    .resenas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
+        gap: 1.5rem;
+    }
+
+    .review-card {
+        background: var(--surface, #FFFDF9);
+        border: 1px solid var(--line, #E2D7C8);
+        border-radius: 18px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.03);
+        transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms ease;
+    }
+    .review-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+    }
+
+    .review-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.85rem;
+        gap: 0.5rem;
+    }
+    .review-author-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .review-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6B1E2E 0%, #C8973A 100%);
+        color: #FFFDF9;
+        font-weight: 800;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(107, 30, 46, 0.2);
+    }
+    .review-author-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #200B10;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .badge-verificado {
+        font-size: 0.68rem;
+        background: #ECFDF5;
+        color: #065F46;
+        border: 1px solid #A7F3D0;
+        border-radius: 999px;
+        padding: 1px 6px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+    .review-date-txt {
+        font-size: 0.75rem;
+        color: var(--muted, #6E5C50);
+    }
+    .review-stars-wrap {
+        display: flex;
+        gap: 2px;
+    }
+
+    .review-tags-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.85rem;
+    }
+    .review-tag-exp {
+        font-size: 0.72rem;
+        background: #F5ECE0;
+        color: #6E5C50;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .review-tag-dish {
+        font-size: 0.72rem;
+        background: rgba(200, 151, 58, 0.12);
+        color: #92400E;
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .review-body-text {
+        font-size: 0.9rem;
+        color: #3C2A20;
+        line-height: 1.5;
+        margin: 0 0 1rem;
+        font-style: italic;
+        flex-grow: 1;
+    }
+
+    .review-admin-actions {
+        display: flex;
+        gap: 0.4rem;
+        padding-top: 0.65rem;
+        border-top: 1px dashed var(--line, #E2D7C8);
+    }
+    .btn-micro-admin {
+        padding: 3px 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: transform 120ms ease;
+    }
+    .btn-micro-admin:active { transform: scale(0.96); }
+    .btn-ok { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+    .btn-warn { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+    .btn-danger { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+
+    /* Modal de Reseña */
+    .modal-resena-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(24, 6, 10, 0.75);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem;
+    }
+    .modal-resena-overlay.open {
+        display: flex;
+        animation: fadeInModal 200ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    @@keyframes fadeInModal {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .modal-resena-box {
+        background: #FFFDF9;
+        border: 1.5px solid #E2D7C8;
+        border-radius: 24px;
+        padding: 2.25rem;
+        max-width: 540px;
+        width: 100%;
+        position: relative;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+        animation: scaleInModal 200ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    @@keyframes scaleInModal {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .btn-close-modal {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.25rem;
+        background: none;
+        border: none;
+        font-size: 1.75rem;
+        line-height: 1;
+        color: var(--muted, #6E5C50);
+        cursor: pointer;
+        transition: transform 120ms ease;
+    }
+    .btn-close-modal:hover { color: var(--brand); transform: scale(1.1); }
+    .btn-close-modal:active { transform: scale(0.95); }
+
+    .modal-resena-head {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .modal-badge-gold {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--gold, #C8973A);
+        background: rgba(200, 151, 58, 0.12);
+        padding: 2px 8px;
+        border-radius: 999px;
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+    }
+    .modal-resena-title {
+        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-size: 2rem;
+        color: var(--brand, #6B1E2E);
+        margin: 0 0 0.25rem;
+    }
+    .modal-resena-sub {
+        font-size: 0.85rem;
+        color: var(--muted, #6E5C50);
+        margin: 0;
+    }
+
+    /* Star Picker */
+    .star-picker-wrap {
+        text-align: center;
+        background: #FAF6F0;
+        border: 1px dashed #E2D7C8;
+        border-radius: 14px;
+        padding: 1.15rem;
+        margin-bottom: 1.25rem;
+    }
+    .star-picker-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #3C2A20;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+    .star-picker-icons {
+        display: inline-flex;
+        gap: 6px;
+    }
+    .btn-pick-star {
+        background: none;
+        border: none;
+        padding: 4px;
+        cursor: pointer;
+        outline: none;
+        transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .btn-pick-star:hover { transform: scale(1.2); }
+    .btn-pick-star:active { transform: scale(0.95); }
+    .btn-pick-star svg {
+        width: 32px;
+        height: 32px;
+        fill: rgba(200, 151, 58, 0.2);
+        stroke: #C8973A;
+        transition: fill 120ms ease;
+    }
+    .btn-pick-star.active svg,
+    .btn-pick-star.hover svg {
+        fill: #F59E0B;
+        stroke: #D97706;
+    }
+    .star-picker-feedback {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--brand, #6B1E2E);
+        margin-top: 0.5rem;
+    }
+
+    /* Inputs */
+    .input-resena-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    @@media (max-width: 500px) {
+        .input-resena-row { grid-template-columns: 1fr; }
+    }
+    .input-resena-group { margin-bottom: 1.25rem; }
+    .input-resena-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #3C2A20;
+        margin-bottom: 0.35rem;
+    }
+    .input-resena-field {
+        width: 100%;
+        padding: 0.65rem 0.85rem;
+        border: 1.5px solid var(--line, #E2D7C8);
+        border-radius: 10px;
+        font-size: 0.88rem;
+        background: #FFFDF9;
+        color: #200B10;
+        box-sizing: border-box;
+        transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+    .input-resena-field:focus {
+        border-color: var(--brand, #6B1E2E);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.1);
+    }
+    .input-textarea {
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .modal-resena-actions {
+        display: flex;
+        gap: 0.85rem;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .btn-cancelar-modal {
+        background: transparent;
+        border: 1px solid var(--line, #E2D7C8);
+        border-radius: 10px;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--muted, #6E5C50);
+        cursor: pointer;
+        transition: transform 120ms ease;
+    }
+    .btn-cancelar-modal:active { transform: scale(0.97); }
+    .btn-submit-resena {
+        background: linear-gradient(135deg, #6B1E2E 0%, #86273A 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.4rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #FFFDF9;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 14px rgba(107, 30, 46, 0.3);
+        transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease;
+    }
+    .btn-submit-resena:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(107, 30, 46, 0.4);
+    }
+    .btn-submit-resena:active { transform: scale(0.97); }
+
+    .resena-feedback-box {
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .resena-feedback-box.error {
+        background: #FEE2E2;
+        border: 1px solid #FCA5A5;
+        color: #991B1B;
+    }
+    .resena-feedback-box.success {
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        color: #065F46;
+    }
+</style>
+
+<script>
+    let ratingActual = 5;
+    const descripcionesEstrellas = {
+        1: "Deficiente (1 de 5 estrellas)",
+        2: "Regular (2 de 5 estrellas)",
+        3: "Buena (3 de 5 estrellas)",
+        4: "Muy Buena (4 de 5 estrellas)",
+        5: "Excelente (5 de 5 estrellas)"
+    };
+
+    function abrirModalResena() {
+        document.getElementById('modalResenaOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        seleccionarEstrella(5);
+        document.getElementById('resenaNombre').focus();
+    }
+
+    function cerrarModalResena() {
+        document.getElementById('modalResenaOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+        const fb = document.getElementById('resenaFeedbackBox');
+        if (fb) {
+            fb.style.display = 'none';
+            fb.className = 'resena-feedback-box';
+        }
+    }
+
+    function clickOverlayResena(e) {
+        if (e.target === document.getElementById('modalResenaOverlay')) {
+            cerrarModalResena();
+        }
+    }
+
+    function seleccionarEstrella(val) {
+        ratingActual = val;
+        document.getElementById('inputRatingValue').value = val;
+        document.getElementById('starPickerTxt').textContent = descripcionesEstrellas[val] || `${val} estrellas`;
+        actualizarIconosEstrellas(val);
+    }
+
+    function hoverEstrella(val) {
+        actualizarIconosEstrellas(val);
+        document.getElementById('starPickerTxt').textContent = descripcionesEstrellas[val] || `${val} estrellas`;
+    }
+
+    function resetEstrellas() {
+        actualizarIconosEstrellas(ratingActual);
+        document.getElementById('starPickerTxt').textContent = descripcionesEstrellas[ratingActual] || `${ratingActual} estrellas`;
+    }
+
+    function actualizarIconosEstrellas(val) {
+        document.querySelectorAll('.btn-pick-star').forEach(btn => {
+            const star = parseInt(btn.getAttribute('data-star'));
+            if (star <= val) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    function actualizarContador(textarea) {
+        const count = textarea.value.length;
+        document.getElementById('charCounterTxt').textContent = `${count} / 1000`;
+    }
+
+    async function enviarResenaAjax(e) {
+        e.preventDefault();
+        const fb = document.getElementById('resenaFeedbackBox');
+        const btn = document.getElementById('btnEnviarResena');
+
+        const nombre = document.getElementById('resenaNombre').value.trim();
+        const correo = document.getElementById('resenaCorreo').value.trim();
+        const calificacion = parseInt(document.getElementById('inputRatingValue').value) || 5;
+        const tipoExp = document.getElementById('resenaTipoExp').value;
+        const plato = document.getElementById('resenaPlato').value.trim();
+        const comentario = document.getElementById('resenaComentario').value.trim();
+
+        if (nombre.length < 2) {
+            fb.style.display = 'block';
+            fb.className = 'resena-feedback-box error';
+            fb.textContent = 'Por favor ingresa tu nombre completo.';
+            return;
+        }
+
+        if (comentario.length < 5) {
+            fb.style.display = 'block';
+            fb.className = 'resena-feedback-box error';
+            fb.textContent = 'Tu comentario debe tener al menos 5 caracteres.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+
+        try {
+            const resp = await fetch('/Resena/CrearApi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombreCliente: nombre,
+                    correo: correo,
+                    calificacion: calificacion,
+                    tipoExperiencia: tipoExp,
+                    platoRecomendado: plato,
+                    comentario: comentario
+                })
+            });
+
+            const data = await resp.json();
+
+            if (data.ok) {
+                fb.style.display = 'block';
+                fb.className = 'resena-feedback-box success';
+                fb.textContent = data.mensaje;
+
+                // Agregar tarjeta al inicio del grid dinámicamente
+                insertarTarjetaResenaEnGrid(data.resena);
+
+                // Actualizar puntuación promedio en pantalla
+                if (data.stats) {
+                    const mainScore = document.getElementById('mainScoreDisplay');
+                    if (mainScore) mainScore.textContent = data.stats.promedio.toFixed(1);
+                    const totalTxt = document.getElementById('mainTotalReviewsTxt');
+                    if (totalTxt) totalTxt.innerHTML = `Basado en <strong>${data.stats.totalResenas}</strong> comensales verificados`;
+                }
+
+                // Limpiar formulario
+                document.getElementById('formNuevaResena').reset();
+                actualizarContador(document.getElementById('resenaComentario'));
+
+                setTimeout(() => {
+                    cerrarModalResena();
+                }, 1500);
+            } else {
+                fb.style.display = 'block';
+                fb.className = 'resena-feedback-box error';
+                fb.textContent = data.mensaje || 'Error al enviar la reseña.';
+            }
+        } catch (err) {
+            console.error(err);
+            fb.style.display = 'block';
+            fb.className = 'resena-feedback-box error';
+            fb.textContent = 'Hubo un problema de conexión al enviar la reseña.';
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+    }
+
+    function insertarTarjetaResenaEnGrid(r) {
+        const grid = document.getElementById('resenasGridContainer');
+        if (!grid) return;
+
+        // Remover mensaje de "sé el primero" si existía
+        const vacio = grid.querySelector('.resena-vacia');
+        if (vacio) vacio.remove();
+
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += `
+                <svg class="star-icon ${i <= r.calificacion ? 'star-fill' : 'star-empty'}" width="16" height="16" viewBox="0 0 24 24">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+            `;
+        }
+
+        const tagDishHtml = r.platoRecomendado ? `
+            <span class="review-tag-dish">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                Recomendó: <strong>${r.platoRecomendado}</strong>
+            </span>
+        ` : '';
+
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        card.setAttribute('data-rating', r.calificacion);
+        card.setAttribute('data-exp', r.tipoExperiencia);
+        card.style.animation = 'scaleInModal 300ms cubic-bezier(0.23, 1, 0.32, 1)';
+
+        const initial = r.nombreCliente ? r.nombreCliente.charAt(0).toUpperCase() : 'C';
+
+        card.innerHTML = `
+            <div class="review-head">
+                <div class="review-author-wrap">
+                    <div class="review-avatar">${initial}</div>
+                    <div>
+                        <div class="review-author-name">
+                            <span>${r.nombreCliente}</span>
+                            <span class="badge-verificado">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                Verificado
+                            </span>
+                        </div>
+                        <div class="review-date-txt">${r.fecha || 'Reciente'}</div>
+                    </div>
+                </div>
+                <div class="review-stars-wrap">${starsHtml}</div>
+            </div>
+            <div class="review-tags-row">
+                <span class="review-tag-exp">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+                    <span>${r.tipoExperiencia}</span>
+                </span>
+                ${tagDishHtml}
+            </div>
+            <p class="review-body-text">"${r.comentario}"</p>
+        `;
+
+        grid.insertBefore(card, grid.firstChild);
+    }
+
+    function filtrarResenas(tipo, btn) {
+        document.querySelectorAll('.chip-filter').forEach(c => c.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+
+        const cards = document.querySelectorAll('.review-card');
+        cards.forEach(card => {
+            if (tipo === 'todas') {
+                card.style.display = 'flex';
+            } else if (tipo === '5estrellas') {
+                card.style.display = card.getAttribute('data-rating') === '5' ? 'flex' : 'none';
+            } else {
+                card.style.display = card.getAttribute('data-exp') === tipo ? 'flex' : 'none';
+            }
+        });
+    }
+</script>

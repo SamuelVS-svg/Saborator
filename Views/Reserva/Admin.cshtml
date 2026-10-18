@@ -1,0 +1,231 @@
+@model List<ControlClientesRestaurante.Models.Reserva>
+@{
+    ViewData["Title"] = "Gestión de Reservas";
+    Layout = "_Layout";
+    var avisos = (List<string>)(ViewBag.Avisos ?? new List<string>());
+    string filtroSel = ViewBag.FiltroSeleccionado as string ?? "hoy";
+    string fechaSel  = ViewBag.FechaSeleccionada as string ?? "";
+    string estadoSel = ViewBag.EstadoSeleccionado as string ?? "";
+    string buscar    = ViewBag.Buscar as string ?? "";
+
+    int totalHoy         = ViewBag.TotalHoy ?? 0;
+    int totalManana      = ViewBag.TotalManana ?? 0;
+    int totalConfirmadas = ViewBag.TotalConfirmadas ?? 0;
+    int totalGeneral     = ViewBag.TotalGeneral ?? 0;
+}
+
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+        <h1 class="page-title">Reservas &amp; Gestión de Salón</h1>
+        <p class="page-subtitle">Control de asistencia, recordatorios por WhatsApp y asignación de mesas</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-action="ExportarCsv" asp-route-filtro="@filtroSel" asp-route-fecha="@fechaSel" asp-route-estado="@estadoSel" asp-route-buscar="@buscar" 
+           class="btn-ghost" style="padding:0.45rem 0.85rem;font-size:0.82rem;gap:0.4rem;display:inline-flex;align-items:center;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Exportar Reservas (Excel)</span>
+        </a>
+        <a asp-controller="Reserva" asp-action="Nueva" target="_blank" class="btn-gold" style="padding:0.45rem 0.95rem;font-size:0.82rem;">
+            + Tomar Reserva Manual
+        </a>
+    </div>
+</div>
+
+<!-- ══ TARJETAS DE KPIS DE RESERVAS ═══════════════════════════════════ -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <a asp-action="Admin" asp-route-filtro="hoy" style="text-decoration:none;">
+            <div class="card-pro p-3" style="border-left: 4px solid var(--color-brand, #7A1C28); cursor:pointer;">
+                <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Para Hoy</div>
+                <div style="font-size:1.45rem;font-weight:800;color:var(--c-dark);margin-top:0.2rem;">@totalHoy reservas</div>
+                <div style="font-size:0.72rem;color:var(--c-muted);">Turnos de almuerzo y cena</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-lg-3">
+        <a asp-action="Admin" asp-route-filtro="manana" style="text-decoration:none;">
+            <div class="card-pro p-3" style="border-left: 4px solid #3B82F6; cursor:pointer;">
+                <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Para Mañana</div>
+                <div style="font-size:1.45rem;font-weight:800;color:#2563EB;margin-top:0.2rem;">@totalManana reservas</div>
+                <div style="font-size:0.72rem;color:var(--c-muted);">Planificación anticipada</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-lg-3">
+        <a asp-action="Admin" asp-route-filtro="semana" style="text-decoration:none;">
+            <div class="card-pro p-3" style="border-left: 4px solid #10B981; cursor:pointer;">
+                <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Próximos 7 Días</div>
+                <div style="font-size:1.45rem;font-weight:800;color:#059669;margin-top:0.2rem;">@totalConfirmadas confirmadas</div>
+                <div style="font-size:0.72rem;color:var(--c-muted);">Comensales activos</div>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-lg-3">
+        <a asp-action="Admin" asp-route-filtro="" style="text-decoration:none;">
+            <div class="card-pro p-3" style="border-left: 4px solid #C8973A; cursor:pointer;">
+                <div style="font-size:0.75rem;color:var(--c-muted);text-transform:uppercase;font-weight:700;">Total Registradas</div>
+                <div style="font-size:1.45rem;font-weight:800;color:#B45309;margin-top:0.2rem;">@totalGeneral en sistema</div>
+                <div style="font-size:0.72rem;color:var(--c-muted);">Historial completo</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+@if (avisos.Any())
+{
+    <div style="background:rgba(200,151,58,0.12);border:1px solid rgba(200,151,58,0.35);border-radius:12px;padding:0.85rem 1.15rem;margin-bottom:1.5rem;">
+        <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gold);margin-bottom:0.35rem;display:flex;align-items:center;gap:0.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span>Avisos de Reservas Recientes</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.25rem;font-size:0.84rem;color:var(--text);">
+            @foreach (var a in avisos)
+            {
+                <div>@a</div>
+            }
+        </div>
+    </div>
+}
+
+<!-- ══ FILTROS Y BUSCADOR ═══════════════════════════════════════════════ -->
+<div class="card-pro p-3 mb-4" style="background:var(--color-bg-card, #FFFDF9);">
+    <form method="get" asp-action="Admin" class="row g-2 align-items-end">
+        <input type="hidden" name="filtro" value="@(string.IsNullOrEmpty(fechaSel) ? filtroSel : "")" />
+        <div class="col-12 col-md-4">
+            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Buscar por Código, Cliente o Teléfono</label>
+            <input type="text" name="buscar" value="@buscar" class="form-control form-control-sm" placeholder="Ej: RES-2026..., Valentina, 300..." />
+        </div>
+        <div class="col-6 col-md-3">
+            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Fecha Específica</label>
+            <input type="date" name="fecha" value="@fechaSel" class="form-control form-control-sm" />
+        </div>
+        <div class="col-6 col-md-2">
+            <label style="font-size:0.75rem;font-weight:700;color:var(--c-muted);margin-bottom:0.25rem;">Estado</label>
+            <select name="estado" class="form-select form-select-sm">
+                <option value="">Todos</option>
+                <option value="Confirmada" selected="@(estadoSel == "Confirmada")">Confirmada</option>
+                <option value="Completada" selected="@(estadoSel == "Completada")">Completada</option>
+                <option value="Cancelada" selected="@(estadoSel == "Cancelada")">Cancelada</option>
+                <option value="No Asistio" selected="@(estadoSel == "No Asistio")">No Asistió</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-3 d-flex gap-2">
+            <button type="submit" class="btn-brand flex-fill" style="padding:0.38rem 0.75rem;font-size:0.8rem;border-radius:8px;">
+                Filtrar
+            </button>
+            <a asp-action="Admin" asp-route-filtro="hoy" class="btn-ghost" style="padding:0.38rem 0.75rem;font-size:0.8rem;border-radius:8px;">
+                Hoy
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- ══ LISTADO GENERAL DE RESERVAS ═════════════════════════════════════ -->
+<div class="card-pro">
+    <div class="card-pro-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="card-pro-title" style="margin:0;">Listado de Reservas (@Model.Count)</h2>
+            <span style="font-size:0.8rem;color:var(--muted);">Salón Principal y Terraza (Mesas 1 a 30)</span>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align:center;padding:3rem 1rem;color:var(--muted);">
+            No hay reservas registradas para el criterio de búsqueda seleccionado.
+        </div>
+    }
+    else
+    {
+        <div class="tbl-wrap">
+            <table class="tbl-pro">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Comensal</th>
+                        <th>Mesa</th>
+                        <th>Fecha &amp; Hora</th>
+                        <th>Personas</th>
+                        <th>Petición</th>
+                        <th>Estado</th>
+                        <th style="width:230px;text-align:right;">Contacto &amp; Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        string telDigitos = new string(r.Telefono.Where(char.IsDigit).ToArray());
+                        if (telDigitos.Length == 10 && telDigitos.StartsWith("3")) telDigitos = "57" + telDigitos;
+                        string msgWp = Uri.EscapeDataString($"¡Hola {r.NombreCliente}! Te saludamos de *Saborator Restaurante*. Te recordamos tu reserva de mesa para hoy:\n\n🍽️ *Mesa:* #{r.NumeroMesa}\n⏰ *Hora:* {r.Hora}\n👥 *Personas:* {r.NumeroPersonas}\n📍 Cra 4 Sur # 43-12, Barranquilla.\n\n¿Nos confirmas tu asistencia? ¡Te esperamos!");
+
+                        <tr>
+                            <td>
+                                <strong style="font-family:'Geist Mono',monospace;color:var(--color-brand, #7A1C28);font-size:0.85rem;">@r.Codigo</strong>
+                            </td>
+                            <td>
+                                <div style="font-weight:700;">@r.NombreCliente</div>
+                                <div style="font-size:0.75rem;color:var(--muted);">@r.Telefono</div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:rgba(200,151,58,0.15);color:#7A1C28;font-weight:700;padding:0.25rem 0.55rem;border-radius:6px;">
+                                    Mesa #@r.NumeroMesa
+                                </span>
+                            </td>
+                            <td style="font-variant-numeric:tabular-nums;font-size:0.85rem;">
+                                <strong>@r.Fecha.ToString("dd/MM/yyyy")</strong><br />
+                                <span style="color:var(--muted);">@r.Hora</span>
+                            </td>
+                            <td style="font-variant-numeric:tabular-nums;">@r.NumeroPersonas pers.</td>
+                            <td style="max-width:180px;font-size:0.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="@r.Notas">
+                                @(string.IsNullOrEmpty(r.Notas) ? "—" : r.Notas)
+                            </td>
+                            <td>
+                                @if (r.Estado == "Confirmada")
+                                { <span class="estado-pill completada" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;">Confirmada</span> }
+                                else if (r.Estado == "Completada")
+                                { <span class="estado-pill" style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;">Completada</span> }
+                                else if (r.Estado == "No Asistio")
+                                { <span class="estado-pill" style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;">No Asistió</span> }
+                                else
+                                { <span class="estado-pill" style="background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;">Cancelada</span> }
+                            </td>
+                            <td style="text-align:right;">
+                                <div class="d-flex justify-content-end align-items-center gap-1">
+                                    <!-- Botón WhatsApp de recordatorio -->
+                                    <a href="https://api.whatsapp.com/send?phone=@telDigitos&text=@msgWp" target="_blank"
+                                       class="btn-ghost" title="Enviar recordatorio por WhatsApp al comensal" 
+                                       style="padding:0.25rem 0.5rem;font-size:0.75rem;background:rgba(37,211,102,0.1);color:#128C7E;border:1px solid rgba(37,211,102,0.3);border-radius:6px;display:inline-flex;align-items:center;gap:0.25rem;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                                        <span>WhatsApp</span>
+                                    </a>
+
+                                    @if (r.Estado == "Confirmada")
+                                    {
+                                        <!-- Marcar comensal sentado / completado -->
+                                        <form asp-action="CambiarEstado" method="post" style="margin:0;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@r.Id" />
+                                            <input type="hidden" name="nuevoEstado" value="Completada" />
+                                            <button type="submit" class="btn-ghost" title="Marcar comensal sentado en la mesa" style="padding:0.25rem 0.5rem;font-size:0.75rem;color:#059669;border-color:rgba(16,185,129,0.3);">
+                                                ✓ Llegó
+                                            </button>
+                                        </form>
+
+                                        <!-- Cancelar -->
+                                        <form asp-action="Cancelar" method="post" style="margin:0;" onsubmit="return confirm('¿Cancelar esta reserva?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@r.Id" />
+                                            <button type="submit" class="btn-ghost" title="Cancelar reserva" style="padding:0.25rem 0.5rem;font-size:0.75rem;color:#DC2626;">
+                                                ✕
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

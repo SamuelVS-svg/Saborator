@@ -1,0 +1,169 @@
+@{
+    ViewData["Title"] = "Actualización Obligatoria de Contraseña — Saborator";
+    Layout = "_Layout";
+    var usuario = (ViewBag.Usuario as string) ?? "";
+}
+
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<div class="login-center-wrapper" style="min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+
+    <!-- Fondo Atmosférico Gastronómico (Fixed, nunca desplaza la tarjeta) -->
+    <div class="gastro-bg" aria-hidden="true" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:0; overflow:hidden;">
+        <div class="gastro-gradient-mesh" style="position:absolute; inset:0;"></div>
+        <div class="gastro-radial-ember-glow" style="position:absolute; inset:0;"></div>
+        <canvas id="gastroEmbersCanvas" class="gastro-canvas" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;"></canvas>
+    </div>
+
+    <!-- Botón Cancelar y Salir -->
+    <a asp-controller="Login" asp-action="Logout" class="gastro-back-pill" title="Cerrar sesión" aria-label="Cancelar y salir">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Cancelar y salir</span>
+    </a>
+
+    <!-- Tarjeta Central de Primer Ingreso -->
+    <main class="gastro-card-wrapper" role="main">
+        <div class="form-card">
+
+            <div class="form-logo" style="justify-content:center; flex-direction:column; text-align:center; margin-bottom:1.25rem;">
+                <div class="form-logo-icon" style="margin:0 auto .75rem auto;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="form-title" style="font-size:1.85rem; margin-bottom:.35rem;">Cambio de Contraseña</h1>
+                    <p class="form-sub" style="margin-bottom:0; font-size:.84rem;">Por seguridad de primer ingreso, define tu clave personal para continuar.</p>
+                </div>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="form-error" role="alert">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>@ViewBag.Error</span>
+                </div>
+            }
+
+            <form asp-controller="Login" asp-action="PrimerIngreso" method="post" id="formPrimerIngreso">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="usuario" value="@usuario" />
+
+                <div class="f-group">
+                    <label class="f-label">Usuario</label>
+                    <div class="f-input-wrap">
+                        <input type="text" class="f-input" value="@usuario" disabled style="background:rgba(239, 232, 218, 0.6); font-weight:700; padding-left:.95rem;" />
+                    </div>
+                </div>
+
+                <div class="f-group">
+                    <label class="f-label" for="txtContrasenaActual">Contraseña Temporal Actual *</label>
+                    <div class="f-input-wrap">
+                        <input type="password" name="contrasenaActual" id="txtContrasenaActual" class="f-input" required placeholder="Ingresa la contraseña con la que accediste" autocomplete="current-password" style="padding-left:.95rem;" />
+                    </div>
+                </div>
+
+                <div class="f-group">
+                    <label class="f-label" for="txtNuevaPass">Nueva Contraseña Personal *</label>
+                    <div class="f-input-wrap">
+                        <input type="password" name="nuevaContrasena" id="txtNuevaPass" class="f-input" required placeholder="Mínimo 8 caracteres (letras, números y símbolos)" autocomplete="new-password" style="padding-left:.95rem;" />
+                    </div>
+                    <span style="font-size:0.75rem; color:var(--c-muted); margin-top:0.3rem; display:block;">
+                        Recomendado: mayúsculas, minúsculas, números y al menos un símbolo ($, #, !, %).
+                    </span>
+                </div>
+
+                <div class="f-group" style="margin-bottom:1.5rem;">
+                    <label class="f-label" for="txtConfirmarPass">Confirmar Nueva Contraseña *</label>
+                    <div class="f-input-wrap">
+                        <input type="password" name="confirmarContrasena" id="txtConfirmarPass" class="f-input" required placeholder="Repite la nueva contraseña" autocomplete="new-password" style="padding-left:.95rem;" />
+                    </div>
+                    <div id="msgCoincidencia" style="display:none; font-size:0.78rem; color:#DC2626; margin-top:0.35rem; font-weight:600;">
+                        Las contraseñas no coinciden.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-entrar" id="btnSubmitPrimerIngreso">
+                    <span>Establecer Contraseña &amp; Entrar</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                </button>
+            </form>
+
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+<script>
+    var np = document.getElementById('txtNuevaPass');
+    var cp = document.getElementById('txtConfirmarPass');
+    var mc = document.getElementById('msgCoincidencia');
+    var btn = document.getElementById('btnSubmitPrimerIngreso');
+
+    function validarCoincidencia() {
+        if (cp.value && np.value !== cp.value) {
+            mc.style.display = 'block';
+            if (btn) btn.disabled = true;
+        } else {
+            mc.style.display = 'none';
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    if (np && cp) {
+        np.addEventListener('input', validarCoincidencia);
+        cp.addEventListener('input', validarCoincidencia);
+    }
+
+    // Canvas suave de brasa de fondo
+    (function initGastronomyCanvas() {
+        var canvas = document.getElementById('gastroEmbersCanvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var width = canvas.width = window.innerWidth;
+        var height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', function() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        var particles = [];
+        for (var i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 2 + 0.8,
+                speedY: Math.random() * 0.7 + 0.3,
+                angle: Math.random() * Math.PI * 2,
+                opacity: Math.random() * 0.5 + 0.25
+            });
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                p.y -= p.speedY;
+                p.x += Math.sin(p.angle) * 0.4;
+                p.angle += 0.02;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(212, 175, 55, ' + p.opacity + ')';
+                ctx.fill();
+
+                if (p.y < -10) {
+                    p.y = height + 10;
+                    p.x = Math.random() * width;
+                }
+            }
+            requestAnimationFrame(render);
+        }
+        render();
+    })();
+</script>
+}

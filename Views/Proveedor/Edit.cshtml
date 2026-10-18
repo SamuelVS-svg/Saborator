@@ -1,0 +1,95 @@
+@model ControlClientesRestaurante.Models.Proveedor
+@{ ViewData["Title"] = "Editar proveedor"; }
+
+<div class="d-flex gap-2 mb-3">
+    <button type="button" onclick="history.back()" class="btn-ghost" style="padding:.35rem .8rem;font-size:.8rem;">← Volver</button>
+</div>
+
+<div class="pg-header">
+    <div class="pg-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </div>
+    <div><div class="pg-title">Editar proveedor</div><div class="pg-sub">Modifica los datos del proveedor</div></div>
+</div>
+<hr class="div-gold" />
+
+<div style="display:flex;justify-content:center;">
+<div class="card-pro p-4" style="max-width:620px;width:100%;">
+    <form asp-action="Edit" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="All" class="alert-err" style="display:@(ViewData.ModelState.IsValid?"none":"block")"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-8">
+                <label class="lbl">Nombre <span style="color:var(--c-red)">*</span></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger" style="font-size:.76rem;"></span>
+            </div>
+            <div class="col-sm-4">
+                <label class="lbl">NIT / RUT</label>
+                <input asp-for="Nit" class="form-control" />
+                <span asp-validation-for="Nit" class="text-danger" style="font-size:.76rem;"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="lbl">Persona de contacto</label>
+                <input asp-for="Contacto" class="form-control" />
+            </div>
+            <div class="col-sm-6">
+                <label class="lbl">Teléfono</label>
+                <input asp-for="Telefono" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="lbl">Correo electrónico</label>
+                <input asp-for="Correo" class="form-control" type="email" />
+                <span asp-validation-for="Correo" class="text-danger" style="font-size:.76rem;"></span>
+            </div>
+            <div class="col-sm-6">
+                <label class="lbl">Categoría</label>
+                <select asp-for="Categoria" class="form-select">
+                    <option value="">— Seleccionar —</option>
+                    <option>Bebidas</option>
+                    <option>Carnes</option>
+                    <option>Frutas y Verduras</option>
+                    <option>Lácteos</option>
+                    <option>Insumos de cocina</option>
+                    <option>Empaques</option>
+                    <option>Limpieza</option>
+                    <option>Otros</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Dirección</label>
+            <input asp-for="Direccion" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Notas</label>
+            <textarea asp-for="Notas" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;">
+                <input asp-for="Activo" type="checkbox" style="width:16px;height:16px;accent-color:var(--brand);" />
+                <span style="font-size:.875rem;font-weight:600;">Proveedor activo</span>
+            </label>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn-brand" style="gap:.4rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar cambios
+            </button>
+            <a asp-action="Index" class="btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+</div>

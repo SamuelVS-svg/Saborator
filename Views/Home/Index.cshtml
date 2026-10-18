@@ -1,0 +1,1844 @@
+@inject ControlClientesRestaurante.Services.ProductoService _productoSvc
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Saborator — Menú & Experiencia Gourmet";
+    Layout = "_Layout";
+
+    var _session = HttpContextAccessor.HttpContext?.Session;
+    var _usuario = _session?.GetString("Usuario");
+    var _rol     = _session?.GetString("Rol") ?? "";
+    var _autenticado = !string.IsNullOrEmpty(_usuario);
+
+    var productos = _productoSvc.ObtenerTodos().Where(p => p.Activo).ToList();
+    var resenas = ViewBag.Resenas as List<ControlClientesRestaurante.Models.Resena> ?? new List<ControlClientesRestaurante.Models.Resena>();
+    var resenaStats = ViewBag.ResenaStats as ControlClientesRestaurante.Services.ResenaEstadisticasDto ?? new ControlClientesRestaurante.Services.ResenaEstadisticasDto();
+}
+
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/intro.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
+
+<!-- ══ INTRO CINEMATOGRÁFICA DE ALTA COCINA ═══════════════════ -->
+<div class="cinematic-intro" id="cinematicIntro" aria-label="Introducción cinematográfica de Saborator">
+    <div class="intro-ambient" aria-hidden="true"></div>
+    <div class="intro-spotlight" aria-hidden="true"></div>
+
+    <button type="button" class="intro-skip-btn" id="introSkipBtn" aria-label="Saltar introducción">
+        <svg class="skip-timer-ring" viewBox="0 0 16 16">
+            <circle class="skip-timer-circle" cx="8" cy="8" r="6" />
+        </svg>
+        <span>Saltar</span>
+        <span class="intro-skip-kbd">Esc</span>
+    </button>
+
+    <div class="intro-stage">
+        <div class="cloche-scene">
+            <div class="emblem-halo" aria-hidden="true"></div>
+            <div class="shockwave-ring" aria-hidden="true"></div>
+
+            <div class="emblem-reveal" aria-hidden="true">
+                <svg width="74" height="74" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="32" cy="32" r="30" stroke="url(#goldRimEmblem)" stroke-width="1.8" fill="rgba(30, 8, 12, 0.75)" />
+                    <circle cx="32" cy="32" r="26" stroke="rgba(200, 151, 58, 0.35)" stroke-dasharray="2 3" stroke-width="1" />
+                    <g transform="translate(14, 16) scale(0.07)">
+                        <path d="M 222 2.070 C 206.991 3.712, 184.913 8.101, 169.500 12.506 C 113.070 28.634, 74.527 56.596, 47.375 101.105 C 32.470 125.537, 24.750 148.313, 19.953 182 C 17.186 201.438, 17.337 210.455, 20.530 216.461 L 23.061 221.220 20.119 228.860 C 14.367 243.796, 14.706 247.409, 22.670 256.010 L 28.164 261.945 25.582 270.722 C 22.452 281.360, 22.380 285.166, 25.101 295.926 L 27.201 304.233 22.254 309.367 C 19.533 312.190, 16.397 315.850, 15.286 317.500 C 12.144 322.166, 6.277 337.681, 3.921 347.555 C -0.913 367.812, 4.565 377.874, 22.180 381.097 L 28.859 382.320 29.468 389.910 C 31.887 420.045, 34.950 425.249, 53.890 431.400 C 64.332 434.792, 69.159 435.633, 94.500 438.474 C 164.287 446.299, 183.112 447.399, 235.461 446.712 C 279.329 446.137, 297.693 445.040, 348.879 439.938 C 407.855 434.059, 442.366 428.978, 457.500 423.945 C 468.239 420.373, 476.179 412.833, 480.305 402.290 C 481.985 397.996, 483.998 380.937, 483.999 370.982 L 484 365.465 490.740 363.697 C 504.795 360.011, 510.018 352.903, 509.985 337.507 C 509.951 321.465, 504.410 308.201, 493.063 297 L 485.465 289.500 486.748 283.500 C 488.885 273.510, 486.632 263.450, 480.440 255.332 L 477.939 252.054 480.617 246.777 C 482.444 243.178, 483.451 239.344, 483.785 234.719 C 484.237 228.444, 484.002 227.388, 480.640 220.587 C 478.021 215.286, 475.199 211.545, 470.524 207.171 L 464.041 201.106 466.770 195.840 C 469.245 191.066, 469.498 189.587, 469.474 180.037 C 469.450 170.404, 469.046 168.170, 464.769 154 C 457.359 129.454, 451.342 112.641, 446.562 103.123 C 441.069 92.186, 430.016 75.678, 422.207 66.746 C 394.440 34.990, 348.098 12.889, 289.500 3.456 C 277.595 1.540, 234.865 0.662, 222 2.070 M 231.507 22.098 C 192.369 24.737, 154.063 35.660, 125.984 52.188 C 88.187 74.438, 60.171 109.730, 45.959 153 C 41.696 165.979, 35 194.025, 35 198.901 C 35 201.192, 42.230 203.255, 58.128 205.499 C 72.081 207.469, 88.998 207.401, 173.500 205.034 C 212 203.955, 268.250 202.596, 298.500 202.013 C 384.949 200.348, 414.057 198.328, 443.923 191.923 C 449.062 190.821, 449.110 190.776, 448.475 187.655 C 446.265 176.793, 435.661 134.842, 433.495 128.390 C 430.111 118.311, 422.106 102.448, 415.636 93 C 407.690 81.396, 392.330 66.626, 378.965 57.736 C 348.556 37.509, 309.631 25.115, 266.895 22.052 C 251.066 20.917, 248.983 20.920, 231.507 22.098 M 215.668 63.253 C 212.835 65.325, 212.534 71.108, 214.861 78.768 C 217.714 88.162, 220.067 91, 225 91 C 230.134 91, 233.422 87.157, 232.701 82 C 232.020 77.132, 228.321 67.677, 225.887 64.583 C 223.629 61.712, 218.660 61.066, 215.668 63.253 M 364.485 89.999 C 361.554 91.108, 356.132 96.900, 353.817 101.395 C 351.418 106.053, 352.440 109.570, 356.485 110.586 C 362.492 112.093, 372.014 103.790, 371.985 97.070 C 371.976 95.107, 371.639 93.005, 371.235 92.400 C 369.913 90.420, 366.541 89.221, 364.485 89.999 M 129.558 129.492 C 124.468 131.305, 121.052 133.872, 118.250 137.990 C 115.444 142.113, 115.410 144.410, 118.114 147.114 C 119.929 148.929, 120.941 149.133, 125.282 148.557 C 135.411 147.213, 142.449 142.454, 143.632 136.148 C 144.194 133.151, 143.900 132.310, 141.589 130.323 C 138.525 127.687, 135.257 127.462, 129.558 129.492 M 277 136 C 272.884 140.116, 275.771 149.850, 283.061 156.436 C 287.664 160.595, 289.832 160.872, 292.826 157.686 C 295.760 154.562, 295.619 149.635, 292.412 143.200 C 288.079 134.503, 281.548 131.452, 277 136 M 389.033 156.620 C 383.333 159.471, 381.503 160.945, 380.409 163.564 C 378.670 167.725, 379.138 168.911, 383.676 171.860 L 387.308 174.220 393.309 171.360 C 401.802 167.313, 405 164.081, 405 159.548 C 405 156.328, 404.591 155.727, 401.532 154.449 C 396.950 152.534, 397.332 152.468, 389.033 156.620 M 179.174 169.314 C 177.978 170.587, 177 172.410, 177 173.364 C 177 178.127, 183.500 185.095, 189.290 186.541 C 195.132 187.999, 197.804 181.603, 194.373 174.374 C 190.961 167.183, 183.507 164.702, 179.174 169.314 M 442 214.596 C 422.784 218.130, 391.751 220.953, 371.773 220.985 L 362.047 221 350.214 236.750 C 343.706 245.412, 338.003 253.129, 337.540 253.898 C 336.592 255.473, 347.063 255.162, 387 252.427 C 412.481 250.682, 424.202 249.047, 440.048 245.028 C 455.913 241.004, 462.735 238.335, 464.660 235.397 C 468.303 229.837, 463.415 217.325, 456.466 214.421 C 452.501 212.765, 451.918 212.772, 442 214.596 M 40.690 225.697 C 36.097 234.894, 34.711 239.591, 35.920 241.851 C 38.074 245.875, 55.526 250.085, 78 252.002 C 97.438 253.660, 155.723 252.610, 157.768 250.565 C 158.625 249.708, 156.029 247.624, 145 240.317 C 140.325 237.220, 134.628 232.984, 132.340 230.905 C 129.937 228.721, 126.769 226.900, 124.840 226.594 C 123.003 226.302, 108.675 225.878, 93 225.652 C 66.689 225.273, 53.648 224.127, 44.794 221.416 C 43.529 221.028, 42.468 222.134, 40.690 225.697 M 225.500 223.555 C 155.842 224.970, 162 224.746, 162 225.865 C 162 226.341, 177.863 239.028, 197.250 254.058 C 216.637 269.088, 237.501 285.300, 243.613 290.085 C 257.824 301.208, 258.377 301.501, 262.173 299.928 C 266.049 298.323, 312.026 248.280, 329.407 226.750 L 333.241 222 309.870 222.158 C 297.017 222.245, 259.050 222.873, 225.500 223.555 M 450 265.589 C 435.967 269.472, 419.676 272.206, 397.500 274.399 C 373.018 276.820, 367.128 277.182, 341.341 277.857 L 316.738 278.500 310.321 285.500 C 306.791 289.350, 302.083 294.637, 299.859 297.250 L 295.814 302 309.085 302 C 323.039 302, 372.976 298.367, 406 294.948 C 427.884 292.683, 446.420 289.239, 458.413 285.208 C 465.005 282.993, 466.884 281.881, 468.736 279.102 C 469.981 277.233, 471 274.741, 471 273.564 C 471 269.949, 466.707 262.519, 464.500 262.315 C 463.400 262.213, 456.875 263.687, 450 265.589 M 48.854 272.706 C 44.780 273.332, 42.667 276.361, 42.667 281.574 C 42.667 287.970, 45.408 290.415, 55.500 293.017 C 66.246 295.789, 81.617 296.714, 146.500 298.495 C 208.760 300.205, 219.030 300.312, 218.929 299.250 C 218.793 297.825, 190.111 274.496, 186.811 273.125 C 184.011 271.963, 177.035 271.952, 141.616 273.053 C 108.563 274.080, 95.913 274.102, 81.616 273.159 C 64.049 272, 54.323 271.866, 48.854 272.706 M 462.100 306.086 C 455.280 308.251, 445.283 310.923, 439.884 312.024 C 411.689 317.769, 341.779 323.845, 291.500 324.918 L 258.500 325.623 251 323.104 L 243.500 320.586 170.500 320.543 C 100.748 320.502, 96.566 320.396, 76.500 318.158 C 64.950 316.870, 53.475 316.007, 51 316.240 C 35.324 317.715, 23.048 334.833, 23.012 355.264 L 23 362.029 29.060 358.970 C 32.392 357.288, 37.268 354.367, 39.895 352.480 C 42.521 350.593, 47.782 347.576, 51.585 345.775 C 57.710 342.874, 59.472 342.500, 67 342.500 C 74.456 342.500, 76.299 342.883, 82 345.614 C 85.575 347.327, 92.031 351.478, 96.347 354.837 C 108.547 364.334, 111.595 364.231, 129.094 353.721 C 142.415 345.721, 149.046 343.500, 159.500 343.540 C 168.437 343.574, 174.412 345.734, 183.531 352.227 C 191.479 357.887, 198.472 361.001, 203.217 360.994 C 206.673 360.989, 209.419 359.830, 217.439 354.995 C 229.469 347.742, 236.637 344.862, 244.220 344.236 C 253.732 343.451, 257.982 344.644, 269.754 351.402 C 282.897 358.948, 285.718 360.014, 292.399 359.956 C 299.417 359.896, 302.903 358.467, 318.875 349.108 C 342.025 335.544, 348.221 335.157, 369.216 345.967 C 375.660 349.285, 382.185 351.993, 383.716 351.984 C 386.772 351.965, 390.187 350.108, 401.441 342.342 C 415.578 332.586, 424.371 333.155, 442 344.967 C 445.025 346.993, 447.998 348.942, 448.607 349.297 C 449.255 349.674, 450.857 347.841, 452.471 344.875 C 453.988 342.089, 456.616 338.229, 458.311 336.299 C 461.263 332.936, 461.627 332.806, 466.947 333.214 C 470.361 333.476, 475.705 335.040, 480.820 337.274 L 489.140 340.908 490.687 337.207 C 493.022 331.618, 492.019 321.642, 488.464 315.112 C 485.519 309.700, 477.970 301.946, 475.772 302.074 C 475.073 302.115, 468.920 303.920, 462.100 306.086 M 410.500 357.509 C 399.201 366.344, 395.730 368.636, 391.612 369.978 C 383.998 372.461, 376.034 370.073, 361.500 360.947 C 353.863 356.151, 348.442 354.666, 343.022 355.884 C 340.760 356.392, 333.417 359.971, 326.705 363.837 C 311.733 372.460, 306.730 374.640, 298.709 376.037 C 287.819 377.933, 278.148 375.046, 260.549 364.642 C 254.646 361.153, 252.757 360.533, 248.024 360.533 C 243.029 360.533, 241.256 361.201, 230.975 366.950 C 211.726 377.714, 212.273 377.500, 204 377.500 C 197.448 377.500, 195.552 377.045, 189 373.905 C 184.875 371.928, 178.655 368.464, 175.178 366.209 C 161.201 357.141, 155.262 357.747, 135.751 370.233 C 131.489 372.960, 125.746 376.048, 122.990 377.096 C 116.435 379.587, 107.556 379.555, 100.788 377.018 C 95.832 375.160, 93.702 373.846, 81.385 365.048 C 74.627 360.220, 67.248 359.649, 60.344 363.417 C 57.680 364.871, 53.840 367.510, 51.810 369.280 L 48.120 372.500 50.450 386 C 53.672 404.680, 54.591 406.494, 62.032 408.879 C 70.736 411.669, 115.580 417.680, 150 420.671 C 179.371 423.223, 260.175 423.234, 291.500 420.690 C 352.409 415.743, 422.951 407.162, 441.487 402.444 C 448.147 400.749, 452.408 397.376, 453.942 392.585 C 454.658 390.350, 457 371.920, 457 368.523 C 457 368.376, 453.429 368.050, 449.065 367.798 C 439.642 367.252, 431.598 363.760, 423.168 356.556 C 420.236 354.050, 417.761 352.008, 417.668 352.017 C 417.576 352.027, 414.350 354.498, 410.500 357.509" stroke="none" fill="url(#goldGradInside)" fill-rule="evenodd"/>
+                    </g>
+                    <circle cx="32" cy="12" r="1.8" fill="#FFFDF9" />
+                </svg>
+            </div>
+
+            <svg class="svg-stage" viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="goldPlateGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#9A6A1E" />
+                        <stop offset="25%" stop-color="#E5C687" />
+                        <stop offset="50%" stop-color="#FFFDF9" />
+                        <stop offset="75%" stop-color="#C8973A" />
+                        <stop offset="100%" stop-color="#7A5212" />
+                    </linearGradient>
+                    <linearGradient id="clocheBodyGrad" x1="15%" y1="10%" x2="85%" y2="90%">
+                        <stop offset="0%" stop-color="#FFF4DC" />
+                        <stop offset="18%" stop-color="#E2B968" />
+                        <stop offset="42%" stop-color="#9A6A1E" />
+                        <stop offset="65%" stop-color="#6B1E2E" />
+                        <stop offset="85%" stop-color="#B8852E" />
+                        <stop offset="100%" stop-color="#551421" />
+                    </linearGradient>
+                    <linearGradient id="clocheHighlightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFDF9" stop-opacity="0.8" />
+                        <stop offset="100%" stop-color="#C8973A" stop-opacity="0" />
+                    </linearGradient>
+                    <linearGradient id="goldRimEmblem" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFFDF9" />
+                        <stop offset="50%" stop-color="#C8973A" />
+                        <stop offset="100%" stop-color="#8E631A" />
+                    </linearGradient>
+                    <linearGradient id="goldGradInside" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#E2B968" />
+                        <stop offset="50%" stop-color="#FFFDF9" />
+                        <stop offset="100%" stop-color="#C8973A" />
+                    </linearGradient>
+                    <filter id="shadowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.45" />
+                    </filter>
+                </defs>
+
+                <g class="platter-shadow">
+                    <ellipse cx="140" cy="154" rx="100" ry="15" fill="rgba(0,0,0,0.55)" filter="blur(6px)" />
+                </g>
+                <ellipse cx="140" cy="150" rx="98" ry="14" fill="url(#goldPlateGrad)" stroke="rgba(255,253,249,0.3)" stroke-width="0.8" />
+                <ellipse cx="140" cy="148.5" rx="88" ry="10" fill="#18060A" stroke="url(#goldPlateGrad)" stroke-width="0.7" />
+
+                <g class="cloche-dome-group">
+                    <path d="M 68 145 C 68 85, 108 56, 140 56 C 172 56, 212 85, 212 145 Z" 
+                          fill="url(#clocheBodyGrad)" stroke="rgba(255, 253, 249, 0.45)" stroke-width="1" filter="url(#shadowFilter)" />
+                    <path d="M 82 140 C 80 94, 114 66, 138 64 C 122 72, 100 96, 102 140 Z" fill="url(#clocheHighlightGrad)" />
+                    <path d="M 62 145 Q 140 156 218 145 Q 140 148 62 145 Z" fill="url(#goldPlateGrad)" stroke="rgba(255,253,249,0.6)" stroke-width="0.75" />
+                    <rect x="137.5" y="47" width="5" height="10" rx="2" fill="url(#goldPlateGrad)" />
+                    <circle cx="140" cy="40" r="9" fill="none" stroke="url(#goldPlateGrad)" stroke-width="3" />
+                    <circle cx="140" cy="40" r="4.5" fill="none" stroke="rgba(255,253,249,0.8)" stroke-width="1.2" />
+                    <circle cx="137.5" cy="38" r="1.8" fill="#FFFDF9" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="intro-brand-wrap">
+            <div class="intro-brand-title" role="presentation"><span>Saborator</span></div>
+            <p class="intro-brand-sub">Alta Cocina &amp; Gestión</p>
+        </div>
+    </div>
+</div>
+
+<div class="landing">
+
+    <!-- ══ NAV GASTRONÓMICO ═════════════════════════════════════ -->
+    <nav class="lnav">
+        <a href="/" class="lnav-brand">
+            <div class="lnav-icon">
+                <partial name="_LogoBurger" />
+            </div>
+            <span class="lnav-name">Saborator</span>
+        </a>
+
+        <div class="lnav-menu-links">
+            <a href="#menu" class="lnav-item"><span>La Carta</span></a>
+            <a href="#ubicacion" class="lnav-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Sede &amp; Mapa</span>
+            </a>
+            <a href="#resenas" class="lnav-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>Reseñas</span>
+            </a>
+            <a href="javascript:void(0)" onclick="abrirModalModalidad()" class="lnav-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                <span id="navModalityText">Domicilio</span>
+            </a>
+            <a asp-controller="Pedido" asp-action="Rastrear" class="lnav-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Rastrear Pedido</span>
+            </a>
+            <a asp-controller="Pago" asp-action="Checkout" class="lnav-item">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <span>Pagar Cuenta</span>
+            </a>
+            @if (_autenticado)
+            {
+                <a asp-controller="Reserva" asp-action="MisReservas" class="lnav-item">
+                    <span>Mis Reservas</span>
+                </a>
+            }
+        </div>
+
+        <div class="lnav-actions">
+            <!-- Botón de Modo Oscuro / Claro -->
+            <button type="button" class="theme-toggle-btn" onclick="toggleModoOscuro()" title="Cambiar modo de luz u oscuro" aria-label="Cambiar modo de luz u oscuro">
+                <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+
+            <!-- Botón de Carrito Flotante/Nav estilo KFC -->
+            <button type="button" onclick="abrirDrawerCarrito()" class="lnav-cart-btn" id="navCartBtn" aria-label="Ver Carrito">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span class="nav-cart-badge" id="navCartCount" style="display:none;">0</span>
+            </button>
+
+            <a asp-controller="Reserva" asp-action="Nueva" class="lnav-btn-p">Reservar Mesa</a>
+            @if (_autenticado)
+            {
+                <span class="lnav-user-tag" style="font-size:0.84rem;color:var(--text, #1C1416);font-weight:700;margin-left:0.35rem;display:inline-flex;align-items:center;gap:4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold, #C8973A)" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>@_usuario</span>
+                </span>
+                <a asp-controller="Login" asp-action="Logout" class="lnav-btn-o" style="padding:0.35rem 0.75rem;font-size:0.8rem;">Salir</a>
+            }
+            else
+            {
+                <a asp-controller="Login" asp-action="Index" class="lnav-btn-o" style="text-decoration:none;display:inline-flex;align-items:center;">Iniciar Sesión</a>
+            }
+        </div>
+    </nav>
+
+    <!-- ══ HERO DEL MENÚ GASTRONÓMICO (MINIMALISTA INSPIRADO EN EL VIDEO) ═══════════════════════ -->
+    <section class="hero hero-minimal" id="inicio">
+        <div class="hero-minimal-container">
+            <!-- Columna Izquierda: Tipografía limpia, propuesta de valor y acciones rápidas -->
+            <div class="hero-minimal-left">
+                <div class="hero-tag-minimal">
+                    <span class="hero-tag-dot"></span>
+                    <span>Alta Cocina Contemporánea &bull; Barranquilla</span>
+                </div>
+
+                <h1 class="hero-title-minimal">
+                    Disfruta Alta Cocina<br/>
+                    <span class="hero-title-accent">Hecha con Pasión.</span>
+                </h1>
+
+                <p class="hero-desc-minimal">
+                    Ingredientes seleccionados, masa madre artesanal y técnicas culinarias de autor. 
+                    Ordena a domicilio express con seguimiento o reserva tu mesa en salón.
+                </p>
+
+                <!-- Barra interactiva rápida de pedido / modalidad -->
+                <div class="hero-minimal-order-box">
+                    <a href="#menu" class="btn-minimal-order">
+                        <span>Ordenar Ahora</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+
+                    <div class="hero-minimal-mode-pill" onclick="abrirModalModalidad()" role="button" tabindex="0" title="Cambiar tipo de entrega">
+                        <div class="mode-pill-icon" id="heroBarIcon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                        </div>
+                        <div class="mode-pill-texts">
+                            <span class="mode-pill-title" id="heroModalityLabel">Domicilio Express</span>
+                            <span class="mode-pill-sub" id="heroAddressLabel">Ingresa tu dirección &rsaquo;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-minimal-meta">
+                    <div class="meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>Entrega: <strong>25-35 min</strong></span>
+                    </div>
+                    <div class="meta-divider"></div>
+                    <div class="meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span>Calificación: <strong>4.9 / 5.0</strong></span>
+                    </div>
+                    <div class="meta-divider"></div>
+                    <a asp-controller="Reserva" asp-action="Nueva" class="meta-item meta-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                        <span>Reservar Salón</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Escena visual isométrica minimalista inspirada en el video -->
+            <div class="hero-minimal-right">
+                <div class="hero-showcase-wrapper">
+                    <!-- Plato / Bandeja isométrica de presentación -->
+                    <div class="minimal-slate-board">
+                        <div class="slate-glow"></div>
+                        <img src="/img/hamburguesa.jpg" alt="Hamburguesa de Autor Saborator" class="slate-main-dish" />
+                        <div class="slate-reflection"></div>
+                    </div>
+
+                    <!-- Tarjeta flotante 1: Producto destacado de autor -->
+                    <div class="floating-dish-chip chip-top" onclick="location.href='#menu'">
+                        <div class="chip-avatar" style="background-image:url('/img/salchipapa.jpg');"></div>
+                        <div class="chip-info">
+                            <span class="chip-title">Salchipapa Gourmet</span>
+                            <span class="chip-price">$28.000 COP</span>
+                        </div>
+                        <span class="chip-badge">Firma</span>
+                    </div>
+
+                    <!-- Tarjeta flotante 2: Reserva de salón confirmada -->
+                    <div class="floating-dish-chip chip-bottom" onclick="location.href='/Reserva/Nueva'">
+                        <div class="chip-icon-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <div class="chip-info">
+                            <span class="chip-title">Mesa en Salón</span>
+                            <span class="chip-sub">Disponibilidad en vivo</span>
+                        </div>
+                        <span class="chip-arrow">&rarr;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ CARTA / MENÚ GASTRONÓMICO COMPLETO ════════════════════ -->
+    <section class="section-pad carta-section-wrap" id="menu">
+        <div class="section-inner">
+            <div class="section-center" style="margin-bottom:2.5rem;">
+                <div class="hero-tag" style="margin-bottom:0.75rem;">
+                    Nuestra Selección
+                </div>
+                <h2 class="section-title">Nuestra Carta Gastronómica</h2>
+                <p class="section-sub">Elaborada artesanalmente con productos frescos de temporada</p>
+            </div>
+
+            <!-- Filtros por Categoría y Preferencias Dietarias -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                <div class="d-flex flex-wrap gap-2" id="cartaCategoryFilter">
+                    <button type="button" class="btn-ghost active" onclick="filtrarCartaCategoria('todas', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;background:#7A1C28;color:#FFFDF9;">Todas</button>
+                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Hamburguesas & Carnes', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Hamburguesas &amp; Carnes</button>
+                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Salchipapas Gourmet', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Salchipapas Gourmet</button>
+                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Perros & Especiales', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Perros &amp; Especiales</button>
+                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Acompañamientos', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Acompañamientos</button>
+                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Bebidas', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Bebidas</button>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" id="btnToggleVeg" onclick="toggleFiltroDieta('veg')" class="btn-ghost" style="padding:0.35rem 0.75rem;font-size:0.78rem;border-radius:999px;font-weight:700;">
+                        🌱 Solo Veg
+                    </button>
+                    <button type="button" id="btnToggleGluten" onclick="toggleFiltroDieta('gluten')" class="btn-ghost" style="padding:0.35rem 0.75rem;font-size:0.78rem;border-radius:999px;font-weight:700;">
+                        🌾 Sin TACC
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid de Platos de la Carta Minimalista -->
+            <div class="menu-minimal-grid">
+                @foreach (var p in productos)
+                {
+                    bool esBurger = p.Nombre.ToLower().Contains("hamburguesa");
+                    bool esHotDog = p.Nombre.ToLower().Contains("perro");
+                    bool esSalchi = p.Nombre.ToLower().Contains("salchipapa");
+                    bool esPapas  = p.Nombre.ToLower().Contains("papas");
+                    bool esCoca   = p.Nombre.ToLower().Contains("coca");
+                    bool esPepsi  = p.Nombre.ToLower().Contains("pepsi");
+                    bool esAgua   = p.Nombre.ToLower().Contains("agua");
+                    bool esBebida = esCoca || esPepsi || esAgua;
+
+                    string tagBadge = esBurger ? "Firma" : (esHotDog ? "Especial" : (esBebida ? "Bebida" : (esSalchi ? "Gourmet" : (esPapas ? "Crujientes" : "Acompañamiento"))));
+                    string tiempo = p.TiempoCoccionMinutos > 0 ? $"{p.TiempoCoccionMinutos} min" : (esBebida ? "Al instante" : (esBurger ? "15 min" : (esHotDog ? "12 min" : "10 min")));
+
+                    string? bgImg = esSalchi ? "/img/salchipapa.jpg"
+                        : (esBurger ? "/img/hamburguesa.jpg"
+                        : (esHotDog ? "/img/perrocaliente.jpg"
+                        : (esPapas ? "/img/papasfrancesa.jpg"
+                        : (esCoca ? "/img/cocacola.png?v=3"
+                        : (esPepsi ? "/img/pepsi.webp?v=2"
+                        : (esAgua ? "/img/agua.webp?v=2" : null))))));
+                    string imgSegura = bgImg ?? "/img/hamburguesa.jpg";
+
+                    <article class="dish-card-minimal" tabindex="0" aria-label="@p.Nombre"
+                             data-categoria="@p.Categoria" data-veg="@p.EsVegetariano.ToString().ToLower()" data-gluten="@p.EsLibreGluten.ToString().ToLower()">
+                        <div class="dish-minimal-media">
+                            <span class="dish-minimal-badge">@tagBadge</span>
+                            <img src="@imgSegura" alt="@p.Nombre" class="dish-minimal-img" loading="lazy" />
+                            <span class="dish-minimal-time">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                @tiempo
+                            </span>
+                        </div>
+
+                        <div class="dish-minimal-body">
+                            <div class="dish-minimal-header">
+                                <h3 class="dish-minimal-name">@p.Nombre</h3>
+                                <span class="dish-minimal-price">$@p.Precio.ToString("N0")</span>
+                            </div>
+
+                            <p class="dish-minimal-desc">
+                                @(string.IsNullOrEmpty(p.Descripcion) ? "Receta tradicional con ingredientes seleccionados y cocción artesanal." : p.Descripcion)
+                            </p>
+
+                            <!-- Etiquetas Dietarias y Alérgenos -->
+                            <div class="d-flex flex-wrap gap-1 align-items-center mb-2" style="font-size:0.72rem;">
+                                @if (p.EsVegetariano)
+                                {
+                                    <span style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:4px;padding:1px 5px;font-weight:700;">🌱 Vegetariano</span>
+                                }
+                                @if (p.EsLibreGluten)
+                                {
+                                    <span style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;border-radius:4px;padding:1px 5px;font-weight:700;">🌾 Sin Gluten</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(p.Alergenos))
+                                {
+                                    <span style="color:#B45309;font-weight:600;" title="Contiene: @p.Alergenos">⚠️ @p.Alergenos</span>
+                                }
+                            </div>
+
+                            <div class="dish-minimal-footer">
+                                <button type="button" class="btn-dish-add" onclick="cartAgregar(@p.Id, '@p.Nombre.Replace("'", "\\'")', @Convert.ToInt64(p.Precio), '@imgSegura', this)">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    <span>Agregar</span>
+                                </button>
+                                <a asp-controller="Reserva" asp-action="Nueva" class="btn-dish-reserve-icon" title="Reservar mesa en salón" aria-label="Reservar mesa">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+
+            <script>
+                let categoriaActiva = 'todas';
+                let filtroSoloVeg = false;
+                let filtroSoloGluten = false;
+
+                function filtrarCartaCategoria(cat, btn) {
+                    categoriaActiva = cat;
+                    document.querySelectorAll('#cartaCategoryFilter .btn-ghost').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = '';
+                        b.style.color = '';
+                    });
+                    btn.classList.add('active');
+                    btn.style.background = '#7A1C28';
+                    btn.style.color = '#FFFDF9';
+                    aplicarFiltrosCarta();
+                }
+
+                function toggleFiltroDieta(tipo) {
+                    if (tipo === 'veg') {
+                        filtroSoloVeg = !filtroSoloVeg;
+                        const btn = document.getElementById('btnToggleVeg');
+                        btn.style.background = filtroSoloVeg ? '#059669' : '';
+                        btn.style.color = filtroSoloVeg ? '#FFF' : '';
+                    } else if (tipo === 'gluten') {
+                        filtroSoloGluten = !filtroSoloGluten;
+                        const btn = document.getElementById('btnToggleGluten');
+                        btn.style.background = filtroSoloGluten ? '#2563EB' : '';
+                        btn.style.color = filtroSoloGluten ? '#FFF' : '';
+                    }
+                    aplicarFiltrosCarta();
+                }
+
+                function aplicarFiltrosCarta() {
+                    const cards = document.querySelectorAll('.dish-card-minimal');
+                    cards.forEach(card => {
+                        const cat = card.getAttribute('data-categoria') || '';
+                        const esVeg = card.getAttribute('data-veg') === 'true';
+                        const esGluten = card.getAttribute('data-gluten') === 'true';
+
+                        let visible = true;
+                        if (categoriaActiva !== 'todas' && !cat.toLowerCase().includes(categoriaActiva.toLowerCase())) {
+                            visible = false;
+                        }
+                        if (filtroSoloVeg && !esVeg) {
+                            visible = false;
+                        }
+                        if (filtroSoloGluten && !esGluten) {
+                            visible = false;
+                        }
+                        card.style.display = visible ? 'flex' : 'none';
+                    });
+                }
+            </script>
+
+            <!-- Banner Exclusivo hacia el Plano de Mesas -->
+            <div style="margin-top:3.5rem;background:linear-gradient(135deg, #2A0B13 0%, #150508 100%);color:#FFFDF9;border-radius:20px;padding:3rem 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2rem;box-shadow:0 16px 40px rgba(0,0,0,0.35);border:1px solid rgba(200,151,58,0.3);">
+                <div style="max-width:540px;">
+                    <div style="color:var(--gold);font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:0.5rem;">
+                        Experiencia Exclusiva en Sala
+                    </div>
+                    <h3 style="font-family:var(--font-serif);font-size:2.2rem;font-weight:400;margin:0 0 0.75rem;color:#FFFDF9;">
+                        Reserva tu Mesa en Tiempo Real
+                    </h3>
+                    <p style="color:rgba(255,253,249,0.7);font-size:0.95rem;line-height:1.6;margin:0;">
+                        Visualiza el plano de las 30 mesas del restaurante. Escoge tu ubicación predilecta entre Salón Principal, Terraza Panorámica o Salón Cava VIP.
+                    </p>
+                </div>
+                <div>
+                    <a asp-controller="Reserva" asp-action="Nueva" class="btn-gold" style="padding:0.85rem 1.85rem;font-size:0.95rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;">
+                        <span>Ver Plano &amp; Reservar</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══ FILOSOFÍA DE EXPERIENCIA GASTRONÓMICA ═════════════════ -->
+    <section class="section-pad" id="experiencia">
+        <div class="section-inner">
+            <div class="section-center">
+                <h2 class="section-title">El Arte de la Hospitalidad</h2>
+                <p class="section-sub">Tres pilares que definen cada visita a Saborator</p>
+            </div>
+            <div class="features-grid">
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <h3>Cocina de Precisión</h3>
+                    <p>Recetas diseñadas con equilibrio de sabores, carnes de primera calidad y aderezos emulsionados en casa.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <h3>Mesas Asignadas</h3>
+                    <p>Un sistema de butacas y mesas digitales que garantiza que tu lugar esté listo sin esperas.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    <h3>Servicio Personalizado</h3>
+                    <p>Atención cercana de nuestro equipo de sommeliers y meseros para que tu experiencia sea inolvidable.</p>
+                </div>
+            </div>
+        </div>
+    <!-- ══ NUEVA SECCIÓN: SEDE PRINCIPAL, GOOGLE MAPS & ASIGNADOR DE DOMICILIOS ══ -->
+    <section class="section-pad ubicacion-section" id="ubicacion">
+        <div class="section-inner">
+            <div class="section-center" style="margin-bottom:2.5rem;">
+                <div class="hero-tag" style="margin-bottom:0.75rem;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Sede Principal &amp; Cobertura en Barranquilla
+                </div>
+                <h2 class="section-title">Encuéntranos &amp; Asigna tu Domicilio</h2>
+                <p class="section-sub">Despachamos directamente desde nuestra cocina central en Barranquilla o visítanos en nuestro salón.</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(340px, 100%), 1fr));gap:2.5rem;align-items:start;">
+                
+                <!-- Tarjeta 1: Información de Sede & Mapa Google Maps -->
+                <div class="ubicacion-card">
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+                        <div style="width:44px;height:44px;border-radius:12px;background:rgba(200,151,58,0.15);border:1px solid rgba(200,151,58,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold,#C8973A);">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <div>
+                            <h3 style="font-family:var(--font-serif);font-size:1.6rem;color:var(--brand);margin:0;line-height:1.2;">Sede Saborator Barranquilla</h3>
+                            <span style="font-size:0.8rem;color:var(--gold,#C8973A);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Cocina Central &amp; Salón Gourmet</span>
+                        </div>
+                    </div>
+
+                    <div class="ubicacion-inner-box">
+                        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem;">
+                            <span style="color:var(--gold,#C8973A);display:inline-flex;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h4"/><path d="M18 9h2a2 2 0 0 1 2 2v11h-4"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+                            </span>
+                            <strong style="font-size:1.05rem;">Cra 4 Sur # 50D-107</strong>
+                        </div>
+                        <div style="color:var(--muted);font-size:0.88rem;margin-left:1.7rem;">
+                            Barranquilla, Atlántico · Sector Ciudadela 20 de Julio
+                        </div>
+                        <div style="display:flex;align-items:center;gap:1.5rem;margin-top:0.85rem;padding-top:0.75rem;border-top:1px dashed var(--line,#E2D7C8);font-size:0.82rem;color:var(--muted);">
+                            <span style="display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <strong>12:00 PM - 11:30 PM</strong>
+                            </span>
+                            <span style="display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <strong>300 123 4567</strong>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Google Maps -->
+                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico" 
+                           target="_blank" rel="noopener noreferrer" 
+                           class="btn-gold" style="flex:1;min-width:180px;text-align:center;padding:0.75rem 1rem;border-radius:10px;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 4px 14px rgba(200,151,58,0.25);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            Abrir en Google Maps
+                        </a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico" 
+                           target="_blank" rel="noopener noreferrer" 
+                           style="flex:1;min-width:160px;text-align:center;padding:0.75rem 1rem;border-radius:10px;text-decoration:none;font-weight:700;background:#200B10;color:#FFFDF9;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;border:1px solid rgba(200,151,58,0.4);">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                            Cómo llegar (GPS)
+                        </a>
+                    </div>
+
+                    <!-- Google Maps Iframe Embebido -->
+                    <div style="position:relative;width:100%;height:320px;border-radius:14px;overflow:hidden;border:1.5px solid #C8973A;box-shadow:0 8px 24px rgba(32,11,16,0.12);">
+                        <iframe 
+                            src="https://maps.google.com/maps?q=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación Saborator Barranquilla Cra 4 Sur #50D-107">
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2: Calculadora / Asignador de Valor de Domicilio -->
+                <div class="ubicacion-card">
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+                        <div style="width:44px;height:44px;border-radius:12px;background:rgba(200,151,58,0.15);border:1px solid rgba(200,151,58,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold,#C8973A);">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                        </div>
+                        <div>
+                            <h3 style="font-family:var(--font-serif);font-size:1.6rem;color:var(--brand);margin:0;line-height:1.2;">Asignar Valor de Domicilio</h3>
+                            <span style="font-size:0.8rem;color:var(--gold,#C8973A);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Tarifas por Zonas de Barranquilla</span>
+                        </div>
+                    </div>
+
+                    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5;">
+                        Selecciona tu barrio o sector en Barranquilla para calcular y fijar la tarifa exacta de envío en tu orden, despachada desde la <strong>Cra 4 Sur # 50D-107</strong>:
+                    </p>
+
+                    <!-- Selector de Zona / Barrio -->
+                    <div style="margin-bottom:1.25rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:800;color:var(--text);text-transform:uppercase;margin-bottom:0.4rem;letter-spacing:0.5px;">
+                            Selecciona tu Sector o Barrio en Barranquilla *
+                        </label>
+                        <select id="homeZoneSelect" onchange="cambiarZonaDomicilioHome()" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#FAF6F0);color:var(--text);font-weight:600;box-sizing:border-box;cursor:pointer;">
+                            <optgroup label="Zona Sur Cercana — $4.000 COP">
+                                <option value="4000|Ciudadela 20 de Julio">Ciudadela 20 de Julio (Sede local)</option>
+                                <option value="4000|La Magdalena">La Magdalena</option>
+                                <option value="4000|Las Cayenas">Las Cayenas</option>
+                                <option value="4000|Simón Bolívar">Simón Bolívar</option>
+                                <option value="4000|Santa María">Santa María</option>
+                                <option value="4000|Carrizal">Carrizal</option>
+                                <option value="4000|Buenos Aires">Buenos Aires</option>
+                                <option value="4000|Las Palmas">Las Palmas</option>
+                                <option value="4000|Los Robles">Los Robles</option>
+                            </optgroup>
+                            <optgroup label="Zona Centro / Suroccidente / Soledad — $6.000 COP">
+                                <option value="6000|San Roque">San Roque</option>
+                                <option value="6000|Rebolo">Rebolo</option>
+                                <option value="6000|Chiquinquirá">Chiquinquirá</option>
+                                <option value="6000|San Felipe">San Felipe</option>
+                                <option value="6000|Bostón">Bostón</option>
+                                <option value="6000|Lucero">Lucero</option>
+                                <option value="6000|Los Pinos">Los Pinos</option>
+                                <option value="6000|El Valle">El Valle</option>
+                                <option value="6000|Cevillar">Cevillar</option>
+                                <option value="6000|Soledad Centro">Soledad Centro / Hipódromo</option>
+                            </optgroup>
+                            <optgroup label="Zona Norte / Riomar / Prado — $9.000 COP (Límite 12 km)">
+                                <option value="9000|El Prado">El Prado ($9.000)</option>
+                                <option value="9000|Alto Prado">Alto Prado ($9.000)</option>
+                                <option value="9000|Riomar">Riomar ($9.000)</option>
+                                <option value="9000|Miramar">Miramar ($9.000)</option>
+                                <option value="9000|Buenavista">Buenavista ($9.000)</option>
+                                <option value="9000|Villa Campestre">Villa Campestre ($9.000)</option>
+                                <option value="9000|Villa Santos">Villa Santos ($9.000)</option>
+                                <option value="9000|Paraíso">Paraíso ($9.000)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Input Dirección Exacta -->
+                    <div style="margin-bottom:1.25rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:800;color:var(--text);text-transform:uppercase;margin-bottom:0.4rem;letter-spacing:0.5px;">
+                            Dirección de Entrega
+                        </label>
+                        <input type="text" id="homeAddressInput" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#FAF6F0);color:var(--text);box-sizing:border-box;" />
+                    </div>
+
+                    <!-- Tarjeta Resumen Cotización -->
+                    <div style="background:linear-gradient(135deg, rgba(32,11,16,0.95), rgba(48,15,22,0.98));color:#FFFDF9;border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;border:1px solid rgba(200,151,58,0.35);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                            <span style="font-size:0.85rem;color:rgba(255,253,249,0.7);">Tarifa de Domicilio:</span>
+                            <span id="homeFeeDisplay" style="font-size:1.35rem;font-weight:800;color:#C8973A;">$4.000 COP</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:rgba(255,253,249,0.85);margin-bottom:0.35rem;">
+                            <span>Sector seleccionado:</span>
+                            <span id="homeSectorDisplay" style="font-weight:700;">Ciudadela 20 de Julio</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:rgba(255,253,249,0.85);">
+                            <span>Tiempo estimado de entrega:</span>
+                            <span id="homeTimeDisplay" style="color:#10B981;font-weight:700;display:inline-flex;align-items:center;gap:4px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span>25 - 35 minutos</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Botón Asignar Tarifa y Pedir -->
+                    <button type="button" onclick="aplicarTarifaDomicilioHome()" class="btn-gold" style="width:100%;padding:0.85rem;border-radius:12px;font-weight:800;font-size:1rem;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;box-shadow:0 6px 20px rgba(200,151,58,0.3);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <span>Asignar Tarifa &amp; Pedir en la Carta</span>
+                    </button>
+                    <div id="homeFeeConfirmNotice" style="display:none;margin-top:0.75rem;padding:0.6rem;background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;border-radius:8px;font-size:0.82rem;font-weight:700;text-align:center;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-2px;"><polyline points="20 6 9 17 4 12"/></svg>
+                        ¡Tarifa de domicilio asignada con éxito a tu orden!
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ SECCIÓN DE RESEÑAS & CALIFICACIONES DE COMENSALES ══════ -->
+    <section class="section-pad resenas-section" id="resenas">
+        <div class="lcontainer">
+            <div class="sec-head">
+                <span class="sec-pill" style="display:inline-flex;align-items:center;gap:4px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Calificaciones &amp; Opiniones
+                </span>
+                <h2 class="sec-title">La Voz de Nuestros Comensales</h2>
+                <p class="sec-sub">
+                    Transparencia y excelencia culinaria. Conoce las vivencias de quienes han degustado nuestras creaciones tanto en nuestro salón como en pedidos a domicilio en Barranquilla.
+                </p>
+            </div>
+
+            <!-- Resumen de Puntuación -->
+            <div style="display:grid;grid-template-columns:320px 1fr;gap:2rem;margin-bottom:2.5rem;align-items:stretch;">
+                <div style="background:#18060A;border:1.5px solid rgba(200,151,58,0.35);border-radius:20px;padding:2rem;color:#FFFDF9;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 12px 35px rgba(24,6,10,0.2);">
+                    <div style="font-family:var(--font-serif);font-size:4.25rem;font-weight:700;line-height:1;color:var(--gold);margin-bottom:0.4rem;" id="homeScoreDisplay">
+                        @resenaStats.Promedio.ToString("0.0")
+                    </div>
+                    <div style="display:flex;gap:4px;margin-bottom:0.6rem;">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <svg width="22" height="22" viewBox="0 0 24 24" style="@(i <= Math.Round(resenaStats.Promedio) ? "fill:#F59E0B;stroke:#D97706;" : "fill:rgba(255,253,249,0.15);stroke:rgba(255,253,249,0.3);")"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        }
+                    </div>
+                    <div style="font-size:0.85rem;color:rgba(255,253,249,0.75);margin-bottom:1.25rem;" id="homeTotalReviewsDisplay">
+                        Basado en <strong>@resenaStats.TotalResenas</strong> experiencias verificadas
+                    </div>
+                    <button type="button" onclick="abrirModalResenaHome()" class="btn-gold" style="padding:0.7rem 1.25rem;border-radius:10px;font-weight:800;font-size:0.85rem;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:0.4rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        <span>Dejar mi Reseña</span>
+                    </button>
+                </div>
+
+                <div class="resena-stats-card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                        <h4 style="font-size:1.05rem;font-weight:700;color:var(--brand);margin:0;">Satisfacción de Comensales</h4>
+                        <span style="font-size:0.8rem;color:#065F46;background:#ECFDF5;border:1px solid #A7F3D0;padding:2px 8px;border-radius:999px;font-weight:700;">98% Recomendado</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
+                        <span style="width:70px;font-weight:700;color:var(--text);">5 estrellas</span>
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F2EBE1);border-radius:999px;overflow:hidden;">
+                            <div style="width:@(resenaStats.Porcentaje5)%;height:100%;background:linear-gradient(90deg, #F59E0B, #C8973A);border-radius:999px;"></div>
+                        </div>
+                        <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas5 (@(resenaStats.Porcentaje5)%)</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
+                        <span style="width:70px;font-weight:700;color:var(--text);">4 estrellas</span>
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F2EBE1);border-radius:999px;overflow:hidden;">
+                            <div style="width:@(resenaStats.Porcentaje4)%;height:100%;background:linear-gradient(90deg, #F59E0B, #C8973A);border-radius:999px;"></div>
+                        </div>
+                        <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas4 (@(resenaStats.Porcentaje4)%)</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
+                        <span style="width:70px;font-weight:700;color:var(--text);">3 estrellas</span>
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F2EBE1);border-radius:999px;overflow:hidden;">
+                            <div style="width:@(resenaStats.Porcentaje3)%;height:100%;background:linear-gradient(90deg, #F59E0B, #C8973A);border-radius:999px;"></div>
+                        </div>
+                        <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas3 (@(resenaStats.Porcentaje3)%)</span>
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;">
+                        <span style="width:70px;font-weight:700;color:var(--text);">1-2 estrellas</span>
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F2EBE1);border-radius:999px;overflow:hidden;">
+                            <div style="width:@(resenaStats.Porcentaje2 + resenaStats.Porcentaje1)%;height:100%;background:#EF4444;border-radius:999px;"></div>
+                        </div>
+                        <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@(resenaStats.Estrellas2 + resenaStats.Estrellas1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Reseñas de Clientes -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(320px, 100%), 1fr));gap:1.5rem;margin-bottom:2rem;" id="homeResenasGrid">
+                @foreach (var r in resenas.Take(6))
+                {
+                    <div class="resena-card-item">
+                        <div>
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg, #6B1E2E, #C8973A);color:#FFFDF9;font-weight:800;font-size:0.95rem;display:flex;align-items:center;justify-content:center;">
+                                        @(string.IsNullOrEmpty(r.NombreCliente) ? "C" : r.NombreCliente.Substring(0, 1).ToUpper())
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.92rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:5px;">
+                                            <span>@r.NombreCliente</span>
+                                            @if (r.Verificado)
+                                            {
+                                                <span style="font-size:0.65rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:999px;padding:1px 5px;font-weight:700;display:inline-flex;align-items:center;gap:2px;">
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                                    Verificado
+                                                </span>
+                                            }
+                                        </div>
+                                        <div style="font-size:0.74rem;color:var(--muted);">@r.FechaCreacion.ToString("dd MMM yyyy")</div>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex;gap:2px;">
+                                    @for (int s = 1; s <= 5; s++)
+                                    {
+                                        <svg width="15" height="15" viewBox="0 0 24 24" style="@(s <= r.Calificacion ? "fill:#F59E0B;stroke:#D97706;" : "fill:rgba(0,0,0,0.1);stroke:rgba(0,0,0,0.2);")"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    }
+                                </div>
+                            </div>
+
+                            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;">
+                                <span style="font-size:0.7rem;background:var(--surface-2);color:var(--muted);padding:2px 7px;border-radius:6px;font-weight:600;display:inline-flex;align-items:center;gap:3px;">
+                                    @if (r.TipoExperiencia == "Domicilio Express")
+                                    {
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                                    }
+                                    else
+                                    {
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+                                    }
+                                    <span>@r.TipoExperiencia</span>
+                                </span>
+                                @if (!string.IsNullOrEmpty(r.PlatoRecomendado))
+                                {
+                                    <span style="font-size:0.7rem;background:rgba(200,151,58,0.12);color:#92400E;padding:2px 7px;border-radius:6px;font-weight:600;">
+                                        Recomendó: <strong>@r.PlatoRecomendado</strong>
+                                    </span>
+                                }
+                            </div>
+
+                            <p style="font-size:0.88rem;color:#3C2A20;line-height:1.5;margin:0;font-style:italic;">
+                                "@r.Comentario"
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Botón Ver Todas las Reseñas -->
+            <div style="text-align:center;">
+                <a asp-controller="Resena" asp-action="Index" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.6rem;background:#FFFDF9;border:1.5px solid var(--brand);color:var(--brand);border-radius:12px;font-weight:800;font-size:0.9rem;text-decoration:none;transition:all 140ms ease;box-shadow:0 4px 14px rgba(107,30,46,0.08);">
+                    <span>Ver Todas las Reseñas (@resenaStats.TotalResenas)</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal para Dejar Reseña en Home -->
+    <div class="modal-resena-overlay" id="homeModalResenaOverlay" onclick="clickOverlayResenaHome(event)" role="dialog" aria-modal="true" aria-labelledby="homeModalResenaTitle">
+        <div class="modal-resena-box">
+            <button type="button" class="btn-close-modal" onclick="cerrarModalResenaHome()" aria-label="Cerrar modal">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            
+            <div class="modal-resena-head">
+                <span class="modal-badge-gold">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Experiencia Gastronómica
+                </span>
+                <h2 class="modal-resena-title" id="homeModalResenaTitle">Tu Opinión en Saborator</h2>
+                <p class="modal-resena-sub">Cuéntanos tu experiencia y ayuda a otros comensales a elegir.</p>
+            </div>
+
+            <form id="homeFormNuevaResena" onsubmit="enviarResenaHomeAjax(event)">
+                @Html.AntiForgeryToken()
+                <div id="homeResenaFeedback" class="resena-feedback-box" style="display:none;"></div>
+
+                <div class="star-picker-wrap">
+                    <label class="star-picker-label">Tu Calificación General *</label>
+                    <div class="star-picker-icons" id="homeStarPickerIcons">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <button type="button" class="btn-pick-star active" data-star="@i" onclick="seleccionarEstrellaHome(@i)" onmouseenter="hoverEstrellaHome(@i)" onmouseleave="resetEstrellasHome()" aria-label="@i estrellas">
+                                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            </button>
+                        }
+                    </div>
+                    <span class="star-picker-feedback" id="homeStarPickerTxt">Excelente (5 de 5 estrellas)</span>
+                    <input type="hidden" id="homeInputRating" value="5" />
+                </div>
+
+                <div class="input-resena-row">
+                    <div class="input-resena-col">
+                        <label class="input-resena-label">Tu Nombre *</label>
+                        <div class="input-icon-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <input type="text" id="homeResenaNombre" required placeholder="Tu nombre" value="@_usuario" class="input-resena-field has-icon" maxlength="150" />
+                        </div>
+                    </div>
+                    <div class="input-resena-col">
+                        <label class="input-resena-label">Correo (Opcional)</label>
+                        <div class="input-icon-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <input type="email" id="homeResenaCorreo" placeholder="correo@ejemplo.com" class="input-resena-field has-icon" maxlength="150" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-resena-row">
+                    <div class="input-resena-col">
+                        <label class="input-resena-label">Tipo de Experiencia *</label>
+                        <div class="input-icon-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+                            <select id="homeResenaTipoExp" class="input-resena-field has-icon">
+                                <option value="En Restaurante">En Restaurante / Mesa</option>
+                                <option value="Domicilio Express">Domicilio Express</option>
+                                <option value="Para Llevar">Para Llevar / Pick-up</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-resena-col">
+                        <label class="input-resena-label">Plato Recomendado (Opcional)</label>
+                        <div class="input-icon-wrap">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                            <input type="text" id="homeResenaPlato" placeholder="Ej: Desgranado Especial..." list="homeDatalistPlatos" class="input-resena-field has-icon" maxlength="150" />
+                            <datalist id="homeDatalistPlatos">
+                                @foreach (var p in productos)
+                                {
+                                    <option value="@p.Nombre" />
+                                }
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-resena-group">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                        <label class="input-resena-label" style="margin:0;">Tu Reseña &amp; Comentario *</label>
+                        <span id="homeCharCounter" style="font-size:0.75rem;color:var(--muted);font-weight:600;">0 / 1000</span>
+                    </div>
+                    <textarea id="homeResenaComentario" required rows="4" maxlength="1000" 
+                              placeholder="Describe el sabor, la temperatura de llegada, la presentación o la atención..." 
+                              class="input-resena-field input-textarea" oninput="actualizarContadorHome(this)"></textarea>
+                </div>
+
+                <div class="modal-resena-actions">
+                    <button type="button" onclick="cerrarModalResenaHome()" class="btn-cancelar-modal">Cancelar</button>
+                    <button type="submit" id="homeBtnEnviarResena" class="btn-submit-resena">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        <span>Publicar Opinión</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══ FOOTER GOURMET BORGOÑA & CREMA ═════════════════════════════════ -->
+    <div style="text-align:center;padding:1.5rem 0 0;background:var(--brand);border-top:1px solid var(--gold);">
+        <button type="button" onclick="replayIntro()" class="replay-intro-btn" title="Reproducir intro cinematográfica" style="margin:0 auto;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Ver intro de gala</span>
+        </button>
+    </div>
+    <partial name="_FooterGourmet" />
+
+</div>
+
+<!-- ══ MODAL DE AUTH RÁPIDO PARA EL HOME ══════════════════════ -->
+<div class="auth-modal-overlay" id="homeAuthModalOverlay" aria-modal="true" role="dialog">
+    <div class="auth-modal-box">
+        <button type="button" class="auth-modal-close" onclick="cerrarModalAuthHome()" aria-label="Cerrar">&times;</button>
+        <div class="auth-modal-header">
+            <div class="auth-modal-logo">Saborator</div>
+            <div class="auth-modal-title" id="homeAuthTitle">Acceso Comensal</div>
+            <p class="auth-modal-desc" id="homeAuthDesc">Inicia sesión o crea tu cuenta para reservar tu mesa.</p>
+        </div>
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="homeTabLogin" onclick="cambiarHomeAuthTab('login')">Iniciar Sesión</button>
+            <button type="button" class="auth-tab-btn" id="homeTabReg" onclick="cambiarHomeAuthTab('registro')">Crear Cuenta</button>
+        </div>
+        <div id="homeAuthFeedback" class="auth-feedback"></div>
+
+        <div class="auth-tab-pane active" id="homePaneLogin">
+            <form onsubmit="ejecutarLoginHome(event)">
+                @Html.AntiForgeryToken()
+                <div class="ticket-form-group">
+                    <label for="hUsuario">Usuario</label>
+                    <input type="text" id="hUsuario" class="ticket-input" required placeholder="Tu usuario" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hPass">Contraseña</label>
+                    <input type="password" id="hPass" class="ticket-input" required placeholder="••••••••" />
+                </div>
+                <button type="submit" class="btn-confirm-reserva">Ingresar</button>
+            </form>
+        </div>
+
+        <div class="auth-tab-pane" id="homePaneReg">
+            <form onsubmit="ejecutarRegHome(event)">
+                @Html.AntiForgeryToken()
+                <div class="ticket-form-group">
+                    <label for="hrNom">Nombre Completo *</label>
+                    <input type="text" id="hrNom" class="ticket-input" required placeholder="Tu nombre" />
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div class="ticket-form-group" style="flex:1;">
+                        <label for="hrTipoDoc">Tipo Doc. *</label>
+                        <select id="hrTipoDoc" class="ticket-input" style="padding:0.6rem 0.5rem;">
+                            <option value="CC" selected>CC</option>
+                            <option value="CE">CE</option>
+                            <option value="PA">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div class="ticket-form-group" style="flex:1.5;">
+                        <label for="hrDoc">Documento (Mayor de edad) *</label>
+                        <input type="text" id="hrDoc" class="ticket-input" required placeholder="1020304050" />
+                    </div>
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hrFechaNac">Fecha de Nacimiento (18+ años) *</label>
+                    <input type="date" id="hrFechaNac" class="ticket-input" required max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hrCorreo">Correo Electrónico (para validación) *</label>
+                    <input type="email" id="hrCorreo" class="ticket-input" required placeholder="tu-correo@ejemplo.com" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hrTel">Teléfono *</label>
+                    <input type="tel" id="hrTel" class="ticket-input" required placeholder="300 123 4567" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hrUsu">Usuario *</label>
+                    <input type="text" id="hrUsu" class="ticket-input" required placeholder="usuario_comensal" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hrPass">Contraseña *</label>
+                    <input type="password" id="hrPass" class="ticket-input" required placeholder="Mínimo 6 caracteres" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="hrConf">Confirmar Contraseña *</label>
+                    <input type="password" id="hrConf" class="ticket-input" required placeholder="Repite contraseña" />
+                </div>
+                <button type="submit" class="btn-confirm-reserva">Crear Cuenta</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/intro.js" asp-append-version="true"></script>
+<script>
+    function abrirModalAuthHome(tab) {
+        document.getElementById('homeAuthModalOverlay').classList.add('show');
+        cambiarHomeAuthTab(tab || 'login');
+    }
+    function cerrarModalAuthHome() {
+        document.getElementById('homeAuthModalOverlay').classList.remove('show');
+        var fb = document.getElementById('homeAuthFeedback');
+        fb.className = 'auth-feedback';
+        fb.textContent = '';
+    }
+    function cambiarHomeAuthTab(tab) {
+        var isLogin = tab === 'login';
+        document.getElementById('homeTabLogin').classList.toggle('active', isLogin);
+        document.getElementById('homeTabReg').classList.toggle('active', !isLogin);
+        document.getElementById('homePaneLogin').classList.toggle('active', isLogin);
+        document.getElementById('homePaneReg').classList.toggle('active', !isLogin);
+    }
+    function ejecutarLoginHome(e) {
+        e.preventDefault();
+        var u = document.getElementById('hUsuario').value.trim();
+        var p = document.getElementById('hPass').value;
+        var fb = document.getElementById('homeAuthFeedback');
+        fetch('/Login/LoginAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario: u, contrasena: p, password: p, contraseña: p, returnUrl: '/Reserva/Nueva' })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                window.location.href = data.redirectUrl || '/Reserva/Nueva';
+            } else {
+                fb.className = 'auth-feedback error';
+                fb.textContent = data.mensaje;
+            }
+        });
+    }
+    function ejecutarRegHome(e) {
+        e.preventDefault();
+        var nom  = document.getElementById('hrNom').value.trim();
+        var tDoc = document.getElementById('hrTipoDoc').value;
+        var doc  = document.getElementById('hrDoc').value.trim();
+        var fn   = document.getElementById('hrFechaNac').value;
+        var cor  = document.getElementById('hrCorreo').value.trim();
+        var tel  = document.getElementById('hrTel').value.trim();
+        var usu  = document.getElementById('hrUsu').value.trim();
+        var pas  = document.getElementById('hrPass').value;
+        var cnf  = document.getElementById('hrConf').value;
+        var fb   = document.getElementById('homeAuthFeedback');
+        if (pas !== cnf) {
+            fb.className = 'auth-feedback error';
+            fb.textContent = 'Las contraseñas no coinciden.';
+            return;
+        }
+        fetch('/Login/RegistroAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                nombreCompleto: nom, 
+                tipoDocumento: tDoc,
+                documento: doc, 
+                fechaNacimiento: fn,
+                correo: cor,
+                telefono: tel, 
+                usuario: usu, 
+                contraseña: pas, 
+                confirmarContraseña: cnf, 
+                returnUrl: '/Reserva/Nueva' 
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                window.location.href = data.redirectUrl || '/Login/RegistroExitoso';
+            } else {
+                fb.className = 'auth-feedback error';
+                fb.textContent = data.mensaje;
+            }
+        });
+    }
+    document.getElementById('homeAuthModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) cerrarModalAuthHome();
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // ══ MODAL DE RESEÑAS EN EL HOME (AJAX) ═════════════════════════════
+    // ══════════════════════════════════════════════════════════════════
+
+    let homeRatingActual = 5;
+    const homeDescripcionesEstrellas = {
+        1: "Por mejorar (1 de 5 estrellas)",
+        2: "Regular (2 de 5 estrellas)",
+        3: "Buena (3 de 5 estrellas)",
+        4: "Muy buena (4 de 5 estrellas)",
+        5: "Excelente (5 de 5 estrellas) — ¡Insuperable!"
+    };
+
+    function abrirModalResenaHome() {
+        const overlay = document.getElementById('homeModalResenaOverlay');
+        if (overlay) {
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            seleccionarEstrellaHome(5);
+            const inputNom = document.getElementById('homeResenaNombre');
+            if (inputNom && !inputNom.value) inputNom.focus();
+        }
+    }
+
+    function cerrarModalResenaHome() {
+        const overlay = document.getElementById('homeModalResenaOverlay');
+        if (overlay) {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+            const fb = document.getElementById('homeResenaFeedback');
+            if (fb) {
+                fb.style.display = 'none';
+                fb.className = 'resena-feedback-box';
+            }
+        }
+    }
+
+    function clickOverlayResenaHome(e) {
+        if (e.target === document.getElementById('homeModalResenaOverlay')) {
+            cerrarModalResenaHome();
+        }
+    }
+
+    function seleccionarEstrellaHome(val) {
+        homeRatingActual = val;
+        const inp = document.getElementById('homeInputRating');
+        if (inp) inp.value = val;
+        const txt = document.getElementById('homeStarPickerTxt');
+        if (txt) txt.textContent = homeDescripcionesEstrellas[val] || `${val} estrellas`;
+        actualizarIconosEstrellasHome(val);
+    }
+
+    function hoverEstrellaHome(val) {
+        actualizarIconosEstrellasHome(val);
+        const txt = document.getElementById('homeStarPickerTxt');
+        if (txt) txt.textContent = homeDescripcionesEstrellas[val] || `${val} estrellas`;
+    }
+
+    function resetEstrellasHome() {
+        actualizarIconosEstrellasHome(homeRatingActual);
+        const txt = document.getElementById('homeStarPickerTxt');
+        if (txt) txt.textContent = homeDescripcionesEstrellas[homeRatingActual] || `${homeRatingActual} estrellas`;
+    }
+
+    function actualizarIconosEstrellasHome(val) {
+        const icons = document.querySelectorAll('#homeStarPickerIcons .btn-pick-star');
+        icons.forEach(btn => {
+            const star = parseInt(btn.getAttribute('data-star'));
+            if (star <= val) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+    }
+
+    function actualizarContadorHome(textarea) {
+        const count = textarea.value.length;
+        const counter = document.getElementById('homeCharCounter');
+        if (counter) counter.textContent = `${count} / 1000`;
+    }
+
+    async function enviarResenaHomeAjax(e) {
+        e.preventDefault();
+        const fb = document.getElementById('homeResenaFeedback');
+        const btn = document.getElementById('homeBtnEnviarResena');
+
+        const nombre = document.getElementById('homeResenaNombre').value.trim();
+        const correo = document.getElementById('homeResenaCorreo').value.trim();
+        const calificacion = parseInt(document.getElementById('homeInputRating').value) || 5;
+        const tipoExp = document.getElementById('homeResenaTipoExp').value;
+        const plato = document.getElementById('homeResenaPlato').value.trim();
+        const comentario = document.getElementById('homeResenaComentario').value.trim();
+
+        if (nombre.length < 2) {
+            fb.style.display = 'block';
+            fb.className = 'resena-feedback-box error';
+            fb.textContent = 'Por favor ingresa tu nombre completo.';
+            return;
+        }
+
+        if (comentario.length < 5) {
+            fb.style.display = 'block';
+            fb.className = 'resena-feedback-box error';
+            fb.textContent = 'Tu reseña debe tener al menos 5 caracteres.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.style.opacity = '0.6';
+
+        try {
+            const resp = await fetch('/Resena/CrearApi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombreCliente: nombre,
+                    correo: correo,
+                    calificacion: calificacion,
+                    tipoExperiencia: tipoExp,
+                    platoRecomendado: plato,
+                    comentario: comentario
+                })
+            });
+
+            const data = await resp.json();
+
+            if (data.ok) {
+                fb.style.display = 'block';
+                fb.className = 'resena-feedback-box success';
+                fb.textContent = data.mensaje;
+
+                const grid = document.getElementById('homeResenasGrid');
+                if (grid && data.resena) {
+                    let starsHtml = '';
+                    for (let s = 1; s <= 5; s++) {
+                        starsHtml += `
+                            <svg width="15" height="15" viewBox="0 0 24 24" style="${s <= data.resena.calificacion ? 'fill:#F59E0B;stroke:#D97706;' : 'fill:rgba(0,0,0,0.1);stroke:rgba(0,0,0,0.2);'}">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        `;
+                    }
+
+                    const tagDish = data.resena.platoRecomendado ? `
+                        <span style="font-size:0.7rem;background:rgba(200,151,58,0.12);color:#92400E;padding:2px 7px;border-radius:6px;font-weight:600;">
+                            Recomendó: <strong>${data.resena.platoRecomendado}</strong>
+                        </span>
+                    ` : '';
+
+                    const newCard = document.createElement('div');
+                    newCard.style.cssText = "background:#FFFDF9;border:1.5px solid #C8973A;border-radius:18px;padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 22px rgba(200,151,58,0.15);animation:fadeInModal 300ms ease-out;";
+
+                    const initial = data.resena.nombreCliente ? data.resena.nombreCliente.charAt(0).toUpperCase() : 'C';
+
+                    newCard.innerHTML = `
+                        <div>
+                            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;">
+                                <div style="display:flex;align-items:center;gap:0.75rem;">
+                                    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg, #6B1E2E, #C8973A);color:#FFFDF9;font-weight:800;font-size:0.95rem;display:flex;align-items:center;justify-content:center;">
+                                        ${initial}
+                                    </div>
+                                    <div>
+                                        <div style="font-size:0.92rem;font-weight:700;color:#200B10;display:flex;align-items:center;gap:5px;">
+                                            <span>${data.resena.nombreCliente}</span>
+                                            <span style="font-size:0.65rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:999px;padding:1px 5px;font-weight:700;display:inline-flex;align-items:center;gap:2px;">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                                Verificado
+                                            </span>
+                                        </div>
+                                        <div style="font-size:0.74rem;color:var(--muted);">Justo ahora</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:2px;">${starsHtml}</div>
+                            </div>
+                            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;">
+                                <span style="font-size:0.7rem;background:#F5ECE0;color:#6E5C50;padding:2px 7px;border-radius:6px;font-weight:600;">
+                                    ${data.resena.tipoExperiencia}
+                                </span>
+                                ${tagDish}
+                            </div>
+                            <p style="font-size:0.88rem;color:#3C2A20;line-height:1.5;margin:0;font-style:italic;">
+                                "${data.resena.comentario}"
+                            </p>
+                        </div>
+                    `;
+
+                    grid.insertBefore(newCard, grid.firstChild);
+                }
+
+                if (data.stats) {
+                    const score = document.getElementById('homeScoreDisplay');
+                    if (score) score.textContent = data.stats.promedio.toFixed(1);
+                    const totalTxt = document.getElementById('homeTotalReviewsDisplay');
+                    if (totalTxt) totalTxt.innerHTML = `Basado en <strong>${data.stats.totalResenas}</strong> experiencias verificadas`;
+                }
+
+                document.getElementById('homeFormNuevaResena').reset();
+                actualizarContadorHome(document.getElementById('homeResenaComentario'));
+
+                setTimeout(() => {
+                    cerrarModalResenaHome();
+                }, 1400);
+            } else {
+                fb.style.display = 'block';
+                fb.className = 'resena-feedback-box error';
+                fb.textContent = data.mensaje || 'Error al enviar reseña.';
+            }
+        } catch (err) {
+            console.error(err);
+            fb.style.display = 'block';
+            fb.className = 'resena-feedback-box error';
+            fb.textContent = 'Error de conexión al enviar la reseña.';
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // ══ MOTOR DEL CARRITO Y DOMICILIOS ESTILO KFC ═════════════════════
+    // ══════════════════════════════════════════════════════════════════
+
+    let cart = [];
+    let modalidadEntrega = localStorage.getItem('saborator_tipo_entrega') || 'Domicilio';
+    let direccionGuardada = localStorage.getItem('saborator_direccion') || '';
+    let costoEnvioGuardado = parseInt(localStorage.getItem('saborator_costo_envio')) || 4000;
+    let barrioGuardado = localStorage.getItem('saborator_barrio') || 'Ciudadela 20 de Julio';
+
+    function obtenerImagenPorNombre(nombre) {
+        if (!nombre) return '/img/hamburguesa.jpg';
+        const n = nombre.toLowerCase().trim();
+        if (n.includes('perro') || n.includes('hot dog') || n.includes('hotdog')) return '/img/perrocaliente.jpg';
+        if (n.includes('salchipapa')) return '/img/salchipapa.jpg';
+        if (n.includes('papa')) return '/img/papasfrancesa.jpg';
+        if (n.includes('coca')) return '/img/cocacola.png?v=3';
+        if (n.includes('pepsi')) return '/img/pepsi.webp?v=2';
+        if (n.includes('agua')) return '/img/agua.webp?v=2';
+        if (n.includes('hamburguesa') || n.includes('burger')) return '/img/hamburguesa.jpg';
+        return '/img/hamburguesa.jpg';
+    }
+
+    function initCartEngine() {
+        try {
+            cart = JSON.parse(localStorage.getItem('saborator_cart') || '[]');
+        } catch(e) {
+            cart = [];
+        }
+
+        // Auto-reparar imágenes guardadas para que cada producto tenga su foto real
+        if (Array.isArray(cart) && cart.length > 0) {
+            let modificado = false;
+            cart.forEach(item => {
+                const fotoReal = obtenerImagenPorNombre(item.nombre);
+                if (!item.imgUrl || item.imgUrl === '0' || item.imgUrl === 0 || !item.imgUrl.startsWith('/') || (item.imgUrl.includes('hamburguesa') && fotoReal !== '/img/hamburguesa.jpg')) {
+                    item.imgUrl = fotoReal;
+                    modificado = true;
+                }
+            });
+            if (modificado) {
+                localStorage.setItem('saborator_cart', JSON.stringify(cart));
+            }
+        }
+
+        actualizarModalidadUI();
+        actualizarUI();
+    }
+
+    function guardarCart() {
+        localStorage.setItem('saborator_cart', JSON.stringify(cart));
+        actualizarUI();
+    }
+
+    function cartAgregar(id, nombre, precio, imgUrl, btn) {
+        // Asegurar imagen específica del producto seleccionado
+        let foto = (typeof imgUrl === 'string' && imgUrl.startsWith('/')) 
+            ? imgUrl 
+            : obtenerImagenPorNombre(nombre);
+
+        const precioNum = (typeof precio === 'number') ? precio : (parseFloat(precio) || 0);
+
+        const item = cart.find(x => x.id === id);
+        if (item) {
+            item.cantidad += 1;
+            item.imgUrl = foto;
+        } else {
+            cart.push({
+                id: id,
+                nombre: nombre,
+                precio: precioNum,
+                imgUrl: foto,
+                cantidad: 1
+            });
+        }
+        guardarCart();
+
+        // Feedback táctil visual en el botón
+        if (btn) {
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>¡Agregado!</span>
+            `;
+            btn.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.style.transform = '';
+            }, 900);
+        }
+    }
+
+    function cartCambiarCantidad(id, delta) {
+        const item = cart.find(x => x.id === id);
+        if (!item) return;
+        item.cantidad += delta;
+        if (item.cantidad <= 0) {
+            cart = cart.filter(x => x.id !== id);
+        }
+        guardarCart();
+    }
+
+    function cartEliminar(id) {
+        cart = cart.filter(x => x.id !== id);
+        guardarCart();
+    }
+
+    function actualizarUI() {
+        const totalItems = cart.reduce((acc, x) => acc + x.cantidad, 0);
+        const subtotal = cart.reduce((acc, x) => acc + (x.precio * x.cantidad), 0);
+        const envio = (modalidadEntrega === 'Domicilio' && totalItems > 0) ? costoEnvioGuardado : 0;
+        const totalFinal = subtotal + envio;
+
+        // 1. Badge Navbar
+        const navBadge = document.getElementById('navCartCount');
+        if (navBadge) {
+            navBadge.textContent = totalItems;
+            navBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+
+        // 2. Barra Flotante Inferior
+        const floatBar = document.getElementById('cartFloatingBar');
+        if (floatBar) {
+            if (totalItems > 0) {
+                floatBar.classList.add('visible');
+                document.getElementById('floatItemCount').textContent = totalItems;
+                document.getElementById('floatSubtotalVal').textContent = `$${subtotal.toLocaleString('es-CO')} COP`;
+                document.getElementById('floatModeVal').textContent = modalidadEntrega === 'Domicilio' 
+                    ? `Domicilio ($${costoEnvioGuardado.toLocaleString('es-CO')} - ${barrioGuardado})` 
+                    : (modalidadEntrega === 'ParaLlevar' ? 'Retiro en Restaurante' : 'En Mesa');
+            } else {
+                floatBar.classList.remove('visible');
+            }
+        }
+
+        // 3. Renderizar items en Drawer
+        renderDrawerItems(subtotal, envio, totalFinal);
+    }
+
+    function renderDrawerItems(subtotal, envio, totalFinal) {
+        const list = document.getElementById('drawerItemsList');
+        if (!list) return;
+
+        if (cart.length === 0) {
+            list.innerHTML = `
+                <div style="text-align:center;padding:3rem 1rem;color:rgba(255,253,249,0.5);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:0.75rem;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <p style="font-size:1.1rem;font-weight:600;margin:0 0 0.35rem;color:#FFFDF9;">Tu carrito está vacío</p>
+                    <p style="font-size:0.85rem;margin:0;">Explora nuestra carta y añade tus platos favoritos.</p>
+                </div>
+            `;
+        } else {
+            let html = '';
+            cart.forEach(item => {
+                const itemTotal = item.precio * item.cantidad;
+                const itemImg = (item.imgUrl && typeof item.imgUrl === 'string' && item.imgUrl.startsWith('/') && !item.imgUrl.includes('0')) 
+                    ? item.imgUrl 
+                    : obtenerImagenPorNombre(item.nombre);
+                html += `
+                    <div class="drawer-item">
+                        <div class="drawer-item-img" style="background-image:url('${itemImg}');"></div>
+                        <div class="drawer-item-details">
+                            <div class="drawer-item-top">
+                                <span class="drawer-item-name">${item.nombre}</span>
+                                <button type="button" class="drawer-item-remove" onclick="cartEliminar(${item.id})" title="Eliminar">&times;</button>
+                            </div>
+                            <div class="drawer-item-bottom">
+                                <div class="cart-stepper">
+                                    <button type="button" class="cart-stepper-btn" onclick="cartCambiarCantidad(${item.id}, -1)">&minus;</button>
+                                    <span class="cart-stepper-count">${item.cantidad}</span>
+                                    <button type="button" class="cart-stepper-btn" onclick="cartCambiarCantidad(${item.id}, 1)">&plus;</button>
+                                </div>
+                                <span class="drawer-item-price">$${itemTotal.toLocaleString('es-CO')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        document.getElementById('drawerSubtotal').textContent = `$${subtotal.toLocaleString('es-CO')} COP`;
+        document.getElementById('drawerShipping').textContent = envio > 0 ? `$${envio.toLocaleString('es-CO')} COP (${barrioGuardado})` : 'Gratis ($0)';
+        document.getElementById('drawerTotal').textContent = `$${totalFinal.toLocaleString('es-CO')} COP`;
+
+        // Validación Límite Mínimo de Domicilio ($20.000 COP)
+        const minAlert = document.getElementById('drawerMinAlert');
+        const checkoutBtn = document.getElementById('drawerCheckoutBtn');
+        const LIMITE_MINIMO = 20000;
+
+        if (modalidadEntrega === 'Domicilio' && subtotal < LIMITE_MINIMO && cart.length > 0) {
+            if (minAlert) {
+                minAlert.style.display = 'block';
+                const faltante = LIMITE_MINIMO - subtotal;
+                document.getElementById('drawerMinFaltante').textContent = `$${faltante.toLocaleString('es-CO')} COP`;
+            }
+            if (checkoutBtn) {
+                checkoutBtn.style.opacity = '0.5';
+                checkoutBtn.onclick = function(e) {
+                    e.preventDefault();
+                    alert(`El pedido mínimo para despacho a domicilio es de $${LIMITE_MINIMO.toLocaleString('es-CO')} COP.\nTe faltan $${(LIMITE_MINIMO - subtotal).toLocaleString('es-CO')} COP para poder enviar a domicilio.`);
+                };
+            }
+        } else {
+            if (minAlert) minAlert.style.display = 'none';
+            if (checkoutBtn) {
+                checkoutBtn.style.opacity = '1';
+                checkoutBtn.onclick = null;
+            }
+        }
+    }
+
+    // Drawer Open / Close
+    function abrirDrawerCarrito() {
+        document.getElementById('cartDrawerOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function cerrarDrawerCarrito() {
+        document.getElementById('cartDrawerOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    function clickOverlayDrawer(e) {
+        if (e.target === document.getElementById('cartDrawerOverlay')) {
+            cerrarDrawerCarrito();
+        }
+    }
+
+    // Modal de Modalidad (KFC)
+    function abrirModalModalidad() {
+        document.getElementById('modalityModalOverlay').classList.add('open');
+        // Marcar opción activa
+        document.querySelectorAll('.mod-option-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`opt${modalidadEntrega}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const addrBox = document.getElementById('quickAddressBox');
+        if (addrBox) {
+            addrBox.style.display = modalidadEntrega === 'Domicilio' ? 'block' : 'none';
+            document.getElementById('quickAddressInput').value = direccionGuardada;
+            // Sincronizar select si existe
+            const sel = document.getElementById('quickBarrioSelect');
+            if (sel) {
+                for (let i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].value.includes(barrioGuardado)) {
+                        sel.selectedIndex = i;
+                        break;
+                    }
+                }
+                cambiarBarrioModalKfc();
+            }
+        }
+    }
+    function cerrarModalModalidad() {
+        document.getElementById('modalityModalOverlay').classList.remove('open');
+    }
+
+    function seleccionarModalidad(tipo) {
+        modalidadEntrega = tipo;
+        localStorage.setItem('saborator_tipo_entrega', tipo);
+        
+        document.querySelectorAll('.mod-option-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`opt${tipo}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const addrBox = document.getElementById('quickAddressBox');
+        if (tipo === 'Domicilio') {
+            addrBox.style.display = 'block';
+            document.getElementById('quickAddressInput').focus();
+        } else {
+            addrBox.style.display = 'none';
+            actualizarModalidadUI();
+            actualizarUI();
+            cerrarModalModalidad();
+        }
+    }
+
+    function cambiarBarrioModalKfc() {
+        const sel = document.getElementById('quickBarrioSelect').value;
+        const display = document.getElementById('quickModalFeeDisplay');
+        const parts = sel.split('|');
+        const tarifa = parseInt(parts[0]) || 4000;
+        if (display) display.textContent = `$${tarifa.toLocaleString('es-CO')} COP`;
+    }
+
+    function guardarDireccionRapida() {
+        const dir = document.getElementById('quickAddressInput').value.trim();
+        const sel = document.getElementById('quickBarrioSelect').value;
+        const parts = sel.split('|');
+        const tarifa = parseInt(parts[0]) || 4000;
+        const barrio = parts[1] || 'Ciudadela 20 de Julio';
+
+        costoEnvioGuardado = tarifa;
+        barrioGuardado = barrio;
+        localStorage.setItem('saborator_costo_envio', tarifa);
+        localStorage.setItem('saborator_barrio', barrio);
+
+        if (dir) {
+            direccionGuardada = dir;
+            localStorage.setItem('saborator_direccion', dir);
+        }
+        actualizarModalidadUI();
+        actualizarUI();
+        cerrarModalModalidad();
+    }
+
+    // Funciones del Cotizador de la Sección Home
+    function cambiarZonaDomicilioHome() {
+        const sel = document.getElementById('homeZoneSelect').value;
+        const parts = sel.split('|');
+        const tarifa = parseInt(parts[0]) || 4000;
+        const sector = parts[1] || 'Ciudadela 20 de Julio';
+        document.getElementById('homeFeeDisplay').textContent = `$${tarifa.toLocaleString('es-CO')} COP`;
+        document.getElementById('homeSectorDisplay').textContent = sector;
+        const timeTxt = tarifa <= 4000 ? '20 - 30 minutos' : (tarifa <= 6000 ? '30 - 40 minutos' : '40 - 55 minutos');
+        document.getElementById('homeTimeDisplay').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span>${timeTxt}</span>`;
+    }
+
+    function aplicarTarifaDomicilioHome() {
+        const sel = document.getElementById('homeZoneSelect').value;
+        const parts = sel.split('|');
+        const tarifa = parseInt(parts[0]) || 4000;
+        const barrio = parts[1] || 'Ciudadela 20 de Julio';
+        const dir = document.getElementById('homeAddressInput').value.trim();
+
+        costoEnvioGuardado = tarifa;
+        barrioGuardado = barrio;
+        localStorage.setItem('saborator_costo_envio', tarifa);
+        localStorage.setItem('saborator_barrio', barrio);
+        if (dir) {
+            direccionGuardada = dir;
+            localStorage.setItem('saborator_direccion', dir);
+        }
+        modalidadEntrega = 'Domicilio';
+        localStorage.setItem('saborator_tipo_entrega', 'Domicilio');
+
+        actualizarModalidadUI();
+        actualizarUI();
+
+        const notice = document.getElementById('homeFeeConfirmNotice');
+        if (notice) {
+            notice.style.display = 'block';
+            setTimeout(() => { notice.style.display = 'none'; }, 4000);
+        }
+
+        const menuSec = document.getElementById('menu');
+        if (menuSec) menuSec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function actualizarModalidadUI() {
+        const navText = document.getElementById('navModalityText');
+        const heroType = document.getElementById('heroModalityLabel');
+        const heroAddr = document.getElementById('heroAddressLabel');
+        const drawerLabel = document.getElementById('drawerModLabel');
+
+        if (modalidadEntrega === 'Domicilio') {
+            if (navText) navText.textContent = 'Domicilio';
+            if (heroType) heroType.textContent = 'Domicilio Express';
+            if (heroAddr) heroAddr.textContent = direccionGuardada ? `${direccionGuardada} (${barrioGuardado})` : 'Ingresa tu dirección de entrega';
+            if (drawerLabel) drawerLabel.textContent = `Domicilio (${barrioGuardado})`;
+        } else if (modalidadEntrega === 'ParaLlevar') {
+            if (navText) navText.textContent = 'Para Llevar';
+            if (heroType) heroType.textContent = 'Para Llevar';
+            if (heroAddr) heroAddr.textContent = 'Retiro en Sede: Cra 4 Sur # 50D-107';
+            if (drawerLabel) drawerLabel.textContent = 'Retiro en Restaurante';
+        } else {
+            if (navText) navText.textContent = 'En Mesa';
+            if (heroType) heroType.textContent = 'Consumo en Mesa';
+            if (heroAddr) heroAddr.textContent = 'Plano de 30 mesas exclusivo';
+            if (drawerLabel) drawerLabel.textContent = 'Consumo en Salón';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initCartEngine);
+</script>
+
+<!-- ══ COMPONENTES HTML DE DOMICILIOS & CARRITO ESTILO KFC ═════════ -->
+
+<!-- Modal Selector de Modalidad (KFC) -->
+<div class="modality-modal-overlay" id="modalityModalOverlay" onclick="if(event.target===this) cerrarModalModalidad();">
+    <div class="modality-modal">
+        <button type="button" class="modality-modal-close" onclick="cerrarModalModalidad()">&times;</button>
+        <h2 class="modality-modal-title">¿Cómo deseas tu orden?</h2>
+        <p class="modality-modal-sub">Elige tu forma de entrega preferida para Saborator:</p>
+
+        <div class="modality-modal-options">
+            <div class="mod-option-btn active" id="optDomicilio" onclick="seleccionarModalidad('Domicilio')">
+                <span class="mod-opt-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                </span>
+                <div>
+                    <div class="mod-opt-title">Domicilio Express</div>
+                    <div class="mod-opt-desc">Te lo llevamos caliente y sellado a tu puerta desde Cra 4 Sur # 50D-107</div>
+                </div>
+            </div>
+
+            <div id="quickAddressBox" style="display:none;background:#FAF6F0;padding:1.15rem;border-radius:14px;border:1.5px solid #E2D7C8;margin-top:-0.35rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;padding-bottom:0.6rem;border-bottom:1px dashed #E2D7C8;">
+                    <span style="font-size:0.78rem;color:#6E5C50;display:inline-flex;align-items:center;gap:4px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Despacho: <strong>Cra 4 Sur # 50D-107, Barranquilla</strong>
+                    </span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:#C8973A;font-weight:700;text-decoration:none;">
+                        Ver Maps ↗
+                    </a>
+                </div>
+
+                <label style="display:block;font-size:0.75rem;font-weight:800;color:#3C2A20;margin-bottom:0.35rem;text-transform:uppercase;">Sector / Barrio en Barranquilla *</label>
+                <select id="quickBarrioSelect" onchange="cambiarBarrioModalKfc()" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid #E2D7C8;border-radius:8px;font-size:0.88rem;background:#FFFDF9;color:#3C2A20;font-weight:600;margin-bottom:0.65rem;">
+                    <option value="4000|Ciudadela 20 de Julio">Ciudadela 20 de Julio ($4.000 COP)</option>
+                    <option value="4000|La Magdalena">La Magdalena ($4.000 COP)</option>
+                    <option value="4000|Las Cayenas">Las Cayenas ($4.000 COP)</option>
+                    <option value="4000|Simón Bolívar">Simón Bolívar ($4.000 COP)</option>
+                    <option value="4000|Santa María">Santa María ($4.000 COP)</option>
+                    <option value="4000|Carrizal">Carrizal ($4.000 COP)</option>
+                    <option value="4000|Buenos Aires">Buenos Aires ($4.000 COP)</option>
+                    <option value="4000|Las Palmas">Las Palmas ($4.000 COP)</option>
+                    <option value="4000|Los Robles">Los Robles ($4.000 COP)</option>
+                    <option value="6000|San Roque">San Roque ($6.000 COP)</option>
+                    <option value="6000|Rebolo">Rebolo ($6.000 COP)</option>
+                    <option value="6000|Chiquinquirá">Chiquinquirá ($6.000 COP)</option>
+                    <option value="6000|San Felipe">San Felipe ($6.000 COP)</option>
+                    <option value="6000|Bostón">Bostón ($6.000 COP)</option>
+                    <option value="6000|Lucero">Lucero ($6.000 COP)</option>
+                    <option value="6000|Los Pinos">Los Pinos ($6.000 COP)</option>
+                    <option value="6000|El Valle">El Valle ($6.000 COP)</option>
+                    <option value="6000|Soledad Centro">Soledad Centro / Hipódromo ($6.000 COP)</option>
+                    <option value="9000|El Prado">El Prado ($9.000 COP)</option>
+                    <option value="9000|Alto Prado">Alto Prado ($9.000 COP)</option>
+                    <option value="9000|Riomar">Riomar ($9.000 COP)</option>
+                    <option value="9000|Miramar">Miramar ($9.000 COP)</option>
+                    <option value="9000|Buenavista">Buenavista ($9.000 COP)</option>
+                    <option value="9000|Villa Campestre">Villa Campestre ($9.000 COP)</option>
+                    <option value="9000|Villa Santos">Villa Santos ($9.000 COP)</option>
+                    <option value="9000|Paraíso">Paraíso ($9.000 COP)</option>
+                </select>
+
+                <label style="display:block;font-size:0.75rem;font-weight:800;color:#3C2A20;margin-bottom:0.35rem;text-transform:uppercase;">Dirección exacta de entrega *</label>
+                <input type="text" id="quickAddressInput" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid #E2D7C8;border-radius:8px;font-size:0.9rem;box-sizing:border-box;margin-bottom:0.65rem;" />
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;padding:0.5rem 0.75rem;background:rgba(200,151,58,0.12);border-radius:8px;font-size:0.82rem;">
+                    <span>Tarifa asignada:</span>
+                    <strong id="quickModalFeeDisplay" style="color:#C8973A;font-size:0.95rem;">$4.000 COP</strong>
+                </div>
+
+                <button type="button" onclick="guardarDireccionRapida()" class="btn-gold" style="width:100%;padding:0.65rem;border-radius:8px;font-weight:800;border:none;cursor:pointer;">Confirmar Dirección y Tarifa</button>
+            </div>
+
+            <div class="mod-option-btn" id="optParaLlevar" onclick="seleccionarModalidad('ParaLlevar')">
+                <span class="mod-opt-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </span>
+                <div>
+                    <div class="mod-opt-title">Para Llevar / Pick Up</div>
+                    <div class="mod-opt-desc">Pide en línea y retira en restaurante sin hacer fila (Gratis)</div>
+                </div>
+            </div>
+
+            <div class="mod-option-btn" id="optEnMesa" onclick="seleccionarModalidad('EnMesa')">
+                <span class="mod-opt-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+                </span>
+                <div>
+                    <div class="mod-opt-title">Consumo en Salón / Mesa</div>
+                    <div class="mod-opt-desc">Disfruta tu comida servida a tu mesa en nuestro salón exclusivo</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Barra Flotante de Carrito en la parte inferior (KFC) -->
+<div class="cart-floating-bar" id="cartFloatingBar">
+    <div class="float-info">
+        <div class="float-cart-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="float-count-badge" id="floatItemCount">0</span>
+        </div>
+        <div class="float-texts">
+            <span class="float-subtotal" id="floatSubtotalVal">$0 COP</span>
+            <span class="float-mode" id="floatModeVal">Domicilio Express</span>
+        </div>
+    </div>
+    <button type="button" class="float-action-btn" onclick="abrirDrawerCarrito()">
+        <span>Ver Mi Pedido</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+</div>
+
+<!-- Drawer Lateral de Carrito estilo KFC -->
+<div class="cart-drawer-overlay" id="cartDrawerOverlay" onclick="clickOverlayDrawer(event)">
+    <aside class="cart-drawer" id="cartDrawer">
+        <div class="drawer-header">
+            <h2 class="drawer-title">Tu Pedido</h2>
+            <button type="button" class="drawer-close" onclick="cerrarDrawerCarrito()" aria-label="Cerrar">&times;</button>
+        </div>
+
+        <div class="drawer-modality-bar">
+            <span class="drawer-mod-text" id="drawerModText">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                <span id="drawerModLabel">Domicilio Express</span>
+            </span>
+            <span class="drawer-mod-change" onclick="abrirModalModalidad()">Cambiar</span>
+        </div>
+
+        <div class="drawer-items" id="drawerItemsList">
+            <!-- Items del carrito -->
+        </div>
+
+        <div class="drawer-footer">
+            <!-- Alerta de Pedido Mínimo de Domicilio -->
+            <div id="drawerMinAlert" style="display:none;margin-bottom:0.75rem;padding:0.65rem 0.85rem;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);border-radius:10px;font-size:0.78rem;color:#FCA5A5;line-height:1.4;">
+                <div style="font-weight:700;display:flex;align-items:center;gap:5px;margin-bottom:2px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Límite Mínimo de Domicilio: $20.000 COP</span>
+                </div>
+                <span>Te faltan <strong id="drawerMinFaltante" style="color:#FFF;">$0</strong> en comida para habilitar el domicilio. Puedes agregar más platos o elegir "Para Llevar".</span>
+            </div>
+
+            <div class="drawer-totals">
+                <div class="drawer-total-row">
+                    <span>Subtotal</span>
+                    <span id="drawerSubtotal">$0 COP</span>
+                </div>
+                <div class="drawer-total-row" id="drawerShippingRow">
+                    <span>Costo de Envío</span>
+                    <span id="drawerShipping">$4.000 COP</span>
+                </div>
+                <div class="drawer-total-row final">
+                    <span>Total a Pagar</span>
+                    <span id="drawerTotal">$0 COP</span>
+                </div>
+            </div>
+
+            <a href="/Pedido/Checkout" class="drawer-checkout-btn" id="drawerCheckoutBtn">
+                <span>Continuar al Checkout</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+        </div>
+    </aside>
+</div>
+

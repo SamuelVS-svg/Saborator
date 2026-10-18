@@ -1,0 +1,659 @@
+@{
+    ViewData["Title"] = "Mi Perfil & Apariencia";
+    var usuario = ViewBag.Usuario as ControlClientesRestaurante.Models.Usuario;
+    var cliente = ViewBag.Cliente as ControlClientesRestaurante.Models.Cliente;
+    string rol = ViewBag.Rol as string ?? "Usuario";
+    string nombreMostrar = cliente?.Nombre ?? usuario?.NombreUsuario ?? "Usuario";
+    string inicial = !string.IsNullOrEmpty(nombreMostrar) ? nombreMostrar.Substring(0, 1).ToUpper() : "U";
+    string? fotoPerfil = ViewBag.FotoPerfil as string ?? usuario?.FotoPerfil;
+    string temaActual = ViewBag.Tema as string ?? usuario?.Tema ?? "clasico";
+    bool esBienvenida = (ViewBag.EsBienvenida as bool?) == true;
+}
+
+<div class="perfil-wrapper" style="max-width:1040px;margin:2rem auto;padding:0 1.25rem;">
+
+    <!-- ══ BANNER DE BIENVENIDA (TRAS CREAR LA CUENTA) ═════════════════════ -->
+    @if (esBienvenida)
+    {
+        <div style="background:linear-gradient(135deg, var(--brand,#6B1E2E) 0%, #3B0E17 100%);color:#FFFDF9;border-radius:20px;padding:2rem 2.25rem;margin-bottom:2rem;box-shadow:0 12px 32px -8px rgba(107,30,46,0.35);position:relative;overflow:hidden;border:1px solid rgba(212,194,165,0.35);">
+            <div style="position:absolute;right:-20px;bottom:-20px;width:180px;height:180px;border-radius:50%;background:rgba(212,194,165,0.08);pointer-events:none;"></div>
+            <div style="display:flex;align-items:flex-start;gap:1.25rem;position:relative;z-index:2;flex-wrap:wrap;">
+                <div style="width:52px;height:52px;border-radius:14px;background:rgba(212,194,165,0.2);border:1.5px solid var(--gold,#D4C2A5);display:flex;align-items:center;justify-content:center;color:var(--gold,#D4C2A5);flex-shrink:0;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <div style="flex:1;min-width:260px;">
+                    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,194,165,0.18);border:1px solid rgba(212,194,165,0.4);border-radius:999px;padding:2px 10px;font-size:0.75rem;font-weight:800;color:var(--gold,#D4C2A5);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.04em;">
+                        ✨ Cuenta Creada Exitosamente
+                    </div>
+                    <h2 style="font-size:1.6rem;font-weight:800;margin:0 0 0.5rem 0;color:#FFFDF9;letter-spacing:-0.02em;">
+                        ¡Bienvenido a Saborator, @nombreMostrar!
+                    </h2>
+                    <p style="margin:0 0 1.25rem 0;font-size:0.92rem;color:rgba(255,253,249,0.88);line-height:1.5;max-width:680px;">
+                        Tu registro está completo. Personaliza tu cuenta ahora mismo: <strong>sube tu foto de perfil</strong> o elige un avatar gastronómico, y <strong>selecciona el tema visual</strong> que prefieras para navegar en nuestra plataforma.
+                    </p>
+                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                        <a href="#seccionFotoTema" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold,#D4C2A5);color:#1C1416;padding:0.65rem 1.25rem;border-radius:10px;text-decoration:none;font-weight:800;font-size:0.85rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:transform 140ms ease;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Elegir Foto & Tema</span>
+                        </a>
+                        <a asp-controller="Pedido" asp-action="Menu" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,253,249,0.12);border:1px solid rgba(255,253,249,0.3);color:#FFFDF9;padding:0.65rem 1.25rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.85rem;">
+                            <span>Ver la Carta & Pedir</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ══ TARJETA DE CABECERA DE PERFIL ═════════════════════════════════ -->
+    <div style="background:var(--surface,#FFFDF9);border:1px solid var(--line,#E2D7C8);border-radius:20px;padding:1.75rem 2rem;margin-bottom:1.75rem;box-shadow:0 4px 16px var(--color-shadow, rgba(0,0,0,0.03));display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
+        <div style="display:flex;align-items:center;gap:1.25rem;">
+            <!-- Avatar grande con anillo de estado -->
+            <div style="position:relative;">
+                <div id="headerAvatarDisplay" style="width:76px;height:76px;border-radius:50%;background:var(--brand,#6B1E2E);color:var(--gold,#D4C2A5);font-size:2rem;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(107,30,46,0.22);border:3px solid var(--gold,#D4C2A5);overflow:hidden;">
+                    @if (!string.IsNullOrEmpty(fotoPerfil))
+                    {
+                        <img src="@fotoPerfil" alt="Foto de @nombreMostrar" style="width:100%;height:100%;object-fit:cover;display:block;" />
+                    }
+                    else
+                    {
+                        <span>@inicial</span>
+                    }
+                </div>
+                <a href="#seccionFotoTema" title="Cambiar foto de perfil" style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:var(--brand,#6B1E2E);color:#FFFDF9;border:2px solid var(--surface,#FFFDF9);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.2);text-decoration:none;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </a>
+            </div>
+
+            <div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <h1 style="font-size:1.6rem;font-weight:800;color:var(--brand,#6B1E2E);margin:0;letter-spacing:-0.02em;">@nombreMostrar</h1>
+                    <span style="background:var(--brand-soft, rgba(107,30,46,0.1));color:var(--ink,#6B1E2E);border:1px solid var(--line,#E2D7C8);font-size:0.75rem;font-weight:800;padding:2px 10px;border-radius:999px;">
+                        @rol
+                    </span>
+                    <span id="badgeTemaActual" style="background:var(--surface-2,#EFE6D8);color:var(--text,#1C1416);border:1px solid var(--line,#E2D7C8);font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;">
+                        <span style="width:7px;height:7px;border-radius:50%;background:var(--gold,#D4C2A5);"></span>
+                        Tema: <strong style="text-transform:capitalize;">@temaActual</strong>
+                    </span>
+                </div>
+                <div style="font-size:0.85rem;color:var(--muted,#6B7280);margin-top:4px;">
+                    Usuario del sistema: <strong style="font-family:var(--font-mono, monospace);color:var(--text,#1C1416);">@@@usuario?.NombreUsuario</strong>
+                    · Miembro desde: <strong>@(usuario?.FechaCreacion.ToString("dd/MM/yyyy") ?? "N/A")</strong>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            @if (rol == "Administrador")
+            {
+                <a asp-controller="Auditoria" asp-action="Index" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-2,#FAF6F0);border:1px solid var(--line,#E2D7C8);color:var(--text,#3C2A20);padding:0.55rem 1rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.82rem;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Bitácora de Auditoría</span>
+                </a>
+            }
+            <a asp-controller="Pedido" asp-action="MisPedidos" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface-2,#FAF6F0);border:1px solid var(--line,#E2D7C8);color:var(--text,#3C2A20);padding:0.55rem 1rem;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.82rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                <span>Mis Pedidos</span>
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div style="background:#ECFDF5;border:1px solid #10B981;color:#065F46;border-radius:14px;padding:0.95rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:600;box-shadow:0 2px 8px rgba(16,185,129,0.12);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>@TempData["Mensaje"]</span>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div style="background:#FEF2F2;border:1px solid #EF4444;color:#991B1B;border-radius:14px;padding:0.95rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;font-size:0.88rem;font-weight:600;box-shadow:0 2px 8px rgba(239,68,68,0.12);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>@TempData["Error"]</span>
+        </div>
+    }
+
+    <!-- ══ SECCIÓN NUEVA: FOTO DE PERFIL Y APARTADO DE TEMAS ═══════════════ -->
+    <div id="seccionFotoTema" style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.75rem;margin-bottom:1.75rem;">
+
+        <!-- ── 1. CONFIGURACIÓN DE FOTO DE PERFIL & AVATARES ── -->
+        <div style="background:var(--surface,#FFFDF9);border:1px solid var(--line,#E2D7C8);border-radius:20px;padding:1.75rem;box-shadow:0 4px 16px var(--color-shadow, rgba(0,0,0,0.02));display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;border-bottom:1px solid var(--line,#E2D7C8);padding-bottom:0.85rem;">
+                    <div style="width:36px;height:36px;border-radius:10px;background:var(--brand-soft, rgba(107,30,46,0.1));color:var(--brand,#6B1E2E);display:flex;align-items:center;justify-content:center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                    <div>
+                        <h3 style="margin:0;font-size:1.1rem;font-weight:800;color:var(--brand,#6B1E2E);">Foto de Perfil</h3>
+                        <p style="margin:0;font-size:0.78rem;color:var(--muted,#6B7280);">Sube tu imagen o elige un avatar gastronómico</p>
+                    </div>
+                </div>
+
+                <!-- Formulario para subir archivo -->
+                <form asp-action="ActualizarFotoPerfil" method="post" enctype="multipart/form-data" id="formFotoPerfil">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="avatarPreset" id="inputAvatarPreset" value="" />
+
+                    <!-- Zona interactiva de subida con Drag & Drop -->
+                    <div class="avatar-dropzone" id="dropzoneAvatar" onclick="document.getElementById('inputFotoArchivo').click()">
+                        <input type="file" id="inputFotoArchivo" name="fotoArchivo" accept=".jpg,.jpeg,.png,.webp,.gif" style="display:none;" onchange="previsualizarFoto(this)" />
+                        
+                        <div id="previewAvatarContainer" style="margin-bottom:0.65rem;">
+                            @if (!string.IsNullOrEmpty(fotoPerfil))
+                            {
+                                <img id="previewAvatarImg" src="@fotoPerfil" alt="Avatar actual" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto;display:block;border:2px solid var(--gold,#D4C2A5);box-shadow:0 3px 10px rgba(0,0,0,0.1);" />
+                            }
+                            else
+                            {
+                                <div id="previewAvatarFallback" style="width:64px;height:64px;border-radius:50%;background:var(--brand,#6B1E2E);color:var(--gold,#D4C2A5);font-size:1.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto;border:2px solid var(--gold,#D4C2A5);">
+                                    @inicial
+                                </div>
+                                <img id="previewAvatarImg" src="" alt="Previsualización" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto;display:none;border:2px solid var(--gold,#D4C2A5);" />
+                            }
+                        </div>
+
+                        <div style="font-size:0.85rem;font-weight:700;color:var(--text,#1C1416);" id="lblDropzoneTitulo">
+                            Haz clic para elegir foto o arrástrala aquí
+                        </div>
+                        <div style="font-size:0.72rem;color:var(--muted,#6B7280);margin-top:2px;">
+                            Formatos soportados: JPG, PNG, WEBP, GIF (Máx. 5MB)
+                        </div>
+                    </div>
+
+                    <!-- Galería de Avatares Gourmet Prediseñados -->
+                    <div style="margin-top:1.25rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:0.25rem;">
+                            O elige un Avatar Gourmet exclusivo:
+                        </label>
+                        <div class="avatar-preset-grid">
+                            <button type="button" class="avatar-preset-btn @(fotoPerfil == "/img/avatars/chef.svg" ? "active" : "")" onclick="seleccionarPreset('/img/avatars/chef.svg', this)" title="Chef Ejecutivo">
+                                <img src="/img/avatars/chef.svg" alt="Chef" class="avatar-preset-img" />
+                                <span class="avatar-preset-label">Chef</span>
+                            </button>
+                            <button type="button" class="avatar-preset-btn @(fotoPerfil == "/img/avatars/burger.svg" ? "active" : "")" onclick="seleccionarPreset('/img/avatars/burger.svg', this)" title="Burger de Autor">
+                                <img src="/img/avatars/burger.svg" alt="Burger" class="avatar-preset-img" />
+                                <span class="avatar-preset-label">Burger</span>
+                            </button>
+                            <button type="button" class="avatar-preset-btn @(fotoPerfil == "/img/avatars/fuego.svg" ? "active" : "")" onclick="seleccionarPreset('/img/avatars/fuego.svg', this)" title="Brasa & Fuego">
+                                <img src="/img/avatars/fuego.svg" alt="Fuego" class="avatar-preset-img" />
+                                <span class="avatar-preset-label">Brasa</span>
+                            </button>
+                            <button type="button" class="avatar-preset-btn @(fotoPerfil == "/img/avatars/coctel.svg" ? "active" : "")" onclick="seleccionarPreset('/img/avatars/coctel.svg', this)" title="Coctel Signature">
+                                <img src="/img/avatars/coctel.svg" alt="Coctel" class="avatar-preset-img" />
+                                <span class="avatar-preset-label">Coctel</span>
+                            </button>
+                            <button type="button" class="avatar-preset-btn @(fotoPerfil == "/img/avatars/cafe.svg" ? "active" : "")" onclick="seleccionarPreset('/img/avatars/cafe.svg', this)" title="Café Barista">
+                                <img src="/img/avatars/cafe.svg" alt="Café" class="avatar-preset-img" />
+                                <span class="avatar-preset-label">Café</span>
+                            </button>
+                            <button type="button" class="avatar-preset-btn @(fotoPerfil == "/img/avatars/estrella.svg" ? "active" : "")" onclick="seleccionarPreset('/img/avatars/estrella.svg', this)" title="Estrella Culinaria">
+                                <img src="/img/avatars/estrella.svg" alt="Estrella" class="avatar-preset-img" />
+                                <span class="avatar-preset-label">Estrella</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Botón de Confirmación -->
+                    <div style="display:flex;gap:0.65rem;margin-top:1.5rem;">
+                        <button type="submit" id="btnGuardarFoto" style="flex:1;background:var(--brand,#6B1E2E);color:var(--on-brand,#FFFDF9);border:none;padding:0.75rem 1rem;border-radius:10px;font-weight:800;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 10px rgba(107,30,46,0.2);display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:opacity 140ms ease;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Guardar Foto</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Botón opcional para eliminar foto si ya tiene una asignada -->
+            @if (!string.IsNullOrEmpty(fotoPerfil))
+            {
+                <form asp-action="EliminarFotoPerfil" method="post" style="margin-top:0.75rem;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" onclick="return confirm('¿Deseas quitar tu foto de perfil y volver a mostrar tus iniciales?')" style="width:100%;background:none;border:1px dashed var(--line,#E2D7C8);color:#991B1B;padding:0.5rem;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <span>Quitar Foto / Usar Iniciales</span>
+                    </button>
+                </form>
+            }
+        </div>
+
+        <!-- ── 2. APARTADO DE ESCOGER UN TEMA ── -->
+        <div style="background:var(--surface,#FFFDF9);border:1px solid var(--line,#E2D7C8);border-radius:20px;padding:1.75rem;box-shadow:0 4px 16px var(--color-shadow, rgba(0,0,0,0.02));display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;border-bottom:1px solid var(--line,#E2D7C8);padding-bottom:0.85rem;flex-wrap:wrap;gap:8px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:36px;height:36px;border-radius:10px;background:rgba(212,194,165,0.2);color:var(--brand,#6B1E2E);display:flex;align-items:center;justify-content:center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20v-20z"/></svg>
+                        </div>
+                        <div>
+                            <h3 style="margin:0;font-size:1.1rem;font-weight:800;color:var(--brand,#6B1E2E);">Escoger Tema Visual</h3>
+                            <p style="margin:0;font-size:0.78rem;color:var(--muted,#6B7280);">Personaliza los colores de toda la plataforma</p>
+                        </div>
+                    </div>
+                    <span id="toastTemaStatus" style="font-size:0.72rem;font-weight:800;color:#065F46;background:#ECFDF5;padding:3px 8px;border-radius:999px;opacity:0;transition:opacity 200ms ease;">
+                        ✓ Sincronizado
+                    </span>
+                </div>
+
+                <div class="theme-selector-grid">
+                    <!-- Tema 1: Saborator Clásico -->
+                    <div class="theme-card @(temaActual == "clasico" ? "active" : "")" onclick="aplicarTema('clasico', this)">
+                        <div>
+                            <div class="theme-card-swatches">
+                                <div class="theme-swatch" style="background:#6B1E2E;" title="Borgoña Saborator"></div>
+                                <div class="theme-swatch" style="background:#F5EFE6;" title="Crema Lino"></div>
+                                <div class="theme-swatch" style="background:#D4C2A5;" title="Champaña Oro"></div>
+                            </div>
+                            <div class="theme-card-title">Saborator Clásico</div>
+                            <p class="theme-card-desc">Borgoña Noble & Crema Cálida. La paleta tradicional de alta cocina.</p>
+                        </div>
+                        <div>
+                            @if (temaActual == "clasico")
+                            {
+                                <span class="theme-active-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Activo</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Tema 2: Noche Gourmet (Dark Mode) -->
+                    <div class="theme-card @(temaActual == "dark" || temaActual == "noche" ? "active" : "")" onclick="aplicarTema('dark', this)">
+                        <div>
+                            <div class="theme-card-swatches">
+                                <div class="theme-swatch" style="background:#120D0F;" title="Negro Obsidian"></div>
+                                <div class="theme-swatch" style="background:#B2475C;" title="Borgoña Carmesí"></div>
+                                <div class="theme-swatch" style="background:#E5C687;" title="Oro Noche"></div>
+                            </div>
+                            <div class="theme-card-title">Noche Gourmet</div>
+                            <p class="theme-card-desc">Obsidian & Borgoña Noir. Modo oscuro de lujo para veladas y descanso visual.</p>
+                        </div>
+                        <div>
+                            @if (temaActual == "dark" || temaActual == "noche")
+                            {
+                                <span class="theme-active-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Activo</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Tema 3: Oro Imperial & Champagne -->
+                    <div class="theme-card @(temaActual == "dorado" ? "active" : "")" onclick="aplicarTema('dorado', this)">
+                        <div>
+                            <div class="theme-card-swatches">
+                                <div class="theme-swatch" style="background:#8C6D28;" title="Oro Imperial"></div>
+                                <div class="theme-swatch" style="background:#FAF6ED;" title="Champaña Cava"></div>
+                                <div class="theme-swatch" style="background:#D4AF37;" title="Destello Dorado"></div>
+                            </div>
+                            <div class="theme-card-title">Oro Imperial</div>
+                            <p class="theme-card-desc">Cava Champagne & Lino Dorado. Distinción inspirada en etiquetas de reserva.</p>
+                        </div>
+                        <div>
+                            @if (temaActual == "dorado")
+                            {
+                                <span class="theme-active-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Activo</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Tema 4: Bistro Botánico & Oliva Esmeralda -->
+                    <div class="theme-card @(temaActual == "esmeralda" ? "active" : "")" onclick="aplicarTema('esmeralda', this)">
+                        <div>
+                            <div class="theme-card-swatches">
+                                <div class="theme-swatch" style="background:#204E38;" title="Verde Bosque"></div>
+                                <div class="theme-swatch" style="background:#F2F6F3;" title="Menta Suave"></div>
+                                <div class="theme-swatch" style="background:#9BB68A;" title="Oliva Fresco"></div>
+                            </div>
+                            <div class="theme-card-title">Bistro Esmeralda</div>
+                            <p class="theme-card-desc">Verde Bosque & Menta Oliva. Frescura botánica inspirada en huertos de autor.</p>
+                        </div>
+                        <div>
+                            @if (temaActual == "esmeralda")
+                            {
+                                <span class="theme-active-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Activo</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Tema 5: Atardecer & Brasa Viva -->
+                    <div class="theme-card @(temaActual == "sunset" ? "active" : "")" onclick="aplicarTema('sunset', this)">
+                        <div>
+                            <div class="theme-card-swatches">
+                                <div class="theme-swatch" style="background:#872B15;" title="Terracota Brasa"></div>
+                                <div class="theme-swatch" style="background:#F9F3EE;" title="Arcilla Cálida"></div>
+                                <div class="theme-swatch" style="background:#E08E45;" title="Ámbar Fuego"></div>
+                            </div>
+                            <div class="theme-card-title">Atardecer & Brasa</div>
+                            <p class="theme-card-desc">Terracota & Ámbar Parrilla. Calidez envolvente y aromas a leña rústica.</p>
+                        </div>
+                        <div>
+                            @if (temaActual == "sunset")
+                            {
+                                <span class="theme-active-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Activo</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información al pie del selector -->
+            <div style="background:var(--surface-2,#FAF6F0);border:1px dashed var(--line,#E2D7C8);padding:0.75rem 1rem;border-radius:12px;font-size:0.78rem;color:var(--muted,#6B7280);margin-top:1.25rem;display:flex;align-items:center;gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>El tema seleccionado se guarda automáticamente en tu cuenta y se aplica en cualquier dispositivo al iniciar sesión.</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══ BLOQUE INFERIOR: DATOS PERSONALES & CAMBIAR CONTRASEÑA ════════ -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.75rem;">
+
+        <!-- ── COLUMNA IZQUIERDA: INFORMACIÓN DE CONTACTO ── -->
+        <div style="background:var(--surface,#FFFDF9);border:1px solid var(--line,#E2D7C8);border-radius:20px;padding:1.75rem;box-shadow:0 4px 16px var(--color-shadow, rgba(0,0,0,0.02));">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;border-bottom:1px solid var(--line,#E2D7C8);padding-bottom:0.85rem;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(200,151,58,0.15);color:var(--gold,#C8973A);display:flex;align-items:center;justify-content:center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div>
+                    <h3 style="margin:0;font-size:1.1rem;font-weight:800;color:var(--brand,#6B1E2E);">Datos Personales</h3>
+                    <p style="margin:0;font-size:0.78rem;color:var(--muted,#6B7280);">Información de tu cuenta y despachos</p>
+                </div>
+            </div>
+
+            @if (cliente != null)
+            {
+                <form asp-action="ActualizarDatosCliente" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="clienteId" value="@cliente.Id" />
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Nombre Completo *</label>
+                        <input type="text" name="nombre" value="@cliente.Nombre" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" required />
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Documento de Identidad</label>
+                        <input type="text" value="@cliente.Documento" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#F9FAFB);color:var(--muted,#6B7280);" disabled />
+                        <span style="font-size:0.72rem;color:var(--faint,#9CA3AF);">El documento no es modificable por seguridad fiscal.</span>
+                    </div>
+
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Teléfono Celular (WhatsApp) *</label>
+                        <input type="tel" name="telefono" value="@cliente.Telefono" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" required />
+                    </div>
+
+                    <div style="margin-bottom:1.5rem;">
+                        <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Correo Electrónico</label>
+                        <input type="email" name="correo" value="@cliente.Correo" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" placeholder="correo@ejemplo.com" />
+                    </div>
+
+                    <button type="submit" style="background:var(--brand,#6B1E2E);color:var(--on-brand,#FFFDF9);border:none;padding:0.75rem 1.5rem;border-radius:10px;font-weight:800;font-size:0.85rem;cursor:pointer;width:100%;box-shadow:0 3px 10px rgba(107,30,46,0.2);">
+                        Guardar Cambios
+                    </button>
+                </form>
+            }
+            else
+            {
+                <div style="font-size:0.88rem;color:var(--text,#4B5563);line-height:1.6;">
+                    <div style="margin-bottom:0.85rem;">
+                        <strong style="color:var(--text,#111827);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;">Nombre de Usuario</strong>
+                        <span style="font-size:1rem;color:var(--brand,#18060A);font-weight:700;">@usuario?.NombreUsuario</span>
+                    </div>
+                    <div style="margin-bottom:0.85rem;">
+                        <strong style="color:var(--text,#111827);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;">Rol Operativo</strong>
+                        <span style="font-size:0.95rem;color:var(--success,#065F46);font-weight:700;">Personal de Restaurante: @rol</span>
+                    </div>
+                    <div style="margin-bottom:0.85rem;">
+                        <strong style="color:var(--text,#111827);display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em;">Estado de la Cuenta</strong>
+                        <span style="font-size:0.85rem;background:var(--success-bg,#ECFDF5);color:var(--success,#065F46);padding:2px 8px;border-radius:999px;font-weight:700;">Activa &amp; Operativa</span>
+                    </div>
+                    <div style="background:var(--surface-2,#FAF6F0);border:1px dashed var(--line,#E2D7C8);padding:0.85rem;border-radius:10px;font-size:0.78rem;color:var(--muted,#6B7280);margin-top:1.5rem;">
+                        ℹ️ Tu cuenta forma parte del equipo operativo de Saborator. Si necesitas modificar tus credenciales operativas o rol, contacta a Gerencia.
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- ── COLUMNA DERECHA: CAMBIO VOLUNTARIO DE CONTRASEÑA ── -->
+        <div style="background:var(--surface,#FFFDF9);border:1px solid var(--line,#E2D7C8);border-radius:20px;padding:1.75rem;box-shadow:0 4px 16px var(--color-shadow, rgba(0,0,0,0.02));">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;border-bottom:1px solid var(--line,#E2D7C8);padding-bottom:0.85rem;">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--brand-soft, rgba(107,30,46,0.1));color:var(--brand,#6B1E2E);display:flex;align-items:center;justify-content:center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div>
+                    <h3 style="margin:0;font-size:1.1rem;font-weight:800;color:var(--brand,#6B1E2E);">Seguridad &amp; Clave</h3>
+                    <p style="margin:0;font-size:0.78rem;color:var(--muted,#6B7280);">Actualiza tu contraseña de acceso</p>
+                </div>
+            </div>
+
+            <form asp-action="CambiarContraseña" method="post" id="formCambiarClave">
+                @Html.AntiForgeryToken()
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Contraseña Actual *</label>
+                    <input type="password" name="contrasenaActual" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" placeholder="Tu clave actual" required />
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Nueva Contraseña *</label>
+                    <input type="password" name="nuevaContrasena" id="inputNuevaClave" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" placeholder="Mínimo 6 caracteres" minlength="6" oninput="verificarFortalezaClave(this.value)" required />
+                    
+                    <!-- Medidor visual de fortaleza -->
+                    <div style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+                        <div style="flex:1;height:4px;background:#E5E7EB;border-radius:2px;overflow:hidden;">
+                            <div id="barraFortaleza" style="height:100%;width:0%;background:#EF4444;transition:all 200ms ease;"></div>
+                        </div>
+                        <span id="txtFortaleza" style="font-size:0.72rem;font-weight:700;color:#9CA3AF;">Seguridad</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Confirmar Nueva Contraseña *</label>
+                    <input type="password" name="confirmarContrasena" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" placeholder="Repite la nueva contraseña" minlength="6" required />
+                </div>
+
+                <button type="submit" style="background:var(--gold,#C8973A);color:#18060A;border:none;padding:0.75rem 1.5rem;border-radius:10px;font-weight:800;font-size:0.85rem;cursor:pointer;width:100%;box-shadow:0 3px 10px rgba(200,151,58,0.25);transition:transform 120ms ease;">
+                    Actualizar Contraseña
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+@Html.AntiForgeryToken()
+
+<script>
+    // ── PREVISUALIZAR IMAGEN SUBIDA ──────────────────────────────────────────
+    function previsualizarFoto(input) {
+        if (!input.files || !input.files[0]) return;
+        var file = input.files[0];
+
+        // Validar tamaño máx 5MB
+        if (file.size > 5 * 1024 * 1024) {
+            alert("La imagen seleccionada supera los 5MB permitidos.");
+            input.value = "";
+            return;
+        }
+
+        // Limpiar selección de presets para favorecer el archivo subido
+        document.getElementById('inputAvatarPreset').value = '';
+        document.querySelectorAll('.avatar-preset-btn').forEach(function(b) { b.classList.remove('active'); });
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var imgPreview = document.getElementById('previewAvatarImg');
+            var fallback = document.getElementById('previewAvatarFallback');
+            if (imgPreview) {
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = 'block';
+            }
+            if (fallback) {
+                fallback.style.display = 'none';
+            }
+            var lbl = document.getElementById('lblDropzoneTitulo');
+            if (lbl) {
+                lbl.textContent = 'Foto lista para guardar: ' + file.name;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ── DRAG & DROP EN ZONA DE SUBIDA ────────────────────────────────────────
+    (function initDragAndDrop() {
+        var dz = document.getElementById('dropzoneAvatar');
+        var fileInput = document.getElementById('inputFotoArchivo');
+        if (!dz || !fileInput) return;
+
+        ['dragenter', 'dragover'].forEach(function(eventName) {
+            dz.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dz.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(function(eventName) {
+            dz.addEventListener(eventName, function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dz.classList.remove('dragover');
+            }, false);
+        });
+
+        dz.addEventListener('drop', function(e) {
+            var dt = e.dataTransfer;
+            var files = dt.files;
+            if (files && files.length > 0) {
+                fileInput.files = files;
+                previsualizarFoto(fileInput);
+            }
+        }, false);
+    })();
+
+    // ── SELECCIONAR AVATAR PREDISEÑADO ───────────────────────────────────────
+    function seleccionarPreset(rutaPreset, btnElement) {
+        document.getElementById('inputAvatarPreset').value = rutaPreset;
+        // Limpiar archivo seleccionado
+        var fileInp = document.getElementById('inputFotoArchivo');
+        if (fileInp) fileInp.value = '';
+
+        // Actualizar estados visuales de los botones
+        document.querySelectorAll('.avatar-preset-btn').forEach(function(b) {
+            b.classList.remove('active');
+        });
+        if (btnElement) {
+            btnElement.classList.add('active');
+        }
+
+        // Previsualizar en la zona
+        var imgPreview = document.getElementById('previewAvatarImg');
+        var fallback = document.getElementById('previewAvatarFallback');
+        if (imgPreview) {
+            imgPreview.src = rutaPreset;
+            imgPreview.style.display = 'block';
+        }
+        if (fallback) {
+            fallback.style.display = 'none';
+        }
+        var lbl = document.getElementById('lblDropzoneTitulo');
+        if (lbl) {
+            lbl.textContent = 'Avatar seleccionado listo para guardar';
+        }
+    }
+
+    // ── APLICAR TEMA CON TRANSICIÓN LIVE & GUARDADO ASYNC ─────────────────────
+    function aplicarTema(tema, cardElement) {
+        // 1. Aplicar inmediatamente al DOM para experiencia instantánea
+        if (tema === 'clasico') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', tema);
+        }
+        try {
+            localStorage.setItem('saborator_theme', tema);
+        } catch(e) {}
+
+        // 2. Actualizar estilos de las tarjetas
+        document.querySelectorAll('.theme-card').forEach(function(c) {
+            c.classList.remove('active');
+            var pill = c.querySelector('.theme-active-pill');
+            if (pill) pill.remove();
+        });
+
+        if (cardElement) {
+            cardElement.classList.add('active');
+            var wrapper = cardElement.children[1];
+            if (wrapper) {
+                wrapper.innerHTML = '<span class="theme-active-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Activo</span>';
+            }
+        }
+
+        // 3. Actualizar badge de tema en cabecera
+        var badge = document.getElementById('badgeTemaActual');
+        if (badge) {
+            badge.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:var(--gold,#D4C2A5);"></span> Tema: <strong style="text-transform:capitalize;">' + tema + '</strong>';
+        }
+
+        // 4. Guardar asíncronamente en backend para persistencia de la cuenta
+        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+        var formData = new FormData();
+        formData.append('tema', tema);
+        formData.append('__RequestVerificationToken', token);
+
+        fetch('/Perfil/ActualizarTema', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var statusToast = document.getElementById('toastTemaStatus');
+            if (statusToast) {
+                statusToast.textContent = '✓ Guardado en tu cuenta';
+                statusToast.style.opacity = '1';
+                setTimeout(function() {
+                    statusToast.style.opacity = '0';
+                }, 2200);
+            }
+            if (typeof showToast === 'function') {
+                showToast('ok', 'Tema "' + tema.toUpperCase() + '" aplicado a tu perfil.');
+            }
+        })
+        .catch(function(err) {
+            console.error('Error guardando tema:', err);
+        });
+    }
+
+    // ── MEDIDOR DE FORTALEZA DE CLAVE ────────────────────────────────────────
+    function verificarFortalezaClave(val) {
+        const barra = document.getElementById('barraFortaleza');
+        const txt = document.getElementById('txtFortaleza');
+        if (!barra || !txt) return;
+
+        let score = 0;
+        if (val.length >= 6) score += 25;
+        if (val.length >= 10) score += 25;
+        if (/[A-Z]/.test(val)) score += 25;
+        if (/[0-9!@@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(val)) score += 25;
+
+        barra.style.width = score + '%';
+        if (score <= 25) {
+            barra.style.background = '#EF4444';
+            txt.textContent = 'Débil';
+            txt.style.color = '#EF4444';
+        } else if (score <= 50) {
+            barra.style.background = '#F59E0B';
+            txt.textContent = 'Moderada';
+            txt.style.color = '#F59E0B';
+        } else if (score <= 75) {
+            barra.style.background = '#3B82F6';
+            txt.textContent = 'Buena';
+            txt.style.color = '#3B82F6';
+        } else {
+            barra.style.background = '#10B981';
+            txt.textContent = 'Muy Segura';
+            txt.style.color = '#10B981';
+        }
+    }
+</script>

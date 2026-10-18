@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGradFlame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#42140A" />
+      <stop offset="100%" stop-color="#140402" />
+    </linearGradient>
+    <linearGradient id="fireOuter" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#EB5757" />
+      <stop offset="60%" stop-color="#F2994A" />
+      <stop offset="100%" stop-color="#F2C94C" />
+    </linearGradient>
+    <linearGradient id="fireInner" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#F2994A" />
+      <stop offset="80%" stop-color="#FFEAA7" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="60" fill="url(#bgGradFlame)" />
+  <circle cx="60" cy="60" r="54" fill="none" stroke="#F2994A" stroke-width="2.5" stroke-dasharray="3 3" opacity="0.7" />
+
+  <g transform="translate(30, 24)">
+    <!-- Carbones encendidos base -->
+    <path d="M 6 62 Q 30 58 54 62 Q 45 68 30 68 Q 15 68 6 62 Z" fill="#2A0B05" />
+    <circle cx="18" cy="63" r="1.5" fill="#EB5757" />
+    <circle cx="32" cy="64" r="2" fill="#F2994A" />
+    <circle cx="44" cy="63" r="1.5" fill="#EB5757" />
+
+    <!-- Llama exterior principal -->
+    <path d="M 30 4 C 36 14, 52 24, 52 42 C 52 56, 42 63, 30 63 C 18 63, 8 56, 8 42 C 8 28, 20 18, 22 14 C 23 20, 28 24, 30 4 Z" fill="url(#fireOuter)" />
+
+    <!-- Llama interior viva -->
+    <path d="M 30 22 C 34 28, 42 34, 42 46 C 42 54, 37 58, 30 58 C 23 58, 18 54, 18 46 C 18 38, 25 32, 26 28 C 27 32, 29 33, 30 22 Z" fill="url(#fireInner)" />
+
+    <!-- Chispas ascendentes -->
+    <circle cx="16" cy="18" r="2" fill="#FFEAA7" opacity="0.9" />
+    <circle cx="44" cy="16" r="1.8" fill="#FFEAA7" opacity="0.9" />
+    <circle cx="32" cy="2" r="1.5" fill="#FFEAA7" opacity="0.8" />
+  </g>
+</svg>

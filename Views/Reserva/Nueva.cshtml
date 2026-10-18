@@ -1,0 +1,712 @@
+@model ControlClientesRestaurante.Controllers.NuevaReservaViewModel
+@{
+    ViewData["Title"] = "Reservar Mesa — Experiencia Gastronómica";
+    Layout = "_Layout";
+    var fechaActual = (DateTime)(ViewBag.FechaSeleccionada ?? DateTime.Today);
+    string horaActual = (string)(ViewBag.HoraSeleccionada ?? "19:00");
+    int mesaPrevia = (int)(ViewBag.MesaPrevia ?? 0);
+    var listaMesas = (List<ControlClientesRestaurante.Services.EstadoMesaDto>)(ViewBag.Mesas ?? new List<ControlClientesRestaurante.Services.EstadoMesaDto>());
+    bool autenticado = (bool)(ViewBag.EstaAutenticado ?? false);
+    string usuario = (string)(ViewBag.Usuario ?? "");
+    string nombreDefault = (string)(ViewBag.NombreDefault ?? "");
+    string telefonoDefault = (string)(ViewBag.TelefonoDefault ?? "");
+    string correoDefault = (string)(ViewBag.CorreoDefault ?? "");
+}
+
+<link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
+
+<div class="reserva-page">
+
+
+
+    <!-- ══ ENCABEZADO DE RESERVA CON ALTO CONTRASTE ═══════════════ -->
+    <section class="reserva-header">
+        <div class="reserva-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Reserva de Sala &amp; Mesa Exclusiva
+        </div>
+        <h1 class="reserva-title">Elige tu Turno &amp; <span>Mesa</span></h1>
+        <p class="reserva-subtitle">
+            Selecciona la fecha y el horario de tu visita. Inicia sesión para desbloquear el plano interactivo de 30 mesas en tiempo real.
+        </p>
+
+        <!-- Indicador de pasos guiados -->
+        <div class="steps-bar">
+            <div class="step-chip @(!autenticado ? "active" : "")" id="stepChip1">
+                <span class="step-num">1</span>
+                <span>Elegir Horario</span>
+            </div>
+            <div class="step-chip @(autenticado ? "active" : "")" id="stepChip2">
+                <span class="step-num">2</span>
+                <span id="stepChip2Text">@(autenticado ? "Plano Desbloqueado" : "Identificarse")</span>
+            </div>
+            <div class="step-chip" id="stepChip3">
+                <span class="step-num">3</span>
+                <span>Confirmar Boleto</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ CONTENEDOR PRINCIPAL: PLANO & BOLETO DIGITAL ══════════ -->
+    <div class="reserva-container">
+
+        <!-- Columna Izquierda: Controles y Plano Interactivo -->
+        <div class="reserva-stage-card">
+
+            <!-- PASO 1: Controles de Fecha, Hora y Personas -->
+            <div class="reserva-controls">
+                <div class="r-control-group">
+                    <label for="inputFecha">1. Fecha de Reserva</label>
+                    <input type="date" id="inputFecha" class="r-input" 
+                           value="@fechaActual.ToString("yyyy-MM-dd")" 
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           onchange="actualizarPlanoMesas()" />
+                </div>
+
+                <div class="r-control-group">
+                    <label for="selectHora">2. Turno / Hora Deseada</label>
+                    <select id="selectHora" class="r-select" onchange="actualizarPlanoMesas()">
+                        <optgroup label="Almuerzo">
+                            <option value="12:30" selected="@(horaActual=="12:30")">12:30 PM (Almuerzo)</option>
+                            <option value="13:30" selected="@(horaActual=="13:30")">01:30 PM (Almuerzo)</option>
+                            <option value="14:30" selected="@(horaActual=="14:30")">02:30 PM (Almuerzo)</option>
+                        </optgroup>
+                        <optgroup label="Cena Gourmet">
+                            <option value="19:00" selected="@(horaActual=="19:00")">07:00 PM (Cena)</option>
+                            <option value="20:00" selected="@(horaActual=="20:00")">08:00 PM (Cena)</option>
+                            <option value="21:00" selected="@(horaActual=="21:00")">09:00 PM (Cena)</option>
+                            <option value="22:00" selected="@(horaActual=="22:00")">10:00 PM (Cena)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="r-control-group">
+                    <label for="selectPersonas">3. Número de Personas</label>
+                    <select id="selectPersonas" class="r-select" onchange="actualizarPersonasTicket()">
+                        <option value="1">1 Persona</option>
+                        <option value="2" selected>2 Personas (Pareja / Velada)</option>
+                        <option value="3">3 Personas</option>
+                        <option value="4">4 Personas (Mesa familiar)</option>
+                        <option value="5">5 Personas</option>
+                        <option value="6">6 Personas (Grupo / Amigos)</option>
+                        <option value="8">8 Personas (Mesa de Gala / VIP)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Banner con Botón "Siguiente: Seleccionar Mesa" -->
+            <div class="next-step-banner" id="nextStepBanner">
+                <div class="next-step-info">
+                    <div class="next-step-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div class="next-step-text">
+                        <h4 id="nextBannerTitle">@(autenticado ? "Turno Seleccionado" : "Paso Obligatorio para Reservar")</h4>
+                        <p id="nextBannerDesc">
+                            @(autenticado 
+                                ? "Haz clic en tu mesa preferida en el plano de abajo para completar tu reserva." 
+                                : "Presiona el botón para iniciar sesión o registrarte y desbloquear el plano de mesas.")
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="button" class="btn-next-action" id="btnSiguienteMesa" onclick="manejarBotonSiguiente()">
+                        <span id="btnSiguienteTexto">@(autenticado ? "Elegir Mesa en Plano ↓" : "Siguiente: Seleccionar Mesa →")</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor del Plano Interactivo con Cortina de Bloqueo -->
+            <div class="floorplan-wrapper" id="floorplanWrapper">
+
+                <!-- Cortina de Bloqueo si NO está logueado -->
+                <div class="floorplan-locked-overlay @(autenticado ? "unlocked" : "")" id="floorplanLockOverlay">
+                    <div class="lock-badge">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3 class="lock-title">Plano de Sala Protegido</h3>
+                    <p class="lock-desc">
+                        Para ver las mesas disponibles y apartar tu ubicación para el horario seleccionado, debes ingresar a tu cuenta o registrarte en segundos.
+                    </p>
+                    <button type="button" class="btn-next-action" onclick="abrirModalAuth('login')">
+                        Iniciar Sesión o Crear Cuenta
+                    </button>
+                </div>
+
+                <!-- Pantalla / Cocina de Autor (Estilo cine) -->
+                <div class="cinema-screen-wrap">
+                    <div class="cinema-screen-arch"></div>
+                    <div class="cinema-screen-label">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        Cocina de Autor &amp; Cava Principal
+                    </div>
+                </div>
+
+                <!-- Leyenda de Estados con Alto Contraste -->
+                <div class="reserva-legend">
+                    <div class="legend-item">
+                        <span class="legend-dot disponible"></span>
+                        <span>Disponible</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot seleccionada"></span>
+                        <span>Tu Selección</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot reservada"></span>
+                        <span>Reservada / Ocupada</span>
+                    </div>
+                </div>
+
+                <!-- Plano de Sala Dividido por Zonas -->
+                <div id="planoMesasContainer">
+
+                    <!-- Zona 1: Salón Principal (Mesas 1 a 12) -->
+                    <div class="zone-section">
+                        <div class="zone-header">
+                            <span class="zone-title">Salón Principal (Mesas 1 – 12)</span>
+                            <div class="zone-line"></div>
+                        </div>
+                        <div class="tables-grid">
+                            @foreach (var m in listaMesas.Where(x => x.Numero <= 12))
+                            {
+                                var clase = !m.Disponible ? "ocupada" : (m.Numero == mesaPrevia ? "selected" : "disponible");
+                                <button type="button" 
+                                        class="table-node @clase" 
+                                        data-mesa="@m.Numero"
+                                        data-capacidad="@m.Capacidad"
+                                        data-disponible="@m.Disponible.ToString().ToLower()"
+                                        onclick="intentarSeleccionarMesa(@m.Numero, @m.Capacidad, @m.Disponible.ToString().ToLower())"
+                                        title="Mesa #@m.Numero - Capacidad @m.Capacidad personas (@m.EstadoTexto)">
+                                    <span class="t-num">@m.Numero</span>
+                                    <span class="t-cap">@m.Capacidad pers.</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Zona 2: Terraza & Ventanal (Mesas 13 a 22) -->
+                    <div class="zone-section">
+                        <div class="zone-header">
+                            <span class="zone-title">Terraza &amp; Ventanal (Mesas 13 – 22)</span>
+                            <div class="zone-line"></div>
+                        </div>
+                        <div class="tables-grid">
+                            @foreach (var m in listaMesas.Where(x => x.Numero >= 13 && x.Numero <= 22))
+                            {
+                                var clase = !m.Disponible ? "ocupada" : (m.Numero == mesaPrevia ? "selected" : "disponible");
+                                <button type="button" 
+                                        class="table-node @clase" 
+                                        data-mesa="@m.Numero"
+                                        data-capacidad="@m.Capacidad"
+                                        data-disponible="@m.Disponible.ToString().ToLower()"
+                                        onclick="intentarSeleccionarMesa(@m.Numero, @m.Capacidad, @m.Disponible.ToString().ToLower())"
+                                        title="Mesa #@m.Numero - Capacidad @m.Capacidad personas (@m.EstadoTexto)">
+                                    <span class="t-num">@m.Numero</span>
+                                    <span class="t-cap">@m.Capacidad pers.</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Zona 3: Salón Cava & VIP (Mesas 23 a 30) -->
+                    <div class="zone-section">
+                        <div class="zone-header">
+                            <span class="zone-title">Salón Cava &amp; VIP (Mesas 23 – 30)</span>
+                            <div class="zone-line"></div>
+                        </div>
+                        <div class="tables-grid">
+                            @foreach (var m in listaMesas.Where(x => x.Numero >= 23))
+                            {
+                                var clase = !m.Disponible ? "ocupada" : (m.Numero == mesaPrevia ? "selected" : "disponible");
+                                <button type="button" 
+                                        class="table-node @clase" 
+                                        data-mesa="@m.Numero"
+                                        data-capacidad="@m.Capacidad"
+                                        data-disponible="@m.Disponible.ToString().ToLower()"
+                                        onclick="intentarSeleccionarMesa(@m.Numero, @m.Capacidad, @m.Disponible.ToString().ToLower())"
+                                        title="Mesa #@m.Numero - Capacidad @m.Capacidad personas (@m.EstadoTexto)">
+                                    <span class="t-num">@m.Numero</span>
+                                    <span class="t-cap">@m.Capacidad pers.</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Boleto Digital / Formulario de Confirmación -->
+        <div class="reserva-ticket-card">
+
+            <div class="ticket-header">
+                <div class="ticket-brand">Saborator</div>
+                <div class="ticket-tag">Boleto Digital de Comensal</div>
+                <div class="ticket-code" id="ticketCodigoPrevio">#PRE-RES</div>
+            </div>
+
+            <form id="formReserva" asp-controller="Reserva" asp-action="Crear" method="post" onsubmit="return validarEnvioReserva(event)">
+                @Html.AntiForgeryToken()
+
+                @* Campo trampa anti-spam (Honeypot) *@
+                <input type="text" name="WebsiteTrap" id="formWebsiteTrap" style="display:none !important;" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+                <input type="hidden" name="Fecha" id="formFecha" value="@fechaActual.ToString("yyyy-MM-dd")" />
+                <input type="hidden" name="Hora" id="formHora" value="@horaActual" />
+                <input type="hidden" name="NumeroPersonas" id="formPersonas" value="2" />
+                <input type="hidden" name="NumeroMesa" id="formMesa" value="@mesaPrevia" />
+
+                <!-- Resumen en vivo de la reserva -->
+                <div class="ticket-details">
+                    <div class="t-row">
+                        <span class="t-label">Mesa Elegida</span>
+                        <span class="t-val highlight" id="ticketMesaVal">@(mesaPrevia > 0 ? $"Mesa #{mesaPrevia}" : "Pendiente de selección")</span>
+                    </div>
+                    <div class="t-row">
+                        <span class="t-label">Fecha del Servicio</span>
+                        <span class="t-val" id="ticketFechaVal">@fechaActual.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="t-row">
+                        <span class="t-label">Horario / Turno</span>
+                        <span class="t-val" id="ticketHoraVal">@horaActual</span>
+                    </div>
+                    <div class="t-row">
+                        <span class="t-label">Comensales</span>
+                        <span class="t-val" id="ticketPersonasVal">2 Personas</span>
+                    </div>
+                </div>
+
+                <!-- Datos del comensal -->
+                <div class="ticket-form-group">
+                    <label for="formNombreCliente">Nombre Completo *</label>
+                    <input type="text" name="NombreCliente" id="formNombreCliente" class="ticket-input" 
+                           value="@nombreDefault" required placeholder="Tu nombre para el recibimiento" />
+                </div>
+
+                <div class="ticket-form-group">
+                    <label for="formTelefono">Teléfono de Contacto *</label>
+                    <input type="tel" name="Telefono" id="formTelefono" class="ticket-input" 
+                           value="@telefonoDefault" required placeholder="Ej: 300 123 4567" />
+                </div>
+
+                <div class="ticket-form-group">
+                    <label for="formCorreo">Correo Electrónico (Opcional)</label>
+                    <input type="email" name="Correo" id="formCorreo" class="ticket-input" 
+                           value="@correoDefault" placeholder="Para enviarte el boleto" />
+                </div>
+
+                <div class="ticket-form-group">
+                    <label for="formNotas">Ocasión o Petición Especial</label>
+                    <textarea name="Notas" id="formNotas" class="ticket-input" rows="2" 
+                              placeholder="Cumpleaños, aniversario, intolerancias o vino predilecto..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-confirm-reserva" id="btnConfirmarReserva">
+                    @(autenticado ? "Confirmar Mi Reserva" : "Iniciar Sesión para Confirmar")
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ══ MODAL CINEMATOGRÁFICO DE AUTENTICACIÓN ═════════════════ -->
+<div class="auth-modal-overlay" id="authModalOverlay" aria-modal="true" role="dialog">
+    <div class="auth-modal-box">
+        <button type="button" class="auth-modal-close" onclick="cerrarModalAuth()" aria-label="Cerrar">&times;</button>
+
+        <div class="auth-modal-header">
+            <div class="auth-modal-logo">Saborator</div>
+            <div class="auth-modal-title" id="authModalTitle">Inicia Sesión para tu Mesa</div>
+            <p class="auth-modal-desc" id="authModalDesc">
+                Para apartar tu mesa en la sala para el horario elegido, ingresa a tu cuenta o crea una en 30 segundos.
+            </p>
+        </div>
+
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="tabBtnLogin" onclick="cambiarAuthTab('login')">
+                Iniciar Sesión
+            </button>
+            <button type="button" class="auth-tab-btn" id="tabBtnRegistro" onclick="cambiarAuthTab('registro')">
+                Crear Cuenta
+            </button>
+        </div>
+
+        <div id="authFeedback" class="auth-feedback"></div>
+
+        <!-- Panel 1: Login -->
+        <div class="auth-tab-pane active" id="paneLogin">
+            <form id="ajaxLoginForm" onsubmit="ejecutarLoginAjax(event)">
+                @Html.AntiForgeryToken()
+                <div class="ticket-form-group">
+                    <label for="mUsuario">Usuario o Correo</label>
+                    <input type="text" id="mUsuario" class="ticket-input" required placeholder="Tu usuario" autocomplete="username" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="mPass">Contraseña</label>
+                    <input type="password" id="mPass" class="ticket-input" required placeholder="••••••••" autocomplete="current-password" />
+                </div>
+                <button type="submit" class="btn-confirm-reserva" style="margin-top:0.75rem;">
+                    Ingresar y Desbloquear Mesas
+                </button>
+            </form>
+        </div>
+
+        <!-- Panel 2: Registro Rápido -->
+        <div class="auth-tab-pane" id="paneRegistro">
+            <form id="ajaxRegistroForm" onsubmit="ejecutarRegistroAjax(event)">
+                @Html.AntiForgeryToken()
+                <div class="ticket-form-group">
+                    <label for="rNombre">Nombre Completo *</label>
+                    <input type="text" id="rNombre" class="ticket-input" required placeholder="Ej: Carolina Gómez" />
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div class="ticket-form-group" style="flex:1;">
+                        <label for="rTipoDoc">Tipo Doc. *</label>
+                        <select id="rTipoDoc" class="ticket-input" style="padding:0.6rem 0.5rem;">
+                            <option value="CC" selected>CC</option>
+                            <option value="CE">CE</option>
+                            <option value="PA">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div class="ticket-form-group" style="flex:1.5;">
+                        <label for="rDocumento">Documento (Mayor de edad) *</label>
+                        <input type="text" id="rDocumento" class="ticket-input" required placeholder="Ej: 1020304050" />
+                    </div>
+                </div>
+                <div class="ticket-form-group">
+                    <label for="rFechaNac">Fecha de Nacimiento (18+ años) *</label>
+                    <input type="date" id="rFechaNac" class="ticket-input" required max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="rCorreo">Correo Electrónico (para validación) *</label>
+                    <input type="email" id="rCorreo" class="ticket-input" required placeholder="tu-correo@ejemplo.com" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="rTelefono">Teléfono Celular *</label>
+                    <input type="tel" id="rTelefono" class="ticket-input" required placeholder="Ej: 300 123 4567" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="rUsuario">Crea un Usuario *</label>
+                    <input type="text" id="rUsuario" class="ticket-input" required placeholder="carolina_comensal" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="rPass">Contraseña *</label>
+                    <input type="password" id="rPass" class="ticket-input" required placeholder="Mínimo 6 caracteres" />
+                </div>
+                <div class="ticket-form-group">
+                    <label for="rPassConf">Confirmar Contraseña *</label>
+                    <input type="password" id="rPassConf" class="ticket-input" required placeholder="Repite tu contraseña" />
+                </div>
+                <button type="submit" class="btn-confirm-reserva" style="margin-top:0.75rem;">
+                    Crear Cuenta y Desbloquear Mesas
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var estaAutenticado = @(autenticado ? "true" : "false");
+    var mesaSeleccionada = @mesaPrevia;
+
+    function manejarBotonSiguiente() {
+        if (!estaAutenticado) {
+            // Abrir modal de autenticación inmediatamente
+            abrirModalAuth('login');
+        } else {
+            // Ya está autenticado, hacer scroll hacia el plano
+            var target = document.getElementById('floorplanWrapper');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    function intentarSeleccionarMesa(num, cap, disp) {
+        if (!estaAutenticado) {
+            // Si intenta tocar una mesa sin loguearse, abrir modal
+            abrirModalAuth('login');
+            return;
+        }
+
+        if (!disp) {
+            showToast('err', 'La Mesa #' + num + ' ya se encuentra reservada en este turno.');
+            return;
+        }
+
+        mesaSeleccionada = num;
+        document.getElementById('formMesa').value = num;
+        document.getElementById('ticketMesaVal').textContent = 'Mesa #' + num + ' (' + cap + ' pers.)';
+        document.getElementById('ticketCodigoPrevio').textContent = '#RES-' + num + Math.floor(100 + Math.random() * 900);
+        document.getElementById('btnConfirmarReserva').textContent = 'Confirmar Reserva (Mesa #' + num + ')';
+
+        // Actualizar visualmente la selección en el plano
+        document.querySelectorAll('.table-node').forEach(function(el) {
+            if (el.getAttribute('data-disponible') === 'true') {
+                el.classList.remove('selected');
+                el.classList.add('disponible');
+            }
+        });
+
+        var btn = document.querySelector('.table-node[data-mesa="' + num + '"]');
+        if (btn) {
+            btn.classList.remove('disponible');
+            btn.classList.add('selected');
+        }
+
+        showToast('ok', 'Has seleccionado la Mesa #' + num + '. Revisa los datos en tu boleto.');
+    }
+
+    function actualizarPersonasTicket() {
+        var p = document.getElementById('selectPersonas').value;
+        document.getElementById('formPersonas').value = p;
+        document.getElementById('ticketPersonasVal').textContent = p + (p === '1' ? ' Persona' : ' Personas');
+    }
+
+    function actualizarPlanoMesas() {
+        var fecha = document.getElementById('inputFecha').value;
+        var hora  = document.getElementById('selectHora').value;
+
+        document.getElementById('formFecha').value = fecha;
+        document.getElementById('formHora').value  = hora;
+
+        // Actualizar valores en el boleto
+        var partes = fecha.split('-');
+        if (partes.length === 3) {
+            document.getElementById('ticketFechaVal').textContent = partes[2] + '/' + partes[1] + '/' + partes[0];
+        }
+        document.getElementById('ticketHoraVal').textContent = hora;
+
+        // Consultar disponibilidad al servidor
+        fetch('/Reserva/MesasDisponibles?fecha=' + encodeURIComponent(fecha) + '&hora=' + encodeURIComponent(hora))
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                data.forEach(function(m) {
+                    var btn = document.querySelector('.table-node[data-mesa="' + m.numero + '"]');
+                    if (btn) {
+                        btn.setAttribute('data-disponible', m.disponible);
+                        btn.className = 'table-node';
+                        if (!m.disponible) {
+                            btn.classList.add('ocupada');
+                            btn.title = 'Mesa #' + m.numero + ' (Reservada)';
+                            if (mesaSeleccionada === m.numero) {
+                                mesaSeleccionada = 0;
+                                document.getElementById('formMesa').value = '0';
+                                document.getElementById('ticketMesaVal').textContent = 'Pendiente de selección';
+                            }
+                        } else {
+                            if (m.numero === mesaSeleccionada) {
+                                btn.classList.add('selected');
+                            } else {
+                                btn.classList.add('disponible');
+                            }
+                            btn.title = 'Mesa #' + m.numero + ' - Capacidad ' + m.capacidad + ' personas (Disponible)';
+                        }
+                    }
+                });
+            })
+            .catch(function(err) { console.error('Error actualizando mesas:', err); });
+    }
+
+    function validarEnvioReserva(e) {
+        if (!estaAutenticado) {
+            e.preventDefault();
+            abrirModalAuth('login');
+            return false;
+        }
+
+        if (!mesaSeleccionada || mesaSeleccionada <= 0) {
+            e.preventDefault();
+            showToast('err', 'Por favor selecciona una mesa disponible en el plano antes de confirmar.');
+            return false;
+        }
+
+        var btn = document.getElementById('btnConfirmarReserva');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:inline-block;width:1rem;height:1rem;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;margin-right:8px;vertical-align:text-bottom;"></span> Confirmando reserva...';
+            btn.style.opacity = '0.85';
+            btn.style.pointerEvents = 'none';
+        }
+
+        return true;
+    }
+
+    // ── MODAL AUTH CONTROLLER ──────────────────────────────────────────
+    function abrirModalAuth(tab) {
+        var fecha = document.getElementById('inputFecha').value;
+        var hora  = document.getElementById('selectHora').value;
+        var partes = fecha.split('-');
+        var fechaFmt = (partes.length === 3) ? (partes[2] + '/' + partes[1] + '/' + partes[0]) : fecha;
+
+        document.getElementById('authModalOverlay').classList.add('show');
+        cambiarAuthTab(tab || 'login');
+
+        document.getElementById('authModalDesc').textContent = 
+            'Estás reservando para el ' + fechaFmt + ' a las ' + hora + '. Ingresa a tu cuenta o regístrate en 30 segundos para seleccionar tu mesa.';
+    }
+
+    function cerrarModalAuth() {
+        document.getElementById('authModalOverlay').classList.remove('show');
+        var fb = document.getElementById('authFeedback');
+        fb.className = 'auth-feedback';
+        fb.textContent = '';
+    }
+
+    function cambiarAuthTab(tab) {
+        var isLogin = tab === 'login';
+        document.getElementById('tabBtnLogin').classList.toggle('active', isLogin);
+        document.getElementById('tabBtnRegistro').classList.toggle('active', !isLogin);
+        document.getElementById('paneLogin').classList.toggle('active', isLogin);
+        document.getElementById('paneRegistro').classList.toggle('active', !isLogin);
+        document.getElementById('authModalTitle').textContent = isLogin ? 'Inicia Sesión para tu Mesa' : 'Crea tu Cuenta de Comensal';
+    }
+
+    function desbloquearExperiencia(nombre, telefono) {
+        estaAutenticado = true;
+        cerrarModalAuth();
+
+        // 1. Quitar la cortina de bloqueo
+        var lockOverlay = document.getElementById('floorplanLockOverlay');
+        if (lockOverlay) lockOverlay.classList.add('unlocked');
+
+        // 2. Actualizar indicador de pasos
+        var chip1 = document.getElementById('stepChip1');
+        var chip2 = document.getElementById('stepChip2');
+        if (chip1) chip1.classList.remove('active');
+        if (chip2) chip2.classList.add('active');
+        document.getElementById('stepChip2Text').textContent = 'Plano Desbloqueado';
+
+        // 3. Actualizar textos del banner siguiente
+        document.getElementById('nextBannerTitle').textContent = '¡Plano de Sala Desbloqueado!';
+        document.getElementById('nextBannerDesc').textContent = 'Elige tu mesa preferida haciendo clic en el plano de abajo.';
+        document.getElementById('btnSiguienteTexto').textContent = 'Elegir Mesa en Plano ↓';
+
+        // 4. Actualizar navbar
+        var navAuth = document.getElementById('navAuthArea');
+        if (navAuth) {
+            navAuth.innerHTML = '<span style="font-size:0.9rem;color:#F0E2D2;font-weight:600;">Hola, <strong style="color:#FFFDF9;">' + nombre + '</strong></span> ' +
+                                '<a href="/Login/Logout" class="btn-ghost" style="font-size:0.82rem;padding:0.4rem 0.95rem;color:#FFFDF9;border-color:rgba(255,253,249,0.35);">Salir</a>';
+        }
+
+        // 5. Prellenar datos del comensal en el boleto
+        if (nombre && !document.getElementById('formNombreCliente').value) {
+            document.getElementById('formNombreCliente').value = nombre;
+        }
+        if (telefono && !document.getElementById('formTelefono').value) {
+            document.getElementById('formTelefono').value = telefono;
+        }
+
+        document.getElementById('btnConfirmarReserva').textContent = mesaSeleccionada > 0 
+            ? 'Confirmar Reserva (Mesa #' + mesaSeleccionada + ')' 
+            : 'Confirmar Mi Reserva';
+
+        showToast('ok', '¡Bienvenido, ' + nombre + '! Ahora selecciona tu mesa en el plano.');
+
+        // Desplazar suavemente hacia el plano de sala
+        var target = document.getElementById('floorplanWrapper');
+        if (target) {
+            setTimeout(function() {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 250);
+        }
+    }
+
+    function ejecutarLoginAjax(e) {
+        e.preventDefault();
+        var u = document.getElementById('mUsuario').value.trim();
+        var p = document.getElementById('mPass').value;
+        var fb = document.getElementById('authFeedback');
+
+        fetch('/Login/LoginAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario: u, contrasena: p, password: p })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                desbloquearExperiencia(u, '');
+            } else {
+                fb.className = 'auth-feedback error';
+                fb.textContent = data.mensaje;
+            }
+        })
+        .catch(function() {
+            fb.className = 'auth-feedback error';
+            fb.textContent = 'Error de conexión. Intenta nuevamente.';
+        });
+    }
+
+    function ejecutarRegistroAjax(e) {
+        e.preventDefault();
+        var nom  = document.getElementById('rNombre').value.trim();
+        var tDoc = document.getElementById('rTipoDoc').value;
+        var doc  = document.getElementById('rDocumento').value.trim();
+        var fn   = document.getElementById('rFechaNac').value;
+        var cor  = document.getElementById('rCorreo').value.trim();
+        var tel  = document.getElementById('rTelefono').value.trim();
+        var usu  = document.getElementById('rUsuario').value.trim();
+        var pass = document.getElementById('rPass').value;
+        var cnf  = document.getElementById('rPassConf').value;
+        var fb   = document.getElementById('authFeedback');
+
+        if (pass !== cnf) {
+            fb.className = 'auth-feedback error';
+            fb.textContent = 'Las contraseñas no coinciden.';
+            return;
+        }
+
+        fetch('/Login/RegistroAjax', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombreCompleto: nom,
+                tipoDocumento: tDoc,
+                documento: doc,
+                fechaNacimiento: fn,
+                correo: cor,
+                telefono: tel,
+                usuario: usu,
+                contrasena: pass,
+                password: pass,
+                confirmarContrasena: cnf,
+                confirmarPassword: cnf
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.ok) {
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    desbloquearExperiencia(nom, tel);
+                }
+            } else {
+                fb.className = 'auth-feedback error';
+                fb.textContent = data.mensaje;
+            }
+        })
+        .catch(function() {
+            fb.className = 'auth-feedback error';
+            fb.textContent = 'Error al registrarse. Intenta nuevamente.';
+        });
+    }
+
+    // Cerrar modal al presionar Escape o clic fuera
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') cerrarModalAuth();
+    });
+    document.getElementById('authModalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) cerrarModalAuth();
+    });
+</script>

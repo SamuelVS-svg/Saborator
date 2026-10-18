@@ -1,0 +1,14 @@
+# robots.txt for Saborator - Restaurante & Gestión
+User-agent: *
+Allow: /
+Allow: /Home/Sistema
+Allow: /Reserva/Nueva
+Disallow: /Cliente/
+Disallow: /Factura/
+Disallow: /Pedido/
+Disallow: /Proveedor/
+Disallow: /Login/
+Disallow: /Reserva/Admin
+Disallow: /Reserva/MisReservas
+
+Sitemap: https://lamesa-restaurante.com/sitemap.xml

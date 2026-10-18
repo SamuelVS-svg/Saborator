@@ -1,0 +1,96 @@
+@model List<ControlClientesRestaurante.Models.Pedido>
+@{ ViewData["Title"] = "Mis pedidos"; }
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-0">
+    <div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" ry="1"/></svg>
+        </div>
+        <div>
+            <div class="pg-title">Mis pedidos</div>
+            <div class="pg-sub">@(User.IsInRole("Cliente") ? "Pedidos que has realizado" : "Pedidos que has tomado en tu turno")</div>
+        </div>
+    </div>
+    @if (User.IsInRole("Cliente"))
+    {
+        <a asp-action="Checkout" asp-route-tipo="Domicilio" class="btn-gold" style="gap:.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo pedido
+        </a>
+    }
+    else
+    {
+        <a asp-action="Menu" class="btn-gold" style="gap:.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo pedido
+        </a>
+    }
+</div>
+<hr class="div-gold" />
+
+@if (!Model.Any())
+{
+    <div class="card-pro text-center py-5" style="color:var(--muted);">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" style="margin-bottom:.75rem;opacity:.3;"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" ry="1"/></svg>
+        <p style="font-weight:600;font-size:1rem;margin-bottom:.25rem;">No tienes pedidos registrados.</p>
+        <p style="font-size:.875rem;">Toma el primero con <strong>+ Nuevo pedido</strong>.</p>
+    </div>
+}
+else
+{
+    <div class="tbl-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>N° Pedido</th>
+                    <th>Mesa</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Hora</th>
+                    <th style="width:140px;text-align:right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td><strong style="font-family:monospace;font-size:.82rem;">@p.Numero</strong></td>
+                        <td><strong>@p.Mesa</strong></td>
+                        <td style="color:var(--muted);font-size:.82rem;">@(p.NombreCliente ?? "—")</td>
+                        <td><strong>$@p.Total.ToString("N0")</strong></td>
+                        <td>
+                            <span class="estado-pill estado-@p.Estado.ToLower()">
+                                @p.Estado
+                            </span>
+                        </td>
+                        <td style="color:var(--muted);font-size:.8rem;">@p.FechaCreacion.ToString("HH:mm")</td>
+                        <td style="text-align:right;white-space:nowrap;">
+                            <a asp-action="Detalle" asp-route-id="@p.Id" class="btn-ghost" style="padding:.28rem .55rem;font-size:.76rem;">
+                                Ver
+                            </a>
+                            @if (p.Estado != "Facturado" && p.Estado != "Cancelado")
+                            {
+                                <a asp-controller="Pago" asp-action="Checkout" asp-route-tipo="Pedido" asp-route-id="@p.Id"
+                                   class="btn-gold" style="padding:.28rem .7rem;font-size:.76rem;gap:.3rem;text-decoration:none;display:inline-flex;align-items:center;background:linear-gradient(135deg, #00E5A3, #00B37E);color:#0A1B14;font-weight:800;border:none;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                    Pagar con Wompi
+                                </a>
+                            }
+                            else if (p.Estado == "Facturado")
+                            {
+                                <span style="font-size:0.75rem;color:var(--color-success);font-weight:700;display:inline-flex;align-items:center;gap:3px;margin-left:4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Pagado
+                                </span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div style="font-size:.73rem;color:var(--muted);margin-top:.5rem;text-align:right;">
+        @Model.Count pedido(s)
+    </div>
+}

@@ -1,0 +1,87 @@
+@model ControlClientesRestaurante.Models.Proveedor
+@{ ViewData["Title"] = "Nuevo proveedor"; }
+
+<div class="d-flex gap-2 mb-3">
+    <button type="button" onclick="history.back()" class="btn-ghost" style="padding:.35rem .8rem;font-size:.8rem;">← Volver</button>
+</div>
+
+<div class="pg-header">
+    <div class="pg-icon">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+    </div>
+    <div><div class="pg-title">Nuevo proveedor</div><div class="pg-sub">Registra un proveedor del restaurante</div></div>
+</div>
+<hr class="div-gold" />
+
+<div style="display:flex;justify-content:center;">
+<div class="card-pro p-4" style="max-width:620px;width:100%;">
+    <form asp-action="Create" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="alert-err" style="display:@(ViewData.ModelState.IsValid?"none":"block")"></div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-8">
+                <label class="lbl">Nombre <span style="color:var(--c-red)">*</span></label>
+                <input asp-for="Nombre" class="form-control" placeholder="Ej: Distribuidora El Sur" />
+                <span asp-validation-for="Nombre" class="text-danger" style="font-size:.76rem;"></span>
+            </div>
+            <div class="col-sm-4">
+                <label class="lbl">NIT / RUT</label>
+                <input asp-for="Nit" class="form-control" placeholder="Ej: 900123456-7" />
+                <span asp-validation-for="Nit" class="text-danger" style="font-size:.76rem;"></span>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="lbl">Persona de contacto</label>
+                <input asp-for="Contacto" class="form-control" placeholder="Ej: Carlos Pérez" />
+            </div>
+            <div class="col-sm-6">
+                <label class="lbl">Teléfono</label>
+                <input asp-for="Telefono" class="form-control" placeholder="Ej: 3001234567" />
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="lbl">Correo electrónico</label>
+                <input asp-for="Correo" class="form-control" type="email" placeholder="proveedor@correo.com" />
+                <span asp-validation-for="Correo" class="text-danger" style="font-size:.76rem;"></span>
+            </div>
+            <div class="col-sm-6">
+                <label class="lbl">Categoría</label>
+                <select asp-for="Categoria" class="form-select">
+                    <option value="">— Seleccionar —</option>
+                    <option>Bebidas</option>
+                    <option>Carnes</option>
+                    <option>Frutas y Verduras</option>
+                    <option>Lácteos</option>
+                    <option>Insumos de cocina</option>
+                    <option>Empaques</option>
+                    <option>Limpieza</option>
+                    <option>Otros</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Dirección</label>
+            <input asp-for="Direccion" class="form-control" placeholder="Ej: Cra 45 #12-34, Barranquilla" />
+        </div>
+
+        <div class="mb-4">
+            <label class="lbl">Notas</label>
+            <textarea asp-for="Notas" class="form-control" rows="2" placeholder="Observaciones sobre el proveedor..."></textarea>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn-brand" style="gap:.4rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar proveedor
+            </button>
+            <a asp-action="Index" class="btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+</div>

@@ -1,0 +1,143 @@
+@model ControlClientesRestaurante.Models.Cliente
+@{ ViewData["Title"] = "Nuevo cliente"; }
+
+<div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        </div>
+    <div>
+        <div class="pg-title">Nuevo cliente</div>
+        <div class="pg-sub">El cliente debe ser mayor de 18 años</div>
+    </div>
+</div>
+<hr class="div-gold" />
+
+<div style="display:flex;justify-content:center;">
+<div class="card-pro p-4" style="max-width:600px;width:100%;">
+    <form asp-action="Create" method="post" id="formCliente" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="alert-err" style="display:@(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+        <div class="mb-3">
+            <label class="lbl">Nombre completo <span class="req">*</span></label>
+            <input asp-for="Nombre" id="campoNombre" class="form-control" placeholder="Ej: María García" />
+            <span asp-validation-for="Nombre" class="text-danger" style="font-size:.76rem;"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Documento <span class="req">*</span></label>
+            <div class="d-flex gap-2 flex-wrap">
+                <select id="tipoDoc" class="form-select" style="max-width:200px;flex:0 0 auto;">
+                    <option value="CC">Cédula ciudadanía</option>
+                    <option value="TI">Tarjeta identidad</option>
+                    <option value="CE">Cédula extranjería</option>
+                    <option value="PA">Pasaporte</option>
+                </select>
+                <input type="text" id="numDoc" class="form-control" style="flex:1;min-width:120px;"
+                       inputmode="numeric" maxlength="10" placeholder="6 a 10 dígitos" />
+            </div>
+            <div style="font-size:.73rem;color:var(--c-muted);margin-top:.25rem;">Solo números, entre 6 y 10 dígitos.</div>
+            <input type="hidden" asp-for="Documento" id="Documento" />
+            <span asp-validation-for="Documento" class="text-danger" style="font-size:.76rem;"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Teléfono <span class="req">*</span></label>
+            <div class="d-flex gap-2 flex-wrap">
+                <select id="codigoPais" class="form-select" style="max-width:175px;flex:0 0 auto;">
+                    <option value="+57">CO +57 Colombia</option>
+                    <option value="+1">US +1 EE.UU.</option>
+                    <option value="+52">MX +52 México</option>
+                    <option value="+54">AR +54 Argentina</option>
+                    <option value="+56">CL +56 Chile</option>
+                    <option value="+51">PE +51 Perú</option>
+                    <option value="+593">EC +593 Ecuador</option>
+                    <option value="+58">VE +58 Venezuela</option>
+                    <option value="+34">ES +34 España</option>
+                </select>
+                <input type="text" id="numTel" class="form-control" style="flex:1;min-width:120px;"
+                       inputmode="numeric" maxlength="10" placeholder="Ej: 3001234567" />
+            </div>
+            <div style="font-size:.73rem;color:var(--c-muted);margin-top:.25rem;">Colombia: inicia en 3, 10 dígitos.</div>
+            <input type="hidden" asp-for="Telefono" id="Telefono" />
+            <span asp-validation-for="Telefono" class="text-danger" style="font-size:.76rem;"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Correo electrónico</label>
+            <input asp-for="Correo" class="form-control" type="email" placeholder="correo@ejemplo.com" />
+            <span asp-validation-for="Correo" class="text-danger" style="font-size:.76rem;"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="lbl">Dirección</label>
+            <input asp-for="Direccion" class="form-control" placeholder="Ej: Cra 45 #12-34, Barranquilla" />
+        </div>
+
+        <div class="mb-4">
+            <label class="lbl">Fecha de nacimiento <span class="req">*</span></label>
+            <input asp-for="FechaNacimiento" class="form-control" type="date" id="fechaNac"
+                   max="@DateTime.Today.AddYears(-18).ToString("yyyy-MM-dd")" />
+            <div style="font-size:.73rem;color:var(--c-muted);margin-top:.25rem;">Debe ser mayor de 18 años.</div>
+            <div id="errEdad" class="txt-err" style="font-size:.76rem;display:none;">El cliente debe ser mayor de edad (18+).</div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn-brand" style="gap:.4rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Guardar cliente
+            </button>
+            <a asp-action="Index" class="btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('campoNombre').addEventListener('input', function() {
+        var p = this.selectionStart;
+        this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
+        try { this.setSelectionRange(p,p); } catch(e){}
+    });
+    document.getElementById('numDoc').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);
+    });
+    document.getElementById('numTel').addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g,'').slice(0,10);
+    });
+
+    document.getElementById('formCliente').addEventListener('submit', function(e) {
+        var tipo = document.getElementById('tipoDoc').value;
+        var num  = document.getElementById('numDoc').value.trim();
+        if (num.length < 6 || num.length > 10) {
+            e.preventDefault(); alert('El documento debe tener entre 6 y 10 dígitos.'); return;
+        }
+        document.getElementById('Documento').value = tipo + '-' + num;
+
+        var cod = document.getElementById('codigoPais').value;
+        var tel = document.getElementById('numTel').value.trim();
+        if (tel.length !== 10) {
+            e.preventDefault(); alert('El teléfono debe tener 10 dígitos.'); return;
+        }
+        if (cod === '+57' && tel[0] !== '3') {
+            e.preventDefault(); alert('Celulares colombianos deben iniciar con 3.'); return;
+        }
+        document.getElementById('Telefono').value = cod + ' ' + tel;
+
+        var f = document.getElementById('fechaNac').value;
+        if (f) {
+            var hoy = new Date(), nac = new Date(f);
+            var edad = hoy.getFullYear() - nac.getFullYear();
+            var m = hoy.getMonth() - nac.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
+            if (edad < 18) {
+                e.preventDefault();
+                document.getElementById('errEdad').style.display = 'block';
+                document.getElementById('fechaNac').focus(); return;
+            }
+        }
+        document.getElementById('errEdad').style.display = 'none';
+    });
+</script>
+}

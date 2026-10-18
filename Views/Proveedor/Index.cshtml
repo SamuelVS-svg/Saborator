@@ -1,0 +1,81 @@
+@model List<ControlClientesRestaurante.Models.Proveedor>
+@{ ViewData["Title"] = "Proveedores"; }
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-0">
+    <div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div>
+            <div class="pg-title">Proveedores</div>
+            <div class="pg-sub">Gestión de proveedores del restaurante</div>
+        </div>
+    </div>
+    <a asp-action="Create" class="btn-gold" style="gap:.4rem;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo proveedor
+    </a>
+</div>
+<hr class="div-gold" />
+
+@if (!Model.Any())
+{
+    <div class="card-pro text-center py-5" style="color:var(--c-muted);">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" style="margin-bottom:.75rem;opacity:.3;"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        <p style="font-weight:600;font-size:1rem;margin-bottom:.25rem;">No hay proveedores registrados.</p>
+        <p style="font-size:.875rem;">Agrega el primero con <strong>+ Nuevo proveedor</strong>.</p>
+    </div>
+}
+else
+{
+    <div class="tbl-wrap">
+        <table id="tablaProveedores">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>Teléfono</th>
+                    <th>Categoría</th>
+                    <th>NIT</th>
+                    <th style="width:110px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@p.Nombre</strong>
+                            @if (!p.Activo)
+                            {
+                                <span style="font-size:.68rem;background:#f8d7da;color:#721c24;border-radius:4px;padding:.1em .4em;margin-left:.35rem;">Inactivo</span>
+                            }
+                        </td>
+                        <td style="color:var(--c-muted);font-size:.875rem;">@(p.Contacto ?? "—")</td>
+                        <td style="color:var(--c-muted);font-size:.875rem;">@(p.Telefono ?? "—")</td>
+                        <td style="font-size:.875rem;">
+                            @if (!string.IsNullOrEmpty(p.Categoria))
+                            {
+                                <span style="background:rgba(212,160,23,.12);color:#a07000;border-radius:20px;padding:.2em .6em;font-size:.72rem;font-weight:700;">@p.Categoria</span>
+                            }
+                            else { <span style="color:var(--c-muted);">—</span> }
+                        </td>
+                        <td style="color:var(--c-muted);font-family:monospace;font-size:.82rem;">@(p.Nit ?? "—")</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@p.Id" class="btn-ghost"
+                                   style="padding:.28rem .65rem;font-size:.76rem;gap:.3rem;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    Editar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div style="font-size:.73rem;color:var(--c-muted);margin-top:.5rem;text-align:right;">
+        <span id="conteo">@Model.Count</span> proveedor(es)
+    </div>
+}

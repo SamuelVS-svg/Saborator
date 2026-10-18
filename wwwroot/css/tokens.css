@@ -1,0 +1,35 @@
+/* ================================================================
+   PRESTACONTROL · Tokens de diseño compartidos (sistema, landing, login)
+   ================================================================ */
+:root{
+  --bg:#F5EFE6; --surface:#FFFDF9; --surface-2:#EFE6D8; --text:#1C1416; --muted:#5E5357; --faint:#6E6468;
+  --line:#E3D8C8; --line-2:#D4C6B2; --brand:#6B1E2E; --brand-hover:#8E2C3F; --ink:#6B1E2E; --brand-soft:rgba(107,30,46,.10);
+  --on-brand:#FFFDF9; --gold:#C9A86A; --amber:#C98A1B; --amber-ink:#8A5A10; --amber-soft:rgba(154,101,18,.10); --warning:#8A5A10;
+  --success:#2A7348; --success-bg:#E3F1E8;
+  --danger:#D6453D; --danger-ink:#B3322B; --danger-soft:#FBE4E2; --danger-bg:#FBE4E2;
+  --info:#2563EB; --info-soft:rgba(37,99,235,.10);
+  --dot:rgba(28,20,22,.07); --glass:rgba(255,253,249,.74); --scrim:rgba(8,8,10,.45);
+  --shadow:0 1px 2px rgba(28,20,22,.05),0 8px 24px -10px rgba(28,20,22,.14);
+  --shadow-lg:0 2px 4px rgba(0,0,0,.05),0 30px 60px -20px rgba(0,0,0,.25);
+  --ease:cubic-bezier(.16,1,.3,1); --spring:cubic-bezier(.34,1.56,.64,1);
+  --r-ctl:12px; --r-card:22px; --r-big:30px;
+  --font:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Geist Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
+  --serif:'Instrument Serif',Georgia,serif;
+  --dock-space:128px;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#141012; --surface:#1E181A; --surface-2:#2A2124; --text:#F5EFE6; --muted:#C8BCB4; --faint:#9A8E92;
+  --line:#3A2E31; --line-2:#4A3B3F; --brand:#B2475C; --brand-hover:#9E3C51; --ink:#E7B7C1; --brand-soft:rgba(178,71,92,.20);
+  --on-brand:#FFFDF9; --gold:#C9A86A; --amber:#E0A94B; --amber-ink:#E0A94B; --amber-soft:rgba(224,169,75,.14); --warning:#E0A94B;
+  --success:#5CC48A; --success-bg:rgba(92,196,138,.14);
+  --danger:#F0625A; --danger-ink:#F57A73; --danger-soft:rgba(240,98,90,.16); --danger-bg:rgba(240,98,90,.16);
+  --info:#60A5FA; --info-soft:rgba(96,165,250,.14);
+  --dot:rgba(245,239,230,.05); --glass:rgba(30,24,26,.74); --scrim:rgba(0,0,0,.6);
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px -10px rgba(0,0,0,.7);
+  --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 30px 60px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+/* Colores fijos permitidos fuera de tokens */
+/* isla/píldora oscura #1C1416 (oscuro: #000), texto sobre ámbar #1c1003, borde interno de moneda dorada #B8934F */

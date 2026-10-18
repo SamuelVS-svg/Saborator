@@ -1,0 +1,274 @@
+@using ControlClientesRestaurante.Models
+@{
+    ViewData["Title"] = "Control de Caja & Arqueo de Turno";
+    Layout = "_Layout";
+    var turnoActivo = ViewBag.TurnoActivo as TurnoCaja;
+    var historial = (ViewBag.Historial as List<TurnoCaja>) ?? new List<TurnoCaja>();
+    var usuario = (ViewBag.Usuario as string) ?? "Cajero";
+}
+
+<div class="container-fluid px-3 px-md-4 py-4" style="max-width: 1300px;">
+
+    <!-- Encabezado de Caja -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 1.5rem;">💵</span>
+                <h1 style="font-size: 1.6rem; font-weight: 800; margin: 0; color: var(--text);">Arqueo &amp; Control de Caja</h1>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--muted); margin: 0.25rem 0 0 0;">
+                Apertura con base en efectivo, registro de ingresos por canal y cierre de turno conciliado.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-controller="Factura" asp-action="Index" class="btn-ghost" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                Ver Historial Facturas
+            </a>
+            <a asp-controller="Pedido" asp-action="Index" class="btn-brand" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                Pedidos en Curso
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert-box mb-4" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #065F46; padding: 0.85rem 1.25rem; border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>@TempData["Mensaje"]</span>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-box mb-4" style="background: var(--danger-bg); border: 1px solid rgba(214, 69, 61, 0.3); color: var(--danger-ink); padding: 0.85rem 1.25rem; border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>@TempData["Error"]</span>
+        </div>
+    }
+
+    <!-- Panel de Estado del Turno -->
+    @if (turnoActivo != null)
+    {
+        <div class="glass-card mb-4" style="padding: 1.75rem; border-radius: 20px; box-shadow: var(--shadow-md);">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10B981; display: flex; align-items: center; justify-content: center;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h2 style="font-size: 1.25rem; font-weight: 800; margin: 0; color: var(--text);">@turnoActivo.CodigoTurno</h2>
+                            <span style="font-size: 0.72rem; background: #ECFDF5; color: #065F46; padding: 2px 8px; border-radius: 999px; font-weight: 700; border: 1px solid #A7F3D0;">TURNO ABIERTO</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--muted);">Cajero: <strong>@turnoActivo.UsuarioCajero</strong> · Apertura: @turnoActivo.FechaApertura.ToString("dd/MM/yyyy hh:mm tt")</div>
+                    </div>
+                </div>
+
+                <button type="button" onclick="document.getElementById('modalCerrarCaja').classList.add('show')" class="btn-brand" style="background: #DC2626; border-color: #DC2626; padding: 0.55rem 1.15rem; font-weight: 700; border-radius: 10px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: -2px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Realizar Arqueo &amp; Cerrar Turno
+                </button>
+            </div>
+
+            <!-- Métricas en vivo del turno -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+                <div style="background: rgba(255,255,255,0.45); padding: 1.25rem; border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Base Inicial Efectivo</div>
+                    <div style="font-size: 1.45rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">$@turnoActivo.MontoInicial.ToString("N0")</div>
+                    <div style="font-size: 0.74rem; color: var(--muted);">Fondo fijo entregado</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.45); padding: 1.25rem; border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Ventas en Efectivo</div>
+                    <div style="font-size: 1.45rem; font-weight: 800; color: #059669; margin-top: 0.25rem;">$@turnoActivo.VentasEfectivo.ToString("N0")</div>
+                    <div style="font-size: 0.74rem; color: var(--muted);">Cobrado en caja / mesa</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.45); padding: 1.25rem; border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Transferencias Digitales</div>
+                    <div style="font-size: 1.45rem; font-weight: 800; color: #2563EB; margin-top: 0.25rem;">$@turnoActivo.VentasTransferencia.ToString("N0")</div>
+                    <div style="font-size: 0.74rem; color: var(--muted);">Nequi / Daviplata / PSE</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.45); padding: 1.25rem; border-radius: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Ventas Tarjetas (Datáfono)</div>
+                    <div style="font-size: 1.45rem; font-weight: 800; color: #7C3AED; margin-top: 0.25rem;">$@turnoActivo.VentasTarjeta.ToString("N0")</div>
+                    <div style="font-size: 0.74rem; color: var(--muted);">Crédito / Débito</div>
+                </div>
+
+                <div style="background: rgba(200, 151, 58, 0.12); padding: 1.25rem; border-radius: 14px; border: 1.5px solid var(--brand); grid-column: 1 / -1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--brand); font-weight: 800; text-transform: uppercase;">Total Efectivo que debe haber en Caja (Base + Cobros)</div>
+                            <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-top: 0.2rem;">$@turnoActivo.TotalEfectivoEsperado.ToString("N0") COP</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.78rem; color: var(--muted);">Facturación Total Turno</div>
+                            <div style="font-size: 1.25rem; font-weight: 800; color: var(--text);">$@turnoActivo.TotalVentasSistema.ToString("N0") COP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Caja Cerrada: Formulario de Apertura -->
+        <div class="glass-card mb-4 text-center" style="padding: 3rem 2rem; border-radius: 20px; max-width: 620px; margin: 0 auto;">
+            <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(107, 30, 46, 0.1); color: var(--brand); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h2 style="font-size: 1.45rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text);">No hay un turno de caja abierto</h2>
+            <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 2rem;">
+                Para comenzar a facturar pedidos y registrar cobros en el punto de venta, abre un nuevo turno ingresando la base de efectivo inicial.
+            </p>
+
+            <form asp-action="Abrir" method="post" style="text-align: left;">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label style="font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 0.35rem;">Base Inicial en Efectivo ($ COP) *</label>
+                    <input type="number" step="1000" min="0" name="montoInicial" value="100000" required class="form-control" style="font-size: 1.1rem; font-weight: 700; padding: 0.65rem 0.85rem;" />
+                    <span style="font-size: 0.74rem; color: var(--muted);">Ejemplo: $100.000 para dar cambio y devueltas.</span>
+                </div>
+
+                <div class="mb-4">
+                    <label style="font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 0.35rem;">Observaciones de Apertura (Opcional)</label>
+                    <input type="text" name="observaciones" placeholder="Ej: Turno Tarde - Caja Principal" class="form-control" style="padding: 0.65rem 0.85rem;" />
+                </div>
+
+                <button type="submit" class="btn-brand" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; font-weight: 800; border-radius: 12px;">
+                    🔓 Abrir Turno de Caja
+                </button>
+            </form>
+        </div>
+    }
+
+    <!-- Historial de Turnos y Cierres Anteriores -->
+    <div class="glass-card" style="padding: 1.75rem; border-radius: 20px; box-shadow: var(--shadow-sm); margin-top: 2rem;">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0;">Historial de Turnos y Arqueos Recientes</h3>
+            <a asp-action="ExportarHistorialTurnosCsv" class="btn-ghost" style="padding: 0.4rem 0.85rem; font-size: 0.8rem; gap: 0.4rem; display: inline-flex; align-items: center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Exportar Arqueos (Excel)</span>
+            </a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table" style="font-size: 0.88rem; vertical-align: middle;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border); color: var(--muted); font-size: 0.78rem; text-transform: uppercase;">
+                        <th>Código</th>
+                        <th>Cajero</th>
+                        <th>Apertura</th>
+                        <th>Cierre</th>
+                        <th>Base Inicial</th>
+                        <th>Ventas Totales</th>
+                        <th>Esperado</th>
+                        <th>Declarado</th>
+                        <th>Diferencia</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!historial.Any())
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center py-4 text-muted">Aún no hay turnos registrados en el sistema.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var t in historial)
+                        {
+                            <tr>
+                                <td><strong>@t.CodigoTurno</strong></td>
+                                <td>@t.UsuarioCajero</td>
+                                <td>@t.FechaApertura.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(t.FechaCierre?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
+                                <td>$@t.MontoInicial.ToString("N0")</td>
+                                <td style="font-weight: 700;">$@t.TotalVentasSistema.ToString("N0")</td>
+                                <td>$@t.TotalEfectivoEsperado.ToString("N0")</td>
+                                <td>@(t.EfectivoRealDeclarado.HasValue ? $"${t.EfectivoRealDeclarado.Value:N0}" : "—")</td>
+                                <td>
+                                    @if (t.Diferencia.HasValue)
+                                    {
+                                        if (t.Diferencia.Value == 0)
+                                        {
+                                            <span style="color: #059669; font-weight: 700;">Exacto ($0)</span>
+                                        }
+                                        else if (t.Diferencia.Value > 0)
+                                        {
+                                            <span style="color: #2563EB; font-weight: 700;">+$@t.Diferencia.Value.ToString("N0") (Sobrante)</span>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #DC2626; font-weight: 700;">-$@Math.Abs(t.Diferencia.Value).ToString("N0") (Faltante)</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (t.Estado == "Abierto")
+                                    {
+                                        <span style="background: #ECFDF5; color: #065F46; padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 0.72rem;">Abierto</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="background: #F3F4F6; color: #374151; padding: 2px 7px; border-radius: 6px; font-weight: 600; font-size: 0.72rem;">Cerrado</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Cierre de Turno y Arqueo Físico -->
+@if (turnoActivo != null)
+{
+    <div class="rec-overlay" id="modalCerrarCaja" style="display: none;">
+        <div class="glass-card rec-box" style="max-width: 480px; width: 100%; padding: 2rem; background: #FFF; border-radius: 20px;">
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text); margin-bottom: 0.35rem;">Arqueo y Cierre de Turno</h3>
+            <p style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1.5rem;">
+                Cuenta físicamente todos los billetes y monedas que tienes en la gaveta y digita el total real.
+            </p>
+
+            <form asp-action="Cerrar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="turnoId" value="@turnoActivo.Id" />
+
+                <div style="background: rgba(200, 151, 58, 0.1); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
+                    <div style="font-size: 0.75rem; color: var(--brand); font-weight: 700; text-transform: uppercase;">Efectivo Esperado según Sistema:</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: var(--text);">$@turnoActivo.TotalEfectivoEsperado.ToString("N0") COP</div>
+                    <div style="font-size: 0.72rem; color: var(--muted);">Base inicial ($@turnoActivo.MontoInicial.ToString("N0")) + Ventas efectivo ($@turnoActivo.VentasEfectivo.ToString("N0"))</div>
+                </div>
+
+                <div class="mb-3">
+                    <label style="font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 0.35rem;">Efectivo Real en Gaveta ($ COP) *</label>
+                    <input type="number" step="1000" min="0" name="efectivoDeclarado" required class="form-control" placeholder="Ej: 350000" style="font-size: 1.1rem; font-weight: 700; padding: 0.65rem 0.85rem;" />
+                </div>
+
+                <div class="mb-4">
+                    <label style="font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 0.35rem;">Nota de Cierre</label>
+                    <input type="text" name="observacionesCierre" placeholder="Ej: Turno cuadrado sin novedades" class="form-control" style="padding: 0.65rem 0.85rem;" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" onclick="document.getElementById('modalCerrarCaja').classList.remove('show')" class="btn-ghost" style="flex: 1; justify-content: center; padding: 0.75rem;">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-brand" style="flex: 2; justify-content: center; padding: 0.75rem; background: #DC2626; border-color: #DC2626; font-weight: 800;">
+                        Confirmar Cierre de Caja
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}

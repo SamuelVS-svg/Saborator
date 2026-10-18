@@ -1,0 +1,231 @@
+@* ════ COMPONENTE DE CONCIERGE WHATSAPP (FLOTANTE & ARRASTRABLE LIBREMENTE) ════ *@
+<div class="luxury-whatsapp-wrap" id="whatsappConcierge" role="button" tabindex="0" title="Arrastra para mover · Haz clic para abrir WhatsApp" aria-label="WhatsApp Concierge Saborator">
+    <div class="wa-drag-handle" title="Arrastrar">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/></svg>
+    </div>
+
+    <a href="https://api.whatsapp.com/send?phone=573225254289&text=Hola%20Saborator,%20quisiera%20informaci%C3%B3n%20sobre%20una%20reserva%20o%20la%20carta."
+       id="waConciergeLink"
+       class="luxury-wa-btn"
+       aria-label="Contactar al Concierge de Saborator por WhatsApp (+57 322 525 4289)"
+       title="WhatsApp Concierge: +57 322 525 4289">
+        <span class="wa-ping-ring"></span>
+        <svg class="wa-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.33C9.35 7.33 9.06 7.4 8.81 7.67C8.56 7.95 7.85 8.62 7.85 9.97C7.85 11.32 8.84 12.63 8.97 12.81C9.11 13 10.9 15.75 13.65 16.93C14.3 17.21 14.81 17.38 15.21 17.5C15.86 17.71 16.45 17.68 16.92 17.61C17.44 17.53 18.52 16.95 18.75 16.32C18.97 15.68 18.97 15.14 18.91 15.03C18.84 14.92 18.66 14.85 18.39 14.71C18.12 14.58 16.79 13.92 16.54 13.83C16.3 13.74 16.12 13.69 15.94 13.97C15.76 14.24 15.25 14.85 15.09 15.03C14.94 15.21 14.79 15.23 14.52 15.1C14.25 14.96 13.38 14.68 12.35 13.76C11.55 13.04 11.01 12.16 10.85 11.89C10.7 11.62 10.84 11.47 10.97 11.34C11.09 11.22 11.24 11.02 11.38 10.86C11.51 10.7 11.56 10.58 11.65 10.4C11.74 10.22 11.7 10.06 11.63 9.93C11.56 9.79 11.02 8.46 10.79 7.92C10.57 7.4 10.35 7.47 10.18 7.46C10.02 7.46 9.84 7.46 9.66 7.46L9.53 7.33Z"/>
+        </svg>
+        <span class="wa-tooltip">
+            <strong>Concierge Saborator</strong>
+            <small>+57 322 525 4289</small>
+        </span>
+    </a>
+</div>
+
+<style>
+    .luxury-whatsapp-wrap {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9990;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .luxury-whatsapp-wrap:active {
+        cursor: grabbing;
+        transform: scale(0.96);
+    }
+    .luxury-whatsapp-wrap.is-dragging {
+        cursor: grabbing;
+        transform: scale(1.08);
+        box-shadow: 0 16px 36px rgba(18, 140, 126, 0.6);
+    }
+    .wa-drag-handle {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(18, 140, 126, 0.9);
+        color: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 6px;
+        padding: 1px 3px;
+        opacity: 0;
+        transition: opacity 160ms ease;
+        pointer-events: none;
+    }
+    .luxury-whatsapp-wrap:hover .wa-drag-handle {
+        opacity: 0.9;
+    }
+    .luxury-wa-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #25D366, #128C7E);
+        color: #FFFFFF;
+        box-shadow: 0 8px 24px rgba(18, 140, 126, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    }
+    .luxury-wa-btn:hover {
+        transform: scale(1.06) translateY(-2px);
+        box-shadow: 0 12px 30px rgba(18, 140, 126, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
+        color: #FFFFFF;
+    }
+    .wa-ping-ring {
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(37, 211, 102, 0.5);
+        animation: waPulse 2.8s infinite cubic-bezier(0.24, 0, 0.38, 1);
+        pointer-events: none;
+    }
+    @@keyframes waPulse {
+        0% { transform: scale(0.95); opacity: 0.8; }
+        50% { transform: scale(1.25); opacity: 0; }
+        100% { transform: scale(0.95); opacity: 0; }
+    }
+    .wa-tooltip {
+        position: absolute;
+        right: 64px;
+        background: rgba(24, 6, 10, 0.94);
+        border: 1px solid rgba(200, 151, 58, 0.4);
+        color: #FFFDF9;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateX(6px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        line-height: 1.3;
+    }
+    .wa-tooltip small {
+        color: #C8973A;
+        font-size: 0.7rem;
+    }
+    .luxury-whatsapp-wrap:hover .wa-tooltip {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    @@media (max-width: 768px) {
+        .luxury-wa-btn { width: 48px; height: 48px; }
+        .wa-tooltip { display: none; }
+    }
+    @@media (prefers-reduced-motion: reduce) {
+        .wa-ping-ring { animation: none; }
+        .luxury-wa-btn { transition: none; }
+    }
+</style>
+
+<script>
+(function() {
+    const waWrap = document.getElementById('whatsappConcierge');
+    const waLink = document.getElementById('waConciergeLink');
+    if (!waWrap || !waLink) return;
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    function inicializarPosicionWa() {
+        const guardadaX = localStorage.getItem('saborator_wa_pos_x');
+        const guardadaY = localStorage.getItem('saborator_wa_pos_y');
+
+        if (guardadaX !== null && guardadaY !== null) {
+            const x = Math.min(Math.max(10, parseInt(guardadaX)), window.innerWidth - 64);
+            const y = Math.min(Math.max(10, parseInt(guardadaY)), window.innerHeight - 64);
+            waWrap.style.left = x + 'px';
+            waWrap.style.top = y + 'px';
+            waWrap.style.right = 'auto';
+            waWrap.style.bottom = 'auto';
+        }
+    }
+
+    function onPointerDown(e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        isDragging = false;
+
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        startX = clientX;
+        startY = clientY;
+
+        const rect = waWrap.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+
+        window.addEventListener('mousemove', onPointerMove, { passive: false });
+        window.addEventListener('mouseup', onPointerUp);
+        window.addEventListener('touchmove', onPointerMove, { passive: false });
+        window.addEventListener('touchend', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const deltaX = clientX - startX;
+        const deltaY = clientY - startY;
+
+        if (Math.hypot(deltaX, deltaY) > 5) {
+            isDragging = true;
+            waWrap.classList.add('is-dragging');
+            if (e.cancelable) e.preventDefault();
+
+            let nuevoX = initialLeft + deltaX;
+            let nuevoY = initialTop + deltaY;
+
+            const pad = 8;
+            nuevoX = Math.max(pad, Math.min(window.innerWidth - waWrap.offsetWidth - pad, nuevoX));
+            nuevoY = Math.max(pad, Math.min(window.innerHeight - waWrap.offsetHeight - pad, nuevoY));
+
+            waWrap.style.left = nuevoX + 'px';
+            waWrap.style.top = nuevoY + 'px';
+            waWrap.style.right = 'auto';
+            waWrap.style.bottom = 'auto';
+        }
+    }
+
+    function onPointerUp() {
+        window.removeEventListener('mousemove', onPointerMove);
+        window.removeEventListener('mouseup', onPointerUp);
+        window.removeEventListener('touchmove', onPointerMove);
+        window.removeEventListener('touchend', onPointerUp);
+
+        waWrap.classList.remove('is-dragging');
+
+        if (isDragging) {
+            const rect = waWrap.getBoundingClientRect();
+            localStorage.setItem('saborator_wa_pos_x', Math.round(rect.left));
+            localStorage.setItem('saborator_wa_pos_y', Math.round(rect.top));
+        }
+    }
+
+    waWrap.addEventListener('mousedown', onPointerDown);
+    waWrap.addEventListener('touchstart', onPointerDown, { passive: true });
+
+    // Prevenir apertura de enlace si fue un arrastre
+    waLink.addEventListener('click', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+        window.open(waLink.href, '_blank', 'noopener,noreferrer');
+        e.preventDefault();
+    });
+
+    document.addEventListener('DOMContentLoaded', inicializarPosicionWa);
+})();
+</script>

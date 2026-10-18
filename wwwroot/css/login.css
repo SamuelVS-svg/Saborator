@@ -1,0 +1,1083 @@
+/* ==========================================================================
+   LOGIN & REGISTRO — ALTA COCINA Y POLISH EMIL KOWALSKI (MAX POLISH)
+   Paleta: Borgoña Profundo (#4A1521, #6B1E2E), Crema Marfil (#FFFDF9, #FAF6F0), Oro (#C8973A, #D4AF37)
+   Layout: Login 100% centrado, animaciones suaves (<300ms, cubic-bezier), estados táctiles y accesibilidad
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
+
+:root {
+    /* Curvas de aceleración precisas de Emil Kowalski */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* Colores Gastronómicos */
+    --brand-burgundy: #6B1E2E;
+    --brand-burgundy-hover: #541623;
+    --brand-dark: #3B0E19;
+    --brand-night: #140307;
+    --gold: #C8973A;
+    --gold-bright: #D4AF37;
+    --gold-glow: rgba(212, 175, 55, 0.32);
+    --cream: #FAF6F0;
+    --ivory: #FFFDF9;
+    --ink: #1C1416;
+    --c-muted: #7A6355;
+    --line: #E5DCB8;
+    --line-active: #C8973A;
+    --focus-ring: rgba(200, 151, 58, 0.35);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--brand-night);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* ── CONTENEDOR PRINCIPAL: CENTRADO TOTAL ────────────────────────────────── */
+.login-center-wrapper {
+    position: relative;
+    min-height: 100vh;
+    width: 100vw;
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.25rem 2.5rem;
+    overflow-x: hidden;
+    background-color: var(--brand-night);
+    box-sizing: border-box;
+}
+
+/* ── FONDO BISTRO Y GASTRO ATMOSFÉRICO (ALTA GASTRONOMÍA) ───────────────── */
+.bistro-bg,
+.gastro-bg {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    z-index: 1 !important;
+}
+
+.gastro-canvas {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+}
+
+.gastro-gradient-mesh {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 20%, rgba(135, 30, 52, 0.75) 0%, rgba(55, 12, 22, 0.90) 42%, #120306 100%);
+}
+
+.gastro-radial-ember-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 15% 80%, rgba(200, 151, 58, 0.14) 0%, transparent 48%),
+                radial-gradient(circle at 85% 80%, rgba(107, 30, 46, 0.38) 0%, transparent 52%);
+}
+
+.bistro-ambient-glow {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 10%, rgba(135, 30, 52, 0.75) 0%, rgba(55, 12, 22, 0.90) 42%, #120306 100%),
+        radial-gradient(circle at 15% 80%, rgba(200, 151, 58, 0.14) 0%, transparent 48%),
+        radial-gradient(circle at 85% 80%, rgba(107, 30, 46, 0.38) 0%, transparent 52%);
+}
+
+.bistro-pendant-lamp {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.85;
+}
+.lamp-left { left: 12%; }
+.lamp-right { right: 12%; }
+
+.lamp-cord {
+    width: 2px;
+    height: 105px;
+    background: linear-gradient(180deg, #1A050A 0%, #C8973A 100%);
+}
+
+.lamp-shade {
+    width: 46px;
+    height: 24px;
+    background: linear-gradient(180deg, #581625 0%, #300A13 100%);
+    border: 1.5px solid rgba(200, 151, 58, 0.55);
+    border-radius: 20px 20px 4px 4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+}
+
+.lamp-glow {
+    width: 170px;
+    height: 250px;
+    margin-top: -8px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(246, 184, 101, 0.28) 0%, rgba(200, 151, 58, 0.12) 40%, transparent 75%);
+    filter: blur(16px);
+    pointer-events: none;
+    animation: lamp-flicker 8s ease-in-out infinite alternate;
+}
+
+@keyframes lamp-flicker {
+    0%, 100% { opacity: 0.85; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* ── MUÑECO INTERACTIVO: CHEF BURGUI (SABORATOR) ────────────────────────── */
+.chef-mascot-stage {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: -32px; /* Las patitas/manos se apoyan directamente sobre la tarjeta */
+    z-index: 25;
+    pointer-events: auto;
+    user-select: none;
+}
+
+.chef-speech-bubble {
+    background: #FFFDF9;
+    border: 1.5px solid rgba(200, 151, 58, 0.45);
+    color: var(--brand-burgundy);
+    font-size: .83rem;
+    font-weight: 700;
+    padding: .46rem 1.05rem;
+    border-radius: 9999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38), 0 0 16px rgba(200, 151, 58, 0.2);
+    margin-bottom: .35rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    transform-origin: bottom center;
+    animation: bubble-pop 320ms var(--ease-spring);
+    position: relative;
+    white-space: nowrap;
+    transition: transform 180ms ease, opacity 180ms ease;
+    z-index: 26;
+}
+
+.chef-speech-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #FFFDF9;
+}
+
+@keyframes bubble-pop {
+    0% { transform: scale(0.7) translateY(8px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.chef-mascot-svg {
+    overflow: visible;
+    cursor: pointer;
+    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.5));
+    transition: transform 220ms var(--ease-out);
+}
+
+.chef-mascot-svg:hover {
+    transform: scale(1.03) translateY(-3px);
+}
+
+.chef-mascot-svg:active {
+    transform: scale(0.97);
+}
+
+/* Transiciones de articulaciones y expresiones del chef */
+.chef-head-group {
+    transform-origin: 110px 140px;
+    transition: transform 240ms var(--ease-out);
+}
+
+.chef-hat {
+    transform-origin: 110px 78px;
+    transition: transform 220ms var(--ease-spring);
+}
+
+.chef-pupil {
+    transition: transform 60ms linear;
+}
+
+.chef-brow {
+    transition: transform 200ms ease;
+}
+
+.chef-arm {
+    transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chef-arm-left {
+    transform-origin: 60px 148px;
+}
+
+.chef-arm-right {
+    transform-origin: 160px 148px;
+}
+
+/* ── ESTADOS INTERACTIVOS DEL CHEF ────────────────────────────────────────── */
+
+/* 1. Mirando hacia abajo (al escribir usuario o nombres) */
+.chef-looking-down .chef-head-group {
+    transform: translateY(4px) rotate(1.2deg);
+}
+.chef-looking-down .chef-hat {
+    transform: rotate(2deg) translateY(-1px);
+}
+
+/* 2. Tapándose los ojos con las manitas (Campo de Contraseña) */
+.chef-cover-eyes .chef-arm-left {
+    transform: translate(32px, -76px) rotate(32deg);
+}
+.chef-cover-eyes .chef-arm-right {
+    transform: translate(-32px, -76px) rotate(-32deg);
+}
+.chef-cover-eyes .chef-hat {
+    transform: translateY(2px) scale(0.98);
+}
+.chef-cover-eyes .chef-brow {
+    transform: translateY(3px);
+}
+
+/* 3. Espiando por un ojo (cuando el usuario hace clic en el ojito para mostrar contraseña) */
+.chef-peeking .chef-arm-left {
+    transform: translate(32px, -76px) rotate(32deg);
+}
+.chef-peeking .chef-arm-right {
+    transform: translate(-14px, -52px) rotate(-8deg);
+}
+
+/* 4. Estado de error (datos inválidos, sacudida) */
+.chef-worried .chef-head-group {
+    animation: chef-shake 400ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+.chef-worried .chef-arm-left {
+    transform: translate(14px, -36px) rotate(18deg);
+}
+.chef-worried .chef-arm-right {
+    transform: translate(-14px, -36px) rotate(-18deg);
+}
+.chef-worried #chefSweatDrop {
+    opacity: 1 !important;
+    animation: sweat-drop-pop 500ms ease-out forwards;
+}
+
+@keyframes chef-shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    20% { transform: translateX(-6px) rotate(-4deg); }
+    40% { transform: translateX(6px) rotate(4deg); }
+    60% { transform: translateX(-4px) rotate(-2deg); }
+    80% { transform: translateX(4px) rotate(2deg); }
+}
+
+@keyframes sweat-drop-pop {
+    0% { opacity: 0; transform: translateY(-4px) scale(0.5); }
+    50% { opacity: 1; transform: translateY(0) scale(1.15); }
+    100% { opacity: 1; transform: translateY(3px) scale(1); }
+}
+
+/* 5. Estado de celebración / éxito */
+.chef-celebrating .chef-head-group {
+    animation: chef-jump 550ms var(--ease-spring);
+}
+.chef-celebrating .chef-arm-left {
+    transform: translate(-12px, -46px) rotate(-48deg);
+}
+.chef-celebrating .chef-arm-right {
+    transform: translate(12px, -46px) rotate(48deg);
+}
+.chef-celebrating .chef-hat {
+    transform: translateY(-8px) rotate(-4deg);
+}
+
+@keyframes chef-jump {
+    0% { transform: translateY(0) scale(1); }
+    40% { transform: translateY(-16px) scale(1.05); }
+    70% { transform: translateY(2px) scale(0.98); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* ── BOTÓN FLOTANTE "VOLVER A LA CARTA" ─────────────────────────────────── */
+.gastro-back-pill {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 30;
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .52rem 1.15rem;
+    background: rgba(255, 253, 249, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 9999px;
+    color: var(--ivory);
+    font-size: .84rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+    transition: transform 160ms var(--ease-out), background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.gastro-back-pill svg {
+    transition: transform 160ms var(--ease-out);
+}
+
+.gastro-back-pill:hover {
+    background: var(--ivory);
+    color: var(--brand-burgundy);
+    border-color: var(--ivory);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.35);
+}
+
+.gastro-back-pill:hover svg {
+    transform: translateX(-3px);
+}
+
+.gastro-back-pill:active {
+    transform: scale(0.96);
+}
+
+.gastro-back-pill:focus-visible {
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 3px;
+}
+
+/* ── TARJETA CENTRAL DE LOGIN & REGISTRO ─────────────────────────────────── */
+.gastro-card-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 475px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+    animation: gastro-card-enter 450ms var(--ease-out) forwards;
+}
+
+@keyframes gastro-card-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.form-card {
+    width: 100%;
+    max-width: 475px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+    background: rgba(255, 253, 249, 0.96);
+    border: 1.5px solid rgba(200, 151, 58, 0.38);
+    border-radius: 24px;
+    padding: 2.25rem 2.25rem 2rem;
+    box-shadow:
+        0 30px 80px -15px rgba(10, 2, 5, 0.75),
+        0 0 50px rgba(107, 30, 46, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 240ms ease;
+    will-change: transform;
+}
+
+/* ── FOCO DINÁMICO REFLEJO DEL CURSOR (SPECULAR SPOTLIGHT GLOW) ───────────── */
+.form-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(
+        circle 340px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(212, 175, 55, 0.16) 0%,
+        rgba(107, 30, 46, 0.08) 45%,
+        transparent 80%
+    );
+    opacity: var(--mouse-active, 0);
+    transition: opacity 300ms ease;
+    z-index: 1;
+}
+
+.form-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── ANIMACIÓN DE SACUDIDA AL INGRESAR DATO INVÁLIDO (DAMPED SHAKE) ───────── */
+@keyframes shake-error {
+    0%, 100% { transform: translateX(0); }
+    18% { transform: translateX(-8px) rotate(-0.5deg); }
+    36% { transform: translateX(7px) rotate(0.5deg); }
+    54% { transform: translateX(-5px) rotate(-0.25deg); }
+    72% { transform: translateX(3px) rotate(0.2deg); }
+    90% { transform: translateX(-1px); }
+}
+
+.shake-error {
+    animation: shake-error 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+
+.input-error {
+    border-color: #DC2626 !important;
+    background: #FEF2F2 !important;
+    box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.22), 0 0 14px rgba(220, 38, 38, 0.2) !important;
+    animation: shake-error 360ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+[data-theme="dark"] .input-error {
+    background: rgba(80, 15, 26, 0.5) !important;
+    border-color: #EF4444 !important;
+    box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.28) !important;
+}
+
+/* ── CELEBRACIÓN / ÉXITO AL INICIAR SESIÓN O CREAR CUENTA ─────────────────── */
+@keyframes success-glow {
+    0% {
+        box-shadow: 0 4px 14px rgba(107, 30, 46, 0.28);
+    }
+    50% {
+        box-shadow: 0 0 28px rgba(16, 185, 129, 0.6), 0 0 40px rgba(212, 175, 55, 0.45);
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+        transform: scale(1);
+    }
+}
+
+.btn-entrar.btn-success-state {
+    background: linear-gradient(135deg, #059669 0%, #10B981 100%) !important;
+    border-color: #059669 !important;
+    color: #FFFFFF !important;
+    animation: success-glow 600ms ease-out forwards;
+}
+
+/* Canvas flotante de confeti y chispas de éxito */
+.auth-burst-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Marca en cabecera */
+.form-logo {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(107, 30, 46, 0.12) 0%, rgba(200, 151, 58, 0.18) 100%);
+    color: var(--brand-burgundy);
+    border: 1.5px solid rgba(200, 151, 58, 0.45);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(107, 30, 46, 0.12);
+    animation: badge-subtle-glow 6s ease-in-out infinite alternate;
+}
+
+@keyframes badge-subtle-glow {
+    0% { box-shadow: 0 4px 12px rgba(107, 30, 46, 0.12); }
+    100% { box-shadow: 0 6px 18px rgba(200, 151, 58, 0.35); }
+}
+
+.form-logo-icon svg {
+    width: 28px;
+    height: 26px;
+    fill: currentColor;
+}
+
+.form-logo-name {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 1.7rem;
+    color: var(--brand-burgundy);
+    line-height: 1;
+    display: block;
+}
+
+.form-logo-tag {
+    font-size: .73rem;
+    font-weight: 600;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    display: block;
+    margin-top: .2rem;
+}
+
+/* ── PESTAÑAS (TABS CON FEEDBACK FLUIDO) ─────────────────────────────────── */
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #EFE8DA;
+    border: 1px solid #DDD4A8;
+    padding: 4px;
+    border-radius: 13px;
+    margin-bottom: 1.5rem;
+    gap: 4px;
+    position: relative;
+}
+
+.auth-tab {
+    background: transparent;
+    border: none;
+    padding: .68rem .8rem;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: .83rem;
+    font-weight: 600;
+    color: var(--c-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    cursor: pointer;
+    transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 160ms var(--ease-out), box-shadow 180ms ease;
+    user-select: none;
+}
+
+.auth-tab.active {
+    background: #FFFFFF;
+    color: var(--brand-burgundy);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.auth-tab:hover:not(.active) {
+    color: var(--ink);
+}
+
+.auth-tab:active {
+    transform: scale(0.97);
+}
+
+.auth-tab:focus-visible {
+    outline: 2px solid var(--brand-burgundy);
+    outline-offset: 1px;
+}
+
+/* ── TRANSICIÓN SUAVE ENTRE SECCIONES (CROSSFADE) ────────────────────────── */
+.auth-section {
+    display: none;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+
+.auth-section.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── TITULARES DE FORMULARIO ─────────────────────────────────────────────── */
+.form-title {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 2.1rem;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: .25rem;
+}
+
+.form-sub {
+    font-size: .86rem;
+    color: var(--c-muted);
+    margin-bottom: 1.4rem;
+}
+
+/* ── ALERTAS DE ERROR Y ÉXITO CON ANIMACIÓN ──────────────────────────────── */
+.form-error, .form-success {
+    border-radius: 10px;
+    padding: .7rem .95rem;
+    font-size: .84rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    animation: alert-slide-down 220ms var(--ease-out) forwards;
+}
+
+@keyframes alert-slide-down {
+    0% { opacity: 0; transform: translateY(-6px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.form-error {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-left: 4px solid #DC2626;
+    color: #991B1B;
+}
+.form-error svg { width: 16px; height: 16px; stroke: #DC2626; stroke-width: 2.2; flex-shrink: 0; }
+
+.form-success {
+    background: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    border-left: 4px solid #059669;
+    color: #065F46;
+}
+.form-success svg { width: 16px; height: 16px; stroke: #059669; stroke-width: 2.2; flex-shrink: 0; }
+
+/* ── CAMPOS DE FORMULARIO CON POLISH AL DETALLE ──────────────────────────── */
+.f-group { margin-bottom: 1.05rem; }
+
+.f-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .85rem;
+}
+
+.f-label {
+    display: block;
+    font-size: .73rem;
+    font-weight: 700;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .35rem;
+}
+
+.f-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.f-icon {
+    position: absolute;
+    left: .85rem;
+    color: var(--c-muted);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    transition: color 160ms ease;
+}
+
+.f-input-wrap:focus-within .f-icon {
+    color: var(--brand-burgundy);
+}
+
+.f-input-wrap input {
+    width: 100%;
+    padding: .72rem .95rem;
+    padding-left: 2.35rem;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: var(--ivory);
+    font-family: inherit;
+    font-size: .9rem;
+    color: var(--ink);
+    transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out), background 160ms ease;
+    outline: none;
+}
+
+.f-row-2 .f-input-wrap input:not([style*="padding-left"]) {
+    padding-left: .95rem;
+}
+
+.f-input-wrap input:focus {
+    border-color: var(--brand-burgundy);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3.5px rgba(107, 30, 46, 0.12), 0 0 14px rgba(200, 151, 58, 0.16);
+}
+
+.f-input-wrap input::placeholder {
+    color: #B5A898;
+}
+
+/* Neutralización elegante de autofill amarillo de navegadores */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--ink);
+    -webkit-box-shadow: 0 0 0 1000px var(--ivory) inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Botón revelador de contraseña */
+.f-pwd-toggle {
+    position: absolute;
+    right: .65rem;
+    background: none;
+    border: none;
+    color: var(--c-muted);
+    cursor: pointer;
+    padding: .4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    transition: color 150ms ease, background 150ms ease;
+}
+
+.f-pwd-toggle:hover {
+    color: var(--brand-burgundy);
+    background: rgba(107, 30, 46, 0.08);
+}
+
+.f-pwd-toggle.active {
+    color: var(--gold);
+}
+
+.f-pwd-toggle:active {
+    transform: scale(0.92);
+}
+
+/* ── BOTÓN ENTRAR / REGISTRARSE (EMIL KOWALSKI PRINCIPLE) ─────────────────── */
+.btn-entrar {
+    width: 100%;
+    padding: .88rem 1.35rem;
+    background: var(--brand-burgundy);
+    border: 1.5px solid var(--brand-burgundy);
+    border-radius: 12px;
+    color: var(--ivory);
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    margin-top: .45rem;
+    box-shadow: 0 4px 14px rgba(107, 30, 46, 0.28);
+    transition: transform 160ms var(--ease-out), background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    user-select: none;
+}
+
+.btn-entrar:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #1C1416;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(200, 151, 58, 0.35);
+}
+
+.btn-entrar:active {
+    transform: scale(0.97);
+}
+
+.btn-entrar:focus-visible {
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 2px;
+}
+
+.btn-entrar:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Micro-spinner para estado de carga */
+.btn-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: btn-spin 600ms linear infinite;
+    display: inline-block;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── PIE DEL FORMULARIO ──────────────────────────────────────────────────── */
+.form-footer {
+    text-align: center;
+    margin-top: 1.35rem;
+    font-size: .83rem;
+    color: var(--c-muted);
+}
+
+.form-footer button.link-btn {
+    color: var(--brand-burgundy);
+    font-weight: 700;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: .83rem;
+    font-family: inherit;
+    padding: 0;
+    margin-left: .25rem;
+    transition: color 150ms ease;
+}
+
+.form-footer button.link-btn:hover {
+    color: var(--gold);
+    text-decoration: underline;
+}
+
+.link-btn {
+    color: var(--brand-burgundy);
+    font-weight: 600;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    transition: color 150ms ease;
+}
+
+.link-btn:hover {
+    color: var(--gold);
+    text-decoration: underline;
+}
+
+/* ── MODAL RECUPERAR CONTRASEÑA ──────────────────────────────────────────── */
+.rec-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 4, 8, 0.78);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.25rem;
+    opacity: 0;
+    transition: opacity 220ms var(--ease-out);
+}
+
+.rec-overlay.show {
+    display: flex;
+    opacity: 1;
+}
+
+.rec-box {
+    background: var(--ivory);
+    border: 1.5px solid rgba(200, 151, 58, 0.4);
+    border-radius: 22px;
+    padding: 2.25rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    transform: scale(0.96);
+    transition: transform 220ms var(--ease-out);
+}
+
+.rec-overlay.show .rec-box {
+    transform: scale(1);
+}
+
+.rec-box h3 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 1.85rem;
+    color: var(--brand-burgundy);
+    margin-bottom: .25rem;
+}
+
+.rec-box p {
+    color: var(--c-muted);
+    font-size: .84rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+.rec-label {
+    display: block;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .35rem;
+}
+
+.rec-input {
+    width: 100%;
+    padding: .72rem .95rem;
+    border: 1.5px solid var(--line);
+    border-radius: 11px;
+    background: #FFFFFF;
+    font-family: inherit;
+    font-size: .9rem;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border-color .18s, box-shadow .18s;
+}
+
+.rec-input:focus {
+    border-color: var(--brand-burgundy);
+    box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.12);
+}
+
+.rec-note {
+    background: #EFE8DA;
+    border: 1px solid #DDD4A8;
+    border-radius: 9px;
+    padding: .75rem;
+    font-size: .78rem;
+    color: var(--ink);
+    margin-top: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: .55rem;
+    line-height: 1.4;
+}
+
+.rec-note svg { width: 15px; height: 15px; stroke: var(--brand-burgundy); stroke-width: 2; flex-shrink: 0; margin-top: .15rem; }
+
+.rec-cancel {
+    background: none;
+    border: none;
+    color: var(--c-muted);
+    cursor: pointer;
+    font-size: .82rem;
+    font-weight: 600;
+    margin-top: .95rem;
+    width: 100%;
+    text-align: center;
+    transition: color 150ms ease;
+}
+
+.rec-cancel:hover { color: var(--brand-burgundy); }
+
+/* ── SOPORTE MODO OSCURO CON TONOS BORGOÑA NOCTURNOS ─────────────────────── */
+[data-theme="dark"] .form-card {
+    background: rgba(32, 10, 16, 0.94);
+    border-color: rgba(200, 151, 58, 0.4);
+    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.9), 0 0 50px rgba(107, 30, 46, 0.45);
+}
+
+[data-theme="dark"] .form-title { color: #FFFDF9; }
+[data-theme="dark"] .form-sub { color: rgba(245, 239, 230, 0.72); }
+[data-theme="dark"] .f-label { color: rgba(245, 239, 230, 0.82); }
+[data-theme="dark"] .f-input-wrap input {
+    background: rgba(20, 5, 9, 0.75);
+    border-color: rgba(200, 151, 58, 0.28);
+    color: #FFFDF9;
+}
+[data-theme="dark"] .f-input-wrap input:focus {
+    border-color: var(--gold);
+    background: rgba(25, 7, 12, 0.9);
+}
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #FFFDF9;
+    -webkit-box-shadow: 0 0 0 1000px rgba(25, 7, 12, 0.95) inset;
+}
+[data-theme="dark"] .auth-tabs {
+    background: rgba(20, 5, 9, 0.85);
+    border-color: rgba(200, 151, 58, 0.25);
+}
+[data-theme="dark"] .auth-tab.active {
+    background: var(--brand-burgundy);
+    color: #FFFDF9;
+}
+[data-theme="dark"] .form-footer {
+    color: rgba(245, 239, 230, 0.72);
+}
+[data-theme="dark"] .rec-box {
+    background: rgba(32, 10, 16, 0.96);
+    color: #FFFDF9;
+}
+[data-theme="dark"] .rec-input {
+    background: rgba(20, 5, 9, 0.8);
+    color: #FFFDF9;
+    border-color: rgba(200, 151, 58, 0.3);
+}
+
+/* ── PREFIERE MOVIMIENTO REDUCIDO (ACCESIBILIDAD) ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .gastro-radial-ember-glow,
+    .gastro-float-item,
+    .form-logo-icon,
+    .gastro-card-wrapper,
+    .rec-box,
+    .auth-section {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ── RESPONSIVE PARA MÓVILES Y PANTALLAS PEQUEÑAS ────────────────────────── */
+@media (max-width: 640px) {
+    .login-center-wrapper {
+        padding: 4.5rem 1rem 2rem;
+    }
+
+    .form-card {
+        padding: 1.75rem 1.35rem 1.6rem;
+        border-radius: 20px;
+    }
+
+    .gastro-back-pill {
+        top: 1rem;
+        left: 1rem;
+        padding: .44rem .9rem;
+        font-size: .8rem;
+    }
+
+    .form-title {
+        font-size: 1.75rem;
+    }
+
+    .f-row-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .g-item-1, .g-item-3, .g-item-4 {
+        display: none;
+    }
+}
