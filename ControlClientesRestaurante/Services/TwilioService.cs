@@ -29,7 +29,7 @@ namespace ControlClientesRestaurante.Services
             _logger = logger;
         }
 
-        private (string accountSid, string authToken, string phoneNumber, string whatsappNumber, string businessName, string verifyServiceSid) ObtenerConfiguracion()
+        private (string accountSid, string authToken, string phoneNumber, string whatsappNumber, string businessName, string verifyServiceSid, string textbeeApiKey, string textbeeDeviceId) ObtenerConfiguracion()
         {
             CargarVariablesEnv();
 
@@ -51,7 +51,13 @@ namespace ControlClientesRestaurante.Services
             var verifyServiceSid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
                 ?? _config["Twilio:VerifyServiceSid"] ?? "VA71c1a0282605c5df407367145f847415";
 
-            return (accountSid.Trim(), authToken.Trim(), phoneNumber.Trim(), whatsappNumber.Trim(), businessName.Trim(), verifyServiceSid.Trim());
+            var textbeeApiKey = Environment.GetEnvironmentVariable("TEXTBEE_API_KEY")
+                ?? _config["TextBee:ApiKey"] ?? "";
+
+            var textbeeDeviceId = Environment.GetEnvironmentVariable("TEXTBEE_DEVICE_ID")
+                ?? _config["TextBee:DeviceId"] ?? "";
+
+            return (accountSid.Trim(), authToken.Trim(), phoneNumber.Trim(), whatsappNumber.Trim(), businessName.Trim(), verifyServiceSid.Trim(), textbeeApiKey.Trim(), textbeeDeviceId.Trim());
         }
 
         private static bool _envCargado = false;
@@ -131,12 +137,72 @@ namespace ControlClientesRestaurante.Services
             return $"+57{limpio}";
         }
 
+        private async Task<(bool ok, string? sid, string? error)> EjecutarTextBeeSmsAsync(string apiKey, string deviceId, string destino, string mensaje)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("TwilioClient");
+                var urls = new List<string>();
+                if (!string.IsNullOrWhiteSpace(deviceId))
+                {
+                    urls.Add($"https://api.textbee.dev/api/v1/gateway/devices/{deviceId}/send-sms");
+                    urls.Add($"https://api.textbee.dev/api/v1/gateway/devices/{deviceId}/sendSMS");
+                }
+                urls.Add("https://api.textbee.dev/api/v1/gateway/send-sms");
+
+                string? lastError = null;
+                foreach (var url in urls)
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Post, url);
+                    request.Headers.Add("x-api-key", apiKey);
+
+                    var payload = new
+                    {
+                        recipients = new[] { destino },
+                        message = mensaje,
+                        deviceId = string.IsNullOrWhiteSpace(deviceId) ? null : deviceId
+                    };
+
+                    request.Content = new StringContent(
+                        JsonSerializer.Serialize(payload),
+                        Encoding.UTF8,
+                        "application/json");
+
+                    var response = await client.SendAsync(request);
+                    var body = await response.Content.ReadAsStringAsync();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _logger.LogInformation("✅ [TextBee SMS Gratis - Éxito]: Enviado a {Destino}", destino);
+                        return (true, "TEXTBEE_SMS_OK", null);
+                    }
+                    lastError = $"TextBee ({(int)response.StatusCode}): {body}";
+                }
+
+                _logger.LogWarning("⚠️ [TextBee SMS - Fallo]: {Error}", lastError);
+                return (false, null, lastError);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al enviar SMS con TextBee");
+                return (false, null, ex.Message);
+            }
+        }
+
         public async Task<(bool ok, string? sid, string? error)> EnviarOtpSmsAsync(string telefono, string codigo)
         {
             var config = ObtenerConfiguracion();
             var destino = NormalizarTelefonoColombiano(telefono);
+            var cuerpoMensaje = $"🍔 [{config.businessName}] Tu código de verificación es: {codigo}. Válido por 5 min.";
 
-            // 1. Si hay Twilio Verify configurado, intentar primero Verify API (soporta SMS directo a Colombia sin número remitente)
+            // 1. Si TextBee (Gateway Android Gratis sin restricción de números) está configurado, enviar inmediatamente
+            if (!string.IsNullOrWhiteSpace(config.textbeeApiKey))
+            {
+                var (okTb, sidTb, _) = await EjecutarTextBeeSmsAsync(config.textbeeApiKey, config.textbeeDeviceId, destino, cuerpoMensaje);
+                if (okTb) return (okTb, sidTb, null);
+            }
+
+            // 2. Si hay Twilio Verify configurado, intentar Verify API
             if (!string.IsNullOrWhiteSpace(config.verifyServiceSid) && !string.IsNullOrWhiteSpace(config.accountSid) && !string.IsNullOrWhiteSpace(config.authToken))
             {
                 var (okVerify, sidVerify, errVerify) = await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destino, "sms");
@@ -147,8 +213,6 @@ namespace ControlClientesRestaurante.Services
                     return (okVerify, sidVerify, errVerify);
                 }
             }
-
-            var cuerpoMensaje = $"🍔 [{config.businessName}] Tu código es: {codigo}. Válido por 5 min.";
 
             if (string.IsNullOrWhiteSpace(config.accountSid) || string.IsNullOrWhiteSpace(config.authToken) || string.IsNullOrWhiteSpace(config.phoneNumber))
             {
@@ -173,6 +237,17 @@ namespace ControlClientesRestaurante.Services
             var destinoWhatsApp = destinoTel.StartsWith("whatsapp:") ? destinoTel : $"whatsapp:{destinoTel}";
             var remitenteWhatsApp = config.whatsappNumber.StartsWith("whatsapp:") ? config.whatsappNumber : $"whatsapp:{config.whatsappNumber}";
             var cuerpoMensaje = $"🍔 Tu código de verificación es *{codigo}* - Expira en 5 min. Gracias por pedir en {config.businessName}";
+            var cuerpoSms = $"🍔 [{config.businessName}] Tu código de verificación es: {codigo}. Válido por 5 min.";
+
+            // 1. Si TextBee está activo, enviarlo también por SMS directo gratis para asegurar que llegue a cualquier número
+            if (!string.IsNullOrWhiteSpace(config.textbeeApiKey))
+            {
+                var (okTb, sidTb, _) = await EjecutarTextBeeSmsAsync(config.textbeeApiKey, config.textbeeDeviceId, destinoTel, cuerpoSms);
+                if (okTb && (string.IsNullOrWhiteSpace(config.accountSid) || string.IsNullOrWhiteSpace(config.authToken)))
+                {
+                    return (okTb, sidTb, null);
+                }
+            }
 
             if (string.IsNullOrWhiteSpace(config.accountSid) || string.IsNullOrWhiteSpace(config.authToken))
             {
@@ -180,7 +255,7 @@ namespace ControlClientesRestaurante.Services
                 return (true, "SIMULATED_WHATSAPP_SID", null);
             }
 
-            // 1. Intentar envío por WhatsApp API (incluyendo el código exacto generado por el sistema)
+            // 2. Intentar envío por WhatsApp API (incluyendo el código exacto generado por el sistema)
             var (okWa, sidWa, errWa) = await EjecutarTwilioApiAsync(
                 config.accountSid,
                 config.authToken,
@@ -191,7 +266,7 @@ namespace ControlClientesRestaurante.Services
 
             if (okWa) return (okWa, sidWa, errWa);
 
-            // 2. Si WhatsApp API falla (ej. número no unido al Sandbox), usar Twilio Verify (WhatsApp o SMS directo)
+            // 3. Si WhatsApp API falla (ej. número no unido al Sandbox), usar Twilio Verify (WhatsApp o SMS directo)
             if (!string.IsNullOrWhiteSpace(config.verifyServiceSid))
             {
                 var (okVerifyWa, sidVerifyWa, errVerifyWa) = await EjecutarTwilioVerifyAsync(config.accountSid, config.authToken, config.verifyServiceSid, destinoTel, "whatsapp");
