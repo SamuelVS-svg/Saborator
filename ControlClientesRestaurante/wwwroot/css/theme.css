@@ -475,6 +475,15 @@ html[data-theme="dark"] .topbar {
   background: var(--surface) !important;
   border-bottom: 1px solid var(--line) !important;
 }
+html[data-theme="dark"] .sb-toggle {
+  background: var(--surface-2) !important;
+  border-color: rgba(200, 151, 58, 0.35) !important;
+  color: var(--gold, #C8973A) !important;
+}
+html[data-theme="dark"] .sb-toggle:hover {
+  border-color: var(--gold, #C8973A) !important;
+  background: rgba(200, 151, 58, 0.18) !important;
+}
 html[data-theme="dark"] .top-search input {
   background: var(--surface-2) !important;
   color: var(--text) !important;

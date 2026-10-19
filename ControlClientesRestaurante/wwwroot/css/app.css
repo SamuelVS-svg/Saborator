@@ -246,20 +246,42 @@ html, body {
 
 .sb-toggle {
     display: none;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: none;
+    gap: 4px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--line, #D4C6B2);
+    background: var(--surface-2, #EFE6D8);
+    color: var(--text, #1C1416);
     cursor: pointer;
-    border-radius: var(--r-control);
+    border-radius: var(--r-control, 10px);
     flex-shrink: 0;
-    transition: background-color 150ms var(--ease), transform 120ms var(--ease);
+    margin-right: 0.25rem;
+    transition: background-color 150ms var(--ease), border-color 150ms var(--ease), transform 120ms var(--ease);
 }
-.sb-toggle:hover { background: var(--brand-soft); }
+.sb-toggle:hover {
+    background: var(--brand-soft, rgba(107,30,46,0.1));
+    border-color: var(--brand, #6B1E2E);
+    color: var(--brand, #6B1E2E);
+}
 .sb-toggle:active { transform: scale(0.94); }
-.sb-toggle span { display: block; width: 18px; height: 2px; background: var(--ink); margin: 3px 0; border-radius: 2px; }
+.sb-toggle svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    stroke: currentColor;
+}
+.sb-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    margin: 0;
+    border-radius: 2px;
+}
 
 .top-page-title {
     font-family: var(--font-serif);
@@ -815,7 +837,12 @@ html, body {
     .sidebar.open { width: var(--sb-open) !important; }
     .topbar { left: 0 !important; }
     .main-content { margin-left: 0 !important; }
-    .sb-toggle { display: flex !important; }
+    .sb-toggle {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
     .top-search { width: 150px; }
     .top-search input:focus { width: 175px; }
     .page-body { padding: 1.25rem 1.25rem 3rem; }

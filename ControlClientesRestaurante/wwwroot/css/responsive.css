@@ -69,6 +69,13 @@ h1, h2, h3, h4, h5 {
     .top-page-title {
         font-size: 1.1rem;
     }
+
+    .sb-toggle {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
 }
 
 @media (max-width: 620px) {
@@ -81,7 +88,8 @@ h1, h2, h3, h4, h5 {
     }
 
     .top-bell,
-    .theme-toggle-btn {
+    .theme-toggle-btn,
+    .sb-toggle {
         width: 34px !important;
         height: 34px !important;
         margin-right: 0.25rem !important;
