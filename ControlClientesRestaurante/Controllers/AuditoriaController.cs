@@ -22,7 +22,15 @@ namespace ControlClientesRestaurante.Controllers
             string? accion = null,
             string? usuario = null)
         {
-            var logs = _auditoriaService.ObtenerLogs(desde, hasta, modulo, accion, usuario);
+            var logs = _auditoriaService.ObtenerLogs(desde, hasta, modulo, accion, usuario)
+                .Where(l => l.Modulo != "Personalización"
+                         && l.Modulo != "Perfil"
+                         && l.Accion != "CAMBIO_TEMA"
+                         && l.Accion != "ACTUALIZACION_AVATAR_PRESET"
+                         && l.Accion != "ACTUALIZACION_FOTO_PERFIL"
+                         && l.Accion != "ELIMINACION_FOTO_PERFIL")
+                .ToList();
+
             var (totalHoy, anulacionesHoy, cajaHoy, usuariosHoy) = _auditoriaService.ObtenerEstadisticasHoy();
 
             ViewBag.TotalHoy        = totalHoy;

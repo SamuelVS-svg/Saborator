@@ -142,16 +142,6 @@ namespace ControlClientesRestaurante.Controllers
 
                     await RefrescarClaimsSesionAsync(usuario);
 
-                    _auditoriaService.Registrar(
-                        nombre,
-                        usuario.Rol?.NombreRol ?? "Usuario",
-                        "ACTUALIZACION_FOTO_PERFIL",
-                        "Perfil",
-                        $"El usuario '{nombre}' actualizó su foto de perfil.",
-                        "Usuario",
-                        usuario.Id,
-                        HttpContext.Connection.RemoteIpAddress?.ToString());
-
                     TempData["Mensaje"] = "¡Tu foto de perfil fue guardada con éxito!";
                     return RedirectToAction(nameof(Index));
                 }
@@ -177,16 +167,6 @@ namespace ControlClientesRestaurante.Controllers
                         _usuarioRepo.GuardarCambios();
 
                         await RefrescarClaimsSesionAsync(usuario);
-
-                        _auditoriaService.Registrar(
-                            nombre,
-                            usuario.Rol?.NombreRol ?? "Usuario",
-                            "ACTUALIZACION_AVATAR_PRESET",
-                            "Perfil",
-                            $"El usuario '{nombre}' seleccionó el avatar prediseñado '{presetNormalizado}'.",
-                            "Usuario",
-                            usuario.Id,
-                            HttpContext.Connection.RemoteIpAddress?.ToString());
 
                         TempData["Mensaje"] = "¡Avatar gourmet asignado con éxito a tu cuenta!";
                         return RedirectToAction(nameof(Index));
@@ -229,16 +209,6 @@ namespace ControlClientesRestaurante.Controllers
 
             await RefrescarClaimsSesionAsync(usuario);
 
-            _auditoriaService.Registrar(
-                nombre,
-                usuario.Rol?.NombreRol ?? "Usuario",
-                "ELIMINACION_FOTO_PERFIL",
-                "Perfil",
-                $"El usuario '{nombre}' restauró su avatar al estilo por defecto con iniciales.",
-                "Usuario",
-                usuario.Id,
-                HttpContext.Connection.RemoteIpAddress?.ToString());
-
             TempData["Mensaje"] = "Foto de perfil eliminada. Se mostrará tu inicial representativa.";
             return RedirectToAction(nameof(Index));
         }
@@ -269,16 +239,6 @@ namespace ControlClientesRestaurante.Controllers
             _usuarioRepo.GuardarCambios();
 
             await RefrescarClaimsSesionAsync(usuario);
-
-            _auditoriaService.Registrar(
-                nombre,
-                usuario.Rol?.NombreRol ?? "Usuario",
-                "CAMBIO_TEMA",
-                "Personalización",
-                $"El usuario '{nombre}' cambió su tema visual a '{temaElegido}'.",
-                "Usuario",
-                usuario.Id,
-                HttpContext.Connection.RemoteIpAddress?.ToString());
 
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || (Request.Headers.Accept.ToString().Contains("application/json")))
             {

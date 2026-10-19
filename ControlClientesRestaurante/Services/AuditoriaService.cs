@@ -63,6 +63,14 @@ namespace ControlClientesRestaurante.Services
         {
             var query = _context.AuditoriaLogs.AsNoTracking().AsQueryable();
 
+            // Excluir eventos cosméticos y de preferencias de interfaz
+            query = query.Where(a => a.Modulo != "Personalización"
+                                  && a.Modulo != "Perfil"
+                                  && a.Accion != "CAMBIO_TEMA"
+                                  && a.Accion != "ACTUALIZACION_AVATAR_PRESET"
+                                  && a.Accion != "ACTUALIZACION_FOTO_PERFIL"
+                                  && a.Accion != "ELIMINACION_FOTO_PERFIL");
+
             if (desde.HasValue)
             {
                 var d = desde.Value.Date;
@@ -102,7 +110,13 @@ namespace ControlClientesRestaurante.Services
             var inicioHoy = DateTime.Today;
             var logsHoy = _context.AuditoriaLogs
                 .AsNoTracking()
-                .Where(a => a.FechaCreacion >= inicioHoy)
+                .Where(a => a.FechaCreacion >= inicioHoy
+                         && a.Modulo != "Personalización"
+                         && a.Modulo != "Perfil"
+                         && a.Accion != "CAMBIO_TEMA"
+                         && a.Accion != "ACTUALIZACION_AVATAR_PRESET"
+                         && a.Accion != "ACTUALIZACION_FOTO_PERFIL"
+                         && a.Accion != "ELIMINACION_FOTO_PERFIL")
                 .ToList();
 
             int totalHoy = logsHoy.Count;

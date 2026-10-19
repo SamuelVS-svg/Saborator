@@ -853,6 +853,22 @@ html, body {
     .page-body { padding: 1rem 0.9rem 2.5rem; }
 }
 
+/* ── OCULTAR WIDGETS FLOTANTES EN PANEL DE ADMINISTRACIÓN / STAFF ────── */
+.sidebar ~ .luxury-whatsapp-wrap,
+.sidebar ~ #saboratorAiWidget,
+.sidebar ~ .ai-widget-container,
+.sidebar ~ .btn-floating-cookie-reopen,
+.main-content ~ .luxury-whatsapp-wrap,
+.main-content ~ #saboratorAiWidget,
+.main-content ~ .ai-widget-container,
+.main-content ~ .btn-floating-cookie-reopen,
+#topbar ~ .luxury-whatsapp-wrap,
+#topbar ~ #saboratorAiWidget,
+#topbar ~ .ai-widget-container,
+#topbar ~ .btn-floating-cookie-reopen {
+    display: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;

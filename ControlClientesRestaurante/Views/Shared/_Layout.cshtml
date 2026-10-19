@@ -520,7 +520,10 @@ else
     }
 }
 
-@if (!_esLogin)
+@{
+    var _esPanelAdmin = _logado && !_esCliente;
+}
+@if (!_esLogin && !_esPanelAdmin)
 {
     <partial name="_IaAsistenteFlotante" />
     <partial name="_WhatsAppConcierge" />
