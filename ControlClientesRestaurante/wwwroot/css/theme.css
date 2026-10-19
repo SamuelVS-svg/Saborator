@@ -695,6 +695,15 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
   gap: 0.4rem;
   flex-wrap: nowrap;
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .gourmet-link {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.65rem;
+  }
 }
 
 .gourmet-link {
