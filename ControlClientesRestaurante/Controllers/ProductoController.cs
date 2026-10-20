@@ -35,6 +35,8 @@ namespace ControlClientesRestaurante.Controllers
             if (!ModelState.IsValid) return View(producto);
 
             var (ok, mensaje) = _productoService.Registrar(producto);
+            if (!ok) { ModelState.AddModelError("", mensaje); return View(producto); }
+
             TempData["Mensaje"] = mensaje;
             return RedirectToAction("Index");
         }

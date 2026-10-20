@@ -40,6 +40,15 @@ namespace ControlClientesRestaurante.Services
             if (mesa == null)
                 return (false, $"La mesa #{numeroMesa} no fue encontrada.");
 
+            // No liberar una mesa que aún tiene un pedido sin cobrar: se perdería el vínculo
+            // entre la mesa y la cuenta pendiente.
+            if (mesa.PedidoId.HasValue && (nuevoEstado == "Libre" || nuevoEstado == "En Limpieza" || nuevoEstado == "Mantenimiento"))
+            {
+                var pedido = _db.Pedidos.FirstOrDefault(p => p.Id == mesa.PedidoId.Value);
+                if (pedido != null && pedido.Estado != "Facturado" && pedido.Estado != "Cancelado")
+                    return (false, $"La mesa #{numeroMesa} tiene el pedido {pedido.Numero} sin cobrar. Cóbralo o cancélalo antes de liberarla.");
+            }
+
             var estadoAnterior = mesa.Estado;
             mesa.Estado = nuevoEstado;
 

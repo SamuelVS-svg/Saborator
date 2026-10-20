@@ -18,6 +18,10 @@ namespace ControlClientesRestaurante.Services
 
         public (bool ok, string mensaje) Registrar(Producto producto)
         {
+            producto.Nombre = producto.Nombre.Trim();
+            if (_repo.ExisteNombre(producto.Nombre))
+                return (false, $"Ya existe un producto llamado '{producto.Nombre}'.");
+
             _repo.Agregar(producto);
             _repo.GuardarCambios();
             return (true, "Producto registrado correctamente.");
@@ -27,6 +31,9 @@ namespace ControlClientesRestaurante.Services
         {
             var existente = _repo.ObtenerPorId(producto.Id);
             if (existente == null) return (false, "Producto no encontrado.");
+            producto.Nombre = producto.Nombre.Trim();
+            if (_repo.ExisteNombre(producto.Nombre, producto.Id))
+                return (false, $"Ya existe otro producto llamado '{producto.Nombre}'.");
 
             existente.Nombre                = producto.Nombre;
             existente.Descripcion           = producto.Descripcion;
