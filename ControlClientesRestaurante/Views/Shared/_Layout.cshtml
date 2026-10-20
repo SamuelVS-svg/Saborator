@@ -31,6 +31,9 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="@(_tema != "clasico" ? _tema : null)">
 <head>
+    @* Styles section for page-specific CSS *@
+    @RenderSection("Styles", required: false)
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Alta Cocina & Gestión")</title>
