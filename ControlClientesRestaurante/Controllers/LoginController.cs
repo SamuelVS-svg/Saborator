@@ -934,47 +934,91 @@ namespace ControlClientesRestaurante.Controllers
         [HttpGet("/Login/GoogleConfig")]
         public IActionResult GoogleConfig()
         {
-            var clientId = _configuration["Google:ClientId"] ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
+            var clientId = _configuration["Authentication:Google:ClientId"] 
+                        ?? _configuration["Google:ClientId"] 
+                        ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") 
+                        ?? "";
             return Json(new { hasClientId = !string.IsNullOrWhiteSpace(clientId), clientId });
         }
 
-        [HttpPost("/Login/GoogleDirectAuth")]
+        [HttpPost("/Login/GoogleCallback")]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> GoogleDirectAuth([FromBody] GoogleDirectAuthDto? dto)
+        public async Task<IActionResult> GoogleCallback([FromForm] string? credential, [FromQuery] string? returnUrl = null)
         {
-            if (dto == null)
-                return BadRequest(new { ok = false, mensaje = "Datos incompletos para acceder con Google." });
+            string? token = credential;
 
-            string? email = dto.Email?.Trim();
-            string? name = dto.Name?.Trim();
-
-            // Si viene credencial JWT oficial de Google Identity Services
-            if (!string.IsNullOrWhiteSpace(dto.Credential))
+            // Si viene por JSON en el body (invocación fetch AJAX)
+            if (string.IsNullOrWhiteSpace(token) && Request.HasJsonContentType())
             {
                 try
                 {
-                    var parts = dto.Credential.Split('.');
-                    if (parts.Length >= 2)
+                    using var reader = new System.IO.StreamReader(Request.Body);
+                    var rawBody = await reader.ReadToEndAsync();
+                    if (!string.IsNullOrWhiteSpace(rawBody))
                     {
-                        var payload = parts[1];
-                        payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
-                        var jsonBytes = Convert.FromBase64String(payload.Replace('-', '+').Replace('_', '/'));
-                        var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
-                        using var doc = System.Text.Json.JsonDocument.Parse(json);
-                        if (doc.RootElement.TryGetProperty("email", out var eElem)) email = eElem.GetString();
-                        if (doc.RootElement.TryGetProperty("name", out var nElem)) name = nElem.GetString();
+                        using var doc = System.Text.Json.JsonDocument.Parse(rawBody);
+                        if (doc.RootElement.TryGetProperty("credential", out var cElem)) token = cElem.GetString();
+                        else if (doc.RootElement.TryGetProperty("Credential", out var cElem2)) token = cElem2.GetString();
+
+                        if (string.IsNullOrWhiteSpace(returnUrl) && doc.RootElement.TryGetProperty("returnUrl", out var rElem))
+                            returnUrl = rElem.GetString();
                     }
                 }
                 catch { }
             }
 
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return BadRequest(new { ok = false, mensaje = "No se recibió la credencial oficial de Google (JWT)." });
+
+                TempData["ErrorLogin"] = "No se recibió la credencial oficial de Google.";
+                return Redirect("/#menu");
+            }
+
+            string? email = null;
+            string? name = null;
+            string? picture = null;
+            string? sub = null;
+
+            try
+            {
+                var parts = token.Split('.');
+                if (parts.Length >= 2)
+                {
+                    var payload = parts[1];
+                    payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                    var jsonBytes = Convert.FromBase64String(payload.Replace('-', '+').Replace('_', '/'));
+                    var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                    using var doc = System.Text.Json.JsonDocument.Parse(json);
+                    if (doc.RootElement.TryGetProperty("email", out var eElem)) email = eElem.GetString();
+                    if (doc.RootElement.TryGetProperty("name", out var nElem)) name = nElem.GetString();
+                    if (doc.RootElement.TryGetProperty("picture", out var pElem)) picture = pElem.GetString();
+                    if (doc.RootElement.TryGetProperty("sub", out var sElem)) sub = sElem.GetString();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return BadRequest(new { ok = false, mensaje = $"Error al procesar credencial de Google: {ex.Message}" });
+
+                TempData["ErrorLogin"] = "Token de autenticación de Google inválido.";
+                return Redirect("/#menu");
+            }
+
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-                return BadRequest(new { ok = false, mensaje = "Por favor ingresa un correo de Google válido." });
+            {
+                if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return BadRequest(new { ok = false, mensaje = "La cuenta de Google seleccionada no proporcionó un correo válido." });
+
+                TempData["ErrorLogin"] = "La cuenta de Google no contiene un correo válido.";
+                return Redirect("/#menu");
+            }
 
             var correoLimpio = email.Trim().ToLowerInvariant();
             var nombreFinal = !string.IsNullOrWhiteSpace(name) ? name.Trim() : email.Split('@')[0];
 
-            // 1. Buscar si ya existe usuario con este correo en SQL Server
+            // 1. Buscar o crear cliente y usuario en SQL Server
             var usuario = _usuarioRepo.ObtenerPorCorreo(correoLimpio);
             Cliente? cliente = _context.Clientes.FirstOrDefault(c => c.Correo == correoLimpio);
 
@@ -988,7 +1032,6 @@ namespace ControlClientesRestaurante.Controllers
                     _context.SaveChanges();
                 }
 
-                // Generar nombre de usuario único
                 var userBase = new string(nombreFinal.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
                 if (string.IsNullOrWhiteSpace(userBase)) userBase = correoLimpio.Split('@')[0];
                 var userFinal = userBase;
@@ -1020,34 +1063,76 @@ namespace ControlClientesRestaurante.Controllers
                 usuario = new Usuario
                 {
                     NombreUsuario = userFinal,
-                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"Google#{Random.Shared.Next(10000, 99999)}!"),
+                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"Google#{Guid.NewGuid():N}!"),
                     RolId = rolCliente.Id,
                     Estado = true,
                     Correo = correoLimpio,
                     EmailVerificado = true,
                     DebeCambiarContraseña = false,
+                    FotoPerfil = picture,
                     Tema = "clasico"
                 };
                 _context.Usuarios.Add(usuario);
                 _context.SaveChanges();
             }
+            else if (!string.IsNullOrWhiteSpace(picture) && string.IsNullOrWhiteSpace(usuario.FotoPerfil))
+            {
+                usuario.FotoPerfil = picture;
+                _context.SaveChanges();
+            }
 
             if (!usuario.Estado)
-                return BadRequest(new { ok = false, mensaje = "Esta cuenta se encuentra inactiva. Contacte al personal del Club Saborator." });
+            {
+                if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return BadRequest(new { ok = false, mensaje = "Esta cuenta se encuentra inactiva. Contacte al personal del Club Saborator." });
+
+                TempData["ErrorLogin"] = "Esta cuenta se encuentra inactiva.";
+                return Redirect("/#menu");
+            }
 
             var nombreMostrar = cliente?.Nombre ?? usuario.NombreUsuario;
             var rol = usuario.Rol?.NombreRol ?? "Cliente";
 
             await IniciarSesionClaimsAsync(usuario, rol, nombreMostrar);
 
-            _auditoriaService.Registrar(usuario.NombreUsuario, rol, "LOGIN_EXITOSO", $"Inicio de sesión exitoso con Google ({correoLimpio}) en Club Saborator.", "Seguridad");
+            _auditoriaService.Registrar(
+                usuario.NombreUsuario,
+                rol,
+                "LOGIN_EXITOSO",
+                "Seguridad",
+                $"Inicio de sesión exitoso con Google Identity Services ({correoLimpio}) en Club Saborator.",
+                "Usuario",
+                usuario.Id,
+                HttpContext.Connection.RemoteIpAddress?.ToString());
 
-            return Ok(new
+            var destino = !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) ? returnUrl : "/#menu";
+
+            if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                ok = true,
-                mensaje = $"¡Bienvenido al Club Saborator, {nombreMostrar}!",
-                redirectUrl = dto.ReturnUrl ?? "/#menu"
-            });
+                return Ok(new
+                {
+                    ok = true,
+                    mensaje = $"¡Bienvenido al Club Saborator, {nombreMostrar}!",
+                    redirectUrl = destino,
+                    email = correoLimpio,
+                    name = nombreMostrar,
+                    picture
+                });
+            }
+
+            return Redirect(destino);
+        }
+
+        [HttpPost("/Login/GoogleDirectAuth")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> GoogleDirectAuth([FromBody] GoogleDirectAuthDto? dto)
+        {
+            if (dto != null && !string.IsNullOrWhiteSpace(dto.Credential))
+            {
+                return await GoogleCallback(dto.Credential, dto.ReturnUrl);
+            }
+
+            return BadRequest(new { ok = false, mensaje = "Credencial oficial de Google requerida." });
         }
 
         [HttpPost("/Login/EnviarOtpWhatsApp")]

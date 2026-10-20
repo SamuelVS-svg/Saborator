@@ -524,3 +524,38 @@
     border: 1px solid #86EFAC;
     color: #15803D;
 }
+
+/* ── BOTÓN VOLVER / BACK LINK TRANSPARENTE ── */
+.btn-auth-back {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #9AA0A6 !important;
+    cursor: pointer;
+    font-size: 0.83rem;
+    padding: 0.4rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 150ms ease, opacity 150ms ease;
+}
+
+.btn-auth-back:hover {
+    color: #FFFDF9 !important;
+    text-decoration: underline;
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* ── CONTENEDOR OFICIAL DE GOOGLE IDENTITY SERVICES ── */
+.google-official-btn-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    min-height: 44px;
+}

@@ -1,3 +1,14 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    var googleClientId = Configuration["Authentication:Google:ClientId"]
+                       ?? Configuration["Google:ClientId"]
+                       ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
+                       ?? "";
+}
+
+<!-- SDK Oficial de Google Identity Services (GSI) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <!-- ══ CLUB SABORATOR: MODAL DE AUTENTICACIÓN ESTILO KFC FAST-FOOD ════════════ -->
 <div class="modal-ingreso-overlay" id="modalIngresoOverlay" aria-modal="true" role="dialog" aria-labelledby="modalClubTitle">
     <div class="modal-ingreso-box" id="modalIngresoBox">
@@ -62,7 +73,7 @@
                         <span>Confirmar e Ingresar</span>
                     </button>
                     <div style="text-align:center;margin-top:0.65rem;">
-                        <a href="javascript:void(0)" onclick="reiniciarFlujoOtpKfc()" style="font-size:0.8rem;color:#E4002B;font-weight:700;text-decoration:underline;">
+                        <a href="javascript:void(0)" onclick="reiniciarFlujoOtpKfc()" class="btn-auth-back" style="font-size:0.8rem;color:#E4002B;font-weight:700;">
                             ← Cambiar número o reenviar código
                         </a>
                     </div>
@@ -96,7 +107,20 @@
                 <span>O continúa con</span>
             </div>
 
-            <!-- BOTÓN OFICIAL DE GOOGLE (SEGÚN ESTÁNDAR OFICIAL DE GOOGLE BRAND) -->
+            <!-- ── INTEGRACIÓN OFICIAL GOOGLE IDENTITY SERVICES (GSI & ONE TAP) ──── -->
+            <div id="g_id_onload"
+                 data-client_id="@googleClientId"
+                 data-context="signin"
+                 data-callback="handleGoogleCredentialResponse"
+                 data-auto_prompt="true"
+                 data-auto_select="false"
+                 data-itp_support="true">
+            </div>
+
+            <!-- Contenedor donde Google SDK renderiza el botón oficial nativo -->
+            <div id="googleOfficialBtnContainer" class="google-official-btn-wrap"></div>
+
+            <!-- Botón Oficial "Continuar con Google" de respaldo con disparo interactivo -->
             <button type="button" class="btn-google-official" id="btnGoogleOfficial" onclick="iniciarGoogleAuthOficial()" title="Acceder con tu cuenta de Google">
                 <svg viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -107,71 +131,28 @@
                 <span>Continuar con Google</span>
             </button>
 
-            <!-- Contenedor para renderizar Google Identity Services oficial si hay ClientId -->
-            <div id="googleIdentityServicesContainer" style="display:none;margin-top:0.75rem;"></div>
-
             <p style="font-size:0.73rem;color:#6B7280;text-align:center;margin-top:1.15rem;line-height:1.45;">
                 Al continuar confirmas que aceptas nuestros
                 <a asp-controller="Home" asp-action="Terminos" target="_blank" style="color:#E4002B;text-decoration:underline;font-weight:700;">Términos y condiciones</a> y las
                 <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank" style="color:#E4002B;text-decoration:underline;font-weight:700;">Políticas de privacidad</a>.
             </p>
         </div>
-
-        <!-- ── VISTA LIMPIA ESTILO GOOGLE OAUTH (CERO DATOS FALSOS) ───────────── -->
-        <div class="google-oauth-clean-card" id="viewGoogleCleanCard">
-            <div class="google-oauth-header">
-                <svg width="36" height="36" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <h4 class="google-oauth-title">Acceder con Google</h4>
-                <p class="google-oauth-sub">Para continuar en <strong>Club Saborator</strong></p>
-            </div>
-
-            <div id="googleCleanFeedback" class="kfc-feedback-box"></div>
-
-            <form onsubmit="ejecutarGoogleDirectAuth(event)">
-                <div class="kfc-field-wrap">
-                    <label for="googleRealEmail">Correo electrónico *</label>
-                    <input type="email" id="googleRealEmail" class="kfc-input" placeholder="tu-cuenta@gmail.com" required autocomplete="email" />
-                </div>
-
-                <div class="kfc-field-wrap">
-                    <label for="googleRealName">Tu nombre completo *</label>
-                    <input type="text" id="googleRealName" class="kfc-input" placeholder="Tu nombre real" required autocomplete="name" />
-                </div>
-
-                <button type="submit" class="btn-google-submit" id="btnGoogleSubmitReal">
-                    <span>Siguiente</span>
-                </button>
-
-                <div class="google-oauth-disclaimer">
-                    Para continuar, Google compartirá tu nombre, dirección de correo electrónico y foto de perfil con Club Saborator. Consulta la Política de Privacidad de Club Saborator.
-                </div>
-
-                <div style="text-align:center;margin-top:0.75rem;">
-                    <button type="button" class="btn-auth-back" onclick="volverAClubMain()" style="color:#5F6368;font-size:0.83rem;">
-                        ← Volver al Club Saborator
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 
-<!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE REAL ══════════════════════════ -->
+<!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE GSI OFICIAL ═══════════════════ -->
 <script>
     let kfcCelularActual = '';
+    const googleClientIdConfig = '@googleClientId';
 
     function abrirModalIngreso() {
         const overlay = document.getElementById('modalIngresoOverlay');
         if (overlay) {
             overlay.classList.add('active');
-            volverAClubMain();
             document.body.style.overflow = 'hidden';
             setTimeout(() => document.getElementById('kfcPhoneInput')?.focus(), 120);
+            // Activar / refrescar selector oficial de cuentas de Google en el dispositivo
+            inicializarGoogleIdentityServices();
         }
     }
 
@@ -240,7 +221,6 @@
             document.getElementById('formKfcVerificarOtp').style.display = 'block';
             mostrarKfcFeedback(data.mensaje, true);
 
-            // Auto-rellenar en modo demo si viene disponible
             if (data.demoCode) {
                 document.getElementById('kfcOtpInput').value = data.demoCode;
             }
@@ -367,52 +347,86 @@
         }
     }
 
-    // ── 3. Flujo Oficial de Google (Cero datos falsos) ──
-    async function iniciarGoogleAuthOficial() {
-        limpiarKfcFeedbacks();
+    // ── 3. Flujo Oficial Google Identity Services (GSI SDK) ──
+    function inicializarGoogleIdentityServices() {
+        const cId = googleClientIdConfig || '';
+        if (!cId) {
+            console.info('Club Saborator: Google ClientId no está configurado aún en Authentication:Google:ClientId.');
+            return;
+        }
 
-        try {
-            // Verificar si el entorno tiene Google ClientId configurado
-            const cfgResp = await fetch('/Login/GoogleConfig');
-            const cfg = await cfgResp.json();
-
-            if (cfg && cfg.hasClientId && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-                // Iniciar SDK oficial de Google Identity Services
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            try {
                 google.accounts.id.initialize({
-                    client_id: cfg.clientId,
-                    callback: handleGoogleCredentialResponse
+                    client_id: cId,
+                    callback: handleGoogleCredentialResponse,
+                    auto_select: false,
+                    cancel_on_tap_outside: true
                 });
-                google.accounts.id.prompt();
-            } else {
-                // Desplegar vista limpia estilo Google OAuth para ingreso con correo real
-                document.getElementById('viewClubSaboratorMain').style.display = 'none';
-                document.getElementById('viewGoogleCleanCard').classList.add('active');
-                setTimeout(() => document.getElementById('googleRealEmail')?.focus(), 80);
+
+                // Renderizar botón oficial de Google dentro del contenedor
+                const container = document.getElementById('googleOfficialBtnContainer');
+                if (container && !container.hasChildNodes()) {
+                    google.accounts.id.renderButton(container, {
+                        type: 'standard',
+                        shape: 'rectangular',
+                        theme: 'outline',
+                        text: 'continue_with',
+                        size: 'large',
+                        logo_alignment: 'left',
+                        width: Math.min(340, window.innerWidth - 60)
+                    });
+                    // Ocultar botón estático si el botón oficial nativo de Google ya se renderizó
+                    const btnStatic = document.getElementById('btnGoogleOfficial');
+                    if (btnStatic) btnStatic.style.display = 'none';
+                }
+
+                // Activar Google One Tap (abre selector nativo con cuentas reales de Google del dispositivo)
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed()) {
+                        console.info('Google One Tap no visible:', notification.getNotDisplayedReason());
+                    }
+                });
+            } catch (err) {
+                console.warn('Google GSI init notice:', err);
             }
-        } catch (err) {
-            // Fallback a vista limpia
-            document.getElementById('viewClubSaboratorMain').style.display = 'none';
-            document.getElementById('viewGoogleCleanCard').classList.add('active');
+        } else {
+            // Reintentar si el script oficial de Google aún se está descargando
+            setTimeout(inicializarGoogleIdentityServices, 200);
         }
     }
 
-    function volverAClubMain() {
-        document.getElementById('viewClubSaboratorMain').style.display = 'block';
-        document.getElementById('viewGoogleCleanCard').classList.remove('active');
+    // Clic en "Continuar con Google" abre el selector OFICIAL de cuentas de Google (accounts.google.com)
+    function iniciarGoogleAuthOficial() {
         limpiarKfcFeedbacks();
+
+        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            // Forzar prompt nativo de cuentas reales de Google del dispositivo
+            google.accounts.id.prompt((notification) => {
+                if (notification.isNotDisplayed()) {
+                    mostrarKfcFeedback('Por favor selecciona tu cuenta en la ventana emergente de Google.', true);
+                }
+            });
+        } else {
+            mostrarKfcFeedback('Cargando el selector oficial de Google... Intenta de nuevo en unos segundos.', false);
+        }
     }
 
+    // Callback oficial que recibe el Token JWT emitido por Google accounts.google.com
     async function handleGoogleCredentialResponse(response) {
         if (!response || !response.credential) return;
 
-        mostrarKfcFeedback('Autenticando con Google...', true);
+        mostrarKfcFeedback('Autenticando con cuenta de Google...', true);
         try {
-            const resp = await fetch('/Login/GoogleDirectAuth', {
+            const resp = await fetch('/Login/GoogleCallback', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: JSON.stringify({
-                    Credential: response.credential,
-                    ReturnUrl: window.location.pathname
+                    credential: response.credential,
+                    returnUrl: window.location.pathname
                 })
             });
             const data = await resp.json();
@@ -423,79 +437,11 @@
                     window.location.href = data.redirectUrl || '/#menu';
                 }, 600);
             } else {
-                mostrarKfcFeedback(data.mensaje || 'Error al autenticar con Google.', false);
+                mostrarKfcFeedback(data.mensaje || 'Error al autenticar tu cuenta de Google.', false);
             }
         } catch (err) {
-            mostrarKfcFeedback('Error de comunicación con el servidor.', false);
-        }
-    }
-
-    async function ejecutarGoogleDirectAuth(e) {
-        e.preventDefault();
-        const email = document.getElementById('googleRealEmail')?.value.trim();
-        const name = document.getElementById('googleRealName')?.value.trim();
-        const feedbackEl = document.getElementById('googleCleanFeedback');
-        const btn = document.getElementById('btnGoogleSubmitReal');
-
-        if (!email || !email.includes('@@')) {
-            if (feedbackEl) {
-                feedbackEl.textContent = 'Por favor ingresa un correo electrónico de Google válido.';
-                feedbackEl.className = 'kfc-feedback-box error';
-                feedbackEl.style.display = 'block';
-            }
-            return;
-        }
-
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<span>Verificando con Club Saborator...</span>';
-        }
-
-        try {
-            const resp = await fetch('/Login/GoogleDirectAuth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    Email: email,
-                    Name: name,
-                    ReturnUrl: window.location.pathname
-                })
-            });
-            const data = await resp.json();
-
-            if (!resp.ok || !data.ok) {
-                if (feedbackEl) {
-                    feedbackEl.textContent = data.mensaje || 'Error al autenticar con Google.';
-                    feedbackEl.className = 'kfc-feedback-box error';
-                    feedbackEl.style.display = 'block';
-                }
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>Siguiente</span>';
-                }
-                return;
-            }
-
-            if (feedbackEl) {
-                feedbackEl.textContent = data.mensaje || '¡Bienvenido al Club Saborator!';
-                feedbackEl.className = 'kfc-feedback-box success';
-                feedbackEl.style.display = 'block';
-            }
-
-            setTimeout(() => {
-                window.location.href = data.redirectUrl || '/#menu';
-            }, 650);
-        } catch (err) {
-            console.error(err);
-            if (feedbackEl) {
-                feedbackEl.textContent = 'Error de conexión al autenticar con Google.';
-                feedbackEl.className = 'kfc-feedback-box error';
-                feedbackEl.style.display = 'block';
-            }
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Siguiente</span>';
-            }
+            console.error('Error GoogleCallback:', err);
+            mostrarKfcFeedback('Error de comunicación al autenticar con Google.', false);
         }
     }
 
@@ -530,4 +476,11 @@
             cerrarModalIngreso();
         }
     });
+
+    // Auto-inicializar Google GSI cuando el DOM y el SDK estén listos
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializarGoogleIdentityServices);
+    } else {
+        inicializarGoogleIdentityServices();
+    }
 </script>
