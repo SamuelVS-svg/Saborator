@@ -5,6 +5,16 @@ Si PowerShell bloquea los scripts, ejecútalos así: `powershell -ExecutionPolic
 
 > Sigue las fases en orden y **no avances si una falla**.
 
+## Atajo: todo en un comando
+
+Instala Tailscale e inicia sesión (Fase 3, pasos 1-2) y luego ejecuta:
+```powershell
+powershell -ExecutionPolicy Bypass -File .\0-publicar-todo.ps1
+```
+Hace el respaldo, compila, arranca con el vigilante, comprueba Tailscale, publica con Funnel y prueba
+la URL pública (HTTPS, host y cookies Secure). **Se detiene en la primera fase que falle** y te dice qué hacer.
+Al final muestra tu URL pública. Las pruebas en el navegador, el celular y la tarea programada siguen siendo tuyas.
+
 ---
 
 ## Fase 2 — Respaldo, compilación y arranque (en tu PC)
