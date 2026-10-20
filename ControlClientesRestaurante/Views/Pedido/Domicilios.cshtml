@@ -25,6 +25,12 @@
         </div>
     </div>
 </div>
+@if (esAdminOCajero)
+{
+    <div style="display:flex;justify-content:flex-end;margin-top:-0.5rem;">
+        <a asp-action="ReporteRepartos" class="btn-ghost" style="font-size:0.82rem;padding:0.4rem 0.85rem;border-radius:8px;">Reporte de entregas por domiciliario</a>
+    </div>
+}
 <hr class="div-gold" />
 
 @if (TempData["Mensaje"] != null)

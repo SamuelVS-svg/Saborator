@@ -12,6 +12,13 @@ namespace ControlClientesRestaurante.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, "Cocina");
         }
 
+        // Grupo de domiciliarios: avisos de domicilios listos para recoger o asignados
+        [Authorize(Roles = "Domiciliario,Administrador")]
+        public async Task UnirseARepartos()
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Repartos");
+        }
+
         // Grupo para seguimiento de un pedido específico por su ID o número
         public async Task SeguirPedido(string pedidoNumero)
         {

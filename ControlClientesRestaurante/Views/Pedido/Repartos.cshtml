@@ -5,8 +5,10 @@
     var asignados     = ViewBag.Asignados     as List<Pedido> ?? new();
     var enCamino      = ViewBag.EnCamino      as List<Pedido> ?? new();
     var entregadosHoy = ViewBag.EntregadosHoy as List<Pedido> ?? new();
-    var efectivoHoy   = entregadosHoy.Where(p => p.MetodoPago == "Efectivo").Sum(p => p.Total)
-                      + enCamino.Where(p => p.MetodoPago == "Efectivo").Sum(p => p.Total);
+    var efectivoHoy   = ViewBag.EfectivoHoy is decimal e ? e : 0m;
+    var fechaHist     = ViewBag.FechaHistorial is DateTime f ? f : DateTime.Today;
+    bool esHoy        = fechaHist == DateTime.Today;
+    string etiquetaDia = esHoy ? "hoy" : $"el {fechaHist:dd/MM/yyyy}";
 }
 
 <div class="pg-header">
@@ -23,7 +25,7 @@
 <div class="rep-stats">
     <div class="rep-stat"><span class="rep-stat-val">@disponibles.Count</span><span class="rep-stat-lbl">Por recoger</span></div>
     <div class="rep-stat"><span class="rep-stat-val">@enCamino.Count</span><span class="rep-stat-lbl">En camino</span></div>
-    <div class="rep-stat"><span class="rep-stat-val">@entregadosHoy.Count</span><span class="rep-stat-lbl">Entregados hoy</span></div>
+    <div class="rep-stat"><span class="rep-stat-val">@entregadosHoy.Count</span><span class="rep-stat-lbl">Entregados @etiquetaDia</span></div>
     <div class="rep-stat"><span class="rep-stat-val">$@efectivoHoy.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span><span class="rep-stat-lbl">Efectivo a rendir</span></div>
 </div>
 
@@ -108,11 +110,22 @@ else
     </div>
 }
 
-@* ── 4. HISTORIAL DEL DÍA ── *@
-<h2 class="rep-section-title">Entregados hoy <span class="rep-count">@entregadosHoy.Count</span></h2>
+@* ── 4. HISTORIAL POR DÍA ── *@
+<div class="rep-hist-head">
+    <h2 class="rep-section-title">Entregados @etiquetaDia <span class="rep-count">@entregadosHoy.Count</span></h2>
+    <form method="get" asp-action="Repartos" class="rep-hist-form">
+        <label for="fechaHist" class="rep-hist-lbl">Ver otro día</label>
+        <input id="fechaHist" type="date" name="fecha" value="@fechaHist.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")"
+               class="rep-hist-input" onchange="this.form.submit()" />
+        @if (!esHoy)
+        {
+            <a asp-action="Repartos" class="rep-hist-hoy">Hoy</a>
+        }
+    </form>
+</div>
 @if (entregadosHoy.Count == 0)
 {
-    <p class="rep-empty">Aún no has completado entregas hoy.</p>
+    <p class="rep-empty">@(esHoy ? "Aún no has completado entregas hoy." : "No tienes entregas registradas ese día.")</p>
 }
 else
 {
@@ -199,6 +212,23 @@ else
     }
     .rep-empty { color: var(--muted); font-size: 0.9rem; margin: 0; }
 
+    .rep-hist-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 1.75rem; }
+    .rep-hist-head .rep-section-title { margin: 0; }
+    .rep-hist-form { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.75rem; }
+    .rep-hist-lbl { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+    .rep-hist-input {
+        padding: 0.35rem 0.5rem; border: 1px solid var(--line); border-radius: 8px;
+        background: var(--surface); color: var(--text); font-size: 0.85rem;
+    }
+    .rep-hist-hoy { font-size: 0.82rem; font-weight: 700; color: var(--brand); text-decoration: none; }
+
+    .rep-aviso {
+        position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+        z-index: 1200; max-width: calc(100vw - 2rem);
+        background: #0EA5E9; color: #FFF; font-weight: 700; font-size: 0.95rem;
+        padding: 0.85rem 1.25rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
     .rep-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
@@ -248,9 +278,58 @@ else
     }
 </style>
 
+<div id="repAviso" class="rep-aviso" role="status" aria-live="polite" hidden></div>
+
+<script src="~/lib/signalr/signalr.min.js"></script>
 <script>
-    // Refresco automático para ver nuevos domicilios listos (no interrumpe si hay un diálogo abierto)
-    setInterval(function () {
-        if (document.visibilityState === 'visible') location.reload();
-    }, 30000);
+    (function () {
+        var miUsuario = @Json.Serialize(User.Identity?.Name ?? "");
+        var recargando = false;
+
+        function sonar() {
+            try {
+                var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                [0, 0.18].forEach(function (t) {
+                    var o = ctx.createOscillator(), g = ctx.createGain();
+                    o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+                    g.gain.setValueAtTime(0.18, ctx.currentTime + t);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.15);
+                    o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.16);
+                });
+            } catch (e) {}
+            if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+        }
+
+        function avisarYRecargar(texto, conSonido) {
+            if (recargando) return;
+            var el = document.getElementById('repAviso');
+            el.textContent = texto; el.hidden = false;
+            if (conSonido) sonar();
+            recargando = true;
+            // Si hay un diálogo de confirmación abierto, recargar después no interrumpe la acción
+            setTimeout(function () { location.reload(); }, 1600);
+        }
+
+        if (typeof signalR !== 'undefined') {
+            var conn = new signalR.HubConnectionBuilder().withUrl('/hubs/cocina').withAutomaticReconnect().build();
+            conn.on('RepartoActualizado', function (d) {
+                if (!d) return;
+                if (d.evento === 'Listo' && !d.repartidor)
+                    avisarYRecargar('🛵 Nuevo domicilio listo para recoger: ' + d.numero + (d.barrio ? ' (' + d.barrio + ')' : ''), true);
+                else if (d.evento === 'Asignado' && d.repartidor === miUsuario)
+                    avisarYRecargar('📋 Te asignaron el pedido ' + d.numero, true);
+                else if (d.evento === 'Listo' && d.repartidor === miUsuario)
+                    avisarYRecargar('✅ Tu pedido ' + d.numero + ' está listo para recoger', true);
+                else if ((d.evento === 'EnCamino' || d.evento === 'Asignado') && d.repartidor !== miUsuario)
+                    avisarYRecargar('Pedido ' + d.numero + ' tomado por otro domiciliario', false);
+            });
+            conn.start().then(function () { return conn.invoke('UnirseARepartos'); })
+                .catch(function (err) { console.warn('[Repartos] Sin tiempo real, se usa el refresco periódico.', err); });
+        }
+
+        // Respaldo por si se cae la conexión en tiempo real
+        setInterval(function () {
+            if (document.visibilityState === 'visible' && !recargando) location.reload();
+        }, 60000);
+    })();
 </script>

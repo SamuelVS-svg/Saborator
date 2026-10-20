@@ -1,0 +1,108 @@
+@using ControlClientesRestaurante.Models
+@{
+    ViewData["Title"] = "Reporte de entregas";
+    var filas = ViewBag.Filas as List<ControlClientesRestaurante.Controllers.PedidoController.ReporteRepartoFila> ?? new();
+    var desde = ViewBag.Desde is DateTime d ? d : DateTime.Today.AddDays(-6);
+    var hasta = ViewBag.Hasta is DateTime h ? h : DateTime.Today;
+    string Cop(decimal v) => "$" + v.ToString("N0", Formato.Co);
+}
+
+<div class="pg-header">
+    <div class="pg-icon">
+        <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    </div>
+    <div>
+        <div class="pg-title">Reporte de entregas</div>
+        <div class="pg-sub">Domicilios entregados por cada domiciliario entre @desde.ToString("dd/MM/yyyy") y @hasta.ToString("dd/MM/yyyy")</div>
+    </div>
+</div>
+<hr class="div-gold" />
+
+<form method="get" asp-action="ReporteRepartos" class="rr-filtros">
+    <div>
+        <label class="lbl" for="desde">Desde</label>
+        <input id="desde" type="date" name="desde" value="@desde.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div>
+        <label class="lbl" for="hasta">Hasta</label>
+        <input id="hasta" type="date" name="hasta" value="@hasta.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="rr-filtros-btn">
+        <button type="submit" class="btn-brand">Ver reporte</button>
+        <a asp-action="ReporteRepartos" asp-route-desde="@DateTime.Today.ToString("yyyy-MM-dd")" asp-route-hasta="@DateTime.Today.ToString("yyyy-MM-dd")" class="btn-ghost">Hoy</a>
+    </div>
+</form>
+
+<div class="rr-totales">
+    <div class="rr-total"><span class="rr-total-val">@filas.Sum(f => f.Entregas)</span><span class="rr-total-lbl">Entregas</span></div>
+    <div class="rr-total"><span class="rr-total-val">@Cop(filas.Sum(f => f.TotalVentas))</span><span class="rr-total-lbl">Ventas a domicilio</span></div>
+    <div class="rr-total"><span class="rr-total-val">@Cop(filas.Sum(f => f.Efectivo))</span><span class="rr-total-lbl">Cobrado en efectivo</span></div>
+    <div class="rr-total"><span class="rr-total-val">@Cop(filas.Sum(f => f.TarifasEnvio))</span><span class="rr-total-lbl">Tarifas de envío</span></div>
+</div>
+
+@if (filas.Count == 0)
+{
+    <p class="rr-vacio">No hay domicilios entregados en esas fechas.</p>
+}
+else
+{
+    <div class="tbl-wrap">
+        <table class="tbl">
+            <thead>
+                <tr>
+                    <th>Domiciliario</th>
+                    <th class="rr-num">Entregas</th>
+                    <th class="rr-num">Ventas</th>
+                    <th class="rr-num">Efectivo cobrado</th>
+                    <th class="rr-num">Tarifas de envío</th>
+                    <th class="rr-num" title="Desde que se hizo el pedido hasta la entrega">Tiempo total prom.</th>
+                    <th class="rr-num" title="Desde que salió del restaurante hasta la entrega">Tiempo en ruta prom.</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var f in filas)
+                {
+                    <tr>
+                        <td><strong>@f.Repartidor</strong></td>
+                        <td class="rr-num">@f.Entregas</td>
+                        <td class="rr-num">@Cop(f.TotalVentas)</td>
+                        <td class="rr-num">@Cop(f.Efectivo)</td>
+                        <td class="rr-num">@Cop(f.TarifasEnvio)</td>
+                        <td class="rr-num">@f.MinutosPromedio min</td>
+                        <td class="rr-num">@(f.MinutosRutaPromedio.HasValue ? $"{f.MinutosRutaPromedio} min" : "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    .rr-filtros {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.85rem;
+        align-items: end;
+        margin-bottom: 1.25rem;
+    }
+    .rr-filtros-btn { display: flex; gap: 0.5rem; }
+    .rr-totales {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+    .rr-total {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+    .rr-total-val { font-size: 1.3rem; font-weight: 800; color: var(--brand); font-variant-numeric: tabular-nums; }
+    .rr-total-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+    .rr-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .rr-vacio { color: var(--muted); }
+</style>

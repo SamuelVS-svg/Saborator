@@ -120,6 +120,11 @@ namespace ControlClientesRestaurante.Controllers
                     nuevoEstado = nuevoEstado
                 });
 
+                if (ped != null && ped.TipoEntrega == "Domicilio")
+                {
+                    await NotificarRepartosSignalR(ped, nuevoEstado);
+                }
+
                 if (ped != null)
                 {
                     await _cocinaHub.Clients.Group($"Pedido_{ped.Numero}").SendAsync("EstadoPedidoCambiado", new
@@ -259,6 +264,23 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         // ── CAMBIAR ESTADO ────────────────────────────────────────────────
+        /// <summary>Avisa a los domiciliarios conectados (pedido listo, asignado, en camino o entregado).</summary>
+        private async Task NotificarRepartosSignalR(Pedido ped, string evento)
+        {
+            try
+            {
+                await _cocinaHub.Clients.Group("Repartos").SendAsync("RepartoActualizado", new
+                {
+                    numero     = ped.Numero,
+                    estado     = ped.Estado,
+                    evento,
+                    repartidor = ped.Repartidor,
+                    barrio     = ped.Barrio
+                });
+            }
+            catch { /* No bloqueante */ }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CambiarEstado(int id, string estado)
         {
@@ -620,7 +642,7 @@ namespace ControlClientesRestaurante.Controllers
         // ── ASIGNAR DOMICILIARIO (CAJERO / ADMIN) ─────────────────────────
         [HttpPost]
         [Authorize(Roles = "Administrador,Cajero")]
-        public IActionResult AsignarRepartidor(int id, string? repartidor)
+        public async Task<IActionResult> AsignarRepartidor(int id, string? repartidor)
         {
             if (!string.IsNullOrWhiteSpace(repartidor))
             {
@@ -636,6 +658,8 @@ namespace ControlClientesRestaurante.Controllers
             var (ok, mensaje) = _pedidoService.AsignarRepartidor(id, repartidor);
             if (ok)
             {
+                var ped = _pedidoService.ObtenerPorId(id);
+                if (ped != null) await NotificarRepartosSignalR(ped, "Asignado");
                 _auditoriaService.Registrar(Usuario(), Rol(), "ASIGNAR_DOMICILIARIO", "Domicilios", mensaje,
                     "Pedido", id, HttpContext.Connection.RemoteIpAddress?.ToString());
             }
@@ -649,20 +673,75 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Domiciliario,Administrador")]
-        public IActionResult Repartos()
+        public IActionResult Repartos(DateTime? fecha = null)
         {
             var yo = Usuario();
             var mios = _pedidoService.ObtenerRepartosDe(yo);
+            var dia = (fecha ?? DateTime.Today).Date;
 
-            ViewBag.Disponibles  = _pedidoService.ObtenerRepartosDisponibles();
-            ViewBag.Asignados    = mios.Where(p => p.Estado is "Pendiente" or "EnPreparacion" or "Listo").ToList();
-            ViewBag.EnCamino     = mios.Where(p => p.Estado == "EnCamino").ToList();
+            ViewBag.Disponibles   = _pedidoService.ObtenerRepartosDisponibles();
+            ViewBag.Asignados     = mios.Where(p => p.Estado is "Pendiente" or "EnPreparacion" or "Listo").ToList();
+            ViewBag.EnCamino      = mios.Where(p => p.Estado == "EnCamino").ToList();
+            ViewBag.FechaHistorial = dia;
             ViewBag.EntregadosHoy = mios
                 .Where(p => (p.Estado == "Entregado" || p.Estado == "Facturado") &&
-                            (p.FechaEntrega ?? p.FechaCreacion).Date == DateTime.Today)
+                            (p.FechaEntrega ?? p.FechaCreacion).Date == dia)
                 .OrderByDescending(p => p.FechaEntrega)
                 .ToList();
+            // El efectivo a rendir es siempre el del día actual, aunque se consulte otra fecha
+            ViewBag.EfectivoHoy = mios
+                .Where(p => p.MetodoPago == "Efectivo" &&
+                            (p.Estado == "EnCamino" ||
+                             ((p.Estado == "Entregado" || p.Estado == "Facturado") && (p.FechaEntrega ?? p.FechaCreacion).Date == DateTime.Today)))
+                .Sum(p => p.Total);
             return View();
+        }
+
+        // ── REPORTE DE ENTREGAS POR DOMICILIARIO (ADMIN / CAJERO) ─────────
+        [HttpGet]
+        [Authorize(Roles = "Administrador,Cajero")]
+        public IActionResult ReporteRepartos(DateTime? desde = null, DateTime? hasta = null)
+        {
+            var d = (desde ?? DateTime.Today.AddDays(-6)).Date;
+            var h = (hasta ?? DateTime.Today).Date;
+            if (h < d) (d, h) = (h, d);
+
+            var entregados = _pedidoService.ObtenerDomicilios()
+                .Where(p => p.TipoEntrega == "Domicilio" && !string.IsNullOrEmpty(p.Repartidor) &&
+                            p.FechaEntrega.HasValue &&
+                            p.FechaEntrega.Value.Date >= d && p.FechaEntrega.Value.Date <= h)
+                .ToList();
+
+            ViewBag.Desde = d;
+            ViewBag.Hasta = h;
+            ViewBag.Filas = entregados
+                .GroupBy(p => p.Repartidor!)
+                .Select(g => new ReporteRepartoFila
+                {
+                    Repartidor      = g.Key,
+                    Entregas        = g.Count(),
+                    TotalVentas     = g.Sum(p => p.Total),
+                    Efectivo        = g.Where(p => p.MetodoPago == "Efectivo").Sum(p => p.Total),
+                    TarifasEnvio    = g.Sum(p => p.CostoEnvio),
+                    MinutosPromedio = (int)Math.Round(g.Average(p => (p.FechaEntrega!.Value - p.FechaCreacion).TotalMinutes)),
+                    MinutosRutaPromedio = g.Any(p => p.FechaDespacho.HasValue)
+                        ? (int)Math.Round(g.Where(p => p.FechaDespacho.HasValue).Average(p => (p.FechaEntrega!.Value - p.FechaDespacho!.Value).TotalMinutes))
+                        : null
+                })
+                .OrderByDescending(f => f.Entregas)
+                .ToList();
+            return View();
+        }
+
+        public class ReporteRepartoFila
+        {
+            public string Repartidor { get; set; } = "";
+            public int Entregas { get; set; }
+            public decimal TotalVentas { get; set; }
+            public decimal Efectivo { get; set; }
+            public decimal TarifasEnvio { get; set; }
+            public int MinutosPromedio { get; set; }
+            public int? MinutosRutaPromedio { get; set; }
         }
 
         [HttpPost]
