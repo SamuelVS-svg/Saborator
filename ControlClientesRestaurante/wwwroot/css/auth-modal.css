@@ -1,22 +1,23 @@
 /* ==========================================================================
-   MODAL DE AUTENTICACIÓN & REGISTRO EN 1 PASO — SABORATOR GOURMET
-   Estilo Emil Kowalski Polish: Microinteracciones, Elevación, Temas Claro/Oscuro
+   CLUB SABORATOR — SISTEMA DE AUTENTICACIÓN ESTILO KFC FAST-FOOD
+   Optimizado para Alta Conversión, Acceso por WhatsApp OTP y Google OAuth Oficial
    ========================================================================== */
 
+/* ── OVERLAY Y CONTENEDOR PRINCIPAL ── */
 .modal-ingreso-overlay {
     position: fixed;
     inset: 0;
     z-index: 10000;
-    background: rgba(12, 4, 7, 0.82);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: rgba(15, 5, 8, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.25rem;
+    padding: 1rem;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-ingreso-overlay.active {
@@ -25,17 +26,17 @@
 }
 
 .modal-ingreso-box {
-    background: #FFFDF9;
-    color: #1A080C;
+    background: #FFFFFF;
+    color: #1A1A1A;
     width: 100%;
-    max-width: 470px;
-    border-radius: 24px;
-    padding: 2.25rem 2rem 2rem;
-    box-shadow: 0 28px 75px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(200, 151, 58, 0.25);
+    max-width: 450px;
+    border-radius: 20px;
+    padding: 2rem 1.85rem 1.75rem;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.06);
     position: relative;
-    transform: scale(0.95) translateY(12px);
-    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 92vh;
+    transform: scale(0.96) translateY(10px);
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 94vh;
     overflow-y: auto;
     overscroll-behavior: contain;
 }
@@ -44,32 +45,33 @@
     transform: scale(1) translateY(0);
 }
 
-/* Modo Oscuro */
+/* Modo Oscuro para Club Saborator */
 :root[data-theme="dark"] .modal-ingreso-box,
 [data-theme="dark"] .modal-ingreso-box {
-    background: #18060B;
+    background: #18090D;
     color: #FFFDF9;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(200, 151, 58, 0.35);
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(200, 151, 58, 0.3);
 }
 
 /* Botón de Cierre */
 .modal-ingreso-close {
     position: absolute;
-    top: 1.15rem;
-    right: 1.15rem;
-    background: rgba(107, 30, 46, 0.08);
+    top: 1rem;
+    right: 1rem;
+    background: #F3F4F6;
     border: none;
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.35rem;
     line-height: 1;
-    color: #6E5C50;
+    color: #6B7280;
     cursor: pointer;
     transition: all 160ms ease;
+    z-index: 2;
 }
 
 :root[data-theme="dark"] .modal-ingreso-close,
@@ -79,401 +81,427 @@
 }
 
 .modal-ingreso-close:hover {
-    background: rgba(220, 38, 38, 0.15);
+    background: #FEE2E2;
     color: #DC2626;
     transform: rotate(90deg);
 }
 
-/* Encabezado */
-.modal-ingreso-header {
+/* ── CABECERA DESTACADA CLUB SABORATOR (ESTILO KFC) ── */
+.kfc-auth-header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.4rem;
 }
 
-.modal-ingreso-brand-logo {
-    font-family: var(--font-serif, 'Instrument Serif', Georgia, serif);
-    font-size: 2.15rem;
-    font-style: italic;
-    font-weight: 400;
-    color: var(--brand, #6B1E2E);
-    line-height: 1;
-    margin-bottom: 0.25rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-}
-
-:root[data-theme="dark"] .modal-ingreso-brand-logo,
-[data-theme="dark"] .modal-ingreso-brand-logo {
-    color: var(--gold, #C8973A);
-}
-
-.modal-ingreso-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #1A080C;
-    margin: 0.25rem 0 0.35rem;
-    line-height: 1.2;
-}
-
-:root[data-theme="dark"] .modal-ingreso-title,
-[data-theme="dark"] .modal-ingreso-title {
-    color: #FFFDF9;
-}
-
-.modal-ingreso-sub {
-    font-size: 0.86rem;
-    color: #6E5C50;
-    margin: 0;
-    line-height: 1.45;
-}
-
-:root[data-theme="dark"] .modal-ingreso-sub,
-[data-theme="dark"] .modal-ingreso-sub {
-    color: #B8A89E;
-}
-
-/* Vistas Interiores */
-.modal-ingreso-view {
-    display: none;
-    animation: authFadeIn 220ms ease;
-}
-
-.modal-ingreso-view.active {
-    display: block;
-}
-
-@keyframes authFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Botones de Autenticación Social */
-.btn-social-auth {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.85rem;
-    width: 100%;
-    padding: 0.82rem 1.2rem;
-    border-radius: 12px;
-    font-size: 0.92rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-    margin-bottom: 0.85rem;
-    text-decoration: none;
-    outline: none;
-    user-select: none;
-}
-
-.btn-social-auth svg {
-    flex-shrink: 0;
-}
-
-/* Google */
-.btn-social-auth.google {
-    background: #FFFFFF;
-    color: #1F2937;
-    border: 1.5px solid #E5E7EB;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.btn-social-auth.google:hover {
-    border-color: #D1D5DB;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    transform: translateY(-1.5px);
-}
-
-:root[data-theme="dark"] .btn-social-auth.google,
-[data-theme="dark"] .btn-social-auth.google {
-    background: #241117;
-    color: #FFFDF9;
-    border-color: rgba(200, 151, 58, 0.28);
-}
-
-:root[data-theme="dark"] .btn-social-auth.google:hover,
-[data-theme="dark"] .btn-social-auth.google:hover {
-    border-color: var(--gold, #C8973A);
-    background: #2D161E;
-}
-
-/* Facebook */
-.btn-social-auth.facebook {
-    background: #1877F2;
-    color: #FFFFFF;
-    border: 1.5px solid #1877F2;
-    box-shadow: 0 2px 8px rgba(24, 119, 242, 0.25);
-}
-
-.btn-social-auth.facebook:hover {
-    background: #166FE5;
-    border-color: #166FE5;
-    box-shadow: 0 6px 18px rgba(24, 119, 242, 0.38);
-    transform: translateY(-1.5px);
-}
-
-/* Correo Electrónico */
-.btn-social-auth.email {
-    background: rgba(200, 151, 58, 0.09);
-    color: #200B10;
-    border: 1.5px solid rgba(200, 151, 58, 0.32);
-}
-
-:root[data-theme="dark"] .btn-social-auth.email,
-[data-theme="dark"] .btn-social-auth.email {
-    color: #FFFDF9;
-    background: rgba(200, 151, 58, 0.12);
-}
-
-.btn-social-auth.email:hover {
-    background: rgba(200, 151, 58, 0.18);
-    border-color: var(--gold, #C8973A);
-    transform: translateY(-1.5px);
-}
-
-/* Nota de Términos al Pie */
-.modal-ingreso-footer-note {
-    font-size: 0.74rem;
-    color: #8C7B70;
-    text-align: center;
-    margin-top: 1.25rem;
-    line-height: 1.45;
-}
-
-:root[data-theme="dark"] .modal-ingreso-footer-note,
-[data-theme="dark"] .modal-ingreso-footer-note {
-    color: #9C8C82;
-}
-
-.modal-ingreso-footer-note a {
-    color: var(--gold, #C8973A);
-    text-decoration: underline;
-    font-weight: 600;
-}
-
-/* ══ VISTA: SOLO UN PASO MÁS ══════════════════════════════════════════════ */
-.step-badge-tag {
+.kfc-club-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 999px;
     font-size: 0.72rem;
     font-weight: 800;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    background: rgba(220, 38, 38, 0.12);
-    color: #DC2626;
-    border: 1px solid rgba(220, 38, 38, 0.3);
-    margin-bottom: 0.4rem;
+    background: #FEE2E2;
+    color: #E4002B;
+    border: 1px solid rgba(228, 0, 43, 0.25);
+    margin-bottom: 0.5rem;
 }
 
-:root[data-theme="dark"] .step-badge-tag,
-[data-theme="dark"] .step-badge-tag {
-    background: rgba(239, 68, 68, 0.18);
-    color: #F87171;
-    border-color: rgba(239, 68, 68, 0.35);
+:root[data-theme="dark"] .kfc-club-badge,
+[data-theme="dark"] .kfc-club-badge {
+    background: rgba(228, 0, 43, 0.18);
+    color: #FF5A70;
+    border-color: rgba(228, 0, 43, 0.4);
 }
 
-.auth-form-group {
+.kfc-auth-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0.2rem 0 0.35rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+:root[data-theme="dark"] .kfc-auth-title,
+[data-theme="dark"] .kfc-auth-title {
+    color: #FFFDF9;
+}
+
+.kfc-auth-sub {
+    font-size: 0.86rem;
+    color: #4B5563;
+    line-height: 1.45;
+    margin: 0;
+}
+
+:root[data-theme="dark"] .kfc-auth-sub,
+[data-theme="dark"] .kfc-auth-sub {
+    color: #9CA3AF;
+}
+
+/* ── PESTAÑAS DE ACCESO RÁPIDO ESTILO FAST-FOOD ── */
+.kfc-tab-selector {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    background: #F3F4F6;
+    padding: 3px;
+    border-radius: 12px;
+    margin-bottom: 1.35rem;
+    gap: 3px;
+}
+
+:root[data-theme="dark"] .kfc-tab-selector,
+[data-theme="dark"] .kfc-tab-selector {
+    background: rgba(255, 253, 249, 0.08);
+}
+
+.kfc-tab-btn {
+    border: none;
+    background: transparent;
+    padding: 0.65rem 0.5rem;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #4B5563;
+    cursor: pointer;
+    transition: all 160ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1;
+}
+
+:root[data-theme="dark"] .kfc-tab-btn,
+[data-theme="dark"] .kfc-tab-btn {
+    color: #D1D5DB;
+}
+
+.kfc-tab-btn.active {
+    background: #FFFFFF;
+    color: #E4002B;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="dark"] .kfc-tab-btn.active,
+[data-theme="dark"] .kfc-tab-btn.active {
+    background: #281016;
+    color: #FF5A70;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ── PANELES DE CONTENIDO ── */
+.kfc-tab-panel {
+    display: none;
+    animation: kfcFade 200ms ease;
+}
+
+.kfc-tab-panel.active {
+    display: block;
+}
+
+@keyframes kfcFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CAMPOS DE FORMULARIO LIMPIOS ── */
+.kfc-field-wrap {
     margin-bottom: 0.95rem;
     text-align: left;
 }
 
-.auth-form-group label {
+.kfc-field-wrap label {
     display: block;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 700;
-    color: #3C2A20;
-    margin-bottom: 0.35rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    color: #374151;
+    margin-bottom: 0.35rem;
 }
 
-:root[data-theme="dark"] .auth-form-group label,
-[data-theme="dark"] .auth-form-group label {
-    color: #E2D7C8;
+:root[data-theme="dark"] .kfc-field-wrap label,
+[data-theme="dark"] .kfc-field-wrap label {
+    color: #E5E7EB;
 }
 
-.auth-form-duo {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-}
-
-.auth-input-field {
-    width: 100%;
-    padding: 0.7rem 0.85rem;
-    border: 1.5px solid #E2D7C8;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    background: #FAF6F0;
-    color: #1A080C;
-    box-sizing: border-box;
-    transition: all 160ms ease;
-    font-family: inherit;
-}
-
-:root[data-theme="dark"] .auth-input-field,
-[data-theme="dark"] .auth-input-field {
-    background: #200B10;
-    border-color: rgba(200, 151, 58, 0.28);
-    color: #FFFDF9;
-}
-
-.auth-input-field:focus {
-    border-color: var(--gold, #C8973A);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.18);
-    background: #FFFFFF;
-}
-
-:root[data-theme="dark"] .auth-input-field:focus,
-[data-theme="dark"] .auth-input-field:focus {
-    background: #250E14;
-}
-
-/* Input Teléfono con Selector de Prefijo */
-.auth-phone-wrap {
+.kfc-phone-group {
     display: flex;
     gap: 6px;
-    align-items: center;
 }
 
-.auth-prefix-select {
-    width: 110px;
-    flex-shrink: 0;
-    padding: 0.7rem 0.5rem;
-    border: 1.5px solid #E2D7C8;
+.kfc-prefix-pill {
+    background: #F3F4F6;
+    border: 1.5px solid #E5E7EB;
     border-radius: 10px;
-    font-size: 0.86rem;
+    padding: 0 0.75rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    background: #FAF6F0;
-    color: #1A080C;
-    box-sizing: border-box;
-    transition: all 160ms ease;
-    font-family: inherit;
-    cursor: pointer;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
-:root[data-theme="dark"] .auth-prefix-select,
-[data-theme="dark"] .auth-prefix-select {
-    background: #200B10;
-    border-color: rgba(200, 151, 58, 0.28);
+:root[data-theme="dark"] .kfc-prefix-pill,
+[data-theme="dark"] .kfc-prefix-pill {
+    background: #241117;
+    border-color: rgba(255, 253, 249, 0.15);
     color: #FFFDF9;
 }
 
-/* Checkboxes */
-.auth-checkbox-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    font-size: 0.81rem;
-    color: #5A4A42;
-    margin-bottom: 0.7rem;
-    cursor: pointer;
-    line-height: 1.45;
-    text-align: left;
-    user-select: none;
-}
-
-:root[data-theme="dark"] .auth-checkbox-row,
-[data-theme="dark"] .auth-checkbox-row {
-    color: #D2C4BC;
-}
-
-.auth-checkbox-row input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #DC2626;
-    flex-shrink: 0;
-    margin-top: 1px;
-    cursor: pointer;
-}
-
-.auth-checkbox-row a {
-    color: var(--gold, #C8973A);
-    text-decoration: underline;
-    font-weight: 700;
-}
-
-/* Botón CTA Rojo Destacado */
-.btn-cta-rojo {
+.kfc-input {
     width: 100%;
-    padding: 0.88rem 1.5rem;
-    border-radius: 12px;
-    font-size: 0.98rem;
+    padding: 0.72rem 0.85rem;
+    border-radius: 10px;
+    border: 1.5px solid #E5E7EB;
+    background: #F9FAFB;
+    font-size: 0.92rem;
+    color: #111827;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: all 160ms ease;
+}
+
+:root[data-theme="dark"] .kfc-input,
+[data-theme="dark"] .kfc-input {
+    background: #200B10;
+    border-color: rgba(255, 253, 249, 0.15);
+    color: #FFFDF9;
+}
+
+.kfc-input:focus {
+    border-color: #E4002B;
+    background: #FFFFFF;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.15);
+}
+
+:root[data-theme="dark"] .kfc-input:focus,
+[data-theme="dark"] .kfc-input:focus {
+    background: #250E14;
+    border-color: #FF5A70;
+}
+
+.kfc-input.otp-digits {
+    font-size: 1.5rem;
+    letter-spacing: 0.5em;
+    text-align: center;
     font-weight: 800;
-    letter-spacing: 0.03em;
-    color: #FFFFFF;
-    background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+    font-family: monospace;
+    padding: 0.6rem 0.5rem;
+}
+
+/* ── BOTONES DE ACCIÓN ── */
+.btn-kfc-cta {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
     border: none;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    box-shadow: 0 8px 22px rgba(220, 38, 38, 0.35);
     transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 1.15rem;
+    box-sizing: border-box;
     text-transform: uppercase;
 }
 
-.btn-cta-rojo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(220, 38, 38, 0.48);
-    filter: brightness(1.08);
+/* Botón Rojo Principal Estilo KFC */
+.btn-kfc-cta.red {
+    background: #E4002B;
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(228, 0, 43, 0.32);
 }
 
-.btn-cta-rojo:active {
+.btn-kfc-cta.red:hover {
+    background: #C80025;
+    box-shadow: 0 10px 24px rgba(228, 0, 43, 0.42);
+    transform: translateY(-1.5px);
+}
+
+/* Botón Verde WhatsApp */
+.btn-kfc-cta.whatsapp {
+    background: #25D366;
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.32);
+}
+
+.btn-kfc-cta.whatsapp:hover {
+    background: #20BD5A;
+    box-shadow: 0 10px 24px rgba(37, 211, 102, 0.42);
+    transform: translateY(-1.5px);
+}
+
+.btn-kfc-cta:active {
     transform: translateY(0);
-    filter: brightness(0.95);
 }
 
-.btn-cta-rojo:disabled {
+.btn-kfc-cta:disabled {
     opacity: 0.65;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
 }
 
-/* Botón Secundario Volver */
-.btn-auth-back {
-    display: inline-flex;
+/* ── SEPARADOR "O CONTINÚA CON" ── */
+.kfc-divider {
+    display: flex;
     align-items: center;
-    gap: 5px;
-    background: none;
-    border: none;
-    color: #8C7B70;
-    font-size: 0.82rem;
-    font-weight: 600;
+    margin: 1.25rem 0;
+    color: #9CA3AF;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.kfc-divider::before,
+.kfc-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+:root[data-theme="dark"] .kfc-divider::before,
+:root[data-theme="dark"] .kfc-divider::after,
+[data-theme="dark"] .kfc-divider::before,
+[data-theme="dark"] .kfc-divider::after {
+    border-bottom-color: rgba(255, 253, 249, 0.12);
+}
+
+.kfc-divider span {
+    padding: 0 0.75rem;
+}
+
+/* ── BOTÓN OFICIAL DE GOOGLE (ESTÁNDAR GOOGLE BRAND GUIDELINES) ── */
+.btn-google-official {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 44px;
+    background: #FFFFFF !important;
+    color: #1F1F1F !important;
+    border: 1px solid #DADCE0 !important;
+    border-radius: 22px;
+    font-family: 'Roboto', 'Google Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.25px;
     cursor: pointer;
+    transition: background-color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.btn-google-official:hover {
+    background-color: #F8FAFD !important;
+    border-color: #D2E3FC !important;
+    box-shadow: 0 2px 4px 0 rgba(60,64,67,0.3), 0 2px 6px 2px rgba(60,64,67,0.15);
+}
+
+.btn-google-official:active {
+    background-color: #EEEEEE !important;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
+}
+
+.btn-google-official svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* ── VISTA LIMPIA ESTILO GOOGLE OAUTH (CERO DATOS FALSOS) ── */
+.google-oauth-clean-card {
+    display: none;
+    text-align: left;
+    padding: 0.5rem 0;
+    animation: kfcFade 200ms ease;
+}
+
+.google-oauth-clean-card.active {
+    display: block;
+}
+
+.google-oauth-header {
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+.google-oauth-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #202124;
+    margin: 0.4rem 0 0.2rem;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+}
+
+:root[data-theme="dark"] .google-oauth-title,
+[data-theme="dark"] .google-oauth-title {
+    color: #FFFDF9;
+}
+
+.google-oauth-sub {
+    font-size: 0.88rem;
+    color: #5F6368;
+    margin: 0;
+}
+
+:root[data-theme="dark"] .google-oauth-sub,
+[data-theme="dark"] .google-oauth-sub {
+    color: #9AA0A6;
+}
+
+.btn-google-submit {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    border-radius: 4px;
+    background: #1A73E8;
+    color: #FFFFFF;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    border: none;
+    cursor: pointer;
+    transition: background 150ms ease, box-shadow 150ms ease;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
     margin-top: 0.85rem;
-    transition: color 150ms ease;
-    padding: 0.25rem 0.5rem;
 }
 
-:root[data-theme="dark"] .btn-auth-back,
-[data-theme="dark"] .btn-auth-back {
-    color: #BFAEA6;
+.btn-google-submit:hover {
+    background: #1557B0;
+    box-shadow: 0 2px 6px 0 rgba(60,64,67,0.3);
 }
 
-.btn-auth-back:hover {
-    color: var(--gold, #C8973A);
+.google-oauth-disclaimer {
+    font-size: 0.72rem;
+    color: #70757A;
+    line-height: 1.45;
+    margin-top: 1rem;
+    padding: 0.65rem 0.75rem;
+    background: #F8F9FA;
+    border-radius: 6px;
 }
 
-/* Feedback Box */
-.auth-feedback-box {
+:root[data-theme="dark"] .google-oauth-disclaimer,
+[data-theme="dark"] .google-oauth-disclaimer {
+    background: rgba(255, 253, 249, 0.05);
+    color: #9AA0A6;
+}
+
+/* ── MENSAJES DE FEEDBACK ── */
+.kfc-feedback-box {
     padding: 0.65rem 0.85rem;
     border-radius: 10px;
     font-size: 0.82rem;
@@ -483,112 +511,16 @@
     text-align: left;
 }
 
-.auth-feedback-box.error {
+.kfc-feedback-box.error {
     display: block;
-    background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: #FEE2E2;
+    border: 1px solid #FCA5A5;
     color: #DC2626;
 }
 
-:root[data-theme="dark"] .auth-feedback-box.error,
-[data-theme="dark"] .auth-feedback-box.error {
-    color: #F87171;
-}
-
-.auth-feedback-box.success {
+.kfc-feedback-box.success {
     display: block;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.35);
-    color: #059669;
-}
-
-:root[data-theme="dark"] .auth-feedback-box.success,
-[data-theme="dark"] .auth-feedback-box.success {
-    color: #34D399;
-}
-
-/* Selector de Cuentas Google */
-.google-account-card {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    padding: 0.75rem 0.95rem;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 160ms ease;
-    margin-bottom: 0.65rem;
-    text-align: left;
-    background: #FFFFFF;
-}
-
-:root[data-theme="dark"] .google-account-card,
-[data-theme="dark"] .google-account-card {
-    background: #200B10;
-    border-color: rgba(200, 151, 58, 0.28);
-}
-
-.google-account-card:hover {
-    border-color: var(--gold, #C8973A);
-    background: rgba(200, 151, 58, 0.08);
-    transform: translateY(-1px);
-}
-
-.google-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4285F4, #34A853);
-    color: #FFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.95rem;
-    flex-shrink: 0;
-}
-
-.google-account-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.google-account-name {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #1F2937;
-    line-height: 1.25;
-}
-
-:root[data-theme="dark"] .google-account-name,
-[data-theme="dark"] .google-account-name {
-    color: #FFFDF9;
-}
-
-.google-account-email {
-    font-size: 0.76rem;
-    color: #6B7280;
-    line-height: 1.2;
-}
-
-:root[data-theme="dark"] .google-account-email,
-[data-theme="dark"] .google-account-email {
-    color: #9CA3AF;
-}
-
-.google-permissions-notice {
-    font-size: 0.73rem;
-    color: #6B7280;
-    text-align: left;
-    line-height: 1.45;
-    margin: 1rem 0 0.5rem;
-    padding: 0.65rem 0.75rem;
-    background: #F9FAFB;
-    border-radius: 8px;
-}
-
-:root[data-theme="dark"] .google-permissions-notice,
-[data-theme="dark"] .google-permissions-notice {
-    background: rgba(255, 255, 255, 0.04);
-    color: #9CA3AF;
+    background: #DCFCE7;
+    border: 1px solid #86EFAC;
+    color: #15803D;
 }

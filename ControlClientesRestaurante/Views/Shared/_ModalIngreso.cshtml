@@ -1,24 +1,104 @@
-<!-- ══ MODAL DE AUTENTICACIÓN & REGISTRO (GOOGLE, FACEBOOK, EMAIL) ════════════ -->
-<div class="modal-ingreso-overlay" id="modalIngresoOverlay" aria-modal="true" role="dialog" aria-labelledby="modalIngresoTitle">
+<!-- ══ CLUB SABORATOR: MODAL DE AUTENTICACIÓN ESTILO KFC FAST-FOOD ════════════ -->
+<div class="modal-ingreso-overlay" id="modalIngresoOverlay" aria-modal="true" role="dialog" aria-labelledby="modalClubTitle">
     <div class="modal-ingreso-box" id="modalIngresoBox">
         <button type="button" class="modal-ingreso-close" onclick="cerrarModalIngreso()" aria-label="Cerrar modal">&times;</button>
 
-        <!-- ── VISTA 1: INGRESA A TU CUENTA (OPCIONES SOCIALES & EMAIL) ────────── -->
-        <div class="modal-ingreso-view active" id="viewIngresoPrincipal">
-            <div class="modal-ingreso-header">
-                <div class="modal-ingreso-brand-logo">
-                    <partial name="_LogoBurger" />
-                    <span>Saborator</span>
-                </div>
-                <h3 class="modal-ingreso-title" id="modalIngresoTitle">Ingresa a tu cuenta</h3>
-                <p class="modal-ingreso-sub">Accede para reservar mesas exclusivas, rastrear tus pedidos y disfrutar de la experiencia gourmet.</p>
+        <!-- ── VISTA PRINCIPAL: FAST-FOOD CLUB SABORATOR ─────────────────────── -->
+        <div id="viewClubSaboratorMain">
+            <div class="kfc-auth-header">
+                <div class="kfc-club-badge">🍔 Club Saborator</div>
+                <h3 class="kfc-auth-title" id="modalClubTitle">¡Bienvenido al Club Saborator!</h3>
+                <p class="kfc-auth-sub">Inicia sesión o regístrate en segundos para pedir, guardar tus direcciones y rastrear tu orden en vivo.</p>
             </div>
 
-            <div id="modalIngresoFeedback" class="auth-feedback-box"></div>
+            <!-- Feedback general -->
+            <div id="kfcFeedbackBox" class="kfc-feedback-box"></div>
 
-            <!-- Botón Google -->
-            <button type="button" class="btn-social-auth google" onclick="iniciarFlujoSocial('google')">
-                <svg width="20" height="20" viewBox="0 0 24 24">
+            <!-- Pestañas de Acceso Rápido (Estilo KFC Colombia) -->
+            <div class="kfc-tab-selector" role="tablist">
+                <button type="button" class="kfc-tab-btn active" id="tabKfcOtp" onclick="cambiarPestanaKfc('otp')">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                    <span>WhatsApp OTP</span>
+                </button>
+                <button type="button" class="kfc-tab-btn" id="tabKfcClave" onclick="cambiarPestanaKfc('clave')">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span>Correo / Clave</span>
+                </button>
+            </div>
+
+            <!-- PANEL 1: ACCESO DIRECTO CON CÓDIGO OTP POR WHATSAPP (SIN CONTRASEÑA) -->
+            <div class="kfc-tab-panel active" id="panelKfcOtp">
+                <!-- Paso 1: Digitar Celular -->
+                <form id="formKfcPedirOtp" onsubmit="ejecutarPedirOtpWhatsApp(event)">
+                    <div class="kfc-field-wrap">
+                        <label for="kfcPhoneInput">Número de Celular *</label>
+                        <div class="kfc-phone-group">
+                            <div class="kfc-prefix-pill">🇨🇴 +57</div>
+                            <input type="tel" id="kfcPhoneInput" class="kfc-input" placeholder="300 123 4567" maxlength="12" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-kfc-cta whatsapp" id="btnPedirOtpSubmit">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.12-.23-.19-.48-.31z"/>
+                        </svg>
+                        <span>Pedir código por WhatsApp</span>
+                    </button>
+                </form>
+
+                <!-- Paso 2: Confirmar Código OTP (Aparece tras enviar) -->
+                <form id="formKfcVerificarOtp" style="display:none;" onsubmit="ejecutarVerificarOtpWhatsApp(event)">
+                    <div style="background:rgba(37,211,102,0.12);border:1px solid rgba(37,211,102,0.3);border-radius:10px;padding:0.65rem 0.85rem;margin-bottom:0.85rem;font-size:0.82rem;color:#15803D;">
+                        📲 Enviamos tu código de 6 dígitos al WhatsApp <strong>+57 <span id="kfcNumeroEnviado"></span></strong>.
+                    </div>
+                    <div class="kfc-field-wrap">
+                        <label for="kfcOtpInput">Digita los 6 dígitos del código *</label>
+                        <input type="text" id="kfcOtpInput" class="kfc-input otp-digits" placeholder="••••••" maxlength="6" inputmode="numeric" required />
+                    </div>
+                    <div class="kfc-field-wrap" id="kfcWrapNombreNuevo">
+                        <label for="kfcNombreCliente">Tu nombre (para tus pedidos) *</label>
+                        <input type="text" id="kfcNombreCliente" class="kfc-input" placeholder="Ej: Juan Pérez" />
+                    </div>
+                    <button type="submit" class="btn-kfc-cta red" id="btnVerificarOtpSubmit">
+                        <span>Confirmar e Ingresar</span>
+                    </button>
+                    <div style="text-align:center;margin-top:0.65rem;">
+                        <a href="javascript:void(0)" onclick="reiniciarFlujoOtpKfc()" style="font-size:0.8rem;color:#E4002B;font-weight:700;text-decoration:underline;">
+                            ← Cambiar número o reenviar código
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PANEL 2: INGRESO CON CORREO / CELULAR + CONTRASEÑA -->
+            <div class="kfc-tab-panel" id="panelKfcClave">
+                <form id="formKfcLoginClave" onsubmit="ejecutarLoginClaveKfc(event)">
+                    <div class="kfc-field-wrap">
+                        <label for="kfcEmailInput">Correo o Celular *</label>
+                        <input type="text" id="kfcEmailInput" class="kfc-input" placeholder="ejemplo@gmail.com o 3001234567" required />
+                    </div>
+                    <div class="kfc-field-wrap">
+                        <label for="kfcPassInput">Contraseña *</label>
+                        <input type="password" id="kfcPassInput" class="kfc-input" placeholder="••••••••" required />
+                    </div>
+                    <button type="submit" class="btn-kfc-cta red" id="btnLoginClaveSubmit">
+                        <span>Ingresar a mi cuenta</span>
+                    </button>
+                    <div style="text-align:center;margin-top:0.65rem;">
+                        <a href="javascript:void(0)" onclick="cambiarPestanaKfc('otp')" style="font-size:0.8rem;color:#4B5563;font-weight:600;">
+                            ¿Sin contraseña? <strong style="color:#E4002B;">Entra con WhatsApp OTP en segundos</strong>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Separador Oficial -->
+            <div class="kfc-divider">
+                <span>O continúa con</span>
+            </div>
+
+            <!-- BOTÓN OFICIAL DE GOOGLE (SEGÚN ESTÁNDAR OFICIAL DE GOOGLE BRAND) -->
+            <button type="button" class="btn-google-official" id="btnGoogleOfficial" onclick="iniciarGoogleAuthOficial()" title="Acceder con tu cuenta de Google">
+                <svg viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -27,223 +107,53 @@
                 <span>Continuar con Google</span>
             </button>
 
-            <!-- Botón Facebook -->
-            <button type="button" class="btn-social-auth facebook" onclick="iniciarFlujoSocial('facebook')">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                <span>Continuar con Facebook</span>
-            </button>
+            <!-- Contenedor para renderizar Google Identity Services oficial si hay ClientId -->
+            <div id="googleIdentityServicesContainer" style="display:none;margin-top:0.75rem;"></div>
 
-            <!-- Botón Correo Electrónico -->
-            <button type="button" class="btn-social-auth email" onclick="mostrarVistaEmail()">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="4" width="20" height="16" rx="2"/>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                </svg>
-                <span>Continuar con correo electrónico</span>
-            </button>
-
-            <p class="modal-ingreso-footer-note">
-                Al continuar, confirmas que has leído y aceptas nuestros
-                <a asp-controller="Home" asp-action="Terminos" target="_blank">Términos y condiciones</a> y las
-                <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank">Políticas de privacidad</a>.
+            <p style="font-size:0.73rem;color:#6B7280;text-align:center;margin-top:1.15rem;line-height:1.45;">
+                Al continuar confirmas que aceptas nuestros
+                <a asp-controller="Home" asp-action="Terminos" target="_blank" style="color:#E4002B;text-decoration:underline;font-weight:700;">Términos y condiciones</a> y las
+                <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank" style="color:#E4002B;text-decoration:underline;font-weight:700;">Políticas de privacidad</a>.
             </p>
         </div>
 
-        <!-- ── VISTA 2: INGRESO CON CORREO / CONTRASEÑA ────────────────────────── -->
-        <div class="modal-ingreso-view" id="viewIngresoEmail">
-            <div class="modal-ingreso-header">
-                <div class="modal-ingreso-brand-logo">
-                    <partial name="_LogoBurger" />
-                    <span>Saborator</span>
-                </div>
-                <h3 class="modal-ingreso-title">Ingresa con correo</h3>
-                <p class="modal-ingreso-sub">Digita tu usuario o correo electrónico y tu clave de acceso.</p>
+        <!-- ── VISTA LIMPIA ESTILO GOOGLE OAUTH (CERO DATOS FALSOS) ───────────── -->
+        <div class="google-oauth-clean-card" id="viewGoogleCleanCard">
+            <div class="google-oauth-header">
+                <svg width="36" height="36" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <h4 class="google-oauth-title">Acceder con Google</h4>
+                <p class="google-oauth-sub">Para continuar en <strong>Club Saborator</strong></p>
             </div>
 
-            <div id="emailFeedback" class="auth-feedback-box"></div>
+            <div id="googleCleanFeedback" class="kfc-feedback-box"></div>
 
-            <form onsubmit="ejecutarLoginEmail(event)" id="formLoginEmail">
-                <div class="auth-form-group">
-                    <label for="inputEmailUsuario">Usuario o Correo *</label>
-                    <input type="text" id="inputEmailUsuario" class="auth-input-field" placeholder="ej: comensal@saborator.com" required />
-                </div>
-                <div class="auth-form-group">
-                    <label for="inputEmailPass">Contraseña *</label>
-                    <input type="password" id="inputEmailPass" class="auth-input-field" placeholder="••••••••" required />
+            <form onsubmit="ejecutarGoogleDirectAuth(event)">
+                <div class="kfc-field-wrap">
+                    <label for="googleRealEmail">Correo electrónico *</label>
+                    <input type="email" id="googleRealEmail" class="kfc-input" placeholder="tu-cuenta@gmail.com" required autocomplete="email" />
                 </div>
 
-                <button type="submit" class="btn-cta-rojo" id="btnLoginEmailSubmit">
-                    <span>Iniciar Sesión</span>
+                <div class="kfc-field-wrap">
+                    <label for="googleRealName">Tu nombre completo *</label>
+                    <input type="text" id="googleRealName" class="kfc-input" placeholder="Tu nombre real" required autocomplete="name" />
+                </div>
+
+                <button type="submit" class="btn-google-submit" id="btnGoogleSubmitReal">
+                    <span>Siguiente</span>
                 </button>
+
+                <div class="google-oauth-disclaimer">
+                    Para continuar, Google compartirá tu nombre, dirección de correo electrónico y foto de perfil con Club Saborator. Consulta la Política de Privacidad de Club Saborator.
+                </div>
 
                 <div style="text-align:center;margin-top:0.75rem;">
-                    <a href="javascript:void(0)" onclick="irAPasoFinal()" style="font-size:0.83rem;color:var(--gold,#C8973A);font-weight:700;text-decoration:underline;">
-                        ¿No tienes cuenta? Crear mi cuenta
-                    </a>
-                </div>
-
-                <div style="text-align:center;">
-                    <button type="button" class="btn-auth-back" onclick="mostrarVistaPrincipal()">
-                        ← Volver a opciones de ingreso
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- ── VISTA 3: SELECTOR FLUIDO DE CUENTA (GOOGLE / SOCIAL OAUTH) ─────── -->
-        <div class="modal-ingreso-view" id="viewSelectorSocial">
-            <div class="modal-ingreso-header" style="margin-bottom:1rem;">
-                <div style="display:flex;justify-content:center;margin-bottom:0.5rem;" id="socialSelectorBrandIcon">
-                    <svg width="34" height="34" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                </div>
-                <h4 class="modal-ingreso-title" style="font-size:1.1rem;" id="socialSelectorTitle">Acceder con Google</h4>
-                <p class="modal-ingreso-sub">Selecciona una cuenta para continuar en <strong>Saborator Alta Cocina</strong></p>
-            </div>
-
-            <div id="socialSelectorFeedback" class="auth-feedback-box"></div>
-
-            <div class="google-account-list">
-                <div class="google-account-card" onclick="seleccionarCuentaSocial('comensal.gourmet@gmail.com', 'Carlos Mendoza', 'google')">
-                    <div class="google-avatar">C</div>
-                    <div class="google-account-info">
-                        <div class="google-account-name">Carlos Mendoza</div>
-                        <div class="google-account-email">comensal.gourmet@gmail.com</div>
-                    </div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8973A" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-
-                <div class="google-account-card" onclick="seleccionarCuentaSocial('valeria.s@gmail.com', 'Valeria Sarmiento', 'google')">
-                    <div class="google-avatar" style="background:linear-gradient(135deg, #EC4899, #8B5CF6);">V</div>
-                    <div class="google-account-info">
-                        <div class="google-account-name">Valeria Sarmiento</div>
-                        <div class="google-account-email">valeria.s@gmail.com</div>
-                    </div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8973A" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-
-                <div class="google-account-card" onclick="mostrarInputCuentaPersonalizada()">
-                    <div class="google-avatar" style="background:#6B7280;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
-                    <div class="google-account-info">
-                        <div class="google-account-name">Usar otra cuenta</div>
-                        <div class="google-account-email">Escribe tu correo de Google o Facebook</div>
-                    </div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                </div>
-
-                <!-- Input desplegable para otra cuenta -->
-                <div id="customSocialAccountBox" style="display:none;margin-top:0.75rem;padding:0.85rem;border:1.5px solid var(--gold,#C8973A);border-radius:12px;background:rgba(200,151,58,0.08);">
-                    <div class="auth-form-group" style="margin-bottom:0.6rem;">
-                        <label for="customSocialEmail">Tu correo electrónico *</label>
-                        <input type="email" id="customSocialEmail" class="auth-input-field" placeholder="tu-cuenta@gmail.com" />
-                    </div>
-                    <div class="auth-form-group" style="margin-bottom:0.6rem;">
-                        <label for="customSocialName">Tu nombre completo</label>
-                        <input type="text" id="customSocialName" class="auth-input-field" placeholder="Nombre y Apellido" />
-                    </div>
-                    <button type="button" class="btn-cta-rojo" style="margin-top:0.5rem;padding:0.7rem;" onclick="confirmarCuentaPersonalizada()">
-                        Continuar
-                    </button>
-                </div>
-            </div>
-
-            <div class="google-permissions-notice">
-                Para continuar, la plataforma compartirá tu nombre, dirección de correo y foto con Saborator. Consulta la Política de Privacidad de Saborator.
-            </div>
-
-            <div style="text-align:center;">
-                <button type="button" class="btn-auth-back" onclick="mostrarVistaPrincipal()">
-                    ← Cancelar y volver
-                </button>
-            </div>
-        </div>
-
-        <!-- ── VISTA 4: SOLO UN PASO MÁS (REGISTRO FINAL / DATOS ADICIONALES) ──── -->
-        <div class="modal-ingreso-view" id="viewPasoFinal">
-            <div class="modal-ingreso-header">
-                <span class="step-badge-tag">Paso 2 de 2 · Finalizar registro</span>
-                <h3 class="modal-ingreso-title">Solo un paso más</h3>
-                <p class="modal-ingreso-sub">Completa tus datos para confirmar tu cuenta y disfrutar de la experiencia gourmet.</p>
-            </div>
-
-            <div id="pasoFinalFeedback" class="auth-feedback-box"></div>
-
-            <form onsubmit="ejecutarRegistroPasoFinal(event)" id="formPasoFinal">
-                <input type="hidden" id="regProvider" value="Social" />
-                <input type="hidden" id="regSocialId" value="" />
-
-                <!-- Nombre y Apellido -->
-                <div class="auth-form-duo">
-                    <div class="auth-form-group">
-                        <label for="regNombre">Nombre *</label>
-                        <input type="text" id="regNombre" class="auth-input-field" placeholder="Tu nombre" required />
-                    </div>
-                    <div class="auth-form-group">
-                        <label for="regApellido">Apellido *</label>
-                        <input type="text" id="regApellido" class="auth-input-field" placeholder="Tu apellido" required />
-                    </div>
-                </div>
-
-                <!-- Correo Electrónico -->
-                <div class="auth-form-group">
-                    <label for="regCorreo">Correo electrónico *</label>
-                    <input type="email" id="regCorreo" class="auth-input-field" placeholder="tu-correo@ejemplo.com" required />
-                </div>
-
-                <!-- Celular con Selector de Prefijo -->
-                <div class="auth-form-group">
-                    <label for="regTelefono">Número de celular *</label>
-                    <div class="auth-phone-wrap">
-                        <select id="regPrefijo" class="auth-prefix-select" aria-label="Prefijo de país">
-                            <option value="+57" selected>🇨🇴 +57</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+52">🇲🇽 +52</option>
-                            <option value="+34">🇪🇸 +34</option>
-                            <option value="+54">🇦🇷 +54</option>
-                            <option value="+56">🇨🇱 +56</option>
-                            <option value="+507">🇵🇦 +507</option>
-                            <option value="+58">🇻🇪 +58</option>
-                            <option value="+51">🇵🇪 +51</option>
-                        </select>
-                        <input type="tel" id="regTelefono" class="auth-input-field" placeholder="300 123 4567" required />
-                    </div>
-                </div>
-
-                <!-- Checkboxes de Consentimiento -->
-                <div style="margin: 1.15rem 0 0.85rem;">
-                    <label class="auth-checkbox-row">
-                        <input type="checkbox" id="regCheckTerminos" required />
-                        <span>Confirmo que he leído y acepto los <a asp-controller="Home" asp-action="Terminos" target="_blank">Términos y condiciones</a> de Saborator. *</span>
-                    </label>
-
-                    <label class="auth-checkbox-row">
-                        <input type="checkbox" id="regCheckPrivacidad" required />
-                        <span>Confirmo que he leído y acepto las <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank">Políticas de privacidad y tratamiento de datos personales</a>. *</span>
-                    </label>
-
-                    <label class="auth-checkbox-row">
-                        <input type="checkbox" id="regCheckPromos" />
-                        <span>Deseo recibir correos promocionales, ofertas gastronómicas y catas exclusivas de Saborator.</span>
-                    </label>
-                </div>
-
-                <!-- Botón CTA Rojo Destacado -->
-                <button type="submit" class="btn-cta-rojo" id="btnCrearCuentaCTA">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Crear mi cuenta</span>
-                </button>
-
-                <div style="text-align:center;">
-                    <button type="button" class="btn-auth-back" onclick="mostrarVistaPrincipal()">
-                        ← Volver a opciones
+                    <button type="button" class="btn-auth-back" onclick="volverAClubMain()" style="color:#5F6368;font-size:0.83rem;">
+                        ← Volver al Club Saborator
                     </button>
                 </div>
             </form>
@@ -251,17 +161,17 @@
     </div>
 </div>
 
-<!-- ══ SCRIPTS CONTROLADORES DEL MODAL ════════════════════════════════════════ -->
+<!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE REAL ══════════════════════════ -->
 <script>
-    // Variables de estado
-    let authCurrentProvider = 'Google';
+    let kfcCelularActual = '';
 
     function abrirModalIngreso() {
         const overlay = document.getElementById('modalIngresoOverlay');
         if (overlay) {
             overlay.classList.add('active');
-            mostrarVistaPrincipal();
+            volverAClubMain();
             document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('kfcPhoneInput')?.focus(), 120);
         }
     }
 
@@ -270,224 +180,160 @@
         if (overlay) {
             overlay.classList.remove('active');
             document.body.style.overflow = '';
-            limpiarFeedbacksAuth();
+            limpiarKfcFeedbacks();
         }
     }
 
-    // Navegación entre vistas del modal
-    function cambiarVistaAuth(idVista) {
-        document.querySelectorAll('.modal-ingreso-view').forEach(v => v.classList.remove('active'));
-        const target = document.getElementById(idVista);
-        if (target) {
-            target.classList.add('active');
-        }
-        limpiarFeedbacksAuth();
-    }
+    function cambiarPestanaKfc(tab) {
+        document.querySelectorAll('.kfc-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.kfc-tab-panel').forEach(p => p.classList.remove('active'));
+        limpiarKfcFeedbacks();
 
-    function mostrarVistaPrincipal() {
-        cambiarVistaAuth('viewIngresoPrincipal');
-        const customBox = document.getElementById('customSocialAccountBox');
-        if (customBox) customBox.style.display = 'none';
-    }
-
-    function mostrarVistaEmail() {
-        cambiarVistaAuth('viewIngresoEmail');
-        setTimeout(() => document.getElementById('inputEmailUsuario')?.focus(), 80);
-    }
-
-    function iniciarFlujoSocial(provider) {
-        authCurrentProvider = provider.toLowerCase();
-        const titleEl = document.getElementById('socialSelectorTitle');
-        const iconWrap = document.getElementById('socialSelectorBrandIcon');
-
-        if (authCurrentProvider === 'facebook') {
-            if (titleEl) titleEl.textContent = 'Acceder con Facebook';
-            if (iconWrap) {
-                iconWrap.innerHTML = `
-                    <svg width="34" height="34" viewBox="0 0 24 24" fill="#1877F2">
-                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                `;
-            }
+        if (tab === 'otp') {
+            document.getElementById('tabKfcOtp')?.classList.add('active');
+            document.getElementById('panelKfcOtp')?.classList.add('active');
+            setTimeout(() => document.getElementById('kfcPhoneInput')?.focus(), 60);
         } else {
-            if (titleEl) titleEl.textContent = 'Acceder con Google';
-            if (iconWrap) {
-                iconWrap.innerHTML = `
-                    <svg width="34" height="34" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                `;
-            }
-        }
-
-        cambiarVistaAuth('viewSelectorSocial');
-    }
-
-    function mostrarInputCuentaPersonalizada() {
-        const box = document.getElementById('customSocialAccountBox');
-        if (box) {
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-            if (box.style.display === 'block') {
-                document.getElementById('customSocialEmail')?.focus();
-            }
+            document.getElementById('tabKfcClave')?.classList.add('active');
+            document.getElementById('panelKfcClave')?.classList.add('active');
+            setTimeout(() => document.getElementById('kfcEmailInput')?.focus(), 60);
         }
     }
 
-    function confirmarCuentaPersonalizada() {
-        const email = document.getElementById('customSocialEmail')?.value.trim();
-        const name = document.getElementById('customSocialName')?.value.trim() || email.split('@@')[0];
-        if (!email || !email.includes('@@')) {
-            mostrarFeedbackAuth('socialSelectorFeedback', 'Por favor ingresa un correo válido.', false);
-            return;
-        }
-        seleccionarCuentaSocial(email, name, authCurrentProvider);
-    }
-
-    // Selecciona la cuenta y consulta si ya existe o si es primera vez
-    async function seleccionarCuentaSocial(email, name, provider) {
-        mostrarFeedbackAuth('socialSelectorFeedback', 'Verificando cuenta en Saborator...', true);
-
-        try {
-            const resp = await fetch('/Login/SocialAuth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    provider: provider || authCurrentProvider,
-                    email: email,
-                    name: name,
-                    returnUrl: window.location.pathname
-                })
-            });
-
-            const data = await resp.json();
-
-            if (!resp.ok || !data.ok) {
-                mostrarFeedbackAuth('socialSelectorFeedback', data.mensaje || 'Error al autenticar con la red social.', false);
-                return;
-            }
-
-            if (data.isNew) {
-                // Primera vez -> Redirige al formulario 'SOLO UN PASO MÁS'
-                irAPasoFinal(data.prefill);
-            } else {
-                // Usuario existente -> Ingreso exitoso inmediato
-                mostrarFeedbackAuth('socialSelectorFeedback', data.mensaje || '¡Bienvenido a Saborator!', true);
-                setTimeout(() => {
-                    window.location.href = data.redirectUrl || window.location.href;
-                }, 750);
-            }
-        } catch (err) {
-            console.error(err);
-            mostrarFeedbackAuth('socialSelectorFeedback', 'Error de conexión con el servidor de autenticación.', false);
-        }
-    }
-
-    // Transición a la vista 'SOLO UN PASO MÁS'
-    function irAPasoFinal(prefill) {
-        cambiarVistaAuth('viewPasoFinal');
-
-        if (prefill) {
-            if (prefill.nombre) document.getElementById('regNombre').value = prefill.nombre;
-            if (prefill.apellido) document.getElementById('regApellido').value = prefill.apellido;
-            if (prefill.correo) document.getElementById('regCorreo').value = prefill.correo;
-            if (prefill.provider) document.getElementById('regProvider').value = prefill.provider;
-            if (prefill.socialId) document.getElementById('regSocialId').value = prefill.socialId;
-        }
-
-        setTimeout(() => {
-            const telInput = document.getElementById('regTelefono');
-            if (telInput && !telInput.value) telInput.focus();
-        }, 100);
-    }
-
-    // Envío del Paso Final de Registro
-    async function ejecutarRegistroPasoFinal(e) {
+    // ── 1. Flujo WhatsApp OTP (Estilo KFC) ──
+    async function ejecutarPedirOtpWhatsApp(e) {
         e.preventDefault();
+        const rawPhone = document.getElementById('kfcPhoneInput')?.value || '';
+        const phone = rawPhone.replace(/\D/g, '');
 
-        const nombre = document.getElementById('regNombre')?.value.trim();
-        const apellido = document.getElementById('regApellido')?.value.trim();
-        const correo = document.getElementById('regCorreo')?.value.trim();
-        const prefijo = document.getElementById('regPrefijo')?.value;
-        const telefono = document.getElementById('regTelefono')?.value.trim();
-        const checkTerminos = document.getElementById('regCheckTerminos')?.checked;
-        const checkPrivacidad = document.getElementById('regCheckPrivacidad')?.checked;
-        const checkPromos = document.getElementById('regCheckPromos')?.checked;
-        const provider = document.getElementById('regProvider')?.value || 'Social';
-        const socialId = document.getElementById('regSocialId')?.value || '';
-
-        if (!checkTerminos || !checkPrivacidad) {
-            mostrarFeedbackAuth('pasoFinalFeedback', 'Debes aceptar los Términos y condiciones y las Políticas de privacidad para continuar.', false);
+        if (phone.length !== 10) {
+            mostrarKfcFeedback('Por favor ingresa los 10 dígitos de tu celular (ej. 3001234567).', false);
             return;
         }
 
-        const btnCta = document.getElementById('btnCrearCuentaCTA');
-        if (btnCta) {
-            btnCta.disabled = true;
-            btnCta.innerHTML = '<span>Creando tu cuenta...</span>';
+        const btn = document.getElementById('btnPedirOtpSubmit');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>Enviando código a WhatsApp...</span>';
         }
 
         try {
-            const resp = await fetch('/Login/CompletarRegistroSocial', {
+            const resp = await fetch('/Login/EnviarOtpWhatsApp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nombre,
-                    apellido,
-                    correo,
-                    prefijoPais: prefijo,
-                    telefono,
-                    aceptaTerminos: checkTerminos,
-                    aceptaPoliticas: checkPrivacidad,
-                    aceptaPromociones: checkPromos,
-                    provider,
-                    socialId,
-                    returnUrl: window.location.pathname
-                })
+                body: JSON.stringify({ Telefono: phone })
             });
-
             const data = await resp.json();
 
             if (!resp.ok || !data.ok) {
-                mostrarFeedbackAuth('pasoFinalFeedback', data.mensaje || 'Error al completar el registro.', false);
-                if (btnCta) {
-                    btnCta.disabled = false;
-                    btnCta.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Crear mi cuenta</span>';
+                mostrarKfcFeedback(data.mensaje || 'No se pudo enviar el código por WhatsApp.', false);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Pedir código por WhatsApp</span>';
                 }
                 return;
             }
 
-            mostrarFeedbackAuth('pasoFinalFeedback', '¡Cuenta creada con éxito! Redirigiendo...', true);
-            setTimeout(() => {
-                window.location.href = data.redirectUrl || window.location.href;
-            }, 850);
+            kfcCelularActual = phone;
+            document.getElementById('kfcNumeroEnviado').textContent = phone;
+            document.getElementById('formKfcPedirOtp').style.display = 'none';
+            document.getElementById('formKfcVerificarOtp').style.display = 'block';
+            mostrarKfcFeedback(data.mensaje, true);
+
+            // Auto-rellenar en modo demo si viene disponible
+            if (data.demoCode) {
+                document.getElementById('kfcOtpInput').value = data.demoCode;
+            }
+            document.getElementById('kfcOtpInput')?.focus();
         } catch (err) {
             console.error(err);
-            mostrarFeedbackAuth('pasoFinalFeedback', 'Error de conexión al guardar los datos.', false);
-            if (btnCta) {
-                btnCta.disabled = false;
-                btnCta.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Crear mi cuenta</span>';
+            mostrarKfcFeedback('Error de conexión al solicitar el código OTP.', false);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Pedir código por WhatsApp</span>';
             }
         }
     }
 
-    // Login clásico con correo y contraseña
-    async function ejecutarLoginEmail(e) {
+    async function ejecutarVerificarOtpWhatsApp(e) {
         e.preventDefault();
-        const usuario = document.getElementById('inputEmailUsuario')?.value.trim();
-        const pass = document.getElementById('inputEmailPass')?.value;
-        const btn = document.getElementById('btnLoginEmailSubmit');
+        const code = (document.getElementById('kfcOtpInput')?.value || '').trim();
+        const nombre = (document.getElementById('kfcNombreCliente')?.value || '').trim();
+        const btn = document.getElementById('btnVerificarOtpSubmit');
 
-        if (!usuario || !pass) {
-            mostrarFeedbackAuth('emailFeedback', 'Por favor ingresa tu usuario/correo y contraseña.', false);
+        if (code.length !== 6) {
+            mostrarKfcFeedback('Por favor digita los 6 dígitos del código recibido.', false);
             return;
         }
 
         if (btn) {
             btn.disabled = true;
-            btn.textContent = 'Verificando...';
+            btn.innerHTML = '<span>Verificando tu acceso...</span>';
+        }
+
+        try {
+            const resp = await fetch('/Login/VerificarOtpWhatsApp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    Telefono: kfcCelularActual,
+                    Codigo: code,
+                    Nombre: nombre,
+                    ReturnUrl: window.location.pathname
+                })
+            });
+            const data = await resp.json();
+
+            if (!resp.ok || !data.ok) {
+                mostrarKfcFeedback(data.mensaje || 'Código incorrecto o expirado.', false);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Confirmar e Ingresar</span>';
+                }
+                return;
+            }
+
+            mostrarKfcFeedback(data.mensaje || '¡Acceso concedido! Bienvenido al Club Saborator.', true);
+            setTimeout(() => {
+                window.location.href = data.redirectUrl || '/';
+            }, 600);
+        } catch (err) {
+            console.error(err);
+            mostrarKfcFeedback('Error de conexión al verificar el código.', false);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Confirmar e Ingresar</span>';
+            }
+        }
+    }
+
+    function reiniciarFlujoOtpKfc() {
+        document.getElementById('formKfcPedirOtp').style.display = 'block';
+        document.getElementById('formKfcVerificarOtp').style.display = 'none';
+        document.getElementById('kfcOtpInput').value = '';
+        const btn = document.getElementById('btnPedirOtpSubmit');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>Pedir código por WhatsApp</span>';
+        }
+        limpiarKfcFeedbacks();
+    }
+
+    // ── 2. Flujo Correo / Contraseña ──
+    async function ejecutarLoginClaveKfc(e) {
+        e.preventDefault();
+        const usuario = document.getElementById('kfcEmailInput')?.value.trim();
+        const pass = document.getElementById('kfcPassInput')?.value;
+        const btn = document.getElementById('btnLoginClaveSubmit');
+
+        if (!usuario || !pass) {
+            mostrarKfcFeedback('Por favor digita tu usuario o correo y tu contraseña.', false);
+            return;
+        }
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>Ingresando...</span>';
         }
 
         try {
@@ -496,49 +342,180 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ usuario, password: pass, returnUrl: window.location.pathname })
             });
-
             const data = await resp.json();
 
             if (!resp.ok || !data.ok) {
-                mostrarFeedbackAuth('emailFeedback', data.mensaje || 'Credenciales incorrectas.', false);
+                mostrarKfcFeedback(data.mensaje || 'Credenciales inválidas.', false);
                 if (btn) {
                     btn.disabled = false;
-                    btn.textContent = 'Iniciar Sesión';
+                    btn.innerHTML = '<span>Ingresar a mi cuenta</span>';
                 }
                 return;
             }
 
-            mostrarFeedbackAuth('emailFeedback', '¡Ingreso correcto! Redirigiendo...', true);
+            mostrarKfcFeedback('¡Ingreso exitoso al Club Saborator! Redirigiendo...', true);
             setTimeout(() => {
-                window.location.href = data.redirectUrl || window.location.href;
+                window.location.href = data.redirectUrl || '/';
             }, 600);
         } catch (err) {
             console.error(err);
-            mostrarFeedbackAuth('emailFeedback', 'Error al procesar la solicitud.', false);
+            mostrarKfcFeedback('Error de conexión al ingresar.', false);
             if (btn) {
                 btn.disabled = false;
-                btn.textContent = 'Iniciar Sesión';
+                btn.innerHTML = '<span>Ingresar a mi cuenta</span>';
             }
         }
     }
 
-    function mostrarFeedbackAuth(idBox, mensaje, esExito) {
-        const box = document.getElementById(idBox);
+    // ── 3. Flujo Oficial de Google (Cero datos falsos) ──
+    async function iniciarGoogleAuthOficial() {
+        limpiarKfcFeedbacks();
+
+        try {
+            // Verificar si el entorno tiene Google ClientId configurado
+            const cfgResp = await fetch('/Login/GoogleConfig');
+            const cfg = await cfgResp.json();
+
+            if (cfg && cfg.hasClientId && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                // Iniciar SDK oficial de Google Identity Services
+                google.accounts.id.initialize({
+                    client_id: cfg.clientId,
+                    callback: handleGoogleCredentialResponse
+                });
+                google.accounts.id.prompt();
+            } else {
+                // Desplegar vista limpia estilo Google OAuth para ingreso con correo real
+                document.getElementById('viewClubSaboratorMain').style.display = 'none';
+                document.getElementById('viewGoogleCleanCard').classList.add('active');
+                setTimeout(() => document.getElementById('googleRealEmail')?.focus(), 80);
+            }
+        } catch (err) {
+            // Fallback a vista limpia
+            document.getElementById('viewClubSaboratorMain').style.display = 'none';
+            document.getElementById('viewGoogleCleanCard').classList.add('active');
+        }
+    }
+
+    function volverAClubMain() {
+        document.getElementById('viewClubSaboratorMain').style.display = 'block';
+        document.getElementById('viewGoogleCleanCard').classList.remove('active');
+        limpiarKfcFeedbacks();
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+        if (!response || !response.credential) return;
+
+        mostrarKfcFeedback('Autenticando con Google...', true);
+        try {
+            const resp = await fetch('/Login/GoogleDirectAuth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    Credential: response.credential,
+                    ReturnUrl: window.location.pathname
+                })
+            });
+            const data = await resp.json();
+
+            if (data && data.ok) {
+                mostrarKfcFeedback(data.mensaje || '¡Acceso concedido con Google!', true);
+                setTimeout(() => {
+                    window.location.href = data.redirectUrl || '/#menu';
+                }, 600);
+            } else {
+                mostrarKfcFeedback(data.mensaje || 'Error al autenticar con Google.', false);
+            }
+        } catch (err) {
+            mostrarKfcFeedback('Error de comunicación con el servidor.', false);
+        }
+    }
+
+    async function ejecutarGoogleDirectAuth(e) {
+        e.preventDefault();
+        const email = document.getElementById('googleRealEmail')?.value.trim();
+        const name = document.getElementById('googleRealName')?.value.trim();
+        const feedbackEl = document.getElementById('googleCleanFeedback');
+        const btn = document.getElementById('btnGoogleSubmitReal');
+
+        if (!email || !email.includes('@@')) {
+            if (feedbackEl) {
+                feedbackEl.textContent = 'Por favor ingresa un correo electrónico de Google válido.';
+                feedbackEl.className = 'kfc-feedback-box error';
+                feedbackEl.style.display = 'block';
+            }
+            return;
+        }
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>Verificando con Club Saborator...</span>';
+        }
+
+        try {
+            const resp = await fetch('/Login/GoogleDirectAuth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    Email: email,
+                    Name: name,
+                    ReturnUrl: window.location.pathname
+                })
+            });
+            const data = await resp.json();
+
+            if (!resp.ok || !data.ok) {
+                if (feedbackEl) {
+                    feedbackEl.textContent = data.mensaje || 'Error al autenticar con Google.';
+                    feedbackEl.className = 'kfc-feedback-box error';
+                    feedbackEl.style.display = 'block';
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Siguiente</span>';
+                }
+                return;
+            }
+
+            if (feedbackEl) {
+                feedbackEl.textContent = data.mensaje || '¡Bienvenido al Club Saborator!';
+                feedbackEl.className = 'kfc-feedback-box success';
+                feedbackEl.style.display = 'block';
+            }
+
+            setTimeout(() => {
+                window.location.href = data.redirectUrl || '/#menu';
+            }, 650);
+        } catch (err) {
+            console.error(err);
+            if (feedbackEl) {
+                feedbackEl.textContent = 'Error de conexión al autenticar con Google.';
+                feedbackEl.className = 'kfc-feedback-box error';
+                feedbackEl.style.display = 'block';
+            }
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Siguiente</span>';
+            }
+        }
+    }
+
+    function mostrarKfcFeedback(msg, esExito) {
+        const box = document.getElementById('kfcFeedbackBox');
         if (box) {
-            box.textContent = mensaje;
-            box.className = 'auth-feedback-box ' + (esExito ? 'success' : 'error');
+            box.textContent = msg;
+            box.className = 'kfc-feedback-box ' + (esExito ? 'success' : 'error');
             box.style.display = 'block';
         }
     }
 
-    function limpiarFeedbacksAuth() {
-        document.querySelectorAll('.auth-feedback-box').forEach(b => {
+    function limpiarKfcFeedbacks() {
+        document.querySelectorAll('.kfc-feedback-box').forEach(b => {
             b.style.display = 'none';
             b.textContent = '';
         });
     }
 
-    // Cerrar modal al presionar Escape o hacer clic en el backdrop
+    // Cerrar modal al presionar Escape o clic fuera
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             const overlay = document.getElementById('modalIngresoOverlay');

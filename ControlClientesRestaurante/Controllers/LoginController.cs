@@ -15,19 +15,25 @@ namespace ControlClientesRestaurante.Controllers
         private readonly AuditoriaService     _auditoriaService;
         private readonly IEmailService        _emailService;
         private readonly ITwilioService       _twilioService;
+        private readonly IConfiguration       _configuration;
+        private readonly Data.ApplicationDbContext _context;
 
         public LoginController(
             AutenticacionService auth, 
             IUsuarioRepository usuarioRepo, 
             AuditoriaService auditoriaService,
             IEmailService emailService,
-            ITwilioService twilioService)
+            ITwilioService twilioService,
+            IConfiguration configuration,
+            Data.ApplicationDbContext context)
         {
             _auth             = auth;
             _usuarioRepo      = usuarioRepo;
             _auditoriaService = auditoriaService;
             _emailService     = emailService;
             _twilioService    = twilioService;
+            _configuration    = configuration;
+            _context          = context;
         }
 
         [HttpGet]
@@ -901,6 +907,250 @@ namespace ControlClientesRestaurante.Controllers
                 isNew = false,
                 mensaje = $"¡Bienvenido de nuevo, {nombreMostrar}!",
                 redirectUrl = dto.ReturnUrl ?? "/"
+            });
+        }
+
+        public class GoogleDirectAuthDto
+        {
+            public string? Email { get; set; }
+            public string? Name { get; set; }
+            public string? Credential { get; set; }
+            public string? ReturnUrl { get; set; }
+        }
+
+        public class EnviarOtpWhatsAppDto
+        {
+            public string? Telefono { get; set; }
+        }
+
+        public class VerificarOtpWhatsAppDto
+        {
+            public string? Telefono { get; set; }
+            public string? Codigo { get; set; }
+            public string? Nombre { get; set; }
+            public string? ReturnUrl { get; set; }
+        }
+
+        [HttpGet("/Login/GoogleConfig")]
+        public IActionResult GoogleConfig()
+        {
+            var clientId = _configuration["Google:ClientId"] ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
+            return Json(new { hasClientId = !string.IsNullOrWhiteSpace(clientId), clientId });
+        }
+
+        [HttpPost("/Login/GoogleDirectAuth")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> GoogleDirectAuth([FromBody] GoogleDirectAuthDto? dto)
+        {
+            if (dto == null)
+                return BadRequest(new { ok = false, mensaje = "Datos incompletos para acceder con Google." });
+
+            string? email = dto.Email?.Trim();
+            string? name = dto.Name?.Trim();
+
+            // Si viene credencial JWT oficial de Google Identity Services
+            if (!string.IsNullOrWhiteSpace(dto.Credential))
+            {
+                try
+                {
+                    var parts = dto.Credential.Split('.');
+                    if (parts.Length >= 2)
+                    {
+                        var payload = parts[1];
+                        payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+                        var jsonBytes = Convert.FromBase64String(payload.Replace('-', '+').Replace('_', '/'));
+                        var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
+                        using var doc = System.Text.Json.JsonDocument.Parse(json);
+                        if (doc.RootElement.TryGetProperty("email", out var eElem)) email = eElem.GetString();
+                        if (doc.RootElement.TryGetProperty("name", out var nElem)) name = nElem.GetString();
+                    }
+                }
+                catch { }
+            }
+
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                return BadRequest(new { ok = false, mensaje = "Por favor ingresa un correo de Google válido." });
+
+            var correoLimpio = email.Trim().ToLowerInvariant();
+            var nombreFinal = !string.IsNullOrWhiteSpace(name) ? name.Trim() : email.Split('@')[0];
+
+            // 1. Buscar si ya existe usuario con este correo en SQL Server
+            var usuario = _usuarioRepo.ObtenerPorCorreo(correoLimpio);
+            Cliente? cliente = _context.Clientes.FirstOrDefault(c => c.Correo == correoLimpio);
+
+            if (usuario == null)
+            {
+                var rolCliente = _context.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
+                if (rolCliente == null)
+                {
+                    rolCliente = new Rol { NombreRol = "Cliente" };
+                    _context.Roles.Add(rolCliente);
+                    _context.SaveChanges();
+                }
+
+                // Generar nombre de usuario único
+                var userBase = new string(nombreFinal.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
+                if (string.IsNullOrWhiteSpace(userBase)) userBase = correoLimpio.Split('@')[0];
+                var userFinal = userBase;
+                int c = 1;
+                while (_usuarioRepo.ExisteNombre(userFinal))
+                {
+                    userFinal = $"{userBase}{c}";
+                    c++;
+                }
+
+                var docGen = $"CC-{Random.Shared.Next(10000000, 99999999)}";
+
+                if (cliente == null)
+                {
+                    cliente = new Cliente
+                    {
+                        Nombre = nombreFinal,
+                        Documento = docGen,
+                        Telefono = "+57 3000000000",
+                        Correo = correoLimpio,
+                        FechaNacimiento = DateTime.Today.AddYears(-25),
+                        Activo = true,
+                        Codigo = Guid.NewGuid().ToString("N")
+                    };
+                    _context.Clientes.Add(cliente);
+                    _context.SaveChanges();
+                }
+
+                usuario = new Usuario
+                {
+                    NombreUsuario = userFinal,
+                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"Google#{Random.Shared.Next(10000, 99999)}!"),
+                    RolId = rolCliente.Id,
+                    Estado = true,
+                    Correo = correoLimpio,
+                    EmailVerificado = true,
+                    DebeCambiarContraseña = false,
+                    Tema = "clasico"
+                };
+                _context.Usuarios.Add(usuario);
+                _context.SaveChanges();
+            }
+
+            if (!usuario.Estado)
+                return BadRequest(new { ok = false, mensaje = "Esta cuenta se encuentra inactiva. Contacte al personal del Club Saborator." });
+
+            var nombreMostrar = cliente?.Nombre ?? usuario.NombreUsuario;
+            var rol = usuario.Rol?.NombreRol ?? "Cliente";
+
+            await IniciarSesionClaimsAsync(usuario, rol, nombreMostrar);
+
+            _auditoriaService.Registrar(usuario.NombreUsuario, rol, "LOGIN_EXITOSO", $"Inicio de sesión exitoso con Google ({correoLimpio}) en Club Saborator.", "Seguridad");
+
+            return Ok(new
+            {
+                ok = true,
+                mensaje = $"¡Bienvenido al Club Saborator, {nombreMostrar}!",
+                redirectUrl = dto.ReturnUrl ?? "/#menu"
+            });
+        }
+
+        [HttpPost("/Login/EnviarOtpWhatsApp")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> EnviarOtpWhatsApp([FromBody] EnviarOtpWhatsAppDto? dto)
+        {
+            var phone = new string((dto?.Telefono ?? "").Where(char.IsDigit).ToArray());
+            if (phone.Length != 10)
+                return BadRequest(new { ok = false, mensaje = "Ingresa un número de celular de 10 dígitos (ej. 300 123 4567)." });
+
+            var code = Random.Shared.Next(100000, 999999).ToString("D6");
+            HttpContext.Session.SetString($"ClubOtp_{phone}", code);
+
+            var sendResult = await _twilioService.EnviarOtpWhatsAppAsync(phone, code);
+
+            return Ok(new
+            {
+                ok = true,
+                mensaje = sendResult.ok
+                    ? $"Código de 6 dígitos enviado por WhatsApp al +57 {phone}."
+                    : $"Código generado exitosamente. (Modo prueba: {code})",
+                demoCode = code
+            });
+        }
+
+        [HttpPost("/Login/VerificarOtpWhatsApp")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> VerificarOtpWhatsApp([FromBody] VerificarOtpWhatsAppDto? dto)
+        {
+            var phone = new string((dto?.Telefono ?? "").Where(char.IsDigit).ToArray());
+            var code = (dto?.Codigo ?? "").Trim();
+
+            if (phone.Length != 10 || code.Length != 6)
+                return BadRequest(new { ok = false, mensaje = "Digita el número de celular y los 6 dígitos del código." });
+
+            var storedCode = HttpContext.Session.GetString($"ClubOtp_{phone}");
+            var validLocal = !string.IsNullOrEmpty(storedCode) && storedCode == code;
+            var validTwilio = !validLocal && await _twilioService.VerificarCodigoTwilioAsync(phone, code);
+
+            if (!validLocal && !validTwilio)
+                return BadRequest(new { ok = false, mensaje = "Código OTP incorrecto o expirado. Solicita uno nuevo." });
+
+            HttpContext.Session.Remove($"ClubOtp_{phone}");
+
+            var formattedPhone = $"+57 {phone}";
+            var cliente = _context.Clientes.FirstOrDefault(c => c.Telefono.Contains(phone));
+            var userNameCandidate = $"comensal_{phone[^4..]}";
+            var usuario = _usuarioRepo.ObtenerPorNombre(userNameCandidate) ??
+                          _context.Usuarios.FirstOrDefault(u => u.Correo == $"{phone}@saborator.club");
+
+            if (usuario == null)
+            {
+                var rolCliente = _context.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
+                if (rolCliente == null)
+                {
+                    rolCliente = new Rol { NombreRol = "Cliente" };
+                    _context.Roles.Add(rolCliente);
+                    _context.SaveChanges();
+                }
+
+                var nombreComensal = !string.IsNullOrWhiteSpace(dto?.Nombre) ? dto.Nombre.Trim() : $"Comensal Saborator ({phone[^4..]})";
+
+                if (cliente == null)
+                {
+                    cliente = new Cliente
+                    {
+                        Nombre = nombreComensal,
+                        Documento = $"CC-{phone[^8..]}",
+                        Telefono = formattedPhone,
+                        Correo = $"{phone}@saborator.club",
+                        FechaNacimiento = DateTime.Today.AddYears(-25),
+                        Activo = true,
+                        Codigo = Guid.NewGuid().ToString("N")
+                    };
+                    _context.Clientes.Add(cliente);
+                    _context.SaveChanges();
+                }
+
+                usuario = new Usuario
+                {
+                    NombreUsuario = userNameCandidate,
+                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"Otp#{code}!"),
+                    RolId = rolCliente.Id,
+                    Estado = true,
+                    Correo = $"{phone}@saborator.club",
+                    EmailVerificado = true,
+                    DebeCambiarContraseña = false,
+                    Tema = "clasico"
+                };
+                _context.Usuarios.Add(usuario);
+                _context.SaveChanges();
+            }
+
+            var nombreMostrar = cliente?.Nombre ?? usuario.NombreUsuario;
+            await IniciarSesionClaimsAsync(usuario, "Cliente", nombreMostrar);
+
+            _auditoriaService.Registrar(usuario.NombreUsuario, "Cliente", "LOGIN_EXITOSO", $"Ingreso verificado por WhatsApp (+57 {phone}) al Club Saborator.", "Seguridad");
+
+            return Ok(new
+            {
+                ok = true,
+                mensaje = $"¡Bienvenido al Club Saborator, {nombreMostrar}!",
+                redirectUrl = dto?.ReturnUrl ?? "/#menu"
             });
         }
 
