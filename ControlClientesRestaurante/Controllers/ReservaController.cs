@@ -170,7 +170,13 @@ namespace ControlClientesRestaurante.Controllers
         public IActionResult Confirmacion(int id)
         {
             var reserva = _reservaService.ObtenerPorId(id);
-            if (reserva == null)
+
+            // Solo el dueño de la reserva o el personal pueden verla (tiene nombre, teléfono y correo).
+            // Antes cualquiera podía recorrer /Reserva/Confirmacion/1, /2, /3...
+            bool esStaff = User.IsInRole("Administrador") || User.IsInRole("Mesero") || User.IsInRole("Cajero");
+            bool esDuenio = reserva?.UsuarioId != null &&
+                            reserva.UsuarioId.ToString() == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (reserva == null || !(esStaff || esDuenio))
             {
                 TempData["Error"] = "La reserva solicitada no existe.";
                 return RedirectToAction("Index", "Home");

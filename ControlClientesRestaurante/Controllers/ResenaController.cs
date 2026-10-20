@@ -61,6 +61,7 @@ namespace ControlClientesRestaurante.Controllers
         // POST: /Resena/CrearApi (vía fetch AJAX desde Home/Index o Resena/Index)
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("autenticacion")]
         public IActionResult CrearApi([FromBody] CrearResenaDto dto)
         {
             if (dto == null)
@@ -68,7 +69,7 @@ namespace ControlClientesRestaurante.Controllers
                 return BadRequest(new { ok = false, mensaje = "Datos de reseña inválidos." });
             }
 
-            var (ok, mensaje, resena) = _resenaService.CrearResena(dto);
+            var (ok, mensaje, resena) = _resenaService.CrearResena(dto, User.Identity?.IsAuthenticated == true);
             if (!ok)
             {
                 return Json(new { ok = false, mensaje });
@@ -81,7 +82,8 @@ namespace ControlClientesRestaurante.Controllers
                 ok = true,
                 mensaje,
                 stats,
-                resena = new
+                // Una reseña pendiente de aprobación no se muestra en la página
+                resena = !resena!.Aprobada ? null : new
                 {
                     resena!.Id,
                     resena.NombreCliente,
@@ -99,9 +101,10 @@ namespace ControlClientesRestaurante.Controllers
         // POST: /Resena/Crear (Fallback formulario HTML clásico)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("autenticacion")]
         public IActionResult Crear([FromForm] CrearResenaDto dto, string? returnUrl)
         {
-            var (ok, mensaje, _) = _resenaService.CrearResena(dto);
+            var (ok, mensaje, _) = _resenaService.CrearResena(dto, User.Identity?.IsAuthenticated == true);
             if (ok) TempData["Mensaje"] = mensaje;
             else TempData["Error"] = mensaje;
 

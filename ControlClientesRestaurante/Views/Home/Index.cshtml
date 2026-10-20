@@ -1222,6 +1222,17 @@
         if (counter) counter.textContent = `${count} / 1000`;
     }
 
+
+    // Escapa el texto escrito por el usuario antes de insertarlo como HTML
+    function escaparResena(r) {
+        const esc = v => typeof v === 'string'
+            ? v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+            : v;
+        const copia = {};
+        Object.keys(r).forEach(k => copia[k] = esc(r[k]));
+        return copia;
+    }
+
     async function enviarResenaHomeAjax(e) {
         e.preventDefault();
         const fb = document.getElementById('homeResenaFeedback');
@@ -1274,6 +1285,7 @@
 
                 const grid = document.getElementById('homeResenasGrid');
                 if (grid && data.resena) {
+                    data.resena = escaparResena(data.resena);
                     let starsHtml = '';
                     for (let s = 1; s <= 5; s++) {
                         starsHtml += `

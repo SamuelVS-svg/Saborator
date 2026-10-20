@@ -23,6 +23,7 @@ namespace ControlClientesRestaurante.Controllers
         // ── API AJAX PÚBLICA PARA CHECKOUT / PEDIDOS ──────────────────────
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("autenticacion")] // evita adivinar códigos probando sin límite
         public IActionResult Validar([FromBody] ValidarCuponDto dto)
         {
             if (dto == null)

@@ -32,7 +32,12 @@ namespace ControlClientesRestaurante.Services
 
         public List<Resena> ObtenerTodas() => _repository.ObtenerTodas();
 
-        public (bool ok, string mensaje, Resena? resena) CrearResena(CrearResenaDto dto)
+        /// <param name="autenticado">
+        /// Solo las reseñas de clientes con sesión iniciada se publican al instante y se marcan como
+        /// verificadas; las anónimas quedan pendientes de aprobación del personal (antes cualquiera
+        /// publicaba al instante con la insignia de "Verificado").
+        /// </param>
+        public (bool ok, string mensaje, Resena? resena) CrearResena(CrearResenaDto dto, bool autenticado = false)
         {
             if (string.IsNullOrWhiteSpace(dto.NombreCliente) || dto.NombreCliente.Trim().Length < 2)
             {
@@ -49,6 +54,12 @@ namespace ControlClientesRestaurante.Services
                 return (false, "Tu reseña debe contener al menos 5 caracteres para compartir tu experiencia.", null);
             }
 
+            if (dto.NombreCliente.Trim().Length > 150 || dto.Comentario.Trim().Length > 1000 ||
+                (dto.PlatoRecomendado?.Length ?? 0) > 150 || (dto.TipoExperiencia?.Length ?? 0) > 50 || (dto.Correo?.Length ?? 0) > 150)
+            {
+                return (false, "Tu reseña es demasiado larga (máximo 1000 caracteres de comentario).", null);
+            }
+
             string tipoExp = string.IsNullOrWhiteSpace(dto.TipoExperiencia) ? "En Restaurante" : dto.TipoExperiencia.Trim();
             string? plato = string.IsNullOrWhiteSpace(dto.PlatoRecomendado) ? null : dto.PlatoRecomendado.Trim();
 
@@ -60,8 +71,8 @@ namespace ControlClientesRestaurante.Services
                 Comentario = dto.Comentario.Trim(),
                 PlatoRecomendado = plato,
                 TipoExperiencia = tipoExp,
-                Aprobada = true,
-                Verificado = true,
+                Aprobada = autenticado,
+                Verificado = autenticado,
                 FechaCreacion = DateTime.Now
             };
 
@@ -69,7 +80,9 @@ namespace ControlClientesRestaurante.Services
             {
                 _repository.Crear(resena);
                 _repository.GuardarCambios();
-                return (true, "¡Gracias por tu reseña! Tu opinión ha sido publicada con éxito.", resena);
+                return (true, autenticado
+                    ? "¡Gracias por tu reseña! Tu opinión ha sido publicada con éxito."
+                    : "¡Gracias por tu reseña! La publicaremos en cuanto nuestro equipo la revise.", resena);
             }
             catch (Exception ex)
             {

@@ -419,34 +419,6 @@ else if (_logado && !_esCliente)
     </div>
 </main>
 
-<!-- ══ TOASTS ═══════════════════════════════════════════════ -->
-<div class="toast-wrap" id="toastWrap"></div>
-
-@if (TempData["Mensaje"] != null)
-{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('ok', @Json.Serialize(TempData["Mensaje"]?.ToString()));
-        });
-    </script>
-}
-@if (TempData["Error"] != null)
-{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('err', @Json.Serialize(TempData["Error"]?.ToString()));
-        });
-    </script>
-}
-@if (TempData["ErrorContrasena"] != null)
-{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('err', @Json.Serialize(TempData["ErrorContrasena"]?.ToString()));
-        });
-    </script>
-}
-
 @* Alertas de stock bajo — aparecen automáticamente para el admin si hay productos con ≤ 5 unidades *@
 @if (_esAdmin && _stockBajo.Any())
 {
@@ -533,6 +505,43 @@ else
     }
 }
 
+<!-- ══ TOASTS ═══════════════════════════════════════════════ -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+@{
+    // Avisos de TempData (éxito/error) para TODAS las páginas: antes solo se mostraban en el panel
+    // del personal y el cliente no veía por qué fallaba su reserva o su pedido. Se omiten en las
+    // páginas que ya los pintan por su cuenta, para no duplicarlos.
+    var _ctrlActual = ViewContext.RouteData.Values["controller"]?.ToString();
+    var _actActual  = ViewContext.RouteData.Values["action"]?.ToString();
+    var _vistaConAvisosPropios = _esLogin
+        || (!(_logado && !_esCliente) && ((_ctrlActual == "Pedido" && _actActual == "Checkout") || _ctrlActual == "Perfil" || _ctrlActual == "Resena"));
+}
+@if (!_vistaConAvisosPropios && TempData["Mensaje"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('ok', @Json.Serialize(TempData["Mensaje"]?.ToString()));
+        });
+    </script>
+}
+@if (!_vistaConAvisosPropios && TempData["Error"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('err', @Json.Serialize(TempData["Error"]?.ToString()));
+        });
+    </script>
+}
+@if (!_vistaConAvisosPropios && TempData["ErrorContrasena"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('err', @Json.Serialize(TempData["ErrorContrasena"]?.ToString()));
+        });
+    </script>
+}
+
 @{
     var _esPanelAdmin = _logado && !_esCliente;
 }
@@ -584,7 +593,8 @@ else
         var iconErr  = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
         var t = document.createElement('div');
         t.className = 'toast ' + tipo;
-        t.innerHTML = (tipo === 'ok' ? iconOk : iconErr) + '<span>' + msg + '</span>';
+        t.innerHTML = (tipo === 'ok' ? iconOk : iconErr) + '<span></span>';
+        t.querySelector('span').textContent = msg; // el mensaje puede contener datos escritos por usuarios
         wrap.appendChild(t);
         setTimeout(function() { t.remove(); }, 3400);
     }
@@ -596,7 +606,8 @@ else
         var icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
         var t = document.createElement('div');
         t.className = 'toast warn';
-        t.innerHTML = icon + '<span>' + msg + '</span>';
+        t.innerHTML = icon + '<span></span>';
+        t.querySelector('span').textContent = msg;
         wrap.appendChild(t);
         setTimeout(function() { t.remove(); }, 6000);   // 6 segundos para leer bien
     }

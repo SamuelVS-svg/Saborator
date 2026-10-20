@@ -41,16 +41,24 @@ namespace ControlClientesRestaurante.Services
 
         public Reserva? ObtenerPorCodigo(string codigo) => _reservaRepo.ObtenerPorCodigo(codigo);
 
+        /// <summary>
+        /// Reservas de la cuenta. Solo por UsuarioId: antes, si no había ninguna, se buscaban
+        /// por nombre del cliente y un usuario veía reservas (con teléfono y correo) de otras
+        /// personas que tuvieran ese nombre.
+        /// </summary>
         public List<Reserva> ObtenerPorUsuario(string nombreUsuario)
         {
             var u = _usuarioRepo.ObtenerPorNombre(nombreUsuario);
-            if (u != null)
-            {
-                var porUsuario = _reservaRepo.ObtenerPorUsuarioId(u.Id);
-                if (porUsuario.Any()) return porUsuario;
-            }
-            return _reservaRepo.ObtenerPorNombreCliente(nombreUsuario);
+            return u != null ? _reservaRepo.ObtenerPorUsuarioId(u.Id) : new List<Reserva>();
         }
+
+        public static readonly string[] EstadosReserva = { "Confirmada", "Confirmada (Pagada)", "Completada", "No Asistio", "Cancelada" };
+
+        /// <summary>Zona y capacidad de cada mesa del plano (1-30).</summary>
+        public static (string zona, int capacidad) DatosMesa(int numero) =>
+            numero <= 12 ? ("Salón Principal", numero % 2 == 0 ? 4 : 2)
+          : numero <= 22 ? ("Terraza & Ventanal", numero % 3 == 0 ? 6 : 4)
+          :                ("Salón Cava & VIP", numero % 2 == 0 ? 8 : 6);
 
         /// <summary>
         /// Obtiene el plano completo de las 30 mesas del restaurante con su estado en la fecha y hora seleccionadas.
@@ -65,24 +73,7 @@ namespace ControlClientesRestaurante.Services
 
             for (int i = 1; i <= 30; i++)
             {
-                string zona;
-                int capacidad;
-
-                if (i <= 12)
-                {
-                    zona = "Salón Principal";
-                    capacidad = (i % 2 == 0) ? 4 : 2;
-                }
-                else if (i <= 22)
-                {
-                    zona = "Terraza & Ventanal";
-                    capacidad = (i % 3 == 0) ? 6 : 4;
-                }
-                else
-                {
-                    zona = "Salón Cava & VIP";
-                    capacidad = (i % 2 == 0) ? 8 : 6;
-                }
+                var (zona, capacidad) = DatosMesa(i);
 
                 bool estaReservada = reservasEnHorario.ContainsKey(i);
 
@@ -130,6 +121,19 @@ namespace ControlClientesRestaurante.Services
 
             if (personas < 1 || personas > 12)
                 return (false, "El número de personas debe ser entre 1 y 12.", null);
+
+            var (_, capacidadMesa) = DatosMesa(numeroMesa);
+            if (personas > capacidadMesa)
+                return (false, $"La mesa {numeroMesa} es para máximo {capacidadMesa} personas. Elige una mesa más grande.", null);
+
+            if (fecha.DayOfWeek == DayOfWeek.Monday)
+                return (false, "Los lunes el restaurante está cerrado por mantenimiento. Elige otro día.", null);
+
+            if (!TimeSpan.TryParseExact(hora.Trim(), @"hh\:mm", null, out var horaReserva))
+                return (false, "El horario seleccionado no es válido.", null);
+
+            if (fecha.Date == DateTime.Today && DateTime.Today.Add(horaReserva) <= DateTime.Now)
+                return (false, "Ese horario de hoy ya pasó. Elige una hora posterior.", null);
 
             // Verificar disponibilidad en fecha y hora
             var reservasExistentes = _reservaRepo.ObtenerPorFecha(fecha);
@@ -201,11 +205,15 @@ namespace ControlClientesRestaurante.Services
 
             if (!esStaff)
             {
-                // Un cliente solo puede cancelar sus propias reservas
-                bool esDuenio = (res.Usuario?.NombreUsuario == usuarioSolicitante) ||
-                                (string.Equals(res.NombreCliente, usuarioSolicitante, StringComparison.OrdinalIgnoreCase));
-                if (!esDuenio) return (false, "No tienes permiso para cancelar esta reserva.");
+                // Un cliente solo puede cancelar sus propias reservas (por cuenta, no por nombre escrito)
+                var u = _usuarioRepo.ObtenerPorNombre(usuarioSolicitante);
+                if (u == null || res.UsuarioId != u.Id)
+                    return (false, "No tienes permiso para cancelar esta reserva.");
+                if (!res.Estado.StartsWith("Confirmada") || res.Fecha.Date < DateTime.Today)
+                    return (false, $"La reserva {res.Codigo} ya no se puede cancelar (estado: {res.Estado}).");
             }
+            if (res.Estado == "Cancelada")
+                return (false, "La reserva ya estaba cancelada.");
 
             res.Estado = "Cancelada";
             _reservaRepo.Actualizar(res);
@@ -223,6 +231,8 @@ namespace ControlClientesRestaurante.Services
         {
             var res = _reservaRepo.ObtenerPorId(id);
             if (res == null) return (false, "Reserva no encontrada.");
+            if (!EstadosReserva.Contains(nuevoEstado))
+                return (false, "Estado de reserva no válido.");
 
             res.Estado = nuevoEstado;
             _reservaRepo.Actualizar(res);

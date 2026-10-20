@@ -63,6 +63,7 @@ namespace ControlClientesRestaurante.Services
                 {
                     descuento = cupon.TopeMaximoDescuento.Value;
                 }
+                descuento = Math.Min(descuento, subtotalProductos);
             }
             else // "Fijo"
             {
@@ -99,8 +100,8 @@ namespace ControlClientesRestaurante.Services
             if (_context.Cupones.Any(c => c.Codigo.ToUpper() == cupon.Codigo))
                 return (false, $"Ya existe un cupón registrado con el código '{cupon.Codigo}'.");
 
-            if (cupon.Valor <= 0)
-                return (false, "El valor del descuento debe ser mayor a 0.");
+            var errorValidacion = ValidarDatos(cupon);
+            if (errorValidacion != null) return (false, errorValidacion);
 
             cupon.FechaCreacion = DateTime.Now;
             _context.Cupones.Add(cupon);
@@ -118,6 +119,9 @@ namespace ControlClientesRestaurante.Services
             if (_context.Cupones.Any(c => c.Codigo.ToUpper() == cupon.Codigo && c.Id != cupon.Id))
                 return (false, $"Ya existe otro cupón con el código '{cupon.Codigo}'.");
 
+            var errorValidacion = ValidarDatos(cupon);
+            if (errorValidacion != null) return (false, errorValidacion);
+
             existente.Codigo = cupon.Codigo;
             existente.Descripcion = cupon.Descripcion;
             existente.TipoDescuento = cupon.TipoDescuento;
@@ -130,6 +134,20 @@ namespace ControlClientesRestaurante.Services
 
             _context.SaveChanges();
             return (true, $"Cupón '{cupon.Codigo}' actualizado exitosamente.");
+        }
+
+        /// <summary>Reglas comunes al crear o editar: tipo válido, porcentaje 1-100 y montos no negativos.</summary>
+        private static string? ValidarDatos(Cupon cupon)
+        {
+            if (cupon.TipoDescuento != "Porcentaje" && cupon.TipoDescuento != "Fijo")
+                return "El tipo de descuento debe ser 'Porcentaje' o 'Fijo'.";
+            if (cupon.Valor <= 0)
+                return "El valor del descuento debe ser mayor a 0.";
+            if (cupon.TipoDescuento == "Porcentaje" && cupon.Valor > 100)
+                return "Un descuento porcentual no puede superar el 100 %.";
+            if (cupon.MontoMinimo < 0 || (cupon.TopeMaximoDescuento ?? 0) < 0 || cupon.UsosMaximos < 0)
+                return "Los montos y el número de usos no pueden ser negativos.";
+            return null;
         }
 
         public (bool ok, string mensaje) CambiarEstado(int id)
