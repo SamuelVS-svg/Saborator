@@ -11,23 +11,36 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Soporte multi-puerto para Railway / Contenedores (escucha en $PORT y 8080 simultáneamente)
+// ── Dónde escucha la app ──────────────────────────────────────────────────────
+// · Contenedor (Railway/Docker): la variable PORT existe → 0.0.0.0:$PORT y 8080, como antes.
+// · Equipo propio (Windows + Tailscale Funnel): sin PORT → SOLO 127.0.0.1, para que nadie de la
+//   red local entre directamente; el tráfico público llega únicamente a través de Tailscale.
+//   El puerto se cambia con la variable SABORATOR_PUERTO (por defecto 5106).
 var port = Environment.GetEnvironmentVariable("PORT");
-if (!builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(port))
+var enContenedor = !string.IsNullOrWhiteSpace(port);
+if (enContenedor)
 {
-    var urls = new HashSet<string> { "http://0.0.0.0:8080" };
-    if (!string.IsNullOrWhiteSpace(port))
-    {
-        urls.Add($"http://0.0.0.0:{port.Trim()}");
-    }
+    var urls = new HashSet<string> { "http://0.0.0.0:8080", $"http://0.0.0.0:{port!.Trim()}" };
     builder.WebHost.UseUrls(string.Join(";", urls));
+}
+else if (!builder.Environment.IsDevelopment())
+{
+    var puertoLocal = Environment.GetEnvironmentVariable("SABORATOR_PUERTO");
+    if (string.IsNullOrWhiteSpace(puertoLocal) || !int.TryParse(puertoLocal, out _)) puertoLocal = "5106";
+    builder.WebHost.UseUrls($"http://127.0.0.1:{puertoLocal}");
 }
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownNetworks.Clear();
-    options.KnownProxies.Clear();
+    if (enContenedor)
+    {
+        // El proxy de Railway no tiene una IP fija conocida
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    }
+    // En el equipo propio se conservan los valores por defecto: solo se confía en las cabeceras
+    // X-Forwarded-* que llegan desde 127.0.0.1 / ::1 (Tailscale), no desde cualquier origen.
 });
 
 builder.Services.AddControllersWithViews(options =>
@@ -114,13 +127,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
+// En producción todas las cookies viajan solo por HTTPS (Railway y Tailscale Funnel sirven HTTPS)
+var cookiePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
+builder.Services.AddAntiforgery(options => options.Cookie.SecurePolicy = cookiePolicy);
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.CookieTempDataProviderOptions>(options => options.Cookie.SecurePolicy = cookiePolicy);
+
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(8);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SecurePolicy = cookiePolicy;
 });
 
 // Límite de intentos para inicio de sesión, registro y códigos OTP (fuerza bruta)
@@ -179,6 +197,23 @@ builder.Services.AddScoped<IWompiService, WompiService>();
 var app = builder.Build();
 
 app.UseForwardedHeaders();
+
+// Detrás de Tailscale Funnel todo el tráfico público llega por HTTPS. Si el proxy local no envía
+// X-Forwarded-Proto, SABORATOR_PROXY_HTTPS=true marca como HTTPS las peticiones que llegan desde
+// el propio equipo (127.0.0.1), para que las cookies Secure y las URLs se generen bien.
+if (string.Equals(Environment.GetEnvironmentVariable("SABORATOR_PROXY_HTTPS"), "true", StringComparison.OrdinalIgnoreCase))
+{
+    app.Use((context, next) =>
+    {
+        var ip = context.Connection.RemoteIpAddress;
+        if (ip != null && System.Net.IPAddress.IsLoopback(ip))
+            context.Request.Scheme = "https";
+        return next();
+    });
+}
+
+// Comprobación de salud para el script vigilante y para verificar HTTPS detrás del proxy
+app.MapGet("/salud", (HttpContext ctx) => Results.Json(new { ok = true, https = ctx.Request.IsHttps, host = ctx.Request.Host.Host }));
 
 if (!app.Environment.IsDevelopment())
 {

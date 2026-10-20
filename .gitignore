@@ -14,3 +14,7 @@ obj/
 cookies.txt
 scratch/
 skills-lock.json
+
+# Publicación local en Windows
+publicado/
+publicar-windows/vigilante.log

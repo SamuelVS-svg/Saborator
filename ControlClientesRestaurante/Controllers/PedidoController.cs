@@ -67,6 +67,11 @@ namespace ControlClientesRestaurante.Controllers
             return propios.Contains(pedido.Numero);
         }
 
+        /// <summary>Guarda el detalle técnico en el registro del servidor (no se muestra al usuario).</summary>
+        private void RegistrarError(Exception ex, int pedidoId) =>
+            HttpContext.RequestServices.GetRequiredService<ILogger<PedidoController>>()
+                .LogError(ex, "Error al cambiar el estado del pedido {PedidoId}", pedidoId);
+
         /// <summary>Cambia el estado y, si el pedido se cancela, devuelve el uso de su cupón.</summary>
         private (bool ok, string mensaje) CambiarEstadoPedido(int id, string nuevoEstado)
         {
@@ -324,7 +329,8 @@ namespace ControlClientesRestaurante.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Error al cambiar estado: {ex.Message}";
+                RegistrarError(ex, id);
+                TempData["Error"] = "No se pudo cambiar el estado del pedido. Intenta de nuevo.";
             }
 
             return RedirectToAction("Index");
@@ -615,9 +621,14 @@ namespace ControlClientesRestaurante.Controllers
                 }
                 TempData[ok ? "Mensaje" : "Error"] = mensaje;
             }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message; // regla de negocio: mensaje pensado para el usuario
+            }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                RegistrarError(ex, id);
+                TempData["Error"] = "No se pudo cambiar el estado del pedido. Intenta de nuevo.";
             }
             return RedirectToAction("Domicilios");
         }
@@ -839,9 +850,14 @@ namespace ControlClientesRestaurante.Controllers
                 }
                 TempData[ok ? "Mensaje" : "Error"] = mensaje;
             }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message; // regla de negocio: mensaje pensado para el usuario
+            }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
+                RegistrarError(ex, id);
+                TempData["Error"] = "No se pudo cambiar el estado del pedido. Intenta de nuevo.";
             }
             return RedirectToAction("Cocina");
         }

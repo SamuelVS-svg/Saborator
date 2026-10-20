@@ -49,7 +49,7 @@ namespace ControlClientesRestaurante.Services
                 ?? _config["Twilio:BusinessName"] ?? "Saborator Soledad";
 
             var verifyServiceSid = Environment.GetEnvironmentVariable("TWILIO_VERIFY_SERVICE_SID")
-                ?? _config["Twilio:VerifyServiceSid"] ?? "VA71c1a0282605c5df407367145f847415";
+                ?? _config["Twilio:VerifyServiceSid"] ?? "";
 
             var textbeeApiKey = Environment.GetEnvironmentVariable("TEXTBEE_API_KEY")
                 ?? _config["TextBee:ApiKey"] ?? "";

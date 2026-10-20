@@ -712,7 +712,8 @@ namespace ControlClientesRestaurante.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new { status = "error_handled", message = ex.Message });
+                _logger.LogError(ex, "Error procesando el webhook de Wompi");
+                return Ok(new { status = "error_handled" });
             }
         }
 

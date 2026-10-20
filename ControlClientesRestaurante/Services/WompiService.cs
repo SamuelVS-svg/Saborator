@@ -50,7 +50,8 @@ namespace ControlClientesRestaurante.Services
             if (esLocal && !forzarProd)
             {
                 pubKey = !string.IsNullOrWhiteSpace(_options.SandboxPublicKey) ? _options.SandboxPublicKey : "pub_test_Q5yDA9xoKdePium1amu0Bush320D4HfR";
-                prvKey = !string.IsNullOrWhiteSpace(_options.SandboxPrivateKey) ? _options.SandboxPrivateKey : "prv_test_V0n2v7u96K1F38sLz9G5j7Vb9mC2D4eF";
+                // Las llaves privadas (aunque sean de pruebas) no van en el código: variable de entorno o appsettings
+                prvKey = Environment.GetEnvironmentVariable("WOMPI_SANDBOX_PRIVATE_KEY") ?? _options.SandboxPrivateKey;
                 ambiente = "sandbox";
             }
 

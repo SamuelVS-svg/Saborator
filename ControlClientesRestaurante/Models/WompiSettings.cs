@@ -23,7 +23,7 @@ namespace ControlClientesRestaurante.Models
         /// <summary>
         /// Llave privada alternativa para pruebas locales en Sandbox
         /// </summary>
-        public string SandboxPrivateKey { get; set; } = "prv_test_V0n2v7u96K1F38sLz9G5j7Vb9mC2D4eF";
+        public string SandboxPrivateKey { get; set; } = string.Empty;
 
         /// <summary>
         /// Entorno de ejecución: "production" o "sandbox"

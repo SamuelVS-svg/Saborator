@@ -186,7 +186,9 @@ namespace ControlClientesRestaurante.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Error al procesar la foto de perfil: {ex.Message}";
+                HttpContext.RequestServices.GetRequiredService<ILogger<PerfilController>>()
+                    .LogError(ex, "Error al guardar la foto de perfil");
+                TempData["Error"] = "No se pudo guardar la foto de perfil. Intenta con otra imagen.";
                 return RedirectToAction(nameof(Index));
             }
         }
