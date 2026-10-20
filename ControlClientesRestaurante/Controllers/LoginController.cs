@@ -911,13 +911,19 @@ namespace ControlClientesRestaurante.Controllers
             public string? ReturnUrl { get; set; }
         }
 
+        /// <summary>ClientId de Google configurado (valores vacíos cuentan como no configurado).</summary>
+        private string ObtenerGoogleClientId() =>
+            new[]
+            {
+                _configuration["Authentication:Google:ClientId"],
+                _configuration["Google:ClientId"],
+                Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
+            }.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
+
         [HttpGet("/Login/GoogleConfig")]
         public IActionResult GoogleConfig()
         {
-            var clientId = _configuration["Authentication:Google:ClientId"] 
-                        ?? _configuration["Google:ClientId"] 
-                        ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") 
-                        ?? "";
+            var clientId = ObtenerGoogleClientId();
             return Json(new { hasClientId = !string.IsNullOrWhiteSpace(clientId), clientId });
         }
 
@@ -956,31 +962,36 @@ namespace ControlClientesRestaurante.Controllers
                 return Redirect("/#menu");
             }
 
-            string? email = null;
-            string? name = null;
-            string? picture = null;
-            string? sub = null;
+            var googleClientId = ObtenerGoogleClientId();
+            if (string.IsNullOrWhiteSpace(googleClientId))
+            {
+                if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    return BadRequest(new { ok = false, mensaje = "El acceso con Google no está configurado en este servidor." });
 
+                TempData["ErrorLogin"] = "El acceso con Google no está configurado.";
+                return Redirect("/#menu");
+            }
+
+            string? email, name, picture, sub;
             try
             {
-                var parts = token.Split('.');
-                if (parts.Length >= 2)
-                {
-                    var payload = parts[1];
-                    payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
-                    var jsonBytes = Convert.FromBase64String(payload.Replace('-', '+').Replace('_', '/'));
-                    var json = System.Text.Encoding.UTF8.GetString(jsonBytes);
-                    using var doc = System.Text.Json.JsonDocument.Parse(json);
-                    if (doc.RootElement.TryGetProperty("email", out var eElem)) email = eElem.GetString();
-                    if (doc.RootElement.TryGetProperty("name", out var nElem)) name = nElem.GetString();
-                    if (doc.RootElement.TryGetProperty("picture", out var pElem)) picture = pElem.GetString();
-                    if (doc.RootElement.TryGetProperty("sub", out var sElem)) sub = sElem.GetString();
-                }
+                // Verifica firma, emisor, expiración y que el token fue emitido para NUESTRO ClientId.
+                // Sin esto cualquiera podría fabricar un token con el correo de otra persona.
+                var payload = await Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(token,
+                    new Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings { Audience = new[] { googleClientId } });
+
+                if (!payload.EmailVerified)
+                    throw new Google.Apis.Auth.InvalidJwtException("El correo de la cuenta de Google no está verificado.");
+
+                email   = payload.Email;
+                name    = payload.Name;
+                picture = payload.Picture;
+                sub     = payload.Subject;
             }
             catch (Exception ex)
             {
                 if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return BadRequest(new { ok = false, mensaje = $"Error al procesar credencial de Google: {ex.Message}" });
+                    return BadRequest(new { ok = false, mensaje = $"No se pudo validar la credencial de Google: {ex.Message}" });
 
                 TempData["ErrorLogin"] = "Token de autenticación de Google inválido.";
                 return Redirect("/#menu");

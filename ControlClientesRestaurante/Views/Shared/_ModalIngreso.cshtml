@@ -1,13 +1,20 @@
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
-    var googleClientId = Configuration["Authentication:Google:ClientId"]
-                       ?? Configuration["Google:ClientId"]
-                       ?? Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
-                       ?? "";
+    // Valores vacíos cuentan como "no configurado": sin un ClientId real el botón de Google se oculta
+    var googleClientId = new[]
+    {
+        Configuration["Authentication:Google:ClientId"],
+        Configuration["Google:ClientId"],
+        Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
+    }.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
+    var googleHabilitado = !string.IsNullOrEmpty(googleClientId);
 }
 
-<!-- SDK Oficial de Google Identity Services (GSI) -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+@if (googleHabilitado)
+{
+    <!-- SDK Oficial de Google Identity Services (GSI) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+}
 
 <!-- ══ CLUB SABORATOR: MODAL DE AUTENTICACIÓN ESTILO KFC FAST-FOOD ════════════ -->
 <div class="modal-ingreso-overlay" id="modalIngresoOverlay" aria-modal="true" role="dialog" aria-labelledby="modalClubTitle">
@@ -102,6 +109,8 @@
                 </form>
             </div>
 
+            @if (googleHabilitado)
+            {
             <!-- Separador Oficial -->
             <div class="kfc-divider">
                 <span>O continúa con</span>
@@ -130,6 +139,7 @@
                 </svg>
                 <span>Continuar con Google</span>
             </button>
+            }
 
             <p style="font-size:0.73rem;color:#6B7280;text-align:center;margin-top:1.15rem;line-height:1.45;">
                 Al continuar confirmas que aceptas nuestros
