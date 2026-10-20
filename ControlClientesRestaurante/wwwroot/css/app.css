@@ -731,6 +731,29 @@ html, body {
     color: var(--text);
 }
 
+/* Global Scrollbar Customization – matches the project palette */
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+*::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+}
+*::-webkit-scrollbar-thumb {
+    background-color: var(--brand);
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--brand-hover);
+}
+/* Firefox scrollbar styling */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand) rgba(0,0,0,0.12);
+}
+
 /* ── MODALES (EMIL KOWALSKI: SCALE 0.96 -> 1, NUNCA SCALE 0) ──────────── */
 .modal-overlay {
     display: none;
