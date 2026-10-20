@@ -77,6 +77,42 @@ namespace ControlClientesRestaurante.Tests
             Assert.True(svc.Validar("MINIMO", 30000).valido);
         }
 
+        private void CrearPedidoConCupon(string cupon, string telefono, string usuario, string estado = "Pendiente")
+        {
+            _context.Pedidos.Add(new Pedido
+            {
+                Numero = $"PED-{Guid.NewGuid():N}"[..12], Mesa = "Domicilio", UsuarioMesero = usuario,
+                Telefono = telefono, CodigoCupon = cupon, Estado = estado, TipoEntrega = "Domicilio"
+            });
+            _context.SaveChanges();
+        }
+
+        [Fact]
+        public void Cupon_UnUsoPorCliente_PorTelefonoOCuenta()
+        {
+            var svc = new CuponService(_context);
+            CrearPedidoConCupon("BIENVENIDA", "+57 300 111 2233", "Online");
+
+            Assert.True(svc.YaUsadoPorCliente("bienvenida", "3001112233", null));      // mismo celular, otro formato
+            Assert.False(svc.YaUsadoPorCliente("BIENVENIDA", "3009998877", null));     // otro cliente
+            Assert.False(svc.YaUsadoPorCliente("BURGER15", "3001112233", null));       // otro cupón
+
+            CrearPedidoConCupon("BURGER15", "3005556677", "ana");
+            Assert.True(svc.YaUsadoPorCliente("BURGER15", "3000000000", "ana"));       // misma cuenta, otro celular
+        }
+
+        [Fact]
+        public void Cupon_PedidoCanceladoNoCuentaYDevuelveElUso()
+        {
+            var svc = new CuponService(_context);
+            svc.Crear(new Cupon { Codigo = "UNO", Descripcion = "x", Valor = 10, UsosMaximos = 1, UsosActuales = 1 });
+            CrearPedidoConCupon("UNO", "3001112233", "Online", estado: "Cancelado");
+
+            Assert.False(svc.YaUsadoPorCliente("UNO", "3001112233", null));
+            svc.DecrementarUso("UNO");
+            Assert.True(svc.Validar("UNO", 50000).valido);   // vuelve a quedar un canje disponible
+        }
+
         // ══ RESERVAS ══════════════════════════════════════════════════════
 
         private ReservaService Reservas() => new(

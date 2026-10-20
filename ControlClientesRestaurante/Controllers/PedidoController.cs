@@ -67,6 +67,15 @@ namespace ControlClientesRestaurante.Controllers
             return propios.Contains(pedido.Numero);
         }
 
+        /// <summary>Cambia el estado y, si el pedido se cancela, devuelve el uso de su cupón.</summary>
+        private (bool ok, string mensaje) CambiarEstadoPedido(int id, string nuevoEstado)
+        {
+            var resultado = _pedidoService.CambiarEstado(id, nuevoEstado);
+            if (resultado.ok && string.Equals(nuevoEstado, "Cancelado", StringComparison.OrdinalIgnoreCase))
+                _cuponService.DecrementarUso(_pedidoService.ObtenerPorId(id)?.CodigoCupon);
+            return resultado;
+        }
+
         // ── MENU ──────────────────────────────────────────────────────────
         [HttpGet]
         [Authorize(Roles = "Mesero,Administrador,Cajero,Cliente")]
@@ -289,7 +298,7 @@ namespace ControlClientesRestaurante.Controllers
 
             try
             {
-                var (ok, mensaje) = _pedidoService.CambiarEstado(id, estado);
+                var (ok, mensaje) = CambiarEstadoPedido(id, estado);
                 if (ok)
                 {
                     await NotificarCambioEstadoSignalR(id, estado);
@@ -433,6 +442,12 @@ namespace ControlClientesRestaurante.Controllers
             string? cuponAplicado = null;
             if (!string.IsNullOrWhiteSpace(codigoCupon))
             {
+                if (_cuponService.YaUsadoPorCliente(codigoCupon, telefono, EstaAutenticado() ? Usuario() : null))
+                {
+                    TempData["Error"] = $"Ya usaste el cupón {codigoCupon.Trim().ToUpperInvariant()}. Cada cupón se puede usar una sola vez por cliente.";
+                    return RedirectToAction("Checkout", new { tipo = tipoEntrega });
+                }
+
                 var (validoCupon, mensajeCupon, montoDescuento, objCupon) = _cuponService.Validar(codigoCupon, subtotalProductos);
                 if (validoCupon && objCupon != null)
                 {
@@ -593,7 +608,7 @@ namespace ControlClientesRestaurante.Controllers
 
             try
             {
-                var (ok, mensaje) = _pedidoService.CambiarEstado(id, nuevoEstado);
+                var (ok, mensaje) = CambiarEstadoPedido(id, nuevoEstado);
                 if (ok)
                 {
                     await NotificarCambioEstadoSignalR(id, nuevoEstado);
@@ -817,7 +832,7 @@ namespace ControlClientesRestaurante.Controllers
             // Cocinero puede cambiar a "EnPreparacion" o "Listo"
             try
             {
-                var (ok, mensaje) = _pedidoService.CambiarEstado(id, nuevoEstado);
+                var (ok, mensaje) = CambiarEstadoPedido(id, nuevoEstado);
                 if (ok)
                 {
                     await NotificarCambioEstadoSignalR(id, nuevoEstado);

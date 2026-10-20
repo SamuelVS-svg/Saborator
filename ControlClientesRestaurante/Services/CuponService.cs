@@ -90,6 +90,39 @@ namespace ControlClientesRestaurante.Services
             }
         }
 
+        /// <summary>Devuelve un canje cuando se cancela el pedido que usó el cupón.</summary>
+        public void DecrementarUso(string? codigo)
+        {
+            if (string.IsNullOrWhiteSpace(codigo)) return;
+            var cupon = ObtenerPorCodigo(codigo);
+            if (cupon != null && cupon.UsosActuales > 0)
+            {
+                cupon.UsosActuales--;
+                _context.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Un cliente solo puede usar cada cupón una vez. Se identifica por su cuenta (si inició
+        /// sesión) o por su número de celular. Los pedidos cancelados no cuentan.
+        /// </summary>
+        public bool YaUsadoPorCliente(string? codigo, string? telefono, string? usuario)
+        {
+            if (string.IsNullOrWhiteSpace(codigo)) return false;
+            var cod = codigo.Trim().ToUpperInvariant();
+            var digitos = new string((telefono ?? "").Where(char.IsDigit).ToArray());
+            if (digitos.Length > 10) digitos = digitos[^10..]; // ignorar prefijo +57
+
+            var pedidos = _context.Pedidos
+                .Where(p => p.CodigoCupon != null && p.CodigoCupon.ToUpper() == cod && p.Estado != "Cancelado")
+                .Select(p => new { p.Telefono, p.UsuarioMesero })
+                .ToList();
+
+            return pedidos.Any(p =>
+                (!string.IsNullOrWhiteSpace(usuario) && usuario != "Online" && p.UsuarioMesero == usuario) ||
+                (digitos.Length >= 7 && new string((p.Telefono ?? "").Where(char.IsDigit).ToArray()).EndsWith(digitos)));
+        }
+
         public (bool ok, string mensaje) Crear(Cupon cupon)
         {
             if (string.IsNullOrWhiteSpace(cupon.Codigo))
