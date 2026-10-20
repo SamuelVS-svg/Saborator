@@ -296,10 +296,17 @@
 </div>
 
 <style>
+    .gourmet-client-main {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-left: clamp(1rem, 2.5vw, 2.5rem) !important;
+        padding-right: clamp(1rem, 2.5vw, 2.5rem) !important;
+    }
     .resenas-pg-wrapper {
-        max-width: 1140px;
+        width: 100%;
+        max-width: 100%;
         margin: 0 auto;
-        padding: 2.5rem 1.25rem 5rem;
+        padding: 1.5rem 0 4rem;
     }
     .resenas-header-box {
         text-align: center;
@@ -492,6 +499,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr));
         gap: 1.5rem;
+        width: 100%;
     }
 
     .review-card {

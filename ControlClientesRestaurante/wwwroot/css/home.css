@@ -2291,6 +2291,43 @@
     border-top: 1px solid var(--line, rgba(200,151,58,0.25));
     color: var(--text, #1C1416);
     transition: background 200ms ease;
+    width: 100%;
+}
+.resenas-section .lcontainer {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+.resenas-section .sec-head {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+.resenas-section .sec-pill {
+    background: rgba(200, 151, 58, 0.12);
+    color: var(--gold, #C8973A);
+    border: 1px solid rgba(200, 151, 58, 0.35);
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+.resenas-section .sec-title {
+    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-size: clamp(2.2rem, 4.5vw, 3rem);
+    font-weight: 400;
+    color: var(--text, #1C1416);
+    margin: 0 0 0.5rem;
+    line-height: 1.15;
+}
+.resenas-section .sec-sub {
+    font-size: 0.95rem;
+    color: var(--muted, #6E5C50);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.55;
 }
 [data-theme="dark"] .resenas-section {
     background: var(--bg, #141012) !important;
