@@ -17,6 +17,10 @@ namespace ControlClientesRestaurante.Controllers
         // Página principal gastronómica — Carta y experiencia del restaurante
         public IActionResult Index()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Dashboard");
+            }
             ViewBag.Resenas = _resenaService.ObtenerAprobadas();
             ViewBag.ResenaStats = _resenaService.ObtenerEstadisticas();
             return View();
