@@ -22,6 +22,12 @@ namespace ControlClientesRestaurante.Repositories
             _context.Usuarios.Include(u => u.Rol)
                 .FirstOrDefault(u => u.Correo != null && u.Correo.ToLower() == correo.Trim().ToLower());
 
+        public List<Usuario> ObtenerActivosPorRol(string nombreRol) =>
+            _context.Usuarios.Include(u => u.Rol)
+                .Where(u => u.Estado && u.Rol != null && u.Rol.NombreRol == nombreRol)
+                .OrderBy(u => u.NombreUsuario)
+                .ToList();
+
         public bool ExisteNombre(string nombreUsuario) =>
             _context.Usuarios.Any(u => u.NombreUsuario.ToLower() == nombreUsuario.ToLower());
 

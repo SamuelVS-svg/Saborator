@@ -11,7 +11,9 @@
     var _esMesero = User.IsInRole("Mesero") || _rol == "Mesero";
     var _esCocinero = User.IsInRole("Cocinero") || _rol == "Cocinero";
     var _esCliente = User.IsInRole("Cliente") || _rol == "Cliente";
-    var _logado   = (User.Identity?.IsAuthenticated == true) || !string.IsNullOrEmpty(_usuario);
+    var _esDomiciliario = User.IsInRole("Domiciliario") || _rol == "Domiciliario";
+    // El panel interno solo se muestra con una cookie de autenticación válida
+    var _logado   = User.Identity?.IsAuthenticated == true;
 
     var _fotoPerfil = (User.Identity?.IsAuthenticated == true)
         ? (User.FindFirst("FotoPerfil")?.Value ?? _session?.GetString("FotoPerfil"))
@@ -112,7 +114,9 @@
       "telephone": "+57-322-525-4289",
       "address": {
         "@@type": "PostalAddress",
-        "addressLocality": "Bogotá",
+        "streetAddress": "Cra 4 Sur # 50D-107",
+        "addressLocality": "Barranquilla",
+        "addressRegion": "Atlántico",
         "addressCountry": "CO"
       },
       "openingHoursSpecification": [
@@ -141,8 +145,7 @@ else if (_logado && !_esCliente)
         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
 
-    <a asp-controller="@(_esCocinero ? "Pedido" : (_esMesero ? "Pedido" : "Cliente"))"
-       asp-action="@(_esCocinero ? "Cocina" : (_esMesero ? "Menu" : "Index"))" class="sb-logo">
+    <a href="@ControlClientesRestaurante.Models.Roles.PaginaInicio(_rol)" class="sb-logo">
         <div class="sb-logo-icon">
             <partial name="_LogoBurger" />
         </div>
@@ -155,12 +158,25 @@ else if (_logado && !_esCliente)
     <nav class="sb-nav">
         <div class="sb-section">Navegación</div>
 
-        @* ── DASHBOARD V12 EJECUTIVO ── *@
-        <a asp-controller="Home" asp-action="Dashboard"
-           class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Home"&&ViewContext.RouteData.Values["action"]?.ToString()=="Dashboard"?"active":"")">
-            <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
-            <span class="sb-lbl">Página principal</span>
-        </a>
+        @* ── DASHBOARD V12 EJECUTIVO: Admin y Cajero ── *@
+        @if (_esAdmin || _esCajero)
+        {
+            <a asp-controller="Home" asp-action="Dashboard"
+               class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Home"&&ViewContext.RouteData.Values["action"]?.ToString()=="Dashboard"?"active":"")">
+                <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+                <span class="sb-lbl">Página principal</span>
+            </a>
+        }
+
+        @* ── MIS REPARTOS: Domiciliario (y Admin para supervisar) ── *@
+        @if (_esDomiciliario || _esAdmin)
+        {
+            <a asp-controller="Pedido" asp-action="Repartos"
+               class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Pedido"&&ViewContext.RouteData.Values["action"]?.ToString()=="Repartos"?"active":"")">
+                <span class="ico"><svg viewBox="0 0 24 24"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg></span>
+                <span class="sb-lbl">Mis Repartos</span>
+            </a>
+        }
 
         @* ── PANTALLA DE COCINA & KDS: Cocinero, Admin y Mesero ── *@
         @if (_esCocinero || _esAdmin || _esMesero)
@@ -178,11 +194,14 @@ else if (_logado && !_esCliente)
         }
 
         @* ── RESERVAS DE MESAS: Admin, Mesero y Cajero ── *@
-        <a asp-controller="Reserva" asp-action="Admin"
-           class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Reserva"?"active":"")">
-            <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-            <span class="sb-lbl">Reservas</span>
-        </a>
+        @if (_esAdmin || _esMesero || _esCajero)
+        {
+            <a asp-controller="Reserva" asp-action="Admin"
+               class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Reserva"?"active":"")">
+                <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+                <span class="sb-lbl">Reservas</span>
+            </a>
+        }
 
         @* ── ESTADO DE MESAS: Mesero, Admin y Cajero ── *@
         @if (_esMesero || _esAdmin || _esCajero)
@@ -210,29 +229,18 @@ else if (_logado && !_esCliente)
             </a>
         }
 
-        @* ── TOMAR PEDIDO / HACER PEDIDO: Mesero, Admin y Cliente ── *@
-        @if (_esMesero || _esAdmin || _esCliente)
+        @* ── TOMAR PEDIDO: Mesero, Admin y Cajero ── *@
+        @if (_esMesero || _esAdmin || _esCajero)
         {
-            if (_esCliente)
-            {
-                <a asp-controller="Pedido" asp-action="Checkout" asp-route-tipo="Domicilio"
-                   class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Pedido"&&ViewContext.RouteData.Values["action"]?.ToString()=="Checkout"?"active":"")">
-                    <span class="ico"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span>
-                    <span class="sb-lbl">Hacer pedido</span>
-                </a>
-            }
-            else
-            {
             <a asp-controller="Pedido" asp-action="Menu"
                class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Pedido"&&ViewContext.RouteData.Values["action"]?.ToString()=="Menu"?"active":"")">
                 <span class="ico"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></span>
                 <span class="sb-lbl">Tomar pedido</span>
             </a>
-            }
         }
 
-        @* ── MIS PEDIDOS: Mesero y Cliente ── *@
-        @if (_esMesero || _esCliente)
+        @* ── MIS PEDIDOS: Mesero ── *@
+        @if (_esMesero)
         {
             <a asp-controller="Pedido" asp-action="MisPedidos"
                class="sb-item @(ViewContext.RouteData.Values["controller"]?.ToString()=="Pedido"&&ViewContext.RouteData.Values["action"]?.ToString()=="MisPedidos"?"active":"")">
@@ -325,16 +333,19 @@ else if (_logado && !_esCliente)
         <input type="text" id="globalSearch" placeholder="Buscar…" autocomplete="off" />
     </div>
 
-    <!-- Acceso Rápido a Dashboard Admin (especialmente útil en móvil) -->
-    <a asp-controller="Home" asp-action="Dashboard" class="top-bell" title="Ir al Dashboard Ejecutivo" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:var(--surface-2);color:var(--gold, #C8973A);border:1px solid rgba(200,151,58,0.35);text-decoration:none;margin-right:0.35rem;transition:transform 140ms ease;flex-shrink:0;">
+    <!-- Acceso rápido a la página principal del rol (especialmente útil en móvil) -->
+    <a href="@ControlClientesRestaurante.Models.Roles.PaginaInicio(_rol)" class="top-bell" title="Ir a mi panel" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:var(--surface-2);color:var(--gold, #C8973A);border:1px solid rgba(200,151,58,0.35);text-decoration:none;margin-right:0.35rem;transition:transform 140ms ease;flex-shrink:0;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
     </a>
 
     <!-- Campana de Avisos de Reservas para Staff -->
+    @if (_esAdmin || _esMesero || _esCajero)
+    {
     <a asp-controller="Reserva" asp-action="Admin" class="top-bell" title="Ver Reservas de Comensales" style="position:relative;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:var(--surface-2);color:var(--text);text-decoration:none;margin-right:0.5rem;transition:transform 140ms ease;flex-shrink:0;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span style="position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);"></span>
     </a>
+    }
 
     <!-- Selector de Modo Oscuro / Modo Claro -->
     <button type="button" class="theme-toggle-btn" onclick="toggleModoOscuro()" title="Cambiar modo de luz u oscuro" aria-label="Cambiar modo de luz u oscuro" style="margin-right:0.65rem;">
@@ -360,7 +371,7 @@ else if (_logado && !_esCliente)
         <div class="profile-dropdown" id="profileDropdown">
             <div class="pd-header">
                 <div class="pd-name">@_usuario</div>
-                <span class="pd-role @(_esAdmin ? "admin" : _esMesero ? "mesero" : _esCajero ? "cajero" : "cliente")">@_rol</span>
+                <span class="pd-role @(_esAdmin ? "admin" : _esMesero ? "mesero" : _esCajero ? "cajero" : _esCocinero ? "cocinero" : _esDomiciliario ? "domiciliario" : "cliente")">@_rol</span>
             </div>
             <a asp-controller="Perfil" asp-action="Index" class="pd-item" style="text-decoration:none;color:inherit;">
                 <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -372,8 +383,8 @@ else if (_logado && !_esCliente)
             </button>
             @if (_usuario == "admin")
             {
-                @* Admin puede cambiar a cualquiera de los otros 2 roles *@
-                foreach (var rol in new[] { "Administrador", "Cajero", "Mesero" })
+                @* La cuenta "admin" puede probar el sistema con cualquier rol del personal *@
+                foreach (var rol in ControlClientesRestaurante.Models.Roles.Personal)
                 {
                     if (rol != _rol)
                     {

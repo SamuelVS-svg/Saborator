@@ -1,10 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ControlClientesRestaurante.Hubs
 {
     public class CocinaHub : Hub
     {
-        // Grupo para estaciones de cocina / KDS
+        // Grupo para estaciones de cocina / KDS (recibe nombres y pedidos de clientes: solo personal)
+        [Authorize(Roles = "Cocinero,Administrador,Mesero")]
         public async Task UnirseACocina()
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "Cocina");

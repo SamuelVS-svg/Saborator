@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using ControlClientesRestaurante.Models;
 using ControlClientesRestaurante.Services;
 using ControlClientesRestaurante.Hubs;
+using ControlClientesRestaurante.Repositories;
 
 namespace ControlClientesRestaurante.Controllers
 {
@@ -17,6 +18,7 @@ namespace ControlClientesRestaurante.Controllers
         private readonly AuditoriaService _auditoriaService;
         private readonly IConfiguration _config;
         private readonly IHubContext<CocinaHub> _cocinaHub;
+        private readonly IUsuarioRepository _usuarioRepo;
 
         public PedidoController(
             PedidoService   pedidoService,
@@ -25,7 +27,8 @@ namespace ControlClientesRestaurante.Controllers
             CuponService    cuponService,
             AuditoriaService auditoriaService,
             IConfiguration config,
-            IHubContext<CocinaHub> cocinaHub)
+            IHubContext<CocinaHub> cocinaHub,
+            IUsuarioRepository usuarioRepo)
         {
             _pedidoService   = pedidoService;
             _productoService = productoService;
@@ -34,17 +37,35 @@ namespace ControlClientesRestaurante.Controllers
             _auditoriaService = auditoriaService;
             _config          = config;
             _cocinaHub       = cocinaHub;
+            _usuarioRepo     = usuarioRepo;
         }
 
-        private bool EstaAutenticado() => User.Identity?.IsAuthenticated == true || !string.IsNullOrEmpty(HttpContext.Session.GetString("Usuario"));
+        // La identidad y el rol se toman únicamente de la cookie de autenticación:
+        // la sesión puede sobrevivir a la cookie y no debe conceder permisos.
+        private bool EstaAutenticado() => User.Identity?.IsAuthenticated == true;
 
-        private string Rol()     => User.FindFirst(ClaimTypes.Role)?.Value ?? HttpContext.Session.GetString("Rol") ?? "";
-        private string Usuario() => User.Identity?.Name ?? HttpContext.Session.GetString("Usuario") ?? "";
+        private string Rol()     => EstaAutenticado() ? (User.FindFirst(ClaimTypes.Role)?.Value ?? "") : "";
+        private string Usuario() => EstaAutenticado() ? (User.Identity?.Name ?? "") : "";
 
-        private bool EsMesero()       => User.IsInRole("Mesero") || Rol() == "Mesero";
-        private bool EsAdminOCajero() => User.IsInRole("Administrador") || User.IsInRole("Cajero") || Rol() == "Administrador" || Rol() == "Cajero";
-        private bool EsCliente()      => User.IsInRole("Cliente") || Rol() == "Cliente";
-        private bool EsCocinero()     => User.IsInRole("Cocinero") || Rol() == "Cocinero";
+        private bool EsMesero()       => User.IsInRole(Roles.Mesero);
+        private bool EsAdminOCajero() => User.IsInRole(Roles.Administrador) || User.IsInRole(Roles.Cajero);
+        private bool EsCliente()      => User.IsInRole(Roles.Cliente);
+        private bool EsCocinero()     => User.IsInRole(Roles.Cocinero);
+        private bool EsDomiciliario() => User.IsInRole(Roles.Domiciliario);
+
+        private const string SesionPedidosOnline = "PedidosOnline";
+
+        /// <summary>¿Puede el visitante actual ver los datos personales (dirección, teléfono) del pedido?</summary>
+        private bool PuedeVerDatosPrivados(Pedido pedido)
+        {
+            if (EsAdminOCajero() || EsMesero() || EsCocinero()) return true;
+            if (EsDomiciliario()) return string.Equals(pedido.Repartidor, Usuario(), StringComparison.OrdinalIgnoreCase);
+            if (EstaAutenticado() && pedido.UsuarioMesero == Usuario()) return true;
+
+            // Pedidos hechos sin cuenta desde este mismo navegador
+            var propios = (HttpContext.Session.GetString(SesionPedidosOnline) ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+            return propios.Contains(pedido.Numero);
+        }
 
         // ── MENU ──────────────────────────────────────────────────────────
         [HttpGet]
@@ -123,11 +144,6 @@ namespace ControlClientesRestaurante.Controllers
         {
             if (EsCliente())
                 return RedirectToAction("Checkout", new { tipo = "Domicilio" });
-
-            if (string.IsNullOrWhiteSpace(nombreCliente) && EsCliente())
-            {
-                nombreCliente = HttpContext.Session.GetString("UsuarioNombre") ?? Usuario();
-            }
 
             // Validaciones
             if (string.IsNullOrWhiteSpace(mesa) || !int.TryParse(mesa.Trim(), out int numMesa) || numMesa < 1 || numMesa > 30)
@@ -229,6 +245,11 @@ namespace ControlClientesRestaurante.Controllers
             {
                 TempData["Error"] = "No tienes permiso para ver pedidos de otros usuarios.";
                 return RedirectToAction("MisPedidos");
+            }
+            if (EsDomiciliario() && !string.Equals(pedido.Repartidor, Usuario(), StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Solo puedes ver los domicilios que tienes asignados.";
+                return RedirectToAction("Repartos");
             }
 
             ViewBag.EsAdminOCajero = EsAdminOCajero();
@@ -454,6 +475,10 @@ namespace ControlClientesRestaurante.Controllers
             // Notificar en tiempo real a la cocina (SignalR)
             await NotificarNuevaComandaSignalR(pedido);
 
+            // Recordar el pedido en este navegador para poder mostrar sus datos en el rastreador
+            var previos = HttpContext.Session.GetString(SesionPedidosOnline);
+            HttpContext.Session.SetString(SesionPedidosOnline, string.IsNullOrEmpty(previos) ? pedido.Numero : $"{previos},{pedido.Numero}");
+
             TempData["Exito"] = $"¡Pedido {pedido.Numero} recibido con éxito!";
             return RedirectToAction("Seguimiento", new { id = pedido.Numero });
         }
@@ -470,7 +495,13 @@ namespace ControlClientesRestaurante.Controllers
             }
             else if (!string.IsNullOrWhiteSpace(telefono))
             {
-                pedido = _pedidoService.ObtenerPorTelefono(telefono).FirstOrDefault();
+                // Coincidencia exacta de dígitos (antes bastaba un fragmento como "3" para ver pedidos ajenos)
+                var digitos = new string(telefono.Where(char.IsDigit).ToArray());
+                if (digitos.Length >= 7)
+                {
+                    pedido = _pedidoService.ObtenerPorTelefono(digitos)
+                        .FirstOrDefault(p => new string((p.Telefono ?? "").Where(char.IsDigit).ToArray()).EndsWith(digitos));
+                }
             }
 
             if (pedido == null)
@@ -482,6 +513,7 @@ namespace ControlClientesRestaurante.Controllers
 
             ViewBag.WompiPublicKey = _config["Wompi:PublicKey"] ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw";
             ViewBag.WompiCurrency  = _config["Wompi:Currency"] ?? "COP";
+            ViewBag.DatosPrivados  = PuedeVerDatosPrivados(pedido);
             return View(pedido);
         }
 
@@ -505,8 +537,7 @@ namespace ControlClientesRestaurante.Controllers
                 estado      = p.Estado,
                 tipoEntrega = p.TipoEntrega,
                 total       = p.Total,
-                direccion   = p.Direccion,
-                barrio      = p.Barrio,
+                repartidor  = p.Estado == "EnCamino" ? p.Repartidor : null,
                 fecha       = p.FechaCreacion.ToString("HH:mm - dd/MM/yyyy")
             });
         }
@@ -517,6 +548,9 @@ namespace ControlClientesRestaurante.Controllers
         public IActionResult Domicilios()
         {
             var domicilios = _pedidoService.ObtenerDomicilios();
+            ViewBag.EsAdminOCajero  = EsAdminOCajero();
+            ViewBag.Domiciliarios   = _usuarioRepo.ObtenerActivosPorRol(Roles.Domiciliario)
+                .Select(u => u.NombreUsuario).ToList();
             return View(domicilios);
         }
 
@@ -524,6 +558,17 @@ namespace ControlClientesRestaurante.Controllers
         [Authorize(Roles = "Administrador,Cajero,Mesero")]
         public async Task<IActionResult> ActualizarEstadoDomicilio(int id, string nuevoEstado)
         {
+            if (string.Equals(nuevoEstado, "EnCamino", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Para despachar un domicilio asígnale un domiciliario; él confirma la salida desde su panel.";
+                return RedirectToAction("Domicilios");
+            }
+            if (string.Equals(nuevoEstado, "Cancelado", StringComparison.OrdinalIgnoreCase) && !EsAdminOCajero())
+            {
+                TempData["Error"] = "Solo el cajero o el administrador pueden cancelar pedidos.";
+                return RedirectToAction("Domicilios");
+            }
+
             try
             {
                 var (ok, mensaje) = _pedidoService.CambiarEstado(id, nuevoEstado);
@@ -556,7 +601,6 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        [IgnoreAntiforgeryToken]
         public IActionResult AsignarValorDomicilioApi([FromBody] AsignarTarifaDto dto)
         {
             if (!EstaAutenticado() || !EsAdminOCajero())
@@ -571,6 +615,86 @@ namespace ControlClientesRestaurante.Controllers
                 costoEnvio = pedido?.CostoEnvio ?? dto.NuevoCostoEnvio, 
                 total = pedido?.Total ?? 0 
             });
+        }
+
+        // ── ASIGNAR DOMICILIARIO (CAJERO / ADMIN) ─────────────────────────
+        [HttpPost]
+        [Authorize(Roles = "Administrador,Cajero")]
+        public IActionResult AsignarRepartidor(int id, string? repartidor)
+        {
+            if (!string.IsNullOrWhiteSpace(repartidor))
+            {
+                var usuario = _usuarioRepo.ObtenerPorNombre(repartidor);
+                if (usuario == null || !usuario.Estado || usuario.Rol?.NombreRol != Roles.Domiciliario)
+                {
+                    TempData["Error"] = "El usuario seleccionado no es un domiciliario activo.";
+                    return RedirectToAction("Domicilios");
+                }
+                repartidor = usuario.NombreUsuario;
+            }
+
+            var (ok, mensaje) = _pedidoService.AsignarRepartidor(id, repartidor);
+            if (ok)
+            {
+                _auditoriaService.Registrar(Usuario(), Rol(), "ASIGNAR_DOMICILIARIO", "Domicilios", mensaje,
+                    "Pedido", id, HttpContext.Connection.RemoteIpAddress?.ToString());
+            }
+            TempData[ok ? "Mensaje" : "Error"] = mensaje;
+            return RedirectToAction("Domicilios");
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        // ══ PANEL DEL DOMICILIARIO ════════════════════════════════════════
+        // ══════════════════════════════════════════════════════════════════
+
+        [HttpGet]
+        [Authorize(Roles = "Domiciliario,Administrador")]
+        public IActionResult Repartos()
+        {
+            var yo = Usuario();
+            var mios = _pedidoService.ObtenerRepartosDe(yo);
+
+            ViewBag.Disponibles  = _pedidoService.ObtenerRepartosDisponibles();
+            ViewBag.Asignados    = mios.Where(p => p.Estado is "Pendiente" or "EnPreparacion" or "Listo").ToList();
+            ViewBag.EnCamino     = mios.Where(p => p.Estado == "EnCamino").ToList();
+            ViewBag.EntregadosHoy = mios
+                .Where(p => (p.Estado == "Entregado" || p.Estado == "Facturado") &&
+                            (p.FechaEntrega ?? p.FechaCreacion).Date == DateTime.Today)
+                .OrderByDescending(p => p.FechaEntrega)
+                .ToList();
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Domiciliario,Administrador")]
+        public async Task<IActionResult> TomarReparto(int id)
+        {
+            var (ok, mensaje) = _pedidoService.IniciarReparto(id, Usuario());
+            if (ok)
+            {
+                await NotificarCambioEstadoSignalR(id, "EnCamino");
+                _auditoriaService.Registrar(Usuario(), Rol(), "DOMICILIO_EN_CAMINO", "Domicilios", mensaje,
+                    "Pedido", id, HttpContext.Connection.RemoteIpAddress?.ToString());
+            }
+            TempData[ok ? "Mensaje" : "Error"] = mensaje;
+            return RedirectToAction("Repartos");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Domiciliario,Administrador,Cajero")]
+        public async Task<IActionResult> ConfirmarEntrega(int id, string? volverA)
+        {
+            var (ok, mensaje) = _pedidoService.ConfirmarEntrega(id, Usuario(), esSupervisor: EsAdminOCajero());
+            if (ok)
+            {
+                await NotificarCambioEstadoSignalR(id, "Entregado");
+                _auditoriaService.Registrar(Usuario(), Rol(), "DOMICILIO_ENTREGADO", "Domicilios", mensaje,
+                    "Pedido", id, HttpContext.Connection.RemoteIpAddress?.ToString());
+            }
+            TempData[ok ? "Mensaje" : "Error"] = mensaje;
+            return volverA == "Domicilios" && EsAdminOCajero()
+                ? RedirectToAction("Domicilios")
+                : RedirectToAction("Repartos");
         }
 
         private static decimal CalcularTarifaOficialPorBarrio(string? barrio)
@@ -602,6 +726,7 @@ namespace ControlClientesRestaurante.Controllers
             var pedidosCocina = _pedidoService.ObtenerParaCocina();
             ViewBag.PedidosListos = _pedidoService.ObtenerListosCocina();
             ViewBag.EsCocinero = EsCocinero();
+            ViewBag.PuedeCocinar = EsCocinero() || User.IsInRole(Roles.Administrador);
             return View(pedidosCocina);
         }
 

@@ -100,15 +100,7 @@ namespace ControlClientesRestaurante.Controllers
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl) && !returnUrl.Contains("/Login", StringComparison.OrdinalIgnoreCase))
                 return returnUrl;
 
-            return rol switch
-            {
-                "Administrador" => "/Home/Dashboard",
-                "Cajero"        => "/Caja/Index",
-                "Mesero"        => "/Pedido/Menu",
-                "Cocinero"      => "/Pedido/Cocina",
-                "Cliente"       => "/#menu",
-                _               => "/Home/Dashboard"
-            };
+            return Roles.PaginaInicio(rol);
         }
 
         [HttpPost]
@@ -235,14 +227,7 @@ namespace ControlClientesRestaurante.Controllers
 
             TempData["Mensaje"] = "¡Contraseña actualizada con éxito! Bienvenido al sistema.";
 
-            if (rol == "Cocinero")
-                return RedirectToAction("Cocina", "Pedido");
-            if (rol == "Mesero" || rol == "Cliente")
-                return RedirectToAction("Menu", "Pedido");
-            if (rol == "Cajero")
-                return RedirectToAction("Index", "Pedido");
-
-            return RedirectToAction("Index", "Cliente");
+            return Redirect(Roles.PaginaInicio(rol));
         }
 
         // ── Cambiar rol (solo usuario "admin") ────────────────────────────
@@ -257,11 +242,10 @@ namespace ControlClientesRestaurante.Controllers
             if (nombreUsuario != "admin")
             {
                 TempData["Error"] = "No tienes permiso para cambiar de rol.";
-                return RedirectToAction("Index", "Cliente");
+                return RedirectToAction("Index", "Perfil");
             }
 
-            var rolesPermitidos = new[] { "Administrador", "Cajero", "Mesero", "Cocinero" };
-            if (!rolesPermitidos.Contains(nuevoRol))
+            if (!Roles.Personal.Contains(nuevoRol))
                 return BadRequest("Rol no válido.");
 
             var u = _usuarioRepo.ObtenerPorNombre("admin");
@@ -273,11 +257,7 @@ namespace ControlClientesRestaurante.Controllers
             TempData["Mensaje"] = $"Rol cambiado a: {nuevoRol}";
 
             // Redirigir a la pantalla principal del nuevo rol
-            if (nuevoRol == "Cocinero")
-                return RedirectToAction("Cocina", "Pedido");
-            if (nuevoRol == "Mesero")
-                return RedirectToAction("Menu", "Pedido");
-            return RedirectToAction("Index", "Cliente");
+            return Redirect(Roles.PaginaInicio(nuevoRol));
         }
 
         // ── Cambiar contraseña (usuario autenticado) ──────────────────────
@@ -292,7 +272,7 @@ namespace ControlClientesRestaurante.Controllers
             if (nuevaContrasena != confirmar)
             {
                 TempData["ErrorContrasena"] = "Las contraseñas nuevas no coinciden.";
-                return RedirectToAction("Index", "Cliente");
+                return RedirectToAction("Index", "Perfil");
             }
 
             var (ok, mensaje) = _auth.CambiarContrasena(
@@ -303,7 +283,7 @@ namespace ControlClientesRestaurante.Controllers
             else
                 TempData["ErrorContrasena"] = mensaje;
 
-            return RedirectToAction("Index", "Cliente");
+            return RedirectToAction("Index", "Perfil");
         }
 
         // ── Acceso Denegado ───────────────────────────────────────────────
@@ -899,7 +879,7 @@ namespace ControlClientesRestaurante.Controllers
 
             await IniciarSesionClaimsAsync(usuarioEntity, rol, nombreMostrar);
 
-            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, rol, "LOGIN_SOCIAL", $"Inicio de sesión exitoso con {provider}.", "Seguridad");
+            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, rol, "LOGIN_SOCIAL", "Seguridad", $"Inicio de sesión exitoso con {provider}.");
 
             return Ok(new
             {
@@ -1229,7 +1209,7 @@ namespace ControlClientesRestaurante.Controllers
             var nombreMostrar = cliente?.Nombre ?? usuario.NombreUsuario;
             await IniciarSesionClaimsAsync(usuario, "Cliente", nombreMostrar);
 
-            _auditoriaService.Registrar(usuario.NombreUsuario, "Cliente", "LOGIN_EXITOSO", $"Ingreso verificado por WhatsApp (+57 {phone}) al Club Saborator.", "Seguridad");
+            _auditoriaService.Registrar(usuario.NombreUsuario, "Cliente", "LOGIN_EXITOSO", "Seguridad", $"Ingreso verificado por WhatsApp (+57 {phone}) al Club Saborator.");
 
             return Ok(new
             {
@@ -1293,7 +1273,7 @@ namespace ControlClientesRestaurante.Controllers
 
             await IniciarSesionClaimsAsync(usuarioEntity, "Cliente", nombreMostrar);
 
-            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, "Cliente", "REGISTRO_SOCIAL_COMPLETO", $"Registro gourmet completado exitosamente vía {dto.Provider ?? "Social/Directo"}.", "Seguridad");
+            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, "Cliente", "REGISTRO_SOCIAL_COMPLETO", "Seguridad", $"Registro gourmet completado exitosamente vía {dto.Provider ?? "Social/Directo"}.");
 
             return Ok(new
             {

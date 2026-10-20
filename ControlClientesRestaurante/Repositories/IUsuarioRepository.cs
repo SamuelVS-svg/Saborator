@@ -7,6 +7,7 @@ namespace ControlClientesRestaurante.Repositories
         Usuario? ObtenerPorNombre(string nombreUsuario);
         Usuario? ObtenerPorTokenVerificacion(string token);
         Usuario? ObtenerPorCorreo(string correo);
+        List<Usuario> ObtenerActivosPorRol(string nombreRol);
         bool ExisteNombre(string nombreUsuario);
         bool ExisteCorreo(string correo);
         void Agregar(Usuario usuario);

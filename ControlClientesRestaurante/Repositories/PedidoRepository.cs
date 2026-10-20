@@ -34,8 +34,9 @@ namespace ControlClientesRestaurante.Repositories
                 .OrderBy(p => p.FechaCreacion).ToList();
 
         public List<Pedido> ObtenerListosCocina() =>
-            ConLineas().Where(p => p.Estado == "Listo" || p.Estado == "EnCamino" || p.Estado == "Entregado")
-                .OrderByDescending(p => p.FechaCreacion).Take(20).ToList();
+            ConLineas().Where(p => (p.Estado == "Listo" || p.Estado == "EnCamino" || p.Estado == "Entregado" || p.Estado == "Facturado")
+                                   && p.FechaCreacion >= DateTime.Today)
+                .OrderByDescending(p => p.FechaCreacion).Take(30).ToList();
 
         public Pedido? ObtenerPorId(int id) =>
             ConLineas().FirstOrDefault(p => p.Id == id);

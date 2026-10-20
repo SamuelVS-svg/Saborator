@@ -1,10 +1,13 @@
 @model List<ControlClientesRestaurante.Models.Pedido>
 @{
-    ViewData["Title"] = "Panel de Domicilios & Envíos — Saborator";
+    ViewData["Title"] = "Panel de Domicilios & Envíos";
+    bool esAdminOCajero = ViewBag.EsAdminOCajero == true;
+    var domiciliarios = ViewBag.Domiciliarios as List<string> ?? new();
     int pendientes = Model.Count(p => p.Estado == "Pendiente");
     int enCocina = Model.Count(p => p.Estado == "EnPreparacion");
+    int listos = Model.Count(p => p.Estado == "Listo");
     int enCamino = Model.Count(p => p.Estado == "EnCamino");
-    int entregados = Model.Count(p => p.Estado == "Listo" || p.Estado == "Entregado");
+    int entregados = Model.Count(p => p.Estado == "Entregado");
 }
 
 <div class="pg-header">
@@ -16,6 +19,7 @@
         <div class="pg-sub" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;">
             <span class="pg-sub-pill"><span class="txt-err">@pendientes por aceptar</span></span>
             <span class="pg-sub-pill" style="color:#B45309;"><span style="color:#F59E0B;">●</span> @enCocina en cocina</span>
+            <span class="pg-sub-pill" style="color:#7C3AED;"><span style="color:#8B5CF6;">●</span> @listos listos</span>
             <span class="pg-sub-pill" style="color:#0369A1;"><span style="color:#0EA5E9;">●</span> @enCamino en camino</span>
             <span class="pg-sub-pill"><span class="txt-ok">@entregados entregados</span></span>
         </div>
@@ -54,9 +58,11 @@ else
             {
                 "Pendiente" => "st-pendiente",
                 "EnPreparacion" => "st-cocina",
+                "Listo" => "st-listo",
                 "EnCamino" => "st-camino",
-                "Listo" or "Entregado" => "st-entregado",
+                "Entregado" => "st-entregado",
                 "Facturado" => "st-facturado",
+                "Cancelado" => "st-cancelado",
                 _ => ""
             };
 
@@ -64,8 +70,9 @@ else
             {
                 "Pendiente" => "Por Aceptar",
                 "EnPreparacion" => "En Cocina",
+                "Listo" => p.TipoEntrega == "Domicilio" ? "Listo para salir" : "Listo para recoger",
                 "EnCamino" => "En Camino",
-                "Listo" or "Entregado" => "Entregado",
+                "Entregado" => "Entregado",
                 "Facturado" => "Facturado",
                 "Cancelado" => "Cancelado",
                 _ => p.Estado
@@ -112,7 +119,7 @@ else
                             <a href="https://www.google.com/maps/dir/?api=1&origin=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&destination=@Uri.EscapeDataString($"{p.Direccion}, {p.Barrio}, Barranquilla")" 
                                target="_blank" rel="noopener noreferrer" 
                                title="Abrir ruta GPS en Google Maps" 
-                               style="padding:0.35rem 0.6rem;background:#FFFDF9;border:1px solid #C8973A;border-radius:6px;font-size:0.75rem;font-weight:700;color:#C8973A;text-decoration:none;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;">
+                               style="padding:0.35rem 0.6rem;background:var(--surface);border:1px solid var(--brand);border-radius:6px;font-size:0.75rem;font-weight:700;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                                 <span>Ruta Maps</span>
                             </a>
@@ -138,7 +145,7 @@ else
                     </div>
 
                     <!-- Fila de Costo de Envío y Ajuste Rápido para Cajero -->
-                    @if (p.TipoEntrega == "Domicilio")
+                    @if (p.TipoEntrega == "Domicilio" && esAdminOCajero && p.Estado != "Facturado" && p.Estado != "Cancelado")
                     {
                         <div class="dom-fee-control-box" id="boxTarifa_@p.Id">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
@@ -149,11 +156,10 @@ else
                             </div>
 
                             <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
-                                <input type="number" id="inpFee_@p.Id" value="@((int)p.CostoEnvio)" min="0" step="500" 
-                                       style="width:75px;padding:3px 6px;font-size:0.8rem;border:1px solid #E2D7C8;border-radius:6px;font-weight:700;color:var(--brand);outline:none;" />
+                                <input type="number" id="inpFee_@p.Id" value="@((int)p.CostoEnvio)" min="0" step="500" aria-label="Tarifa de envío del pedido @p.Numero"
+                                       class="dom-fee-input" />
                                 
-                                <button type="button" onclick="guardarTarifaDomicilio(@p.Id)" title="Guardar valor personalizado"
-                                        style="background:var(--brand);color:#FFF;border:none;border-radius:6px;padding:4px 8px;font-size:0.75rem;font-weight:700;cursor:pointer;">
+                                <button type="button" onclick="guardarTarifaDomicilio(@p.Id)" title="Guardar valor personalizado" class="dom-fee-save">
                                     Guardar
                                 </button>
 
@@ -164,6 +170,37 @@ else
                                     <button type="button" class="btn-micro-chip" title="Norte ($9k)" onclick="aplicarTarifaRapida(@p.Id, 9000)">$9k</button>
                                 </div>
                             </div>
+                        </div>
+                    }
+                    else if (p.TipoEntrega == "Domicilio")
+                    {
+                        <div class="dom-dish-row" style="margin-bottom:0.5rem;">
+                            <span>Tarifa de envío</span>
+                            <span>$@p.CostoEnvio.ToString("N0")</span>
+                        </div>
+                    }
+
+                    @if (p.TipoEntrega == "Domicilio")
+                    {
+                        <div class="dom-rider-row">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                            @if (esAdminOCajero && (p.Estado == "Pendiente" || p.Estado == "EnPreparacion" || p.Estado == "Listo"))
+                            {
+                                <form asp-action="AsignarRepartidor" method="post" class="dom-rider-form">
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <select name="repartidor" class="dom-rider-select" aria-label="Domiciliario del pedido @p.Numero" onchange="this.form.submit()">
+                                        <option value="">Sin domiciliario</option>
+                                        @foreach (var d in domiciliarios)
+                                        {
+                                            <option value="@d" selected="@(string.Equals(d, p.Repartidor, StringComparison.OrdinalIgnoreCase))">@d</option>
+                                        }
+                                    </select>
+                                </form>
+                            }
+                            else
+                            {
+                                <span>Domiciliario: <strong>@(p.Repartidor ?? "sin asignar")</strong></span>
+                            }
                         </div>
                     }
 
@@ -178,7 +215,6 @@ else
                     @if (p.Estado == "Pendiente")
                     {
                         <form asp-action="ActualizarEstadoDomicilio" method="post" style="flex:1;">
-                            @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@p.Id" />
                             <input type="hidden" name="nuevoEstado" value="EnPreparacion" />
                             <button type="submit" class="btn-action btn-cocina">
@@ -189,34 +225,51 @@ else
                     }
                     else if (p.Estado == "EnPreparacion")
                     {
+                        <div class="dom-wait">En cocina — la cocina lo marcará como listo</div>
+                    }
+                    else if (p.Estado == "Listo" && p.TipoEntrega == "Domicilio")
+                    {
+                        <div class="dom-wait">@(string.IsNullOrEmpty(p.Repartidor) ? "Esperando que un domiciliario lo recoja" : $"Esperando a {p.Repartidor}")</div>
+                    }
+                    else if (p.Estado == "Listo")
+                    {
                         <form asp-action="ActualizarEstadoDomicilio" method="post" style="flex:1;">
-                            @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@p.Id" />
-                            <input type="hidden" name="nuevoEstado" value="EnCamino" />
-                            <button type="submit" class="btn-action btn-camino">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
-                                <span>Despachar Repartidor</span>
+                            <input type="hidden" name="nuevoEstado" value="Entregado" />
+                            <button type="submit" class="btn-action btn-entregar">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Entregado al cliente</span>
                             </button>
                         </form>
                     }
                     else if (p.Estado == "EnCamino")
                     {
-                        <form asp-action="ActualizarEstadoDomicilio" method="post" style="flex:1;">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@p.Id" />
-                            <input type="hidden" name="nuevoEstado" value="Entregado" />
-                            <button type="submit" class="btn-action btn-entregar">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                <span>Marcar Entregado</span>
-                            </button>
-                        </form>
+                        if (esAdminOCajero)
+                        {
+                            <form asp-action="ConfirmarEntrega" method="post" style="flex:1;">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <input type="hidden" name="volverA" value="Domicilios" />
+                                <button type="submit" class="btn-action btn-entregar">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span>Marcar Entregado</span>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="dom-wait">En camino con @p.Repartidor</div>
+                        }
                     }
-                    else if (p.Estado == "Listo" || p.Estado == "Entregado")
+                    else if (p.Estado == "Entregado" && esAdminOCajero)
                     {
                         <a asp-controller="Factura" asp-action="FacturarPedido" asp-route-id="@p.Id" class="btn-action btn-facturar" title="Emitir Factura y Cobrar">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                             <span>Cobrar Factura</span>
                         </a>
+                    }
+                    else
+                    {
+                        <div class="dom-wait">@estadoTexto</div>
                     }
 
                     <a asp-action="Seguimiento" asp-route-id="@p.Numero" target="_blank" class="btn-ver-tracker" title="Ver Tracker en vivo">
@@ -253,10 +306,15 @@ else
     .dom-card.st-pendiente { border-left: 5px solid #EF4444; }
     .dom-card.st-cocina    { border-left: 5px solid #F59E0B; }
     .dom-card.st-camino    { border-left: 5px solid #0EA5E9; }
+    .dom-card.st-listo     { border-left: 5px solid #8B5CF6; }
     .dom-card.st-entregado { border-left: 5px solid #10B981; }
+    .dom-card.st-facturado,
+    .dom-card.st-cancelado { border-left: 5px solid var(--line); opacity: 0.75; }
 
     .dom-card-header {
         display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 0.85rem;
@@ -264,8 +322,9 @@ else
         padding-bottom: 0.75rem;
     }
     .dom-id-wrap { display: flex; align-items: center; gap: 0.5rem; }
-    .dom-code { font-weight: 800; font-size: 1.05rem; color: var(--brand, #6B1E2E); }
+    .dom-code { font-weight: 800; font-size: 1.05rem; color: var(--brand, #6B1E2E); white-space: nowrap; }
     .dom-type-pill {
+        white-space: nowrap;
         font-size: 0.72rem;
         font-weight: 700;
         padding: 0.2rem 0.55rem;
@@ -275,6 +334,7 @@ else
     .pill-llevar { background: rgba(200, 151, 58, 0.15); color: #B45309; }
 
     .badge-estado {
+        white-space: nowrap;
         font-size: 0.74rem;
         font-weight: 700;
         padding: 0.25rem 0.65rem;
@@ -285,7 +345,10 @@ else
     .badge-estado.st-pendiente { background: #FEE2E2; color: #991B1B; }
     .badge-estado.st-cocina    { background: #FEF3C7; color: #92400E; }
     .badge-estado.st-camino    { background: #E0F2FE; color: #075985; }
+    .badge-estado.st-listo     { background: #EDE9FE; color: #5B21B6; }
     .badge-estado.st-entregado { background: #D1FAE5; color: #065F46; }
+    .badge-estado.st-facturado { background: var(--surface-2); color: var(--muted); }
+    .badge-estado.st-cancelado { background: #F3F4F6; color: #6B7280; text-decoration: line-through; }
 
     .dom-info-row {
         display: flex;
@@ -307,12 +370,12 @@ else
         display: flex;
         align-items: flex-start;
         gap: 0.45rem;
-        background: #FAF6F0;
+        background: var(--surface-2);
         padding: 0.55rem 0.75rem;
         border-radius: 8px;
         margin-bottom: 0.65rem;
         font-size: 0.84rem;
-        color: #3C2A20;
+        color: var(--text);
     }
     .dom-address-box svg { color: var(--brand, #6B1E2E); margin-top: 2px; flex-shrink: 0; }
     .dom-address { font-weight: 600; }
@@ -320,8 +383,8 @@ else
 
     .dom-notes-box {
         font-size: 0.8rem;
-        color: #6E5C50;
-        background: #FFFBEB;
+        color: var(--text);
+        background: rgba(253, 230, 138, 0.15);
         border: 1px dashed #FDE68A;
         padding: 0.4rem 0.65rem;
         border-radius: 6px;
@@ -337,6 +400,7 @@ else
         overflow-y: auto;
     }
     .dom-dish-row {
+        color: var(--text);
         display: flex;
         justify-content: space-between;
         font-size: 0.84rem;
@@ -398,10 +462,62 @@ else
         padding: 0.5rem 0.65rem;
         margin-bottom: 0.75rem;
     }
+    .dom-fee-input {
+        width: 80px;
+        padding: 3px 6px;
+        font-size: 0.8rem;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-weight: 700;
+        color: var(--brand);
+        background: var(--surface);
+        outline: none;
+    }
+    .dom-fee-input:focus { border-color: var(--brand); }
+    .dom-fee-save {
+        background: var(--brand);
+        color: #FFF;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .dom-rider-row {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.84rem;
+        color: var(--text);
+        margin-bottom: 0.65rem;
+    }
+    .dom-rider-row > svg { color: var(--brand); flex-shrink: 0; }
+    .dom-rider-form { flex: 1; margin: 0; }
+    .dom-rider-select {
+        width: 100%;
+        padding: 0.35rem 0.5rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+    .dom-wait {
+        flex: 1;
+        text-align: center;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--muted);
+        background: var(--surface-2);
+        border-radius: 8px;
+        padding: 0.65rem;
+    }
     .btn-micro-chip {
-        background: #FFFDF9;
+        background: var(--surface);
         border: 1px solid #C8973A;
-        color: #6B1E2E;
+        color: var(--brand);
         font-size: 0.68rem;
         font-weight: 700;
         padding: 2px 6px;
@@ -427,28 +543,30 @@ else
     }
 </style>
 
+<div id="afTokenDomicilios" hidden>@Html.AntiForgeryToken()</div>
 <script>
     async function guardarTarifaDomicilio(pedidoId) {
         const inp = document.getElementById(`inpFee_${pedidoId}`);
         if (!inp) return;
         const tarifa = Math.max(0, parseInt(inp.value) || 0);
+        const token = document.querySelector('#afTokenDomicilios input[name="__RequestVerificationToken"]')?.value || '';
 
         try {
             const resp = await fetch('/Pedido/AsignarValorDomicilioApi', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pedidoId: pedidoId, nuevoCostoEnvio: tarifa })
+                headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': token },
+                body: JSON.stringify({ id: pedidoId, nuevoCostoEnvio: tarifa })
             });
             const data = await resp.json();
             if (data.ok) {
                 const lblFee = document.getElementById(`lblFee_${pedidoId}`);
-                if (lblFee) lblFee.textContent = `$${data.nuevoCostoEnvio.toLocaleString('es-CO')} COP`;
+                if (lblFee) lblFee.textContent = `$${Number(data.costoEnvio).toLocaleString('es-CO')} COP`;
 
                 const lblTotal = document.getElementById(`lblTotal_${pedidoId}`);
-                if (lblTotal) lblTotal.textContent = `$${data.nuevoTotal.toLocaleString('es-CO')} COP`;
+                if (lblTotal) lblTotal.textContent = `$${Number(data.total).toLocaleString('es-CO')} COP`;
 
                 inp.style.borderColor = '#10B981';
-                setTimeout(() => { inp.style.borderColor = '#E2D7C8'; }, 1000);
+                setTimeout(() => { inp.style.borderColor = ''; }, 1000);
             } else {
                 alert(data.mensaje || 'Error al actualizar tarifa');
             }

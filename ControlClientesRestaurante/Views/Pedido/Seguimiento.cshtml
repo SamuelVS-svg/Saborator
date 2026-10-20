@@ -3,20 +3,37 @@
     ViewData["Title"] = $"Seguimiento de Pedido — {Model.Numero}";
 
     string estado = Model.Estado;
+    bool esDomicilio = Model.TipoEntrega == "Domicilio";
+    bool datosPrivados = ViewBag.DatosPrivados == true;
+
     // Mapeo de paso según estado:
     // 1 = Pendiente (Recibido)
-    // 2 = EnPreparacion
-    // 3 = EnCamino
-    // 4 = Listo / Entregado / Facturado
+    // 2 = EnPreparacion (y "Listo" de un domicilio que aún espera domiciliario)
+    // 3 = EnCamino (domicilio) / Listo para recoger (para llevar o mesa)
+    // 4 = Entregado / Facturado
     int stepActual = estado switch
     {
         "Pendiente" => 1,
         "EnPreparacion" => 2,
+        "Listo" => esDomicilio ? 2 : 3,
         "EnCamino" => 3,
-        "Listo" or "Entregado" or "Facturado" => 4,
+        "Entregado" or "Facturado" => 4,
         _ => 1
     };
     bool esCancelado = estado == "Cancelado";
+
+    string textoEstado = estado switch
+    {
+        "EnPreparacion" => "Nuestros chefs están cocinando tu orden al momento",
+        "Listo" => esDomicilio ? "Tu pedido está listo y saldrá en breve con nuestro domiciliario" : "¡Tu pedido está listo para recoger!",
+        "EnCamino" => string.IsNullOrEmpty(Model.Repartidor) ? "Tu pedido va en camino a tu dirección" : $"{Model.Repartidor} va en camino con tu pedido",
+        "Entregado" or "Facturado" => "Tu pedido ha sido entregado ¡Buen provecho!",
+        _ => "Hemos recibido tu pedido y lo estamos confirmando"
+    };
+
+    // Enmascarar datos personales a quien solo conoce el número de pedido
+    string Enmascarar(string? valor, int visibles) =>
+        string.IsNullOrEmpty(valor) ? "" : (valor.Length <= visibles ? new string('•', valor.Length) : new string('•', valor.Length - visibles) + valor[^visibles..]);
 }
 
 <div class="tracker-wrapper">
@@ -43,12 +60,7 @@
         <!-- ══ STEPPER INTERACTIVO ESTILO KFC ═════════════════════════ -->
         <div class="kfc-stepper-card">
             <div class="stepper-time-pill">
-                <span id="labelEstadoTexto">
-                    @if (stepActual == 1) { <text>Hemos recibido tu pedido y lo estamos confirmando</text> }
-                    else if (stepActual == 2) { <text>Nuestros chefs están cocinando tu orden al momento</text> }
-                    else if (stepActual == 3) { <text>Tu pedido va en camino a tu dirección</text> }
-                    else if (stepActual == 4) { <text>Tu pedido ha sido entregado ¡Buen provecho!</text> }
-                </span>
+                <span id="labelEstadoTexto">@textoEstado</span>
             </div>
 
             <div class="stepper-track">
@@ -78,8 +90,8 @@
                     <div class="node-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
                     </div>
-                    <span class="node-label">En Camino</span>
-                    <span class="node-sub">Repartidor</span>
+                    <span class="node-label">@(esDomicilio ? "En Camino" : "Listo")</span>
+                    <span class="node-sub">@(esDomicilio ? (Model.Repartidor ?? "Domiciliario") : "Para recoger")</span>
                 </div>
 
                 <!-- Paso 4 -->
@@ -110,7 +122,14 @@
                 </span>
             </div>
 
-            @if (Model.TipoEntrega == "Domicilio")
+            @if (esDomicilio && !datosPrivados)
+            {
+                <div class="detail-row">
+                    <span class="detail-label">Barrio:</span>
+                    <span class="detail-value">@(Model.Barrio ?? "—")</span>
+                </div>
+            }
+            else if (esDomicilio)
             {
                 <div class="detail-row">
                     <span class="detail-label">Dirección:</span>
@@ -146,12 +165,12 @@
 
             <div class="detail-row">
                 <span class="detail-label">Cliente:</span>
-                <span class="detail-value">@Model.NombreCliente</span>
+                <span class="detail-value">@(datosPrivados ? Model.NombreCliente : Model.NombreCliente?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault())</span>
             </div>
 
             <div class="detail-row">
                 <span class="detail-label">Teléfono:</span>
-                <span class="detail-value">@Model.Telefono</span>
+                <span class="detail-value">@(datosPrivados ? Model.Telefono : Enmascarar(Model.Telefono, 3))</span>
             </div>
 
             <div class="detail-row">
@@ -159,7 +178,7 @@
                 <span class="detail-value">@Model.MetodoPago @(Model.PagaCon.HasValue ? $"(Paga con ${Model.PagaCon.Value:N0})" : "")</span>
             </div>
 
-            @if (!string.IsNullOrEmpty(Model.Notas))
+            @if (datosPrivados && !string.IsNullOrEmpty(Model.Notas))
             {
                 <div class="detail-row">
                     <span class="detail-label">Notas de Acceso:</span>
@@ -169,7 +188,7 @@
 
             <!-- Contacto WhatsApp -->
             <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line,#E2D7C8);">
-                <a href="https://wa.me/573000000000?text=Hola%20Saborator,%20quisiera%20consultar%20sobre%20mi%20pedido%20@Model.Numero" target="_blank" class="btn-whatsapp">
+                <a href="https://wa.me/573225254289?text=Hola%20Saborator,%20quisiera%20consultar%20sobre%20mi%20pedido%20@Model.Numero" target="_blank" class="btn-whatsapp">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                     <span>¿Dudas con tu orden? Escríbenos por WhatsApp</span>
                 </a>
@@ -556,17 +575,27 @@
 <script>
     const orderNumber = '@Model.Numero';
 
-    function aplicarEstadoVisual(estado) {
+    const esDomicilio = @Json.Serialize(esDomicilio);
+    let estadoActual = @Json.Serialize(estado);
+
+    function aplicarEstadoVisual(estado, repartidor) {
+        // Un cambio a Cancelado (o la reaparición de la página) requiere recargar para mostrar el aviso
+        if (estado === "Cancelado" && estadoActual !== "Cancelado") { location.reload(); return; }
+        estadoActual = estado;
+
         let step = 1;
         let texto = "Hemos recibido tu pedido y lo estamos confirmando";
 
         if (estado === "EnPreparacion") {
             step = 2;
             texto = "Nuestros chefs están cocinando tu orden al momento";
+        } else if (estado === "Listo") {
+            step = esDomicilio ? 2 : 3;
+            texto = esDomicilio ? "Tu pedido está listo y saldrá en breve con nuestro domiciliario" : "¡Tu pedido está listo para recoger!";
         } else if (estado === "EnCamino") {
             step = 3;
-            texto = "Tu pedido va en camino a tu dirección";
-        } else if (estado === "Listo" || estado === "Entregado" || estado === "Facturado") {
+            texto = repartidor ? `${repartidor} va en camino con tu pedido` : "Tu pedido va en camino a tu dirección";
+        } else if (estado === "Entregado" || estado === "Facturado") {
             step = 4;
             texto = "Tu pedido ha sido entregado ¡Buen provecho!";
         }
@@ -596,9 +625,8 @@
             .build();
 
         connection.on("EstadoPedidoCambiado", function (data) {
-            if (data && data.estado) {
-                aplicarEstadoVisual(data.estado);
-            }
+            // El hub no envía el nombre del domiciliario: consultar el detalle completo
+            if (data && data.estado) pollOrderStatus();
         });
 
         connection.start()
@@ -615,7 +643,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data && data.estado) {
-                    aplicarEstadoVisual(data.estado);
+                    aplicarEstadoVisual(data.estado, data.repartidor);
                 }
             })
             .catch(err => console.log('Polling check:', err));

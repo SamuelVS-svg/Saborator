@@ -1,10 +1,11 @@
 @model List<ControlClientesRestaurante.Models.Pedido>
 @{
-    ViewData["Title"] = "Pantalla de Cocina (KDS) — Saborator";
+    ViewData["Title"] = "Pantalla de Cocina (KDS)";
     var pedidosListos = ViewBag.PedidosListos as List<ControlClientesRestaurante.Models.Pedido> ?? new();
     int pendientes = Model.Count(p => p.Estado == "Pendiente");
     int enCoccion = Model.Count(p => p.Estado == "EnPreparacion");
     int totalActivos = Model.Count;
+    bool puedeCocinar = ViewBag.PuedeCocinar == true;
 }
 
 <div class="kds-wrapper">
@@ -45,10 +46,10 @@
     <!-- Barra de Filtros y Herramientas -->
     <div class="kds-toolbar">
         <div class="kds-filter-tabs">
-            <button type="button" class="kds-tab active" onclick="filtrarComandas('todas')">Todas Activas (@totalActivos)</button>
-            <button type="button" class="kds-tab" onclick="filtrarComandas('Pendiente')">Pendientes (@pendientes)</button>
-            <button type="button" class="kds-tab" onclick="filtrarComandas('EnPreparacion')">En Cocción (@enCoccion)</button>
-            <button type="button" class="kds-tab" onclick="filtrarComandas('Listos')">Despachadas Hoy (@pedidosListos.Count)</button>
+            <button type="button" class="kds-tab active" onclick="filtrarComandas('todas', this)">Todas Activas (@totalActivos)</button>
+            <button type="button" class="kds-tab" onclick="filtrarComandas('Pendiente', this)">Pendientes (@pendientes)</button>
+            <button type="button" class="kds-tab" onclick="filtrarComandas('EnPreparacion', this)">En Cocción (@enCoccion)</button>
+            <button type="button" class="kds-tab" onclick="filtrarComandas('Listos', this)">Despachadas Hoy (@pedidosListos.Count)</button>
         </div>
 
         <div class="kds-tools">
@@ -89,12 +90,7 @@
                 @foreach (var p in Model)
                 {
                     int minutos = (int)(DateTime.Now - p.FechaCreacion).TotalMinutes;
-                    string tiempoClase = minutos switch
-                    {
-                        < 10 => "time-ok",
-                        < 20 => "time-warn",
-                        _ => "time-danger"
-                    };
+                    string tiempoClase = minutos >= 20 ? "time-danger" : (minutos >= 10 ? "time-warn" : "time-ok");
 
                     bool esPendiente = p.Estado == "Pendiente";
                     bool esCoccion   = p.Estado == "EnPreparacion";
@@ -159,7 +155,11 @@
 
                         <!-- Botón de Acción del Cocinero -->
                         <div class="ticket-actions">
-                            @if (esPendiente)
+                            @if (!puedeCocinar)
+                            {
+                                <div style="width:100%;text-align:center;font-size:0.82rem;font-weight:600;opacity:0.75;">@(esPendiente ? "Por iniciar en cocina" : "En preparación")</div>
+                            }
+                            else if (esPendiente)
                             {
                                 <form asp-action="CocinaCambiarEstado" method="post" style="width:100%;">
                                     @Html.AntiForgeryToken()
@@ -214,12 +214,12 @@
                         <div class="ticket-header">
                             <div>
                                 <span class="ticket-number">@pl.Numero</span>
-                                <span class="ticket-dest-badge dest-mesa">@pl.Mesa</span>
+                                <span class="ticket-dest-badge @(pl.TipoEntrega == "Domicilio" ? "dest-domicilio" : (pl.TipoEntrega == "ParaLlevar" ? "dest-llevar" : "dest-mesa"))">@(pl.TipoEntrega == "Domicilio" ? "Domicilio" : (pl.TipoEntrega == "ParaLlevar" ? "Llevar" : pl.Mesa))</span>
                                 <div class="ticket-client">@pl.NombreCliente</div>
                             </div>
                             <span class="badge-ready">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:3px;vertical-align:-1px;"><polyline points="20 6 9 17 4 12"/></svg>
-                                LISTO
+                                @(pl.Estado switch { "EnCamino" => "EN CAMINO", "Entregado" => "ENTREGADO", "Facturado" => "COBRADO", _ => "LISTO" })
                             </span>
                         </div>
                         <div class="ticket-dishes-body" style="padding:0.75rem 0;">
@@ -365,7 +365,7 @@
         font-size: 0.85rem;
         font-weight: 700;
         cursor: pointer;
-        color: #3C2A20;
+        color: var(--text, #3C2A20);
         transition: all 140ms ease;
     }
     .kds-tab:hover {
@@ -620,11 +620,9 @@
     actualizarReloj();
 
     // Filtros de Comandas
-    function filtrarComandas(filtro) {
+    function filtrarComandas(filtro, boton) {
         document.querySelectorAll('.kds-tab').forEach(t => t.classList.remove('active'));
-        if (event && event.target) {
-            event.target.classList.add('active');
-        }
+        if (boton) boton.classList.add('active');
 
         if (filtro === 'Listos') {
             document.getElementById('seccionActivas').style.display = 'none';

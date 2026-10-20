@@ -1,6 +1,6 @@
 @model List<ControlClientesRestaurante.Models.Resena>
 @{
-    ViewData["Title"] = "Reseñas & Opiniones de Comensales — Saborator";
+    ViewData["Title"] = "Reseñas & Opiniones de Comensales";
     var stats = ViewBag.Stats as ControlClientesRestaurante.Services.ResenaEstadisticasDto ?? new ControlClientesRestaurante.Services.ResenaEstadisticasDto();
     bool esStaff = ViewBag.EsStaff == true;
     bool esAdmin = ViewBag.EsAdmin == true;

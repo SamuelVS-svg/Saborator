@@ -53,7 +53,7 @@ namespace ControlClientesRestaurante.Controllers
 
             ViewBag.Usuario      = usuario;
             ViewBag.Cliente      = cliente;
-            ViewBag.Rol          = usuario.Rol?.NombreRol ?? "Usuario";
+            ViewBag.Rol          = User.FindFirst(ClaimTypes.Role)?.Value ?? usuario.Rol?.NombreRol ?? "Usuario";
             ViewBag.FotoPerfil   = usuario.FotoPerfil;
             ViewBag.Tema         = usuario.Tema ?? "clasico";
             ViewBag.EsBienvenida = bienvenida == true;
@@ -63,7 +63,8 @@ namespace ControlClientesRestaurante.Controllers
         // ── Sincronizador de Claims y Sesión del Usuario Autenticado ───────
         private async Task RefrescarClaimsSesionAsync(Usuario usuario)
         {
-            var rol = usuario.Rol?.NombreRol ?? User.FindFirst(ClaimTypes.Role)?.Value ?? "Cliente";
+            // Conservar el rol activo de la sesión (el admin puede haber cambiado de rol temporalmente)
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value ?? usuario.Rol?.NombreRol ?? "Cliente";
             var nombreMostrar = User.FindFirst("NombreCompleto")?.Value ?? usuario.NombreUsuario;
 
             var claims = new List<Claim>
