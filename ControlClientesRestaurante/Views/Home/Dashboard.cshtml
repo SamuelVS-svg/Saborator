@@ -159,7 +159,7 @@
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                         </div>
                     </div>
-                    <div class="v12-stat-value">$@ventasHoy.ToString("N0")</div>
+                    <div class="v12-stat-value">$@ventasHoy.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                     <div class="v12-stat-footer">
                         <span class="v12-trend-pill @(ventasSube ? "up" : "down")">
                             @if (hayHistorico)
@@ -333,7 +333,7 @@
                             @foreach (var kv in series)
                             {
                                 <div class="v12-serie-resumen" data-serie="@kv.Key" style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;@(kv.Key == "hoy" ? "" : "display:none")">
-                                    @kv.Value.First().etiqueta – @kv.Value.Last().etiqueta · Total $@kv.Value.Sum(x => x.valor).ToString("N0")
+                                    @kv.Value.First().etiqueta – @kv.Value.Last().etiqueta · Total $@kv.Value.Sum(x => x.valor).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)
                                 </div>
                             }
                         </div>

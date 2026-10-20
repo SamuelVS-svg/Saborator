@@ -544,6 +544,20 @@ else
     <partial name="_ModalIngreso" />
 }
 
+@* Cerrar sesión se hace por POST con token; los enlaces a /Login/Logout se envían por este formulario *@
+<form id="formLogout" asp-controller="Login" asp-action="Logout" method="post" hidden></form>
+<script>
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href]');
+        if (!a) return;
+        var url = new URL(a.href, location.href);
+        if (url.origin === location.origin && url.pathname.toLowerCase() === '/login/logout') {
+            e.preventDefault();
+            document.getElementById('formLogout').submit();
+        }
+    });
+</script>
+
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>

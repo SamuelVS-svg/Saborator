@@ -593,7 +593,7 @@
                             <!-- Botón de apertura Wompi con spinner de estado -->
                             <button type="button" id="btnWompiLauncher" onclick="ejecutarWidgetWompiCheckout()" class="btn-pagar-now" style="margin:0 auto;max-width:440px;background:linear-gradient(135deg, #00E5A3, #00B37E);color:#0A1B14;font-weight:900;font-size:1.05rem;box-shadow:0 8px 25px rgba(0,229,163,0.35);">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                                <span id="btnWompiTexto">Pagar $@Model.Monto.ToString("N0") con Wompi</span>
+                                <span id="btnWompiTexto">Pagar $@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) con Wompi</span>
                             </button>
 
                             <!-- Banner de fallback inteligente en caso de demora o adblocker -->
@@ -700,7 +700,7 @@
                                     </div>
                                     <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.4;">
                                         <strong>Titular:</strong> Saborator Gourmet S.A.S.<br />
-                                        <strong>Valor Exacto:</strong> <span style="color:#FF2772;font-weight:800;">$@Model.Monto.ToString("N0") COP</span>
+                                        <strong>Valor Exacto:</strong> <span style="color:#FF2772;font-weight:800;">$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                                     </div>
                                 </div>
 
@@ -739,7 +739,7 @@
 
                             <div style="font-size:0.82rem;color:rgba(255,255,255,0.85);margin-bottom:1.25rem;line-height:1.5;">
                                 <strong>Instrucciones:</strong><br />
-                                1. Envía los <strong>$@Model.Monto.ToString("N0")</strong> desde tu app Nequi al <strong>320 890 1234</strong>.<br />
+                                1. Envía los <strong>$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</strong> desde tu app Nequi al <strong>320 890 1234</strong>.<br />
                                 2. Al completar el envío, copia el <strong>Número de Comprobante / Movimiento</strong> (ej: M0849201).<br />
                                 3. Escríbelo aquí abajo para que el sistema valide tu transferencia de inmediato:
                             </div>
@@ -805,7 +805,7 @@
                                     <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.4;">
                                         <strong>Titular:</strong> Saborator Gourmet S.A.S.<br />
                                         <strong>NIT:</strong> 901.458.912-3<br />
-                                        <strong>Total a Transferir:</strong> <span style="color:#FFCC00;font-weight:800;">$@Model.Monto.ToString("N0") COP</span>
+                                        <strong>Total a Transferir:</strong> <span style="color:#FFCC00;font-weight:800;">$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                                     </div>
                                 </div>
 
@@ -899,7 +899,7 @@
                                     </div>
                                     <div style="font-size:0.8rem;color:rgba(255,255,255,0.9);line-height:1.4;">
                                         <strong>Titular:</strong> Saborator Gourmet S.A.S.<br />
-                                        <strong>Valor:</strong> <span style="color:#FFD100;font-weight:800;">$@Model.Monto.ToString("N0") COP</span>
+                                        <strong>Valor:</strong> <span style="color:#FFD100;font-weight:800;">$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                                     </div>
                                 </div>
 
@@ -960,7 +960,7 @@
                     <div id="seccionSubmitDirecto" style="display:none;">
                         <button type="submit" class="btn-pagar-now" id="btnPagarSubmit">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <span id="btnPagarTexto">Pagar $@Model.Monto.ToString("N0") con Seguridad</span>
+                            <span id="btnPagarTexto">Pagar $@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) con Seguridad</span>
                         </button>
                     </div>
 
@@ -993,9 +993,9 @@
                             <div class="summary-item">
                                 <div>
                                     <div style="font-weight:700;">@item.Nombre</div>
-                                    <small style="color:var(--muted,#6E5D53);">@item.Cantidad x $@item.Precio.ToString("N0")</small>
+                                    <small style="color:var(--muted,#6E5D53);">@item.Cantidad x $@item.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</small>
                                 </div>
-                                <div style="font-weight:700;color:#C8973A;">$@item.Subtotal.ToString("N0")</div>
+                                <div style="font-weight:700;color:#C8973A;">$@item.Subtotal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                             </div>
                         }
                     </div>
@@ -1005,7 +1005,7 @@
                             <span style="display:block;font-size:0.8rem;text-transform:uppercase;color:var(--muted,#6E5D53);letter-spacing:0.08em;font-weight:700;">Total a Pagar</span>
                             <small style="font-size:0.75rem;color:var(--muted,#6E5D53);">Impuestos incluidos</small>
                         </div>
-                        <div class="val">$@Model.Monto.ToString("N0")</div>
+                        <div class="val">$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                     </div>
 
                     <div style="margin-top:1.5rem;font-size:0.78rem;color:var(--muted,#6E5D53);line-height:1.5;">
@@ -1197,9 +1197,9 @@
             if (metodo === 'Efectivo') {
                 btnTexto.textContent = 'Confirmar Solicitud de Cobro en Mesa';
             } else if (metodo === 'Nequi' || metodo === 'Daviplata' || metodo === 'PSE') {
-                btnTexto.textContent = 'Confirmar Transferencia ' + (metodo === 'PSE' ? 'Bancaria' : metodo) + ' ($@Model.Monto.ToString("N0"))';
+                btnTexto.textContent = 'Confirmar Transferencia ' + (metodo === 'PSE' ? 'Bancaria' : metodo) + ' ($@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co))';
             } else {
-                btnTexto.textContent = 'Autorizar Pago con ' + metodo + ' ($@Model.Monto.ToString("N0"))';
+                btnTexto.textContent = 'Autorizar Pago con ' + metodo + ' ($@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co))';
             }
         }
     }

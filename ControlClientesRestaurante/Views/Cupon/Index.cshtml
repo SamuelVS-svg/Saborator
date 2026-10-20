@@ -124,19 +124,19 @@
                                 <span style="font-weight:800;color:#10B981;font-size:1rem;">@c.Valor% OFF</span>
                                 @if (c.TopeMaximoDescuento.HasValue && c.TopeMaximoDescuento.Value > 0)
                                 {
-                                    <div style="font-size:0.74rem;color:var(--muted);">Tope máx: $@c.TopeMaximoDescuento.Value.ToString("N0") COP</div>
+                                    <div style="font-size:0.74rem;color:var(--muted);">Tope máx: $@c.TopeMaximoDescuento.Value.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</div>
                                 }
                             }
                             else
                             {
-                                <span style="font-weight:800;color:#10B981;font-size:1rem;">-$@c.Valor.ToString("N0") COP</span>
+                                <span style="font-weight:800;color:#10B981;font-size:1rem;">-$@c.Valor.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                                 <div style="font-size:0.74rem;color:var(--muted);">Monto Fijo</div>
                             }
                         </td>
                         <td style="font-variant-numeric:tabular-nums;">
                             @if (c.MontoMinimo > 0)
                             {
-                                <strong style="color:var(--ink);">$@c.MontoMinimo.ToString("N0") COP</strong>
+                                <strong style="color:var(--ink);">$@c.MontoMinimo.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                             }
                             else
                             {

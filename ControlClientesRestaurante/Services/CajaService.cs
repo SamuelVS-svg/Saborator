@@ -55,7 +55,7 @@ namespace ControlClientesRestaurante.Services
             _context.TurnosCaja.Add(nuevoTurno);
             _context.SaveChanges();
 
-            return (true, $"Turno {codigo} abierto exitosamente con base de ${montoInicial:N0} COP.", nuevoTurno);
+            return (true, $"Turno {codigo} abierto exitosamente con base de ${(montoInicial).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP.", nuevoTurno);
         }
 
         public (bool ok, string mensaje, TurnoCaja? turno) CerrarTurno(int turnoId, decimal efectivoDeclarado, string? observacionesCierre)
@@ -87,7 +87,7 @@ namespace ControlClientesRestaurante.Services
             _context.SaveChanges();
 
             var dif = turno.Diferencia ?? 0;
-            string balance = dif == 0 ? "Cuadre exacto" : (dif > 0 ? $"Sobrante de ${dif:N0} COP" : $"Faltante de ${Math.Abs(dif):N0} COP");
+            string balance = dif == 0 ? "Cuadre exacto" : (dif > 0 ? $"Sobrante de ${(dif).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP" : $"Faltante de ${(Math.Abs(dif)).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP");
 
             return (true, $"Turno {turno.CodigoTurno} cerrado exitosamente. Balance: {balance}.", turno);
         }

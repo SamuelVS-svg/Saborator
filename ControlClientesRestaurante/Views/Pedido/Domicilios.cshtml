@@ -139,7 +139,7 @@ else
                         {
                             <div class="dom-dish-row">
                                 <span><strong>@(l.Cantidad)x</strong> @l.NombreProducto</span>
-                                <span>$@((l.PrecioUnitario * l.Cantidad).ToString("N0"))</span>
+                                <span>$@((l.PrecioUnitario * l.Cantidad).ToString("N0", ControlClientesRestaurante.Models.Formato.Co))</span>
                             </div>
                         }
                     </div>
@@ -152,7 +152,7 @@ else
                                 <span style="font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">
                                     Tarifa Envío:
                                 </span>
-                                <strong id="lblFee_@p.Id" style="color:var(--brand);font-size:0.88rem;">$@p.CostoEnvio.ToString("N0") COP</strong>
+                                <strong id="lblFee_@p.Id" style="color:var(--brand);font-size:0.88rem;">$@p.CostoEnvio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                             </div>
 
                             <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
@@ -176,7 +176,7 @@ else
                     {
                         <div class="dom-dish-row" style="margin-bottom:0.5rem;">
                             <span>Tarifa de envío</span>
-                            <span>$@p.CostoEnvio.ToString("N0")</span>
+                            <span>$@p.CostoEnvio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
                         </div>
                     }
 
@@ -205,8 +205,8 @@ else
                     }
 
                     <div class="dom-total-row">
-                        <span>Pago: <strong>@p.MetodoPago @(p.PagaCon.HasValue ? $"(Paga con ${p.PagaCon.Value:N0})" : "")</strong></span>
-                        <span class="dom-total-val" id="lblTotal_@p.Id">$@p.Total.ToString("N0") COP</span>
+                        <span>Pago: <strong>@p.MetodoPago @(p.PagaCon.HasValue ? $"(Paga con ${(p.PagaCon.Value).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)})" : "")</strong></span>
+                        <span class="dom-total-val" id="lblTotal_@p.Id">$@p.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                     </div>
                 </div>
 

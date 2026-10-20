@@ -704,7 +704,16 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         // ── Logout ────────────────────────────────────────────────────────
-        public async Task<IActionResult> Logout()
+        // Solo por POST con token antifalsificación: un enlace o imagen en otra página
+        // no puede cerrar la sesión del usuario. Los enlaces "Salir" se envían por POST
+        // desde el formulario oculto del layout.
+        [HttpGet]
+        public IActionResult Logout() => RedirectToAction("Index", "Home");
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Logout")]
+        public async Task<IActionResult> LogoutPost()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
@@ -736,7 +745,7 @@ namespace ControlClientesRestaurante.Controllers
 
             return Ok(new
             {
-                success = true,
+                success = result.ok || _env.IsDevelopment(),
                 // El código solo se muestra en desarrollo; en producción revelarlo permitiría
                 // verificar cualquier número sin tener acceso a él.
                 message = result.ok
@@ -1145,7 +1154,7 @@ namespace ControlClientesRestaurante.Controllers
 
             return Ok(new
             {
-                ok = true,
+                ok = sendResult.ok || _env.IsDevelopment(),
                 mensaje = sendResult.ok
                     ? $"Código de 6 dígitos enviado por WhatsApp al +57 {phone}."
                     : (_env.IsDevelopment()

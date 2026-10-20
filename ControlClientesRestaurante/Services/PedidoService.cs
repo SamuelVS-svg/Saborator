@@ -278,7 +278,7 @@ namespace ControlClientesRestaurante.Services
 
             _repo.Actualizar(pedido);
             _repo.GuardarCambios();
-            return (true, $"Valor de domicilio actualizado a ${pedido.CostoEnvio:N0} COP");
+            return (true, $"Valor de domicilio actualizado a ${(pedido.CostoEnvio).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP");
         }
 
         // ══ REPARTO A DOMICILIO (ROL DOMICILIARIO) ═══════════════════════

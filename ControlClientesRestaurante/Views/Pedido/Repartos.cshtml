@@ -24,7 +24,7 @@
     <div class="rep-stat"><span class="rep-stat-val">@disponibles.Count</span><span class="rep-stat-lbl">Por recoger</span></div>
     <div class="rep-stat"><span class="rep-stat-val">@enCamino.Count</span><span class="rep-stat-lbl">En camino</span></div>
     <div class="rep-stat"><span class="rep-stat-val">@entregadosHoy.Count</span><span class="rep-stat-lbl">Entregados hoy</span></div>
-    <div class="rep-stat"><span class="rep-stat-val">$@efectivoHoy.ToString("N0")</span><span class="rep-stat-lbl">Efectivo a rendir</span></div>
+    <div class="rep-stat"><span class="rep-stat-val">$@efectivoHoy.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span><span class="rep-stat-lbl">Efectivo a rendir</span></div>
 </div>
 
 @* ── 1. EN CAMINO: lo más urgente va primero ── *@
@@ -41,7 +41,7 @@ else
             <div class="rep-card rep-card-camino">
                 @await Html.PartialAsync("_RepartoTarjeta", p)
                 <form asp-action="ConfirmarEntrega" method="post" class="rep-actions"
-                      onsubmit="return confirm('¿Confirmas que entregaste el pedido @p.Numero@(p.MetodoPago == "Efectivo" ? $" y recibiste ${p.Total:N0} en efectivo" : "")?');">
+                      onsubmit="return confirm('¿Confirmas que entregaste el pedido @p.Numero@(p.MetodoPago == "Efectivo" ? $" y recibiste ${(p.Total).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} en efectivo" : "")?');">
                     <input type="hidden" name="id" value="@p.Id" />
                     <button type="submit" class="rep-btn rep-btn-ok">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -127,7 +127,7 @@ else
                         <td>@p.NombreCliente</td>
                         <td>@(p.Barrio ?? "—")</td>
                         <td>@p.MetodoPago</td>
-                        <td>$@p.Total.ToString("N0")</td>
+                        <td>$@p.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
                         <td>@(p.FechaEntrega?.ToString("hh:mm tt") ?? "—")</td>
                     </tr>
                 }

@@ -279,7 +279,7 @@ namespace ControlClientesRestaurante.Controllers
                             Rol(),
                             "CANCELACION_PEDIDO",
                             "Pedidos",
-                            $"El pedido {pedObj?.Numero ?? id.ToString()} por valor de ${(pedObj?.Total ?? 0):N0} COP fue cancelado.",
+                            $"El pedido {pedObj?.Numero ?? id.ToString()} por valor de ${((pedObj?.Total ?? 0)).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP fue cancelado.",
                             "Pedido",
                             id,
                             HttpContext.Connection.RemoteIpAddress?.ToString());
@@ -402,7 +402,7 @@ namespace ControlClientesRestaurante.Controllers
             const decimal LimiteMinimoDomicilio = 20000m;
             if (tipoEntrega == "Domicilio" && subtotalProductos < LimiteMinimoDomicilio)
             {
-                TempData["Error"] = $"El pedido mínimo para despacho a domicilio es de ${LimiteMinimoDomicilio:N0} COP. Tu subtotal actual es de ${subtotalProductos:N0} COP. Agrega más productos a tu orden o elige la opción 'Para Llevar' sin monto mínimo.";
+                TempData["Error"] = $"El pedido mínimo para despacho a domicilio es de ${(LimiteMinimoDomicilio).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP. Tu subtotal actual es de ${(subtotalProductos).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP. Agrega más productos a tu orden o elige la opción 'Para Llevar' sin monto mínimo.";
                 return RedirectToAction("Checkout", new { tipo = tipoEntrega });
             }
 

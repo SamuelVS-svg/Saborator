@@ -101,25 +101,25 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
             <div class="caja-metric-box">
                 <div style="font-size: 0.76rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Base Inicial Efectivo</div>
-                <div style="font-size: 1.45rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">$@turnoActivo.MontoInicial.ToString("N0")</div>
+                <div style="font-size: 1.45rem; font-weight: 800; color: var(--text); margin-top: 0.25rem;">$@turnoActivo.MontoInicial.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                 <div style="font-size: 0.74rem; color: var(--muted);">Fondo fijo entregado</div>
             </div>
 
             <div class="caja-metric-box">
                 <div style="font-size: 0.76rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Ventas en Efectivo</div>
-                <div style="font-size: 1.45rem; font-weight: 800; color: var(--success); margin-top: 0.25rem;">$@turnoActivo.VentasEfectivo.ToString("N0")</div>
+                <div style="font-size: 1.45rem; font-weight: 800; color: var(--success); margin-top: 0.25rem;">$@turnoActivo.VentasEfectivo.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                 <div style="font-size: 0.74rem; color: var(--muted);">Cobrado en caja / mesa</div>
             </div>
 
             <div class="caja-metric-box">
                 <div style="font-size: 0.76rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Transferencias Digitales</div>
-                <div style="font-size: 1.45rem; font-weight: 800; color: var(--info); margin-top: 0.25rem;">$@turnoActivo.VentasTransferencia.ToString("N0")</div>
+                <div style="font-size: 1.45rem; font-weight: 800; color: var(--info); margin-top: 0.25rem;">$@turnoActivo.VentasTransferencia.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                 <div style="font-size: 0.74rem; color: var(--muted);">Nequi / Daviplata / PSE</div>
             </div>
 
             <div class="caja-metric-box">
                 <div style="font-size: 0.76rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Ventas Tarjetas (Datáfono)</div>
-                <div style="font-size: 1.45rem; font-weight: 800; color: #8B5CF6; margin-top: 0.25rem;">$@turnoActivo.VentasTarjeta.ToString("N0")</div>
+                <div style="font-size: 1.45rem; font-weight: 800; color: #8B5CF6; margin-top: 0.25rem;">$@turnoActivo.VentasTarjeta.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                 <div style="font-size: 0.74rem; color: var(--muted);">Crédito / Débito</div>
             </div>
 
@@ -127,11 +127,11 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
                         <div style="font-size: 0.78rem; color: var(--ink); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em;">Total Efectivo que debe haber en Caja (Base + Cobros)</div>
-                        <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-top: 0.2rem;">$@turnoActivo.TotalEfectivoEsperado.ToString("N0") COP</div>
+                        <div style="font-size: 1.85rem; font-weight: 900; color: var(--text); margin-top: 0.2rem;">$@turnoActivo.TotalEfectivoEsperado.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</div>
                     </div>
                     <div style="text-align: right;">
                         <div style="font-size: 0.78rem; color: var(--muted); font-weight: 600;">Facturación Total Turno</div>
-                        <div style="font-size: 1.35rem; font-weight: 800; color: var(--gold);">$@turnoActivo.TotalVentasSistema.ToString("N0") COP</div>
+                        <div style="font-size: 1.35rem; font-weight: 800; color: var(--gold);">$@turnoActivo.TotalVentasSistema.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</div>
                     </div>
                 </div>
             </div>
@@ -212,10 +212,10 @@ else
                             <td style="font-weight: 600; color: var(--text);">@t.UsuarioCajero</td>
                             <td style="color: var(--muted); font-size: 0.82rem;">@t.FechaApertura.ToString("dd/MM/yyyy HH:mm")</td>
                             <td style="color: var(--muted); font-size: 0.82rem;">@(t.FechaCierre?.ToString("dd/MM/yyyy HH:mm") ?? "—")</td>
-                            <td style="color: var(--text);">$@t.MontoInicial.ToString("N0")</td>
-                            <td style="font-weight: 700; color: var(--text);">$@t.TotalVentasSistema.ToString("N0")</td>
-                            <td style="color: var(--text);">$@t.TotalEfectivoEsperado.ToString("N0")</td>
-                            <td style="font-weight: 600; color: var(--text);">@(t.EfectivoRealDeclarado.HasValue ? $"${t.EfectivoRealDeclarado.Value:N0}" : "—")</td>
+                            <td style="color: var(--text);">$@t.MontoInicial.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
+                            <td style="font-weight: 700; color: var(--text);">$@t.TotalVentasSistema.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
+                            <td style="color: var(--text);">$@t.TotalEfectivoEsperado.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
+                            <td style="font-weight: 600; color: var(--text);">@(t.EfectivoRealDeclarado.HasValue ? $"${(t.EfectivoRealDeclarado.Value).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)}" : "—")</td>
                             <td>
                                 @if (t.Diferencia.HasValue)
                                 {
@@ -225,11 +225,11 @@ else
                                     }
                                     else if (t.Diferencia.Value > 0)
                                     {
-                                        <span style="color: var(--info); font-weight: 700;">+$@t.Diferencia.Value.ToString("N0") (Sobrante)</span>
+                                        <span style="color: var(--info); font-weight: 700;">+$@t.Diferencia.Value.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) (Sobrante)</span>
                                     }
                                     else
                                     {
-                                        <span style="color: var(--danger); font-weight: 700;">-$@Math.Abs(t.Diferencia.Value).ToString("N0") (Faltante)</span>
+                                        <span style="color: var(--danger); font-weight: 700;">-$@Math.Abs(t.Diferencia.Value).ToString("N0", ControlClientesRestaurante.Models.Formato.Co) (Faltante)</span>
                                     }
                                 }
                                 else
@@ -271,8 +271,8 @@ else
 
                 <div style="background: rgba(200, 151, 58, 0.14); border: 1px solid rgba(200, 151, 58, 0.35); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
                     <div style="font-size: 0.75rem; color: var(--ink); font-weight: 700; text-transform: uppercase;">Efectivo Esperado según Sistema:</div>
-                    <div style="font-size: 1.5rem; font-weight: 900; color: var(--text);">$@turnoActivo.TotalEfectivoEsperado.ToString("N0") COP</div>
-                    <div style="font-size: 0.74rem; color: var(--muted);">Base inicial ($@turnoActivo.MontoInicial.ToString("N0")) + Ventas efectivo ($@turnoActivo.VentasEfectivo.ToString("N0"))</div>
+                    <div style="font-size: 1.5rem; font-weight: 900; color: var(--text);">$@turnoActivo.TotalEfectivoEsperado.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</div>
+                    <div style="font-size: 0.74rem; color: var(--muted);">Base inicial ($@turnoActivo.MontoInicial.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)) + Ventas efectivo ($@turnoActivo.VentasEfectivo.ToString("N0", ControlClientesRestaurante.Models.Formato.Co))</div>
                 </div>
 
                 <div class="mb-3">

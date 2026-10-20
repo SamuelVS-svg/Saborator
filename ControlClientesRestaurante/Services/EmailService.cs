@@ -203,7 +203,7 @@ namespace ControlClientesRestaurante.Services
             if (string.IsNullOrWhiteSpace(correo)) return false;
 
             string depositoHtml = depositoPagado.HasValue && depositoPagado.Value > 0
-                ? $"<p style='color:#2A7348;font-weight:700;margin:4px 0;'>✓ Depósito de garantía recibido: ${depositoPagado.Value:N0} COP</p>"
+                ? $"<p style='color:#2A7348;font-weight:700;margin:4px 0;'>✓ Depósito de garantía recibido: ${(depositoPagado.Value).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP</p>"
                 : "";
 
             string html = $@"
@@ -291,7 +291,7 @@ namespace ControlClientesRestaurante.Services
         </div>
         <div class='body'>
             <div style='text-align:center;color:#2A7348;font-weight:700;'>✓ Transacción Aprobada Exitosamente</div>
-            <div class='monto'>${monto:N0} COP</div>
+            <div class='monto'>${(monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP</div>
             <p>Estimado/a <strong>{nombreCliente}</strong>, hemos recibido tu pago a través de la pasarela de pagos segura Wompi.</p>
             <div class='box'>
                 <div class='row'><span>Referencia:</span><strong style='font-family:monospace;'>{refPago}</strong></div>
@@ -318,7 +318,7 @@ namespace ControlClientesRestaurante.Services
             if (string.IsNullOrWhiteSpace(correo)) return false;
 
             var itemsHtml = string.Join("", items.Select(i =>
-                $"<tr style='border-bottom:1px solid #E3D8C8;'><td style='padding:8px 0;'>{i.Cantidad}x {i.Producto}</td><td style='text-align:right;padding:8px 0;'><strong>${i.Subtotal:N0}</strong></td></tr>"));
+                $"<tr style='border-bottom:1px solid #E3D8C8;'><td style='padding:8px 0;'>{i.Cantidad}x {i.Producto}</td><td style='text-align:right;padding:8px 0;'><strong>${(i.Subtotal).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)}</strong></td></tr>"));
 
             string html = $@"
 <!DOCTYPE html>
@@ -344,7 +344,7 @@ namespace ControlClientesRestaurante.Services
             <p>Tu orden <strong>#{numeroPedido}</strong> ha entrado a la cocina de autor. Destino: <strong>{mesaODireccion}</strong>.</p>
             <table style='width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;'>
                 {itemsHtml}
-                <tr style='font-size:16px;'><td style='padding:12px 0;color:#6B1E2E;'><strong>Total General:</strong></td><td style='text-align:right;padding:12px 0;color:#6B1E2E;'><strong>${total:N0} COP</strong></td></tr>
+                <tr style='font-size:16px;'><td style='padding:12px 0;color:#6B1E2E;'><strong>Total General:</strong></td><td style='text-align:right;padding:12px 0;color:#6B1E2E;'><strong>${(total).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP</strong></td></tr>
             </table>
         </div>
         <div class='footer'>

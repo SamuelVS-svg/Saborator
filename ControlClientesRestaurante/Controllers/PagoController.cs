@@ -367,11 +367,11 @@ namespace ControlClientesRestaurante.Controllers
                     if (esCaja)
                     {
                         reserva.Estado = "Confirmada (Pagada)";
-                        reserva.Notas = (reserva.Notas ?? "") + $" [Depósito Pagado: ${form.Monto:N0} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
+                        reserva.Notas = (reserva.Notas ?? "") + $" [Depósito Pagado: ${(form.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
                     }
                     else
                     {
-                        reserva.Notas = (reserva.Notas ?? "") + $" [Pago reportado por el cliente, pendiente de verificar: ${form.Monto:N0} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
+                        reserva.Notas = (reserva.Notas ?? "") + $" [Pago reportado por el cliente, pendiente de verificar: ${(form.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
                     }
                     _context.SaveChanges();
 
@@ -683,7 +683,7 @@ namespace ControlClientesRestaurante.Controllers
                         if (reserva != null)
                         {
                             reserva.Estado = "Confirmada (Pagada)";
-                            reserva.Notas = (reserva.Notas ?? "") + $" [Wompi Pagado: ${monto:N0} Trx: {txId}]".Trim();
+                            reserva.Notas = (reserva.Notas ?? "") + $" [Wompi Pagado: ${(monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Trx: {txId}]".Trim();
                             await _context.SaveChangesAsync();
                             await dbTx.CommitAsync();
                             return Ok(new { status = "success", message = $"Reserva {reserva.Codigo} confirmada con éxito." });
@@ -837,7 +837,7 @@ namespace ControlClientesRestaurante.Controllers
                         };
 
                         TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(comprobante);
-                        TempData["Mensaje"] = $"¡Pago de ${comprobante.Monto:N0} procesado y aprobado con éxito por Wompi!";
+                        TempData["Mensaje"] = $"¡Pago de ${(comprobante.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} procesado y aprobado con éxito por Wompi!";
                         return RedirectToAction("Comprobante");
                     }
                 }

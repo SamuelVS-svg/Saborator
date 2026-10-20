@@ -430,7 +430,7 @@ namespace ControlClientesRestaurante.Services
                     .ToList();
 
                 var listado = bebidas.Any()
-                    ? string.Join("\n", bebidas.Select(b => $"• **{b.Nombre}** — ${b.Precio:N0} COP: {b.Descripcion}"))
+                    ? string.Join("\n", bebidas.Select(b => $"• **{b.Nombre}** — ${(b.Precio).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP: {b.Descripcion}"))
                     : "• **Coca-Cola Original 350ml** — $5.000 COP: Botella de vidrio helada.\n• **Jugos Naturales** — $7.000 COP: En agua o leche fresca.";
 
                 return new IaConsultaResponse
@@ -449,7 +449,7 @@ namespace ControlClientesRestaurante.Services
             if (lower.Contains("hamburguesa") || lower.Contains("plato") || lower.Contains("recomiend") || lower.Contains("carta") || lower.Contains("menu") || lower.Contains("salchipapa"))
             {
                 var activos = _productoSvc.ObtenerActivos().Take(4).ToList();
-                var recomendacion = string.Join("\n\n", activos.Select(p => $"✨ **{p.Nombre}** (${p.Precio:N0} COP)\n{p.Descripcion}"));
+                var recomendacion = string.Join("\n\n", activos.Select(p => $"✨ **{p.Nombre}** (${(p.Precio).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP)\n{p.Descripcion}"));
 
                 return new IaConsultaResponse
                 {
@@ -752,7 +752,7 @@ namespace ControlClientesRestaurante.Services
             {
                 var criticos = _productoSvc.ObtenerTodos().Where(p => p.Activo && p.Stock <= 5).ToList();
                 var detalle = criticos.Any()
-                    ? string.Join("\n", criticos.Select(p => $"• ⚠️ **{p.Nombre}**: {p.Stock} unidades restantes (Precio: ${p.Precio:N0})"))
+                    ? string.Join("\n", criticos.Select(p => $"• ⚠️ **{p.Nombre}**: {p.Stock} unidades restantes (Precio: ${(p.Precio).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)})"))
                     : "• ✅ No hay productos en nivel crítico. Todo el stock activo supera las 5 unidades.";
 
                 return new IaConsultaResponse

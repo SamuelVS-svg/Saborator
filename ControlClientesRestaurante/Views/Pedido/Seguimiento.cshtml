@@ -175,7 +175,7 @@
 
             <div class="detail-row">
                 <span class="detail-label">Método de Pago:</span>
-                <span class="detail-value">@Model.MetodoPago @(Model.PagaCon.HasValue ? $"(Paga con ${Model.PagaCon.Value:N0})" : "")</span>
+                <span class="detail-value">@Model.MetodoPago @(Model.PagaCon.HasValue ? $"(Paga con ${(Model.PagaCon.Value).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)})" : "")</span>
             </div>
 
             @if (datosPrivados && !string.IsNullOrEmpty(Model.Notas))
@@ -213,7 +213,7 @@
                                 }
                             </div>
                         </div>
-                        <span class="order-item-price">$@((l.PrecioUnitario * l.Cantidad).ToString("N0"))</span>
+                        <span class="order-item-price">$@((l.PrecioUnitario * l.Cantidad).ToString("N0", ControlClientesRestaurante.Models.Formato.Co))</span>
                     </div>
                 }
             </div>
@@ -223,19 +223,19 @@
                 {
                     <div class="cost-row" style="color:#16A34A;font-weight:700;">
                         <span>Descuento Promocional @(!string.IsNullOrEmpty(Model.CodigoCupon) ? $"({Model.CodigoCupon})" : "")</span>
-                        <span>-$@Model.Descuento.ToString("N0") COP</span>
+                        <span>-$@Model.Descuento.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                     </div>
                 }
                 @if (Model.CostoEnvio > 0)
                 {
                     <div class="cost-row">
                         <span>Costo de Envío</span>
-                        <span>$@Model.CostoEnvio.ToString("N0") COP</span>
+                        <span>$@Model.CostoEnvio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                     </div>
                 }
                 <div class="cost-row total">
                     <span>Total Pagado / A Pagar</span>
-                    <span>$@Model.Total.ToString("N0") COP</span>
+                    <span>$@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                 </div>
             </div>
 
@@ -252,7 +252,7 @@
                     </div>
                     <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.8rem;">Acepta Tarjeta, Nequi, PSE y Botón Bancolombia en línea.</p>
                     <button type="button" onclick="pagarWompiSeguimiento()" style="width:100%;padding:0.75rem;background:linear-gradient(135deg, #FFD700, #C8973A);border:none;border-radius:8px;font-weight:800;color:#18060A;cursor:pointer;font-size:0.95rem;box-shadow:0 4px 12px rgba(200,151,58,0.3);">
-                        Pagar $@Model.Total.ToString("N0") con Wompi
+                        Pagar $@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) con Wompi
                     </button>
                 </div>
 

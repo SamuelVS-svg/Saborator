@@ -50,9 +50,9 @@
         <div class="rt-pay-lbl">@(Model.MetodoPago == "Efectivo" ? "Cobrar en efectivo" : $"Pago: {Model.MetodoPago}")</div>
         @if (Model.MetodoPago == "Efectivo" && Model.PagaCon.HasValue)
         {
-            <div class="rt-pay-sub">Paga con $@Model.PagaCon.Value.ToString("N0") · Cambio $@cambio.ToString("N0")</div>
+            <div class="rt-pay-sub">Paga con $@Model.PagaCon.Value.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) · Cambio $@cambio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
         }
     </div>
-    <div class="rt-total">$@Model.Total.ToString("N0")</div>
+    <div class="rt-total">$@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
 </div>
 
