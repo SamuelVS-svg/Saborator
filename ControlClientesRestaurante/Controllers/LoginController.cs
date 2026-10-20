@@ -823,5 +823,149 @@ namespace ControlClientesRestaurante.Controllers
             HttpContext.Session.SetString("FotoPerfil", usuario.FotoPerfil ?? "");
             HttpContext.Session.SetString("Tema", usuario.Tema ?? "clasico");
         }
+
+        public class SocialAuthDto
+        {
+            public string? Provider { get; set; }
+            public string? Email { get; set; }
+            public string? Name { get; set; }
+            public string? SocialId { get; set; }
+            public string? ReturnUrl { get; set; }
+        }
+
+        public class CompletarRegistroSocialDto
+        {
+            public string? Nombre { get; set; }
+            public string? Apellido { get; set; }
+            public string? Correo { get; set; }
+            public string? PrefijoPais { get; set; }
+            public string? Telefono { get; set; }
+            public string? Password { get; set; }
+            public bool AceptaTerminos { get; set; }
+            public bool AceptaPoliticas { get; set; }
+            public bool AceptaPromociones { get; set; }
+            public string? Provider { get; set; }
+            public string? SocialId { get; set; }
+            public string? ReturnUrl { get; set; }
+        }
+
+        [HttpPost("/Login/SocialAuth")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> SocialAuth([FromBody] SocialAuthDto? dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Email))
+            {
+                return BadRequest(new { ok = false, mensaje = "Datos de autenticación social incompletos." });
+            }
+
+            var provider = string.IsNullOrWhiteSpace(dto.Provider) ? "Google" : dto.Provider.Trim();
+            var res = _auth.ValidarOIniciarSocial(provider, dto.Email, dto.Name, dto.SocialId);
+
+            if (!res.ok)
+            {
+                return BadRequest(new { ok = false, mensaje = res.mensaje });
+            }
+
+            if (res.esNuevo)
+            {
+                var partesNombre = (dto.Name ?? "").Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+                var nombre = partesNombre.Length > 0 ? partesNombre[0] : "";
+                var apellido = partesNombre.Length > 1 ? partesNombre[1] : "";
+
+                return Ok(new
+                {
+                    ok = true,
+                    isNew = true,
+                    prefill = new
+                    {
+                        nombre,
+                        apellido,
+                        correo = dto.Email.Trim().ToLowerInvariant(),
+                        provider,
+                        socialId = dto.SocialId
+                    }
+                });
+            }
+
+            var usuarioEntity = res.usuario!;
+            var rol = usuarioEntity.Rol?.NombreRol ?? "Cliente";
+            var nombreMostrar = res.cliente?.Nombre ?? usuarioEntity.NombreUsuario;
+
+            await IniciarSesionClaimsAsync(usuarioEntity, rol, nombreMostrar);
+
+            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, rol, "LOGIN_SOCIAL", $"Inicio de sesión exitoso con {provider}.", "Seguridad");
+
+            return Ok(new
+            {
+                ok = true,
+                isNew = false,
+                mensaje = $"¡Bienvenido de nuevo, {nombreMostrar}!",
+                redirectUrl = dto.ReturnUrl ?? "/"
+            });
+        }
+
+        [HttpPost("/Login/CompletarRegistroSocial")]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> CompletarRegistroSocial([FromBody] CompletarRegistroSocialDto? dto)
+        {
+            if (dto == null)
+            {
+                return BadRequest(new { ok = false, mensaje = "Datos de formulario inválidos." });
+            }
+
+            if (!dto.AceptaTerminos)
+            {
+                return BadRequest(new { ok = false, mensaje = "Debes aceptar los Términos y condiciones del servicio." });
+            }
+
+            if (!dto.AceptaPoliticas)
+            {
+                return BadRequest(new { ok = false, mensaje = "Debes aceptar las Políticas de privacidad y tratamiento de datos personales." });
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Nombre))
+            {
+                return BadRequest(new { ok = false, mensaje = "Por favor ingresa tu nombre." });
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Correo) || !dto.Correo.Contains("@"))
+            {
+                return BadRequest(new { ok = false, mensaje = "Por favor ingresa un correo electrónico válido." });
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Telefono))
+            {
+                return BadRequest(new { ok = false, mensaje = "Por favor ingresa tu número de celular." });
+            }
+
+            var res = _auth.CompletarRegistroSocial(
+                dto.Nombre,
+                dto.Apellido ?? "",
+                dto.Correo,
+                dto.Telefono,
+                dto.PrefijoPais ?? "+57",
+                dto.AceptaPromociones,
+                dto.Password
+            );
+
+            if (!res.ok)
+            {
+                return BadRequest(new { ok = false, mensaje = res.mensaje });
+            }
+
+            var usuarioEntity = res.usuario!;
+            var nombreMostrar = res.cliente?.Nombre ?? usuarioEntity.NombreUsuario;
+
+            await IniciarSesionClaimsAsync(usuarioEntity, "Cliente", nombreMostrar);
+
+            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, "Cliente", "REGISTRO_SOCIAL_COMPLETO", $"Registro gourmet completado exitosamente vía {dto.Provider ?? "Social/Directo"}.", "Seguridad");
+
+            return Ok(new
+            {
+                ok = true,
+                mensaje = "¡Tu cuenta ha sido creada exitosamente! Bienvenido a Saborator.",
+                redirectUrl = dto.ReturnUrl ?? "/"
+            });
+        }
     }
 }

@@ -1,0 +1,556 @@
+<!-- ══ MODAL DE AUTENTICACIÓN & REGISTRO (GOOGLE, FACEBOOK, EMAIL) ════════════ -->
+<div class="modal-ingreso-overlay" id="modalIngresoOverlay" aria-modal="true" role="dialog" aria-labelledby="modalIngresoTitle">
+    <div class="modal-ingreso-box" id="modalIngresoBox">
+        <button type="button" class="modal-ingreso-close" onclick="cerrarModalIngreso()" aria-label="Cerrar modal">&times;</button>
+
+        <!-- ── VISTA 1: INGRESA A TU CUENTA (OPCIONES SOCIALES & EMAIL) ────────── -->
+        <div class="modal-ingreso-view active" id="viewIngresoPrincipal">
+            <div class="modal-ingreso-header">
+                <div class="modal-ingreso-brand-logo">
+                    <partial name="_LogoBurger" />
+                    <span>Saborator</span>
+                </div>
+                <h3 class="modal-ingreso-title" id="modalIngresoTitle">Ingresa a tu cuenta</h3>
+                <p class="modal-ingreso-sub">Accede para reservar mesas exclusivas, rastrear tus pedidos y disfrutar de la experiencia gourmet.</p>
+            </div>
+
+            <div id="modalIngresoFeedback" class="auth-feedback-box"></div>
+
+            <!-- Botón Google -->
+            <button type="button" class="btn-social-auth google" onclick="iniciarFlujoSocial('google')">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Continuar con Google</span>
+            </button>
+
+            <!-- Botón Facebook -->
+            <button type="button" class="btn-social-auth facebook" onclick="iniciarFlujoSocial('facebook')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>Continuar con Facebook</span>
+            </button>
+
+            <!-- Botón Correo Electrónico -->
+            <button type="button" class="btn-social-auth email" onclick="mostrarVistaEmail()">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+                <span>Continuar con correo electrónico</span>
+            </button>
+
+            <p class="modal-ingreso-footer-note">
+                Al continuar, confirmas que has leído y aceptas nuestros
+                <a asp-controller="Home" asp-action="Terminos" target="_blank">Términos y condiciones</a> y las
+                <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank">Políticas de privacidad</a>.
+            </p>
+        </div>
+
+        <!-- ── VISTA 2: INGRESO CON CORREO / CONTRASEÑA ────────────────────────── -->
+        <div class="modal-ingreso-view" id="viewIngresoEmail">
+            <div class="modal-ingreso-header">
+                <div class="modal-ingreso-brand-logo">
+                    <partial name="_LogoBurger" />
+                    <span>Saborator</span>
+                </div>
+                <h3 class="modal-ingreso-title">Ingresa con correo</h3>
+                <p class="modal-ingreso-sub">Digita tu usuario o correo electrónico y tu clave de acceso.</p>
+            </div>
+
+            <div id="emailFeedback" class="auth-feedback-box"></div>
+
+            <form onsubmit="ejecutarLoginEmail(event)" id="formLoginEmail">
+                <div class="auth-form-group">
+                    <label for="inputEmailUsuario">Usuario o Correo *</label>
+                    <input type="text" id="inputEmailUsuario" class="auth-input-field" placeholder="ej: comensal@saborator.com" required />
+                </div>
+                <div class="auth-form-group">
+                    <label for="inputEmailPass">Contraseña *</label>
+                    <input type="password" id="inputEmailPass" class="auth-input-field" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="btn-cta-rojo" id="btnLoginEmailSubmit">
+                    <span>Iniciar Sesión</span>
+                </button>
+
+                <div style="text-align:center;margin-top:0.75rem;">
+                    <a href="javascript:void(0)" onclick="irAPasoFinal()" style="font-size:0.83rem;color:var(--gold,#C8973A);font-weight:700;text-decoration:underline;">
+                        ¿No tienes cuenta? Crear mi cuenta
+                    </a>
+                </div>
+
+                <div style="text-align:center;">
+                    <button type="button" class="btn-auth-back" onclick="mostrarVistaPrincipal()">
+                        ← Volver a opciones de ingreso
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── VISTA 3: SELECTOR FLUIDO DE CUENTA (GOOGLE / SOCIAL OAUTH) ─────── -->
+        <div class="modal-ingreso-view" id="viewSelectorSocial">
+            <div class="modal-ingreso-header" style="margin-bottom:1rem;">
+                <div style="display:flex;justify-content:center;margin-bottom:0.5rem;" id="socialSelectorBrandIcon">
+                    <svg width="34" height="34" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                </div>
+                <h4 class="modal-ingreso-title" style="font-size:1.1rem;" id="socialSelectorTitle">Acceder con Google</h4>
+                <p class="modal-ingreso-sub">Selecciona una cuenta para continuar en <strong>Saborator Alta Cocina</strong></p>
+            </div>
+
+            <div id="socialSelectorFeedback" class="auth-feedback-box"></div>
+
+            <div class="google-account-list">
+                <div class="google-account-card" onclick="seleccionarCuentaSocial('comensal.gourmet@gmail.com', 'Carlos Mendoza', 'google')">
+                    <div class="google-avatar">C</div>
+                    <div class="google-account-info">
+                        <div class="google-account-name">Carlos Mendoza</div>
+                        <div class="google-account-email">comensal.gourmet@gmail.com</div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8973A" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+
+                <div class="google-account-card" onclick="seleccionarCuentaSocial('valeria.s@gmail.com', 'Valeria Sarmiento', 'google')">
+                    <div class="google-avatar" style="background:linear-gradient(135deg, #EC4899, #8B5CF6);">V</div>
+                    <div class="google-account-info">
+                        <div class="google-account-name">Valeria Sarmiento</div>
+                        <div class="google-account-email">valeria.s@gmail.com</div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8973A" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+
+                <div class="google-account-card" onclick="mostrarInputCuentaPersonalizada()">
+                    <div class="google-avatar" style="background:#6B7280;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="google-account-info">
+                        <div class="google-account-name">Usar otra cuenta</div>
+                        <div class="google-account-email">Escribe tu correo de Google o Facebook</div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+
+                <!-- Input desplegable para otra cuenta -->
+                <div id="customSocialAccountBox" style="display:none;margin-top:0.75rem;padding:0.85rem;border:1.5px solid var(--gold,#C8973A);border-radius:12px;background:rgba(200,151,58,0.08);">
+                    <div class="auth-form-group" style="margin-bottom:0.6rem;">
+                        <label for="customSocialEmail">Tu correo electrónico *</label>
+                        <input type="email" id="customSocialEmail" class="auth-input-field" placeholder="tu-cuenta@gmail.com" />
+                    </div>
+                    <div class="auth-form-group" style="margin-bottom:0.6rem;">
+                        <label for="customSocialName">Tu nombre completo</label>
+                        <input type="text" id="customSocialName" class="auth-input-field" placeholder="Nombre y Apellido" />
+                    </div>
+                    <button type="button" class="btn-cta-rojo" style="margin-top:0.5rem;padding:0.7rem;" onclick="confirmarCuentaPersonalizada()">
+                        Continuar
+                    </button>
+                </div>
+            </div>
+
+            <div class="google-permissions-notice">
+                Para continuar, la plataforma compartirá tu nombre, dirección de correo y foto con Saborator. Consulta la Política de Privacidad de Saborator.
+            </div>
+
+            <div style="text-align:center;">
+                <button type="button" class="btn-auth-back" onclick="mostrarVistaPrincipal()">
+                    ← Cancelar y volver
+                </button>
+            </div>
+        </div>
+
+        <!-- ── VISTA 4: SOLO UN PASO MÁS (REGISTRO FINAL / DATOS ADICIONALES) ──── -->
+        <div class="modal-ingreso-view" id="viewPasoFinal">
+            <div class="modal-ingreso-header">
+                <span class="step-badge-tag">Paso 2 de 2 · Finalizar registro</span>
+                <h3 class="modal-ingreso-title">Solo un paso más</h3>
+                <p class="modal-ingreso-sub">Completa tus datos para confirmar tu cuenta y disfrutar de la experiencia gourmet.</p>
+            </div>
+
+            <div id="pasoFinalFeedback" class="auth-feedback-box"></div>
+
+            <form onsubmit="ejecutarRegistroPasoFinal(event)" id="formPasoFinal">
+                <input type="hidden" id="regProvider" value="Social" />
+                <input type="hidden" id="regSocialId" value="" />
+
+                <!-- Nombre y Apellido -->
+                <div class="auth-form-duo">
+                    <div class="auth-form-group">
+                        <label for="regNombre">Nombre *</label>
+                        <input type="text" id="regNombre" class="auth-input-field" placeholder="Tu nombre" required />
+                    </div>
+                    <div class="auth-form-group">
+                        <label for="regApellido">Apellido *</label>
+                        <input type="text" id="regApellido" class="auth-input-field" placeholder="Tu apellido" required />
+                    </div>
+                </div>
+
+                <!-- Correo Electrónico -->
+                <div class="auth-form-group">
+                    <label for="regCorreo">Correo electrónico *</label>
+                    <input type="email" id="regCorreo" class="auth-input-field" placeholder="tu-correo@ejemplo.com" required />
+                </div>
+
+                <!-- Celular con Selector de Prefijo -->
+                <div class="auth-form-group">
+                    <label for="regTelefono">Número de celular *</label>
+                    <div class="auth-phone-wrap">
+                        <select id="regPrefijo" class="auth-prefix-select" aria-label="Prefijo de país">
+                            <option value="+57" selected>🇨🇴 +57</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+52">🇲🇽 +52</option>
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+54">🇦🇷 +54</option>
+                            <option value="+56">🇨🇱 +56</option>
+                            <option value="+507">🇵🇦 +507</option>
+                            <option value="+58">🇻🇪 +58</option>
+                            <option value="+51">🇵🇪 +51</option>
+                        </select>
+                        <input type="tel" id="regTelefono" class="auth-input-field" placeholder="300 123 4567" required />
+                    </div>
+                </div>
+
+                <!-- Checkboxes de Consentimiento -->
+                <div style="margin: 1.15rem 0 0.85rem;">
+                    <label class="auth-checkbox-row">
+                        <input type="checkbox" id="regCheckTerminos" required />
+                        <span>Confirmo que he leído y acepto los <a asp-controller="Home" asp-action="Terminos" target="_blank">Términos y condiciones</a> de Saborator. *</span>
+                    </label>
+
+                    <label class="auth-checkbox-row">
+                        <input type="checkbox" id="regCheckPrivacidad" required />
+                        <span>Confirmo que he leído y acepto las <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank">Políticas de privacidad y tratamiento de datos personales</a>. *</span>
+                    </label>
+
+                    <label class="auth-checkbox-row">
+                        <input type="checkbox" id="regCheckPromos" />
+                        <span>Deseo recibir correos promocionales, ofertas gastronómicas y catas exclusivas de Saborator.</span>
+                    </label>
+                </div>
+
+                <!-- Botón CTA Rojo Destacado -->
+                <button type="submit" class="btn-cta-rojo" id="btnCrearCuentaCTA">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Crear mi cuenta</span>
+                </button>
+
+                <div style="text-align:center;">
+                    <button type="button" class="btn-auth-back" onclick="mostrarVistaPrincipal()">
+                        ← Volver a opciones
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SCRIPTS CONTROLADORES DEL MODAL ════════════════════════════════════════ -->
+<script>
+    // Variables de estado
+    let authCurrentProvider = 'Google';
+
+    function abrirModalIngreso() {
+        const overlay = document.getElementById('modalIngresoOverlay');
+        if (overlay) {
+            overlay.classList.add('active');
+            mostrarVistaPrincipal();
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function cerrarModalIngreso() {
+        const overlay = document.getElementById('modalIngresoOverlay');
+        if (overlay) {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            limpiarFeedbacksAuth();
+        }
+    }
+
+    // Navegación entre vistas del modal
+    function cambiarVistaAuth(idVista) {
+        document.querySelectorAll('.modal-ingreso-view').forEach(v => v.classList.remove('active'));
+        const target = document.getElementById(idVista);
+        if (target) {
+            target.classList.add('active');
+        }
+        limpiarFeedbacksAuth();
+    }
+
+    function mostrarVistaPrincipal() {
+        cambiarVistaAuth('viewIngresoPrincipal');
+        const customBox = document.getElementById('customSocialAccountBox');
+        if (customBox) customBox.style.display = 'none';
+    }
+
+    function mostrarVistaEmail() {
+        cambiarVistaAuth('viewIngresoEmail');
+        setTimeout(() => document.getElementById('inputEmailUsuario')?.focus(), 80);
+    }
+
+    function iniciarFlujoSocial(provider) {
+        authCurrentProvider = provider.toLowerCase();
+        const titleEl = document.getElementById('socialSelectorTitle');
+        const iconWrap = document.getElementById('socialSelectorBrandIcon');
+
+        if (authCurrentProvider === 'facebook') {
+            if (titleEl) titleEl.textContent = 'Acceder con Facebook';
+            if (iconWrap) {
+                iconWrap.innerHTML = `
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="#1877F2">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                `;
+            }
+        } else {
+            if (titleEl) titleEl.textContent = 'Acceder con Google';
+            if (iconWrap) {
+                iconWrap.innerHTML = `
+                    <svg width="34" height="34" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                `;
+            }
+        }
+
+        cambiarVistaAuth('viewSelectorSocial');
+    }
+
+    function mostrarInputCuentaPersonalizada() {
+        const box = document.getElementById('customSocialAccountBox');
+        if (box) {
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+            if (box.style.display === 'block') {
+                document.getElementById('customSocialEmail')?.focus();
+            }
+        }
+    }
+
+    function confirmarCuentaPersonalizada() {
+        const email = document.getElementById('customSocialEmail')?.value.trim();
+        const name = document.getElementById('customSocialName')?.value.trim() || email.split('@@')[0];
+        if (!email || !email.includes('@@')) {
+            mostrarFeedbackAuth('socialSelectorFeedback', 'Por favor ingresa un correo válido.', false);
+            return;
+        }
+        seleccionarCuentaSocial(email, name, authCurrentProvider);
+    }
+
+    // Selecciona la cuenta y consulta si ya existe o si es primera vez
+    async function seleccionarCuentaSocial(email, name, provider) {
+        mostrarFeedbackAuth('socialSelectorFeedback', 'Verificando cuenta en Saborator...', true);
+
+        try {
+            const resp = await fetch('/Login/SocialAuth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    provider: provider || authCurrentProvider,
+                    email: email,
+                    name: name,
+                    returnUrl: window.location.pathname
+                })
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok || !data.ok) {
+                mostrarFeedbackAuth('socialSelectorFeedback', data.mensaje || 'Error al autenticar con la red social.', false);
+                return;
+            }
+
+            if (data.isNew) {
+                // Primera vez -> Redirige al formulario 'SOLO UN PASO MÁS'
+                irAPasoFinal(data.prefill);
+            } else {
+                // Usuario existente -> Ingreso exitoso inmediato
+                mostrarFeedbackAuth('socialSelectorFeedback', data.mensaje || '¡Bienvenido a Saborator!', true);
+                setTimeout(() => {
+                    window.location.href = data.redirectUrl || window.location.href;
+                }, 750);
+            }
+        } catch (err) {
+            console.error(err);
+            mostrarFeedbackAuth('socialSelectorFeedback', 'Error de conexión con el servidor de autenticación.', false);
+        }
+    }
+
+    // Transición a la vista 'SOLO UN PASO MÁS'
+    function irAPasoFinal(prefill) {
+        cambiarVistaAuth('viewPasoFinal');
+
+        if (prefill) {
+            if (prefill.nombre) document.getElementById('regNombre').value = prefill.nombre;
+            if (prefill.apellido) document.getElementById('regApellido').value = prefill.apellido;
+            if (prefill.correo) document.getElementById('regCorreo').value = prefill.correo;
+            if (prefill.provider) document.getElementById('regProvider').value = prefill.provider;
+            if (prefill.socialId) document.getElementById('regSocialId').value = prefill.socialId;
+        }
+
+        setTimeout(() => {
+            const telInput = document.getElementById('regTelefono');
+            if (telInput && !telInput.value) telInput.focus();
+        }, 100);
+    }
+
+    // Envío del Paso Final de Registro
+    async function ejecutarRegistroPasoFinal(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById('regNombre')?.value.trim();
+        const apellido = document.getElementById('regApellido')?.value.trim();
+        const correo = document.getElementById('regCorreo')?.value.trim();
+        const prefijo = document.getElementById('regPrefijo')?.value;
+        const telefono = document.getElementById('regTelefono')?.value.trim();
+        const checkTerminos = document.getElementById('regCheckTerminos')?.checked;
+        const checkPrivacidad = document.getElementById('regCheckPrivacidad')?.checked;
+        const checkPromos = document.getElementById('regCheckPromos')?.checked;
+        const provider = document.getElementById('regProvider')?.value || 'Social';
+        const socialId = document.getElementById('regSocialId')?.value || '';
+
+        if (!checkTerminos || !checkPrivacidad) {
+            mostrarFeedbackAuth('pasoFinalFeedback', 'Debes aceptar los Términos y condiciones y las Políticas de privacidad para continuar.', false);
+            return;
+        }
+
+        const btnCta = document.getElementById('btnCrearCuentaCTA');
+        if (btnCta) {
+            btnCta.disabled = true;
+            btnCta.innerHTML = '<span>Creando tu cuenta...</span>';
+        }
+
+        try {
+            const resp = await fetch('/Login/CompletarRegistroSocial', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre,
+                    apellido,
+                    correo,
+                    prefijoPais: prefijo,
+                    telefono,
+                    aceptaTerminos: checkTerminos,
+                    aceptaPoliticas: checkPrivacidad,
+                    aceptaPromociones: checkPromos,
+                    provider,
+                    socialId,
+                    returnUrl: window.location.pathname
+                })
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok || !data.ok) {
+                mostrarFeedbackAuth('pasoFinalFeedback', data.mensaje || 'Error al completar el registro.', false);
+                if (btnCta) {
+                    btnCta.disabled = false;
+                    btnCta.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Crear mi cuenta</span>';
+                }
+                return;
+            }
+
+            mostrarFeedbackAuth('pasoFinalFeedback', '¡Cuenta creada con éxito! Redirigiendo...', true);
+            setTimeout(() => {
+                window.location.href = data.redirectUrl || window.location.href;
+            }, 850);
+        } catch (err) {
+            console.error(err);
+            mostrarFeedbackAuth('pasoFinalFeedback', 'Error de conexión al guardar los datos.', false);
+            if (btnCta) {
+                btnCta.disabled = false;
+                btnCta.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Crear mi cuenta</span>';
+            }
+        }
+    }
+
+    // Login clásico con correo y contraseña
+    async function ejecutarLoginEmail(e) {
+        e.preventDefault();
+        const usuario = document.getElementById('inputEmailUsuario')?.value.trim();
+        const pass = document.getElementById('inputEmailPass')?.value;
+        const btn = document.getElementById('btnLoginEmailSubmit');
+
+        if (!usuario || !pass) {
+            mostrarFeedbackAuth('emailFeedback', 'Por favor ingresa tu usuario/correo y contraseña.', false);
+            return;
+        }
+
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Verificando...';
+        }
+
+        try {
+            const resp = await fetch('/Login/LoginAjax', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, password: pass, returnUrl: window.location.pathname })
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok || !data.ok) {
+                mostrarFeedbackAuth('emailFeedback', data.mensaje || 'Credenciales incorrectas.', false);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Iniciar Sesión';
+                }
+                return;
+            }
+
+            mostrarFeedbackAuth('emailFeedback', '¡Ingreso correcto! Redirigiendo...', true);
+            setTimeout(() => {
+                window.location.href = data.redirectUrl || window.location.href;
+            }, 600);
+        } catch (err) {
+            console.error(err);
+            mostrarFeedbackAuth('emailFeedback', 'Error al procesar la solicitud.', false);
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Iniciar Sesión';
+            }
+        }
+    }
+
+    function mostrarFeedbackAuth(idBox, mensaje, esExito) {
+        const box = document.getElementById(idBox);
+        if (box) {
+            box.textContent = mensaje;
+            box.className = 'auth-feedback-box ' + (esExito ? 'success' : 'error');
+            box.style.display = 'block';
+        }
+    }
+
+    function limpiarFeedbacksAuth() {
+        document.querySelectorAll('.auth-feedback-box').forEach(b => {
+            b.style.display = 'none';
+            b.textContent = '';
+        });
+    }
+
+    // Cerrar modal al presionar Escape o hacer clic en el backdrop
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            const overlay = document.getElementById('modalIngresoOverlay');
+            if (overlay && overlay.classList.contains('active')) {
+                cerrarModalIngreso();
+            }
+        }
+    });
+
+    document.getElementById('modalIngresoOverlay')?.addEventListener('click', function (e) {
+        if (e.target === this) {
+            cerrarModalIngreso();
+        }
+    });
+</script>

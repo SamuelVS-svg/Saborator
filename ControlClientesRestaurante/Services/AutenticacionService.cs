@@ -400,5 +400,146 @@ namespace ControlClientesRestaurante.Services
 
             return CambiarContrasena(nombreUsuario, contrasenaActual, nuevaContrasena);
         }
+
+        /// <summary>
+        /// Valida si un usuario o cliente autenticado con Google/Facebook ya existe en la plataforma.
+        /// Si existe, retorna el usuario para iniciar sesión. Si no existe, indica que es nuevo (requiere 'SOLO UN PASO MÁS').
+        /// </summary>
+        public (bool ok, string mensaje, bool esNuevo, Usuario? usuario, Cliente? cliente) ValidarOIniciarSocial(
+            string provider, string email, string? nombre, string? socialId)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return (false, "El correo electrónico es requerido por la plataforma social.", false, null, null);
+
+            var correoLimpio = email.Trim().ToLowerInvariant();
+            var usuario = _usuarioRepository.ObtenerPorCorreo(correoLimpio);
+            var cliente = _context.Clientes.FirstOrDefault(c => c.Correo == correoLimpio);
+
+            if (usuario != null)
+            {
+                if (!usuario.Estado)
+                    return (false, "Esta cuenta se encuentra inactiva. Contacte al personal del restaurante.", false, null, null);
+
+                if (cliente == null && !string.IsNullOrWhiteSpace(usuario.NombreUsuario))
+                {
+                    cliente = _context.Clientes.FirstOrDefault(c => c.Nombre == usuario.NombreUsuario);
+                }
+
+                return (true, "Inicio de sesión social exitoso.", false, usuario, cliente);
+            }
+
+            // Si no existe usuario, el comensal es nuevo y debe completar su perfil ('SOLO UN PASO MÁS')
+            return (true, "Usuario social nuevo.", true, null, cliente);
+        }
+
+        /// <summary>
+        /// Completa el registro de un nuevo cliente/comensal proveniente del flujo social o rápido ('SOLO UN PASO MÁS').
+        /// Crea tanto la entidad Cliente como la entidad Usuario con rol 'Cliente' y sesión verificada.
+        /// </summary>
+        public (bool ok, string mensaje, Usuario? usuario, Cliente? cliente) CompletarRegistroSocial(
+            string nombre, string apellido, string correo, string telefono, string? prefijoPais,
+            bool aceptaPromociones, string? contrasena = null)
+        {
+            if (string.IsNullOrWhiteSpace(nombre))
+                return (false, "El nombre es obligatorio.", null, null);
+
+            if (string.IsNullOrWhiteSpace(correo) || !correo.Contains("@"))
+                return (false, "Un correo electrónico válido es obligatorio.", null, null);
+
+            if (string.IsNullOrWhiteSpace(telefono))
+                return (false, "El número de celular es obligatorio.", null, null);
+
+            var correoLimpio = correo.Trim().ToLowerInvariant();
+            var prefijo = string.IsNullOrWhiteSpace(prefijoPais) ? "+57" : prefijoPais.Trim();
+            var telLimpio = new string(telefono.Where(char.IsDigit).ToArray());
+            if (telLimpio.Length < 7)
+                return (false, "Ingresa un número de celular válido de al menos 7 dígitos.", null, null);
+
+            var telefonoCompleto = $"{prefijo} {telLimpio}";
+
+            // Verificar si el correo ya está en uso
+            var usuarioExistente = _usuarioRepository.ObtenerPorCorreo(correoLimpio);
+            if (usuarioExistente != null)
+            {
+                return (true, "Ya tenías una cuenta con este correo. Iniciando sesión...", usuarioExistente, _context.Clientes.FirstOrDefault(c => c.Correo == correoLimpio));
+            }
+
+            var nombreCompleto = $"{nombre.Trim()} {apellido?.Trim()}".Trim();
+
+            // Generar documento técnico válido para cumplir con la entidad Cliente (ej. CC-10XXXXXXXX)
+            var ultimosDigitos = telLimpio.Length >= 8 ? telLimpio[^8..] : telLimpio.PadLeft(8, '0');
+            var docGenerado = $"CC-{ultimosDigitos}";
+            int reintentos = 0;
+            while (_context.Clientes.Any(c => c.Documento == docGenerado) && reintentos < 10)
+            {
+                docGenerado = $"CC-{Random.Shared.Next(10000000, 99999999)}";
+                reintentos++;
+            }
+
+            // Generar nombre de usuario único amigable
+            var baseUser = new string(nombre.ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
+            if (string.IsNullOrWhiteSpace(baseUser))
+                baseUser = correoLimpio.Split('@')[0];
+            var usuarioFinal = baseUser;
+            int counter = 1;
+            while (_usuarioRepository.ExisteNombre(usuarioFinal))
+            {
+                usuarioFinal = $"{baseUser}{counter}";
+                counter++;
+            }
+
+            // Contraseña segura
+            var passFinal = !string.IsNullOrWhiteSpace(contrasena) && contrasena.Length >= 6 ? contrasena : $"Social#Saborator{Random.Shared.Next(1000, 9999)}!";
+
+            using var tx = _context.Database.BeginTransaction();
+            try
+            {
+                var rolCliente = _context.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
+                if (rolCliente == null)
+                {
+                    rolCliente = new Rol { NombreRol = "Cliente" };
+                    _context.Roles.Add(rolCliente);
+                    _context.SaveChanges();
+                }
+
+                // 1. Crear el Cliente
+                var nuevoCliente = new Cliente
+                {
+                    Nombre          = nombreCompleto,
+                    Documento       = docGenerado,
+                    Telefono        = telefonoCompleto,
+                    Correo          = correoLimpio,
+                    FechaNacimiento = DateTime.Today.AddYears(-25),
+                    Activo          = true,
+                    Codigo          = Guid.NewGuid().ToString("N")
+                };
+                _context.Clientes.Add(nuevoCliente);
+                _context.SaveChanges();
+
+                // 2. Crear el Usuario con rol Cliente
+                var nuevoUsuario = new Usuario
+                {
+                    NombreUsuario          = usuarioFinal,
+                    ContraseñaHash         = BCrypt.Net.BCrypt.HashPassword(passFinal),
+                    RolId                  = rolCliente.Id,
+                    Estado                 = true,
+                    Correo                 = correoLimpio,
+                    EmailVerificado        = true,
+                    DebeCambiarContraseña  = false,
+                    Tema                   = "clasico"
+                };
+                _context.Usuarios.Add(nuevoUsuario);
+                _context.SaveChanges();
+
+                tx.Commit();
+
+                return (true, "¡Cuenta creada exitosamente! Bienvenido a Saborator.", nuevoUsuario, nuevoCliente);
+            }
+            catch (Exception ex)
+            {
+                tx.Rollback();
+                return (false, $"Error al completar el registro: {ex.Message}", null, null);
+            }
+        }
     }
 }

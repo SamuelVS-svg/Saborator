@@ -206,7 +206,7 @@
             }
             else
             {
-                <a asp-controller="Login" asp-action="Index" class="lnav-btn-o lnav-btn-login">Iniciar Sesión</a>
+                <button type="button" onclick="abrirModalIngreso()" class="lnav-btn-o lnav-btn-login" id="btnNavIngresarHome">Ingresar</button>
             }
 
             <!-- Botón Menú Hamburguesa Móvil -->
@@ -238,8 +238,7 @@
         }
         else
         {
-            <a asp-controller="Login" asp-action="Index">🔑 Iniciar Sesión</a>
-            <a asp-controller="Login" asp-action="Index" asp-route-tab="registro" style="color:var(--gold, #C8973A);font-weight:700;">✨ Crear Cuenta</a>
+            <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalIngreso();">👤 Ingresar</a>
         }
     </div>
 

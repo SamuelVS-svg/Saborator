@@ -106,12 +106,9 @@
             }
             else
             {
-                <a asp-controller="Login" asp-action="Index" class="gourmet-btn-login">
-                    Iniciar Sesión
-                </a>
-                <a asp-controller="Login" asp-action="Index" asp-route-tab="registro" class="gourmet-btn-register">
-                    Crear Cuenta
-                </a>
+                <button type="button" onclick="abrirModalIngreso()" class="gourmet-btn-login" id="btnNavIngresarGourmet">
+                    Ingresar
+                </button>
             }
 
             <!-- Botón Hamburguesa Responsive -->
@@ -140,8 +137,7 @@
         }
         else
         {
-            <a asp-controller="Login" asp-action="Index" class="gourmet-mobile-item">Iniciar Sesión</a>
-            <a asp-controller="Login" asp-action="Index" asp-route-tab="registro" class="gourmet-mobile-item" style="color:var(--gold);">Crear Cuenta</a>
+            <button type="button" onclick="abrirModalIngreso(); toggleGourmetMobileNav();" class="gourmet-mobile-item" style="background:none;border:none;text-align:left;width:100%;cursor:pointer;font-size:inherit;font-family:inherit;color:inherit;">👤 Ingresar</button>
         }
     </div>
 </header>
