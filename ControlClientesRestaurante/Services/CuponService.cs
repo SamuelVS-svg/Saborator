@@ -53,7 +53,7 @@ namespace ControlClientesRestaurante.Services
                 return (false, $"El cupón '{cupon.Codigo}' ha alcanzado el límite máximo de {cupon.UsosMaximos} canjes.", 0, null);
 
             if (subtotalProductos < cupon.MontoMinimo)
-                return (false, $"El cupón '{cupon.Codigo}' requiere un consumo mínimo de ${cupon.MontoMinimo:N0} COP en productos.", 0, null);
+                return (false, $"El cupón '{cupon.Codigo}' requiere un consumo mínimo de ${(cupon.MontoMinimo).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP en productos.", 0, null);
 
             decimal descuento = 0;
             if (cupon.TipoDescuento.Equals("Porcentaje", StringComparison.OrdinalIgnoreCase))
@@ -72,7 +72,7 @@ namespace ControlClientesRestaurante.Services
             if (descuento <= 0)
                 return (false, "El cupón no genera descuento aplicable en esta orden.", 0, null);
 
-            return (true, $"¡Cupón '{cupon.Codigo}' aplicado! Ahorras ${descuento:N0} COP.", descuento, cupon);
+            return (true, $"¡Cupón '{cupon.Codigo}' aplicado! Ahorras ${(descuento).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP.", descuento, cupon);
         }
 
         /// <summary>

@@ -310,7 +310,7 @@ namespace ControlClientesRestaurante.Controllers
                 "Cajero",
                 "EMISION_FACTURA",
                 "Facturas",
-                $"Factura {facturaCreada.Numero} emitida para pedido {pedido.Numero} por valor de ${facturaCreada.Total:N0} COP.",
+                $"Factura {facturaCreada.Numero} emitida para pedido {pedido.Numero} por valor de ${(facturaCreada.Total).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP.",
                 "Factura",
                 facturaCreada.Id,
                 HttpContext.Connection.RemoteIpAddress?.ToString());

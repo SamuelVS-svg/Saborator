@@ -58,7 +58,7 @@ else
                         <td><strong style="font-family:monospace;font-size:.82rem;">@p.Numero</strong></td>
                         <td><strong>@p.Mesa</strong></td>
                         <td style="color:var(--muted);font-size:.82rem;">@(p.NombreCliente ?? "—")</td>
-                        <td><strong>$@p.Total.ToString("N0")</strong></td>
+                        <td><strong>$@p.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</strong></td>
                         <td>
                             <span class="estado-pill estado-@p.Estado.ToLower()">
                                 @p.Estado

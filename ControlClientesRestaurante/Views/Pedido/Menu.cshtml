@@ -433,7 +433,7 @@
                              onclick="toggleItem(@p.Id, @((double)p.Precio), '@p.Nombre.Replace("'","\\'")', @p.Stock)">
                             <div class="m-ico">@Html.Raw(GetIco(p.Nombre))</div>
                             <div class="m-name">@p.Nombre</div>
-                            <div class="m-price">$@p.Precio.ToString("N0")</div>
+                            <div class="m-price">$@p.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                             <div class="m-qty" id="qty-wrap-@p.Id">
                                 <button type="button" class="qty-btn" onclick="cambiarCant(@p.Id,-1,event)">−</button>
                                 <span class="qty-num" id="qty-@p.Id">1</span>

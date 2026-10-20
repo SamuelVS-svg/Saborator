@@ -53,7 +53,7 @@ namespace ControlClientesRestaurante.Controllers
 
             ViewBag.Usuario      = usuario;
             ViewBag.Cliente      = cliente;
-            ViewBag.Rol          = usuario.Rol?.NombreRol ?? "Usuario";
+            ViewBag.Rol          = User.FindFirst(ClaimTypes.Role)?.Value ?? usuario.Rol?.NombreRol ?? "Usuario";
             ViewBag.FotoPerfil   = usuario.FotoPerfil;
             ViewBag.Tema         = usuario.Tema ?? "clasico";
             ViewBag.EsBienvenida = bienvenida == true;
@@ -63,7 +63,8 @@ namespace ControlClientesRestaurante.Controllers
         // ── Sincronizador de Claims y Sesión del Usuario Autenticado ───────
         private async Task RefrescarClaimsSesionAsync(Usuario usuario)
         {
-            var rol = usuario.Rol?.NombreRol ?? User.FindFirst(ClaimTypes.Role)?.Value ?? "Cliente";
+            // Conservar el rol activo de la sesión (el admin puede haber cambiado de rol temporalmente)
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value ?? usuario.Rol?.NombreRol ?? "Cliente";
             var nombreMostrar = User.FindFirst("NombreCompleto")?.Value ?? usuario.NombreUsuario;
 
             var claims = new List<Claim>
@@ -119,6 +120,13 @@ namespace ControlClientesRestaurante.Controllers
                     if (!permitidas.Contains(extension))
                     {
                         TempData["Error"] = "Formato no válido. Usa JPG, PNG, WEBP o GIF.";
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    // Verificar el contenido real (firma del archivo), no solo la extensión
+                    if (!EsImagenValida(fotoArchivo))
+                    {
+                        TempData["Error"] = "El archivo no es una imagen válida.";
                         return RedirectToAction(nameof(Index));
                     }
 
@@ -181,6 +189,21 @@ namespace ControlClientesRestaurante.Controllers
                 TempData["Error"] = $"Error al procesar la foto de perfil: {ex.Message}";
                 return RedirectToAction(nameof(Index));
             }
+        }
+
+        private static bool EsImagenValida(IFormFile archivo)
+        {
+            var cabecera = new byte[12];
+            using var stream = archivo.OpenReadStream();
+            int leidos = stream.Read(cabecera, 0, cabecera.Length);
+            if (leidos < 12) return false;
+
+            bool jpg  = cabecera[0] == 0xFF && cabecera[1] == 0xD8 && cabecera[2] == 0xFF;
+            bool png  = cabecera[0] == 0x89 && cabecera[1] == 0x50 && cabecera[2] == 0x4E && cabecera[3] == 0x47;
+            bool gif  = cabecera[0] == 0x47 && cabecera[1] == 0x49 && cabecera[2] == 0x46 && cabecera[3] == 0x38;
+            bool webp = cabecera[0] == 0x52 && cabecera[1] == 0x49 && cabecera[2] == 0x46 && cabecera[3] == 0x46
+                     && cabecera[8] == 0x57 && cabecera[9] == 0x45 && cabecera[10] == 0x42 && cabecera[11] == 0x50;
+            return jpg || png || gif || webp;
         }
 
         // ── Eliminar Foto de Perfil ───────────────────────────────────────

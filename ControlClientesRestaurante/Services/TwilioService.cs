@@ -216,8 +216,10 @@ namespace ControlClientesRestaurante.Services
 
             if (string.IsNullOrWhiteSpace(config.accountSid) || string.IsNullOrWhiteSpace(config.authToken) || string.IsNullOrWhiteSpace(config.phoneNumber))
             {
-                _logger.LogInformation("📱 [Twilio SMS - MODO SIMULACIÓN]: {Destino} | {Mensaje}", destino, cuerpoMensaje);
-                return (true, "SIMULATED_SMS_SID", null);
+                // Sin proveedor configurado no se envía nada: informarlo en vez de simular éxito
+                // (y no escribir el código en los registros del servidor).
+                _logger.LogWarning("📱 SMS no enviado a {Destino}: Twilio no está configurado.", destino);
+                return (false, null, "NO_CONFIGURADO");
             }
 
             return await EjecutarTwilioApiAsync(
@@ -251,8 +253,8 @@ namespace ControlClientesRestaurante.Services
 
             if (string.IsNullOrWhiteSpace(config.accountSid) || string.IsNullOrWhiteSpace(config.authToken))
             {
-                _logger.LogInformation("💬 [Twilio WhatsApp - MODO SIMULACIÓN]: {Destino} | {Mensaje}", destinoWhatsApp, cuerpoMensaje);
-                return (true, "SIMULATED_WHATSAPP_SID", null);
+                _logger.LogWarning("💬 WhatsApp no enviado a {Destino}: Twilio no está configurado.", destinoWhatsApp);
+                return (false, null, "NO_CONFIGURADO");
             }
 
             // 2. Intentar envío por WhatsApp API (incluyendo el código exacto generado por el sistema)

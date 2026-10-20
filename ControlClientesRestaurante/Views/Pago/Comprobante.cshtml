@@ -1,6 +1,6 @@
 @model ControlClientesRestaurante.Controllers.ComprobantePagoViewModel
 @{
-    ViewData["Title"] = $"Comprobante de Pago {Model.ReferenciaTransaccion} — Saborator";
+    ViewData["Title"] = $"Comprobante de Pago {Model.ReferenciaTransaccion}";
     Layout = "_Layout";
 }
 
@@ -264,7 +264,7 @@
                             <tr>
                                 <td>@item.Nombre</td>
                                 <td style="text-align:center;">@item.Cantidad</td>
-                                <td style="text-align:right;">$@item.Subtotal.ToString("N0")</td>
+                                <td style="text-align:right;">$@item.Subtotal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
                             </tr>
                         }
                     </tbody>
@@ -276,7 +276,7 @@
                     <span style="font-size:0.85rem;text-transform:uppercase;color:rgba(255,253,249,0.7);letter-spacing:0.06em;display:block;">Total Pagado</span>
                     <small style="color:#52C41A;font-weight:600;">Estado: APROBADO</small>
                 </div>
-                <div class="amount">$@Model.Monto.ToString("N0")</div>
+                <div class="amount">$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
             </div>
         </div>
 

@@ -1,0 +1,58 @@
+@model ControlClientesRestaurante.Models.Pedido
+@{
+    var destino = $"{Model.Direccion}, {Model.Barrio}, Barranquilla";
+    var cambio  = Model.PagaCon.HasValue && Model.PagaCon.Value > Model.Total ? Model.PagaCon.Value - Model.Total : 0;
+}
+
+<div class="rt-head">
+    <span class="rt-code">@Model.Numero</span>
+    <span class="rt-time">Pedido a las @Model.FechaCreacion.ToString("hh:mm tt")</span>
+</div>
+
+<div class="rt-client">
+    <strong>@Model.NombreCliente</strong>
+    @if (!string.IsNullOrEmpty(Model.Telefono))
+    {
+        <a href="tel:@Model.Telefono" class="rt-phone">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            @Model.Telefono
+        </a>
+    }
+</div>
+
+<div class="rt-address">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <div style="flex:1;min-width:0;">
+        <div class="rt-dir">@Model.Direccion</div>
+        @if (!string.IsNullOrEmpty(Model.Barrio))
+        {
+            <div class="rt-barrio">Barrio: @Model.Barrio</div>
+        }
+    </div>
+    <a class="rt-maps" target="_blank" rel="noopener noreferrer"
+       href="https://www.google.com/maps/dir/?api=1&origin=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&destination=@Uri.EscapeDataString(destino)">Ruta</a>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Notas))
+{
+    <div class="rt-note"><strong>Nota:</strong> @Model.Notas</div>
+}
+
+<div class="rt-items">
+    @foreach (var l in Model.Lineas)
+    {
+        <span>@(l.Cantidad)× @l.NombreProducto</span>
+    }
+</div>
+
+<div class="rt-pay">
+    <div>
+        <div class="rt-pay-lbl">@(Model.MetodoPago == "Efectivo" ? "Cobrar en efectivo" : $"Pago: {Model.MetodoPago}")</div>
+        @if (Model.MetodoPago == "Efectivo" && Model.PagaCon.HasValue)
+        {
+            <div class="rt-pay-sub">Paga con $@Model.PagaCon.Value.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) · Cambio $@cambio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
+        }
+    </div>
+    <div class="rt-total">$@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
+</div>
+

@@ -1,0 +1,256 @@
+@using ControlClientesRestaurante.Models
+@{
+    ViewData["Title"] = "Mis Repartos";
+    var disponibles   = ViewBag.Disponibles   as List<Pedido> ?? new();
+    var asignados     = ViewBag.Asignados     as List<Pedido> ?? new();
+    var enCamino      = ViewBag.EnCamino      as List<Pedido> ?? new();
+    var entregadosHoy = ViewBag.EntregadosHoy as List<Pedido> ?? new();
+    var efectivoHoy   = entregadosHoy.Where(p => p.MetodoPago == "Efectivo").Sum(p => p.Total)
+                      + enCamino.Where(p => p.MetodoPago == "Efectivo").Sum(p => p.Total);
+}
+
+<div class="pg-header">
+    <div class="pg-icon">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+    </div>
+    <div>
+        <div class="pg-title">Mis Repartos</div>
+        <div class="pg-sub">Recoge los domicilios listos, llévalos y confirma la entrega</div>
+    </div>
+</div>
+<hr class="div-gold" />
+
+<div class="rep-stats">
+    <div class="rep-stat"><span class="rep-stat-val">@disponibles.Count</span><span class="rep-stat-lbl">Por recoger</span></div>
+    <div class="rep-stat"><span class="rep-stat-val">@enCamino.Count</span><span class="rep-stat-lbl">En camino</span></div>
+    <div class="rep-stat"><span class="rep-stat-val">@entregadosHoy.Count</span><span class="rep-stat-lbl">Entregados hoy</span></div>
+    <div class="rep-stat"><span class="rep-stat-val">$@efectivoHoy.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span><span class="rep-stat-lbl">Efectivo a rendir</span></div>
+</div>
+
+@* ── 1. EN CAMINO: lo más urgente va primero ── *@
+<h2 class="rep-section-title">En camino <span class="rep-count">@enCamino.Count</span></h2>
+@if (enCamino.Count == 0)
+{
+    <p class="rep-empty">No tienes entregas en curso.</p>
+}
+else
+{
+    <div class="rep-grid">
+        @foreach (var p in enCamino)
+        {
+            <div class="rep-card rep-card-camino">
+                @await Html.PartialAsync("_RepartoTarjeta", p)
+                <form asp-action="ConfirmarEntrega" method="post" class="rep-actions"
+                      onsubmit="return confirm('¿Confirmas que entregaste el pedido @p.Numero@(p.MetodoPago == "Efectivo" ? $" y recibiste ${(p.Total).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} en efectivo" : "")?');">
+                    <input type="hidden" name="id" value="@p.Id" />
+                    <button type="submit" class="rep-btn rep-btn-ok">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Confirmar entrega</span>
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+}
+
+@* ── 2. ASIGNADOS POR CAJA ── *@
+@if (asignados.Count > 0)
+{
+    <h2 class="rep-section-title">Asignados a ti <span class="rep-count">@asignados.Count</span></h2>
+    <div class="rep-grid">
+        @foreach (var p in asignados)
+        {
+            <div class="rep-card">
+                @await Html.PartialAsync("_RepartoTarjeta", p)
+                <div class="rep-actions">
+                    @if (p.Estado == "Listo")
+                    {
+                        <form asp-action="TomarReparto" method="post" style="width:100%;">
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button type="submit" class="rep-btn rep-btn-go">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                                <span>Recogí el pedido — salir a entregar</span>
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="rep-wait">En cocina — espera a que esté listo</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@* ── 3. DISPONIBLES PARA TOMAR ── *@
+<h2 class="rep-section-title">Listos para recoger <span class="rep-count">@disponibles.Count</span></h2>
+@if (disponibles.Count == 0)
+{
+    <p class="rep-empty">No hay domicilios esperando domiciliario. Esta página se actualiza sola cada 30 segundos.</p>
+}
+else
+{
+    <div class="rep-grid">
+        @foreach (var p in disponibles)
+        {
+            <div class="rep-card">
+                @await Html.PartialAsync("_RepartoTarjeta", p)
+                <form asp-action="TomarReparto" method="post" class="rep-actions">
+                    <input type="hidden" name="id" value="@p.Id" />
+                    <button type="submit" class="rep-btn rep-btn-go">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
+                        <span>Tomar y salir a entregar</span>
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+}
+
+@* ── 4. HISTORIAL DEL DÍA ── *@
+<h2 class="rep-section-title">Entregados hoy <span class="rep-count">@entregadosHoy.Count</span></h2>
+@if (entregadosHoy.Count == 0)
+{
+    <p class="rep-empty">Aún no has completado entregas hoy.</p>
+}
+else
+{
+    <div class="tbl-wrap">
+        <table class="tbl">
+            <thead><tr><th>Pedido</th><th>Cliente</th><th>Barrio</th><th>Pago</th><th>Total</th><th>Entregado</th></tr></thead>
+            <tbody>
+                @foreach (var p in entregadosHoy)
+                {
+                    <tr>
+                        <td><strong>@p.Numero</strong></td>
+                        <td>@p.NombreCliente</td>
+                        <td>@(p.Barrio ?? "—")</td>
+                        <td>@p.MetodoPago</td>
+                        <td>$@p.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
+                        <td>@(p.FechaEntrega?.ToString("hh:mm tt") ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<style>
+    /* Tarjeta de reparto (partial _RepartoTarjeta) */
+    .rt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+    .rt-code { font-weight: 800; font-size: 1.05rem; color: var(--brand); }
+    .rt-time { font-size: 0.75rem; color: var(--muted); }
+    .rt-client { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.92rem; color: var(--text); }
+    .rt-phone { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--brand); font-weight: 700; text-decoration: none; font-size: 0.88rem; }
+    .rt-address {
+        display: flex; align-items: flex-start; gap: 0.5rem;
+        background: var(--surface-2); border-radius: 8px; padding: 0.55rem 0.7rem;
+        font-size: 0.86rem; color: var(--text);
+    }
+    .rt-address > svg { color: var(--brand); margin-top: 2px; flex-shrink: 0; }
+    .rt-dir { font-weight: 600; overflow-wrap: anywhere; }
+    .rt-barrio { font-size: 0.76rem; color: var(--muted); }
+    .rt-maps {
+        flex-shrink: 0; align-self: center;
+        padding: 0.35rem 0.7rem; border: 1px solid var(--brand); border-radius: 8px;
+        font-size: 0.78rem; font-weight: 700; color: var(--brand); text-decoration: none;
+    }
+    .rt-note { font-size: 0.8rem; color: var(--text); border: 1px dashed var(--line); border-radius: 6px; padding: 0.4rem 0.6rem; }
+    .rt-items { display: flex; flex-wrap: wrap; gap: 0.3rem 0.75rem; font-size: 0.82rem; color: var(--muted); }
+    .rt-pay { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--line); padding-top: 0.6rem; }
+    .rt-pay-lbl { font-size: 0.8rem; font-weight: 700; color: var(--text); }
+    .rt-pay-sub { font-size: 0.75rem; color: var(--muted); }
+    .rt-total { font-size: 1.15rem; font-weight: 800; color: var(--brand); font-variant-numeric: tabular-nums; }
+
+    .rep-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    .rep-stat {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+    .rep-stat-val { font-size: 1.35rem; font-weight: 800; color: var(--brand); font-variant-numeric: tabular-nums; }
+    .rep-stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+
+    .rep-section-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text);
+        margin: 1.75rem 0 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .rep-count {
+        font-size: 0.75rem;
+        background: var(--surface-2);
+        color: var(--muted);
+        border-radius: 999px;
+        padding: 0.1rem 0.55rem;
+    }
+    .rep-empty { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+    .rep-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+        gap: 1rem;
+    }
+    .rep-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-left: 5px solid #10B981;
+        border-radius: 14px;
+        padding: 1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+    .rep-card-camino { border-left-color: #0EA5E9; }
+
+    .rep-actions { margin-top: auto; display: flex; }
+    .rep-btn {
+        width: 100%;
+        min-height: 46px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        cursor: pointer;
+        color: #FFF;
+        transition: transform 120ms ease, filter 120ms ease;
+    }
+    .rep-btn:hover { filter: brightness(1.05); }
+    .rep-btn:active { transform: scale(0.98); }
+    .rep-btn-go { background: #0EA5E9; }
+    .rep-btn-ok { background: #10B981; }
+    .rep-wait {
+        width: 100%;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted);
+        background: var(--surface-2);
+        border-radius: 10px;
+        padding: 0.7rem;
+    }
+</style>
+
+<script>
+    // Refresco automático para ver nuevos domicilios listos (no interrumpe si hay un diálogo abierto)
+    setInterval(function () {
+        if (document.visibilityState === 'visible') location.reload();
+    }, 30000);
+</script>

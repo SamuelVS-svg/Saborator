@@ -1,7 +1,7 @@
 @inject ControlClientesRestaurante.Services.ProductoService _productoSvc
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
-    ViewData["Title"] = "Saborator — Menú & Experiencia Gourmet";
+    ViewData["Title"] = "Menú & Experiencia Gourmet";
     Layout = "_Layout";
 
     var _session = HttpContextAccessor.HttpContext?.Session;
@@ -12,8 +12,7 @@
         ? User.FindFirst(System.Security.Claims.ClaimTypes.Role)!.Value
         : (_session?.GetString("Rol") ?? "");
     var _autenticado = (User.Identity?.IsAuthenticated == true) || !string.IsNullOrEmpty(_usuario);
-    var _esPersonal  = User.IsInRole("Administrador") || User.IsInRole("Cajero") || User.IsInRole("Mesero") || User.IsInRole("Cocinero")
-        || _rol == "Administrador" || _rol == "Cajero" || _rol == "Mesero" || _rol == "Cocinero";
+    var _esPersonal = Roles.EsPersonal(_rol);
 
     var productos = _productoSvc.ObtenerTodos().Where(p => p.Activo).ToList();
     var resenas = ViewBag.Resenas as List<ControlClientesRestaurante.Models.Resena> ?? new List<ControlClientesRestaurante.Models.Resena>();
@@ -165,9 +164,9 @@
             }
             @if (_esPersonal)
             {
-                <a asp-controller="Home" asp-action="Dashboard" class="lnav-item lnav-item-admin" style="background:rgba(200,151,58,0.18);border:1px solid rgba(200,151,58,0.55);border-radius:999px;padding:0.28rem 0.72rem;color:var(--gold, #C8973A) !important;font-weight:700 !important;">
+                <a href="@Roles.PaginaInicio(_rol)" class="lnav-item lnav-item-admin" style="background:rgba(200,151,58,0.18);border:1px solid rgba(200,151,58,0.55);border-radius:999px;padding:0.28rem 0.72rem;color:var(--gold, #C8973A) !important;font-weight:700 !important;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="display:inline-block !important;flex-shrink:0;"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-                    <span>Dashboard Admin</span>
+                    <span>Mi Panel</span>
                 </a>
             }
         </div>
@@ -190,7 +189,7 @@
             {
                 @if (_esPersonal)
                 {
-                    <a asp-controller="Home" asp-action="Dashboard" class="lnav-user-tag staff" title="Ir al Dashboard Admin">
+                    <a href="@Roles.PaginaInicio(_rol)" class="lnav-user-tag staff" title="Ir a mi panel">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" style="display:inline-block !important;flex-shrink:0;"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
                         <span>@_usuario</span>
                     </a>
@@ -227,7 +226,7 @@
         <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--gold, #C8973A);font-weight:700;">📅 Reservar Mesa</a>
         @if (_esPersonal)
         {
-            <a asp-controller="Home" asp-action="Dashboard" style="color:var(--gold, #C8973A);font-weight:700;">📊 Dashboard Admin</a>
+            <a href="@Roles.PaginaInicio(_rol)" style="color:var(--gold, #C8973A);font-weight:700;">📊 Mi Panel</a>
         }
         @if (_autenticado)
         {
@@ -405,7 +404,7 @@
                         <div class="dish-minimal-body">
                             <div class="dish-minimal-header">
                                 <h3 class="dish-minimal-name">@p.Nombre</h3>
-                                <span class="dish-minimal-price">$@p.Precio.ToString("N0")</span>
+                                <span class="dish-minimal-price">$@p.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
                             </div>
 
                             <p class="dish-minimal-desc">
@@ -552,6 +551,8 @@
                 </div>
             </div>
         </div>
+    </section>
+
     <!-- ══ NUEVA SECCIÓN: SEDE PRINCIPAL, GOOGLE MAPS & ASIGNADOR DE DOMICILIOS ══ -->
     <section class="section-pad ubicacion-section" id="ubicacion">
         <div class="section-inner">

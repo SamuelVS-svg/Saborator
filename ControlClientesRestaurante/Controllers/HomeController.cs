@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ControlClientesRestaurante.Models;
 
@@ -17,9 +19,11 @@ namespace ControlClientesRestaurante.Controllers
         // Página principal gastronómica — Carta y experiencia del restaurante
         public IActionResult Index()
         {
-            if (User.Identity?.IsAuthenticated == true)
+            // El personal va directo a su panel; los clientes sí ven la carta pública
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (User.Identity?.IsAuthenticated == true && Roles.EsPersonal(rol))
             {
-                return RedirectToAction("Dashboard");
+                return Redirect(Roles.PaginaInicio(rol));
             }
             ViewBag.Resenas = _resenaService.ObtenerAprobadas();
             ViewBag.ResenaStats = _resenaService.ObtenerEstadisticas();
@@ -35,6 +39,7 @@ namespace ControlClientesRestaurante.Controllers
         // Dashboard V12 — Centro de Control y Analítica Operativa
         [HttpGet("/Dashboard")]
         [HttpGet("/Home/Dashboard")]
+        [Authorize(Roles = "Administrador,Cajero")]
         public IActionResult Dashboard()
         {
             return View();

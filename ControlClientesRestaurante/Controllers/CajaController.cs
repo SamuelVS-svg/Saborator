@@ -53,7 +53,7 @@ namespace ControlClientesRestaurante.Controllers
                         "Cajero",
                         "APERTURA_CAJA",
                         "Caja",
-                        $"Turno {turnoCreado.CodigoTurno} aperturado por {usuario} con base inicial de ${montoInicial:N0} COP.",
+                        $"Turno {turnoCreado.CodigoTurno} aperturado por {usuario} con base inicial de ${(montoInicial).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP.",
                         "TurnoCaja",
                         turnoCreado.Id,
                         HttpContext.Connection.RemoteIpAddress?.ToString());
@@ -80,7 +80,7 @@ namespace ControlClientesRestaurante.Controllers
                         "Cajero",
                         "CIERRE_CAJA",
                         "Caja",
-                        $"Turno {turnoCerrado.CodigoTurno} cerrado por {turnoCerrado.UsuarioCajero}. Efectivo declarado: ${efectivoDeclarado:N0} COP. Diferencia/Descuadre: ${(turnoCerrado.Diferencia ?? 0):N0} COP.",
+                        $"Turno {turnoCerrado.CodigoTurno} cerrado por {turnoCerrado.UsuarioCajero}. Efectivo declarado: ${(efectivoDeclarado).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP. Diferencia/Descuadre: ${((turnoCerrado.Diferencia ?? 0)).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP.",
                         "TurnoCaja",
                         turnoId,
                         HttpContext.Connection.RemoteIpAddress?.ToString());

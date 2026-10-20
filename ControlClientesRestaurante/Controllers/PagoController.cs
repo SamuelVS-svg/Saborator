@@ -251,9 +251,19 @@ namespace ControlClientesRestaurante.Controllers
                 return RedirectToAction("Checkout", new { tipo = form.TipoOrigen, id = form.OrigenId });
             }
 
+            // Este formulario no cobra realmente: solo la caja puede dar un pago por recibido.
+            // Un cliente solo puede reportar un pago (queda pendiente de verificación) y la
+            // tarjeta únicamente se acepta a través del widget de Wompi.
+            bool esCaja = User.IsInRole(Roles.Administrador) || User.IsInRole(Roles.Cajero);
+            if (!esCaja && string.Equals(form.MetodoPago, "Tarjeta", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["Error"] = "Para pagar con tarjeta usa el botón \"Pagar con Wompi\".";
+                return RedirectToAction("Checkout", new { tipo = form.TipoOrigen, id = form.OrigenId });
+            }
+
             // Simulación bancaria de pasarela (Generación de credenciales de aprobación)
             string refTransaccion = "TRX-" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + Random.Shared.Next(100, 999);
-            string codAprobacion = Random.Shared.Next(100000, 999999).ToString();
+            string codAprobacion = esCaja ? Random.Shared.Next(100000, 999999).ToString() : "PENDIENTE";
             string detalleMetodo = string.Empty;
 
             switch (form.MetodoPago)
@@ -323,7 +333,7 @@ namespace ControlClientesRestaurante.Controllers
                         Precio = l.PrecioUnitario
                     }).ToList();
 
-                    if (pedido.Estado != "Facturado")
+                    if (esCaja && pedido.Estado != "Facturado")
                     {
                         // Facturar pedido automáticamente a través del servicio
                         var lineas = pedido.Lineas.Select(l => (l.ProductoId, l.Cantidad)).ToList();
@@ -354,8 +364,15 @@ namespace ControlClientesRestaurante.Controllers
                 {
                     codReserva = reserva.Codigo;
                     mesa = reserva.NumeroMesa.ToString();
-                    reserva.Estado = "Confirmada (Pagada)";
-                    reserva.Notas = (reserva.Notas ?? "") + $" [Depósito Pagado: ${form.Monto:N0} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
+                    if (esCaja)
+                    {
+                        reserva.Estado = "Confirmada (Pagada)";
+                        reserva.Notas = (reserva.Notas ?? "") + $" [Depósito Pagado: ${(form.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
+                    }
+                    else
+                    {
+                        reserva.Notas = (reserva.Notas ?? "") + $" [Pago reportado por el cliente, pendiente de verificar: ${(form.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} vía {form.MetodoPago} Ref: {refTransaccion}]".Trim();
+                    }
                     _context.SaveChanges();
 
                     itemsComprobante.Add(new ItemResumenViewModel
@@ -415,7 +432,7 @@ namespace ControlClientesRestaurante.Controllers
                     NumeroFactura = numFacturaGenerada,
                     CodigoReserva = codReserva,
                     Mesa = mesa,
-                    Estado = "Aprobado",
+                    Estado = esCaja ? "Aprobado" : "Pendiente",
                     UsuarioRegistro = UsuarioActual()
                 };
                 _context.TransaccionesPago.Add(transaccionDb);
@@ -423,8 +440,8 @@ namespace ControlClientesRestaurante.Controllers
             }
             catch { /* Trazabilidad no bloqueante en caso de auditoría */ }
 
-            // Notificación por correo digital al comensal (Asíncrono)
-            if (!string.IsNullOrWhiteSpace(form.Correo))
+            // Notificación por correo digital al comensal (solo cuando el pago está confirmado)
+            if (esCaja && !string.IsNullOrWhiteSpace(form.Correo))
             {
                 _ = Task.Run(async () =>
                 {
@@ -445,7 +462,9 @@ namespace ControlClientesRestaurante.Controllers
             }
 
             TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(comprobante);
-            TempData["Mensaje"] = "¡Pago procesado con éxito por la pasarela!";
+            TempData["Mensaje"] = esCaja
+                ? "¡Pago registrado con éxito!"
+                : "Recibimos tu solicitud de pago. Nuestra caja la verificará y te confirmará.";
 
             return RedirectToAction("Comprobante");
         }
@@ -664,7 +683,7 @@ namespace ControlClientesRestaurante.Controllers
                         if (reserva != null)
                         {
                             reserva.Estado = "Confirmada (Pagada)";
-                            reserva.Notas = (reserva.Notas ?? "") + $" [Wompi Pagado: ${monto:N0} Trx: {txId}]".Trim();
+                            reserva.Notas = (reserva.Notas ?? "") + $" [Wompi Pagado: ${(monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Trx: {txId}]".Trim();
                             await _context.SaveChangesAsync();
                             await dbTx.CommitAsync();
                             return Ok(new { status = "success", message = $"Reserva {reserva.Codigo} confirmada con éxito." });
@@ -818,7 +837,7 @@ namespace ControlClientesRestaurante.Controllers
                         };
 
                         TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(comprobante);
-                        TempData["Mensaje"] = $"¡Pago de ${comprobante.Monto:N0} procesado y aprobado con éxito por Wompi!";
+                        TempData["Mensaje"] = $"¡Pago de ${(comprobante.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} procesado y aprobado con éxito por Wompi!";
                         return RedirectToAction("Comprobante");
                     }
                 }

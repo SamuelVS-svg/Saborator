@@ -1,6 +1,6 @@
 @model List<ControlClientesRestaurante.Services.MesaDetalleDto>
 @{
-    ViewData["Title"] = "Control de Mesas — Saborator";
+    ViewData["Title"] = "Control de Mesas";
     Layout = "_Layout";
     var filtro = ViewBag.FiltroActual as string ?? "Todas";
     var total = (int)(ViewBag.Total ?? 30);
@@ -586,7 +586,7 @@
                             <div class="mc-info-title">Pedido Activo en Mesa</div>
                             <div class="mc-info-main">@item.PedidoActivo.NombreCliente</div>
                             <div class="mc-info-sub">
-                                Total: <strong>$@item.PedidoActivo.Total.ToString("N0")</strong> • @item.PedidoActivo.Lineas.Count productos
+                                Total: <strong>$@item.PedidoActivo.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</strong> • @item.PedidoActivo.Lineas.Count productos
                             </div>
                         }
                         else if (estado == "Reservada" && item.ReservaActiva != null)

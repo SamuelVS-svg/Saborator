@@ -3,6 +3,7 @@
 @inject ControlClientesRestaurante.Services.MesaService _mesaSvc
 @inject ControlClientesRestaurante.Services.ReservaService _reservaSvc
 @inject ControlClientesRestaurante.Services.ProductoService _productoSvc
+@inject ControlClientesRestaurante.Services.ResenaService _resenaSvc
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     ViewData["Title"] = "Dashboard V12 — Control & Analítica";
@@ -28,21 +29,67 @@
     var productos = _productoSvc.ObtenerTodos();
 
     var facturasHoy = facturas.Where(f => f.FechaCreacion.Date == DateTime.Today).ToList();
-    var ventasHoy = facturasHoy.Any() ? facturasHoy.Sum(f => f.Total) : facturas.TakeLast(5).Sum(f => f.Total);
-    var ventasCambio = "+18.4%";
+    var ventasHoy = facturasHoy.Sum(f => f.Total);
+
+    // Comparación real contra el promedio diario de los 7 días anteriores
+    var inicioSemana = DateTime.Today.AddDays(-7);
+    var ventasSemana = facturas.Where(f => f.FechaCreacion >= inicioSemana && f.FechaCreacion < DateTime.Today).Sum(f => f.Total);
+    var promedioDiario = ventasSemana / 7m;
+    bool hayHistorico = promedioDiario > 0;
+    var variacionVentas = hayHistorico ? (double)((ventasHoy - promedioDiario) / promedioDiario * 100) : 0;
+    var ventasCambio = hayHistorico ? $"{(variacionVentas >= 0 ? "+" : "")}{variacionVentas:0.0}%" : "Sin histórico";
+    var ventasSube = variacionVentas >= 0;
 
     var pedidosActivos = pedidos.Where(p => p.Estado == "Pendiente" || p.Estado == "EnPreparacion" || p.Estado == "En Preparación" || p.Estado == "Abierto").Count();
-    var pedidosCambio = "+12.1%";
+    var domiciliosEnRuta = pedidos.Count(p => p.Estado == "EnCamino");
+    var pedidosCambio = $"{domiciliosEnRuta} en ruta";
 
-    var totalMesas = mesas.Count > 0 ? mesas.Count : 12;
+    var totalMesas = mesas.Count;
     var mesasOcupadas = mesas.Count(m => m.Estado == "Ocupada");
-    var ocupacionPorcentaje = totalMesas > 0 ? (int)Math.Round((double)mesasOcupadas / totalMesas * 100) : 65;
+    var ocupacionPorcentaje = totalMesas > 0 ? (int)Math.Round((double)mesasOcupadas / totalMesas * 100) : 0;
 
-    var reservasHoy = reservas.Where(r => r.Fecha.Date == DateTime.Today || r.Fecha >= DateTime.Today).OrderBy(r => r.Fecha).Take(6).ToList();
-    var totalReservasNum = reservas.Count > 0 ? reservas.Count : 14;
+    var reservasHoy = reservas.Where(r => r.Fecha.Date >= DateTime.Today && r.Estado != "Cancelada").OrderBy(r => r.Fecha).Take(6).ToList();
+    var reservasActivas = reservas.Where(r => r.Fecha.Date >= DateTime.Today && r.Estado != "Cancelada" && r.Estado != "Completada").ToList();
+    var totalReservasNum = reservasActivas.Count;
+    var reservasDeHoy = reservasActivas.Count(r => r.Fecha.Date == DateTime.Today);
 
     var stockBajo = productos.Where(p => p.Activo && p.Stock <= 5).ToList();
     var fechaHoy = DateTime.Now;
+
+    // Métricas reales del bloque principal
+    var pedidosHoy = pedidos.Count(p => p.FechaCreacion.Date == DateTime.Today && p.Estado != "Cancelado");
+    var entregasHoy = pedidos.Where(p => p.TipoEntrega == "Domicilio" && p.FechaEntrega.HasValue && p.FechaEntrega.Value.Date == DateTime.Today).ToList();
+    var minutosEntrega = entregasHoy.Any() ? (int)Math.Round(entregasHoy.Average(p => (p.FechaEntrega!.Value - p.FechaCreacion).TotalMinutes)) : (int?)null;
+    var statsResenas = _resenaSvc.ObtenerEstadisticas();
+
+    // ── Calendario real del mes (semana inicia en lunes) con días que tienen reservas ──
+    var culturaEs = new System.Globalization.CultureInfo("es-CO");
+    var primerDiaMes = new DateTime(fechaHoy.Year, fechaHoy.Month, 1);
+    int desfaseLunes = ((int)primerDiaMes.DayOfWeek + 6) % 7;
+    int diasMes = DateTime.DaysInMonth(fechaHoy.Year, fechaHoy.Month);
+    var diasConReserva = reservas
+        .Where(r => r.Estado != "Cancelada" && r.Fecha.Year == fechaHoy.Year && r.Fecha.Month == fechaHoy.Month)
+        .Select(r => r.Fecha.Day).ToHashSet();
+
+    // ── Series reales de facturación para la gráfica ──
+    List<(string etiqueta, decimal valor)> SerieDias(int dias) =>
+        Enumerable.Range(0, dias).Select(i => DateTime.Today.AddDays(-(dias - 1) + i))
+            .Select(d => (d.ToString("dd/MM"), facturas.Where(f => f.FechaCreacion.Date == d).Sum(f => f.Total)))
+            .ToList();
+    var serieHoy = Enumerable.Range(10, 14)
+        .Select(h => ($"{h}:00", facturasHoy.Where(f => f.FechaCreacion.Hour == h).Sum(f => f.Total)))
+        .ToList();
+    var series = new Dictionary<string, List<(string etiqueta, decimal valor)>>
+    {
+        ["hoy"] = serieHoy, ["7d"] = SerieDias(7), ["30d"] = SerieDias(30)
+    };
+    string Trazo(List<(string etiqueta, decimal valor)> serie, bool area)
+    {
+        var max = Math.Max(1m, serie.Max(x => x.valor));
+        var pts = serie.Select((x, i) => $"{(serie.Count == 1 ? 0 : i * 600.0 / (serie.Count - 1)):0.#} {(170 - (double)(x.valor / max) * 140):0.#}").ToList();
+        var linea = "M " + string.Join(" L ", pts);
+        return area ? linea + " L 600 180 L 0 180 Z" : linea;
+    }
     var fotoPerfil = (User.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(User.FindFirst("FotoPerfil")?.Value))
         ? User.FindFirst("FotoPerfil")!.Value
         : session?.GetString("FotoPerfil");
@@ -112,10 +159,13 @@
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                         </div>
                     </div>
-                    <div class="v12-stat-value">@ventasHoy.ToString("C0")</div>
+                    <div class="v12-stat-value">$@ventasHoy.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                     <div class="v12-stat-footer">
-                        <span class="v12-trend-pill up">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
+                        <span class="v12-trend-pill @(ventasSube ? "up" : "down")">
+                            @if (hayHistorico)
+                            {
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="@(ventasSube ? "18 15 12 9 6 15" : "6 9 12 15 18 9")"/></svg>
+                            }
                             @ventasCambio
                         </span>
                         <span class="v12-trend-label">vs. promedio semanal</span>
@@ -133,10 +183,9 @@
                     <div class="v12-stat-value">@pedidosActivos</div>
                     <div class="v12-stat-footer">
                         <span class="v12-trend-pill up">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
                             @pedidosCambio
                         </span>
-                        <span class="v12-trend-label">comandas en cocina y mesa</span>
+                        <span class="v12-trend-label">domicilios con domiciliario</span>
                     </div>
                 </div>
 
@@ -151,7 +200,6 @@
                     <div class="v12-stat-value">@ocupacionPorcentaje%</div>
                     <div class="v12-stat-footer">
                         <span class="v12-trend-pill up">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
                             @mesasOcupadas / @totalMesas
                         </span>
                         <span class="v12-trend-label">mesas con comensales</span>
@@ -169,10 +217,9 @@
                     <div class="v12-stat-value">@totalReservasNum</div>
                     <div class="v12-stat-footer">
                         <span class="v12-trend-pill up">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>
-                            100%
+                            @reservasDeHoy hoy
                         </span>
-                        <span class="v12-trend-label">confirmadas para el turno</span>
+                        <span class="v12-trend-label">próximas, sin canceladas</span>
                     </div>
                 </div>
             </section>
@@ -193,30 +240,31 @@
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
                                 <span>Centro de Operaciones Gastronómico</span>
                             </div>
-                            <h2 class="v12-bento-hero-title">Rendimiento en Servicio Óptimo</h2>
+                            <h2 class="v12-bento-hero-title">Operación de hoy</h2>
                             <p class="v12-bento-hero-desc">
-                                La cocina está despachando comandas con un tiempo promedio de 14 minutos. Todas las transacciones de facturación se encuentran sincronizadas atómicamente con el inventario.
+                                @pedidosHoy pedidos registrados hoy, @pedidosActivos en curso y @domiciliosEnRuta domicilios en ruta.
+                                @(stockBajo.Any() ? $"{stockBajo.Count} productos con stock crítico." : "Sin alertas de inventario.")
                             </p>
                         </div>
 
                         <div class="v12-bento-hero-metric">
                             <div class="v12-bento-metric-col">
-                                <span class="v12-bento-metric-val">14 min</span>
-                                <span class="v12-bento-metric-lbl">Tiempo Medio Cocina</span>
+                                <span class="v12-bento-metric-val">@(minutosEntrega.HasValue ? $"{minutosEntrega} min" : "—")</span>
+                                <span class="v12-bento-metric-lbl">Tiempo medio domicilio</span>
                             </div>
                             <div class="v12-bento-metric-col">
-                                <span class="v12-bento-metric-val">99.8%</span>
-                                <span class="v12-bento-metric-lbl">Stock Atómico OK</span>
+                                <span class="v12-bento-metric-val">@entregasHoy.Count</span>
+                                <span class="v12-bento-metric-lbl">Domicilios entregados</span>
                             </div>
                             <div class="v12-bento-metric-col">
-                                <span class="v12-bento-metric-val">4.9 ★</span>
+                                <span class="v12-bento-metric-val">@(statsResenas.TotalResenas > 0 ? $"{statsResenas.Promedio:0.0} ★" : "—")</span>
                                 <span class="v12-bento-metric-lbl">Reseñas Clientes</span>
                             </div>
                         </div>
 
                         <div style="margin-top: 1.4rem;">
-                            <a asp-controller="Pedido" asp-action="Cocina" class="v12-bento-hero-btn">
-                                Monitorear KDS Cocina
+                            <a asp-controller="Pedido" asp-action="@(User.IsInRole("Administrador") ? "Cocina" : "Index")" class="v12-bento-hero-btn">
+                                @(User.IsInRole("Administrador") ? "Monitorear KDS Cocina" : "Ver pedidos activos")
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </a>
                         </div>
@@ -225,11 +273,8 @@
                     <!-- ══ 5. CALENDARIO COMPACTO CON DÍAS RESALTADOS ══════════ -->
                     <div class="glass-card glass-card-hover v12-calendar-card v12-animate-enter v12-stagger-5">
                         <div class="v12-cal-header">
-                            <span class="v12-cal-month">@fechaHoy.ToString("MMMM yyyy").ToUpperInvariant()</span>
-                            <div class="v12-cal-controls">
-                                <button type="button" class="v12-cal-btn" aria-label="Anterior">&lt;</button>
-                                <button type="button" class="v12-cal-btn" aria-label="Siguiente">&gt;</button>
-                            </div>
+                            <span class="v12-cal-month">@fechaHoy.ToString("MMMM yyyy", culturaEs).ToUpper(culturaEs)</span>
+                            <a asp-controller="Reserva" asp-action="Admin" class="v12-panel-action">Reservas</a>
                         </div>
                         <div class="v12-cal-grid">
                             <div class="v12-cal-day-head">L</div>
@@ -240,28 +285,15 @@
                             <div class="v12-cal-day-head">S</div>
                             <div class="v12-cal-day-head">D</div>
 
-                            @* Días del mes *@
-                            <div class="v12-cal-day muted">29</div>
-                            <div class="v12-cal-day muted">30</div>
-                            <div class="v12-cal-day">1</div>
-                            <div class="v12-cal-day has-event">2</div>
-                            <div class="v12-cal-day">3</div>
-                            <div class="v12-cal-day has-event">4</div>
-                            <div class="v12-cal-day">5</div>
-                            <div class="v12-cal-day">6</div>
-                            <div class="v12-cal-day has-event">7</div>
-                            <div class="v12-cal-day">8</div>
-                            <div class="v12-cal-day today has-event">@fechaHoy.Day</div>
-                            <div class="v12-cal-day has-event">10</div>
-                            <div class="v12-cal-day">11</div>
-                            <div class="v12-cal-day has-event">12</div>
-                            <div class="v12-cal-day">13</div>
-                            <div class="v12-cal-day">14</div>
-                            <div class="v12-cal-day has-event">15</div>
-                            <div class="v12-cal-day">16</div>
-                            <div class="v12-cal-day">17</div>
-                            <div class="v12-cal-day">18</div>
-                            <div class="v12-cal-day has-event">19</div>
+                            @for (int k = 0; k < desfaseLunes; k++)
+                            {
+                                <div class="v12-cal-day muted"></div>
+                            }
+                            @for (int d = 1; d <= diasMes; d++)
+                            {
+                                <div class="v12-cal-day @(d == fechaHoy.Day ? "today" : "") @(diasConReserva.Contains(d) ? "has-event" : "")"
+                                     title="@(diasConReserva.Contains(d) ? "Hay reservas este día" : "")">@d</div>
+                            }
                         </div>
                     </div>
 
@@ -273,39 +305,37 @@
                                 <span style="font-size:0.75rem; color:var(--muted);">Registro continuo por franja horaria</span>
                             </div>
                             <div class="v12-chart-filters">
-                                <button type="button" class="v12-chart-filter-btn active">Hoy</button>
-                                <button type="button" class="v12-chart-filter-btn">7D</button>
-                                <button type="button" class="v12-chart-filter-btn">30D</button>
+                                <button type="button" class="v12-chart-filter-btn active" data-serie="hoy">Hoy</button>
+                                <button type="button" class="v12-chart-filter-btn" data-serie="7d">7D</button>
+                                <button type="button" class="v12-chart-filter-btn" data-serie="30d">30D</button>
                             </div>
                         </div>
                         <div class="v12-chart-body">
-                            <svg class="v12-chart-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
+                            <svg class="v12-chart-svg" viewBox="0 0 600 180" preserveAspectRatio="none" role="img" aria-label="Facturación por periodo">
                                 <defs>
-                                    <!-- Degradado en el color principal de la marca -->
                                     <linearGradient id="v12AreaGrad" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stop-color="var(--brand)" stop-opacity="0.45" />
                                         <stop offset="60%" stop-color="var(--brand)" stop-opacity="0.12" />
                                         <stop offset="100%" stop-color="var(--brand)" stop-opacity="0.0" />
                                     </linearGradient>
                                 </defs>
-                                
-                                <!-- Eje de fondo sutil -->
-                                <line x1="0" y1="40" x2="600" y2="40" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="0.8" opacity="0.6"/>
-                                <line x1="0" y1="90" x2="600" y2="90" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="0.8" opacity="0.6"/>
-                                <line x1="0" y1="140" x2="600" y2="140" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="0.8" opacity="0.6"/>
-
-                                <!-- Relleno de área degradada -->
-                                <path d="M 0 150 C 70 140, 110 80, 170 95 C 240 110, 290 40, 360 45 C 430 50, 480 100, 530 65 C 570 40, 590 20, 600 25 L 600 180 L 0 180 Z" fill="url(#v12AreaGrad)"/>
-                                
-                                <!-- Línea curva suave -->
-                                <path class="v12-chart-line" d="M 0 150 C 70 140, 110 80, 170 95 C 240 110, 290 40, 360 45 C 430 50, 480 100, 530 65 C 570 40, 590 20, 600 25" />
-
-                                <!-- Marcadores con hover -->
-                                <circle class="v12-chart-point" cx="170" cy="95" r="4.5" />
-                                <circle class="v12-chart-point" cx="360" cy="45" r="4.5" />
-                                <circle class="v12-chart-point" cx="530" cy="65" r="4.5" />
-                                <circle class="v12-chart-point" cx="600" cy="25" r="4.5" />
+                                <line x1="0" y1="30" x2="600" y2="30" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="0.8" opacity="0.6"/>
+                                <line x1="0" y1="100" x2="600" y2="100" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="0.8" opacity="0.6"/>
+                                <line x1="0" y1="170" x2="600" y2="170" stroke="var(--line)" stroke-dasharray="4 4" stroke-width="0.8" opacity="0.6"/>
+                                @foreach (var kv in series)
+                                {
+                                    <g class="v12-serie" data-serie="@kv.Key" style="@(kv.Key == "hoy" ? "" : "display:none")">
+                                        <path d="@Trazo(kv.Value, true)" fill="url(#v12AreaGrad)"/>
+                                        <path class="v12-chart-line" d="@Trazo(kv.Value, false)" />
+                                    </g>
+                                }
                             </svg>
+                            @foreach (var kv in series)
+                            {
+                                <div class="v12-serie-resumen" data-serie="@kv.Key" style="font-size:0.75rem;color:var(--muted);margin-top:0.35rem;@(kv.Key == "hoy" ? "" : "display:none")">
+                                    @kv.Value.First().etiqueta – @kv.Value.Last().etiqueta · Total $@kv.Value.Sum(x => x.valor).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -365,30 +395,7 @@
                             }
                             else
                             {
-                                <div class="v12-event-item">
-                                    <div class="v12-event-avatar">S</div>
-                                    <div class="v12-event-info">
-                                        <p class="v12-event-title">Reserva VIP Salón</p>
-                                        <p class="v12-event-sub">Mesa 4 · 4 pers. · 19:30</p>
-                                    </div>
-                                    <span class="v12-event-tag confirmed">Confirmada</span>
-                                </div>
-                                <div class="v12-event-item">
-                                    <div class="v12-event-avatar">M</div>
-                                    <div class="v12-event-info">
-                                        <p class="v12-event-title">Marta Gómez</p>
-                                        <p class="v12-event-sub">Mesa 2 · 2 pers. · 20:00</p>
-                                    </div>
-                                    <span class="v12-event-tag confirmed">Confirmada</span>
-                                </div>
-                                <div class="v12-event-item">
-                                    <div class="v12-event-avatar">C</div>
-                                    <div class="v12-event-info">
-                                        <p class="v12-event-title">Carlos Méndez</p>
-                                        <p class="v12-event-sub">Mesa 8 · 6 pers. · 20:45</p>
-                                    </div>
-                                    <span class="v12-event-tag pending">Pendiente</span>
-                                </div>
+                                <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0;">No hay reservas próximas.</p>
                             }
                         </div>
                     </div>
@@ -464,6 +471,10 @@
         btn.addEventListener('click', function() {
             document.querySelectorAll('.v12-chart-filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
+            var serie = this.dataset.serie;
+            document.querySelectorAll('.v12-serie, .v12-serie-resumen').forEach(function(el) {
+                el.style.display = el.dataset.serie === serie ? '' : 'none';
+            });
         });
     });
 </script>

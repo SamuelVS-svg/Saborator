@@ -43,29 +43,6 @@ namespace ControlClientesRestaurante.Services
                 contraseñaCorrecta = false;
             }
 
-            // Fallback de conveniencia para credenciales clásicas del seed si el usuario intenta con las anteriores
-            if (!contraseñaCorrecta)
-            {
-                var usuarioNorm = usuario.NombreUsuario.ToLower().Trim();
-                bool esPasswordClasica = 
-                    (usuarioNorm == "admin" && (contraseña == "admin123" || contraseña == "Admin#Saborator2026!")) ||
-                    (usuarioNorm == "cajero" && (contraseña == "cajero123" || contraseña == "Cajero#Saborator2026!")) ||
-                    (usuarioNorm == "mesero" && (contraseña == "mesero123" || contraseña == "Mesero#Saborator2026!")) ||
-                    (usuarioNorm == "cocinero" && (contraseña == "cocinero123" || contraseña == "Cocinero#Saborator2026!"));
-
-                if (esPasswordClasica)
-                {
-                    contraseñaCorrecta = true;
-                    // Sincronizar hash en segundo plano
-                    try
-                    {
-                        usuario.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(contraseña);
-                        _context.SaveChanges();
-                    }
-                    catch { }
-                }
-            }
-
             if (!contraseñaCorrecta)
                 return new ResultadoLogin(false, "Usuario o contraseña incorrectos.");
 
@@ -461,7 +438,8 @@ namespace ControlClientesRestaurante.Services
             var usuarioExistente = _usuarioRepository.ObtenerPorCorreo(correoLimpio);
             if (usuarioExistente != null)
             {
-                return (true, "Ya tenías una cuenta con este correo. Iniciando sesión...", usuarioExistente, _context.Clientes.FirstOrDefault(c => c.Correo == correoLimpio));
+                // Nunca iniciar sesión en una cuenta existente solo por conocer su correo
+                return (false, "Ya existe una cuenta con este correo. Inicia sesión con tu contraseña.", null, null);
             }
 
             var nombreCompleto = $"{nombre.Trim()} {apellido?.Trim()}".Trim();

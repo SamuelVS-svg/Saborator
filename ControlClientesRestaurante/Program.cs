@@ -2,6 +2,7 @@ using ControlClientesRestaurante.Data;
 using ControlClientesRestaurante.Models;
 using ControlClientesRestaurante.Repositories;
 using ControlClientesRestaurante.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -92,10 +93,56 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
+        // Solo por HTTPS en producción (en local se permite HTTP para desarrollar)
+        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+            ? CookieSecurePolicy.SameAsRequest
+            : CookieSecurePolicy.Always;
         options.Cookie.Name = ".Saborator.Auth";
+
+        // Expulsar de inmediato a cuentas desactivadas o eliminadas (no esperar a que caduque la cookie)
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var nombre = context.Principal?.Identity?.Name;
+            if (string.IsNullOrEmpty(nombre)) return;
+            var repo = context.HttpContext.RequestServices.GetRequiredService<IUsuarioRepository>();
+            var usuario = repo.ObtenerPorNombre(nombre);
+            if (usuario == null || !usuario.Estado)
+            {
+                context.RejectPrincipal();
+                await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+        };
     });
 
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
+
+// Límite de intentos para inicio de sesión, registro y códigos OTP (fuerza bruta)
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("autenticacion", httpContext =>
+        System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "desconocido",
+            _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json; charset=utf-8";
+        await context.HttpContext.Response.WriteAsync(
+            "{\"ok\":false,\"success\":false,\"mensaje\":\"Demasiados intentos. Espera un minuto e inténtalo de nuevo.\",\"error\":\"Demasiados intentos. Espera un minuto e inténtalo de nuevo.\"}", token);
+    };
+});
 
 // Repositorios
 builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
@@ -156,6 +203,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
@@ -178,6 +226,24 @@ try
     if (useSqlite)
     {
         db.Database.EnsureCreated();
+
+        // EnsureCreated no altera bases SQLite ya existentes: añadir columnas nuevas si faltan
+        var columnasPedidos = new List<string>();
+        var conn = db.Database.GetDbConnection();
+        conn.Open();
+        using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "PRAGMA table_info('Pedidos');";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read()) columnasPedidos.Add(reader.GetString(1));
+        }
+        conn.Close();
+        if (!columnasPedidos.Contains("Repartidor"))
+        {
+            db.Database.ExecuteSqlRaw("ALTER TABLE Pedidos ADD COLUMN Repartidor TEXT NULL;");
+            db.Database.ExecuteSqlRaw("ALTER TABLE Pedidos ADD COLUMN FechaDespacho TEXT NULL;");
+            db.Database.ExecuteSqlRaw("ALTER TABLE Pedidos ADD COLUMN FechaEntrega TEXT NULL;");
+        }
     }
     else
     {
@@ -400,6 +466,13 @@ try
             ALTER TABLE [Pedidos] ADD [Descuento] DECIMAL(18,2) NOT NULL DEFAULT 0;
         END
 
+        IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Pedidos' AND COLUMN_NAME = 'Repartidor')
+        BEGIN
+            ALTER TABLE [Pedidos] ADD [Repartidor] NVARCHAR(100) NULL;
+            ALTER TABLE [Pedidos] ADD [FechaDespacho] DATETIME2 NULL;
+            ALTER TABLE [Pedidos] ADD [FechaEntrega] DATETIME2 NULL;
+        END
+
         IF NOT EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Facturas' AND COLUMN_NAME = 'CodigoCupon')
         BEGIN
             ALTER TABLE [Facturas] ADD [CodigoCupon] NVARCHAR(50) NULL;
@@ -504,89 +577,41 @@ try
         db.SaveChanges();
     }
 
-    var rolAdmin  = db.Roles.FirstOrDefault(r => r.NombreRol == "Administrador");
-    if (rolAdmin  == null) { rolAdmin  = new Rol { NombreRol = "Administrador" }; db.Roles.Add(rolAdmin);  db.SaveChanges(); }
-
-    var rolCajero = db.Roles.FirstOrDefault(r => r.NombreRol == "Cajero");
-    if (rolCajero == null) { rolCajero = new Rol { NombreRol = "Cajero" };        db.Roles.Add(rolCajero); db.SaveChanges(); }
-
-    var rolMesero = db.Roles.FirstOrDefault(r => r.NombreRol == "Mesero");
-    if (rolMesero == null) { rolMesero = new Rol { NombreRol = "Mesero" };        db.Roles.Add(rolMesero); db.SaveChanges(); }
-
-    var rolCocinero = db.Roles.FirstOrDefault(r => r.NombreRol == "Cocinero");
-    if (rolCocinero == null) { rolCocinero = new Rol { NombreRol = "Cocinero" }; db.Roles.Add(rolCocinero); db.SaveChanges(); }
-
-    var rolCliente = db.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
-    if (rolCliente == null) { rolCliente = new Rol { NombreRol = "Cliente" };      db.Roles.Add(rolCliente); db.SaveChanges(); }
-
-    // Credenciales Seguras en Seed
-    var uAdmin = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == "admin");
-    if (uAdmin == null)
+    // Asegurar que existan todos los roles del sistema
+    foreach (var nombreRol in ControlClientesRestaurante.Models.Roles.Personal.Append(ControlClientesRestaurante.Models.Roles.Cliente))
     {
-        db.Usuarios.Add(new Usuario { NombreUsuario = "admin", ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Admin#Saborator2026!"), RolId = rolAdmin.Id, DebeCambiarContraseña = false });
+        if (!db.Roles.Any(r => r.NombreRol == nombreRol))
+            db.Roles.Add(new Rol { NombreRol = nombreRol });
     }
-    else
-    {
-        uAdmin.RolId = rolAdmin.Id;
-        uAdmin.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Admin#Saborator2026!");
-        uAdmin.DebeCambiarContraseña = false;
-    }
+    db.SaveChanges();
 
-    var uCajero = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == "cajero");
-    if (uCajero == null)
+    // Cuentas de demostración: se crean solo si no existen. Nunca se sobrescribe la
+    // contraseña de una cuenta existente (antes se reiniciaba en cada arranque).
+    var cuentasSemilla = new[]
     {
-        db.Usuarios.Add(new Usuario { NombreUsuario = "cajero", ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Cajero#Saborator2026!"), RolId = rolCajero.Id, DebeCambiarContraseña = false });
-    }
-    else
+        (Usuario: "admin",        Clave: "Admin#Saborator2026!",        Rol: "Administrador"),
+        (Usuario: "cajero",       Clave: "Cajero#Saborator2026!",       Rol: "Cajero"),
+        (Usuario: "mesero",       Clave: "Mesero#Saborator2026!",       Rol: "Mesero"),
+        (Usuario: "cocinero",     Clave: "Cocinero#Saborator2026!",     Rol: "Cocinero"),
+        (Usuario: "domiciliario", Clave: "Domiciliario#Saborator2026!", Rol: "Domiciliario"),
+        (Usuario: "cliente",      Clave: "Cliente#Saborator2026!",      Rol: "Cliente"),
+    };
+    foreach (var cuenta in cuentasSemilla)
     {
-        uCajero.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Cajero#Saborator2026!");
-        uCajero.RolId = rolCajero.Id;
-        uCajero.DebeCambiarContraseña = false;
-    }
+        if (db.Usuarios.Any(u => u.NombreUsuario == cuenta.Usuario)) continue;
 
-    var uMesero = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == "mesero");
-    if (uMesero == null)
-    {
-        db.Usuarios.Add(new Usuario { NombreUsuario = "mesero", ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Mesero#Saborator2026!"), RolId = rolMesero.Id, DebeCambiarContraseña = false });
-    }
-    else
-    {
-        uMesero.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Mesero#Saborator2026!");
-        uMesero.RolId = rolMesero.Id;
-        uMesero.DebeCambiarContraseña = false;
-    }
-
-    var uCocinero = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == "cocinero");
-    if (uCocinero == null)
-    {
-        db.Usuarios.Add(new Usuario { NombreUsuario = "cocinero", ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Cocinero#Saborator2026!"), RolId = rolCocinero.Id, DebeCambiarContraseña = false });
-    }
-    else
-    {
-        uCocinero.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Cocinero#Saborator2026!");
-        uCocinero.RolId = rolCocinero.Id;
-        uCocinero.DebeCambiarContraseña = false;
-    }
-
-    var uCliente = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == "cliente");
-    if (uCliente == null)
-    {
-        db.Usuarios.Add(new Usuario {
-            NombreUsuario = "cliente",
-            ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Cliente#Saborator2026!"),
-            RolId = rolCliente.Id,
+        var rolId = db.Roles.First(r => r.NombreRol == cuenta.Rol).Id;
+        db.Usuarios.Add(new Usuario
+        {
+            NombreUsuario         = cuenta.Usuario,
+            ContraseñaHash        = BCrypt.Net.BCrypt.HashPassword(cuenta.Clave),
+            RolId                 = rolId,
             DebeCambiarContraseña = false,
-            EmailVerificado = true,
-            Correo = "cliente@saborator.com"
+            EmailVerificado       = true,
+            Correo                = cuenta.Rol == "Cliente" ? "cliente@saborator.com" : null
         });
     }
-    else
-    {
-        uCliente.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword("Cliente#Saborator2026!");
-        uCliente.RolId = rolCliente.Id;
-        uCliente.DebeCambiarContraseña = false;
-        uCliente.EmailVerificado = true;
-    }
+    db.SaveChanges();
 
     var cCliente = db.Clientes.FirstOrDefault(c => c.Correo == "cliente@saborator.com" || c.Nombre == "Cliente Saborator");
     if (cCliente == null)

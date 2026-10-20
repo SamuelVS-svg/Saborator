@@ -52,6 +52,14 @@ namespace ControlClientesRestaurante.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal? PagaCon { get; set; }
 
+        // Domiciliario (usuario con rol "Domiciliario") que lleva el pedido
+        [StringLength(100)]
+        public string? Repartidor { get; set; }
+
+        public DateTime? FechaDespacho { get; set; }
+
+        public DateTime? FechaEntrega { get; set; }
+
         public int? FacturaId { get; set; }
         public Factura? Factura { get; set; }
 

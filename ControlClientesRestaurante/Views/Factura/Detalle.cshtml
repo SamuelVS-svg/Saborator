@@ -222,8 +222,8 @@
                             <strong>@l.NombreProducto</strong>
                         </td>
                         <td style="text-align:center;font-weight:600;">@l.Cantidad</td>
-                        <td style="text-align:right;color:#4B5563;">$@l.PrecioUnitario.ToString("N0")</td>
-                        <td style="text-align:right;font-weight:700;">$@subtotalLinea.ToString("N0")</td>
+                        <td style="text-align:right;color:#4B5563;">$@l.PrecioUnitario.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
+                        <td style="text-align:right;font-weight:700;">$@subtotalLinea.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</td>
                     </tr>
                 }
             </tbody>
@@ -234,14 +234,14 @@
             <div style="min-width:300px;width:100%;max-width:340px;">
                 <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
                     <span>Subtotal de Productos:</span>
-                    <strong style="color:#111827;">$@Model.Subtotal.ToString("N0") COP</strong>
+                    <strong style="color:#111827;">$@Model.Subtotal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                 </div>
 
                 @if (Model.Descuento > 0)
                 {
                     <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#059669;">
                         <span>Descuento Promocional @(!string.IsNullOrWhiteSpace(Model.CodigoCupon) ? $"({Model.CodigoCupon})" : ""):</span>
-                        <strong style="color:#059669;">-$@Model.Descuento.ToString("N0") COP</strong>
+                        <strong style="color:#059669;">-$@Model.Descuento.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                     </div>
                 }
 
@@ -249,7 +249,7 @@
                 {
                     <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
                         <span>Servicio Domicilio Express:</span>
-                        <strong style="color:#C8973A;">$@Model.CostoEnvio.ToString("N0") COP</strong>
+                        <strong style="color:#C8973A;">$@Model.CostoEnvio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                     </div>
                 }
 
@@ -257,7 +257,7 @@
                 {
                     <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
                         <span>IVA (@Model.ImpuestoPorcentaje%):</span>
-                        <strong style="color:#111827;">$@ivaCalculado.ToString("N0") COP</strong>
+                        <strong style="color:#111827;">$@ivaCalculado.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                     </div>
                 }
 
@@ -265,13 +265,13 @@
                 {
                     <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
                         <span>Propina Voluntaria (10%):</span>
-                        <strong style="color:#111827;">$@Model.Propina.ToString("N0") COP</strong>
+                        <strong style="color:#111827;">$@Model.Propina.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                     </div>
                 }
 
                 <div style="border-top:2px solid #111827;margin:.6rem 0;padding-top:.6rem;display:flex;justify-content:space-between;align-items:center;">
                     <span style="font-size:1.05rem;font-weight:800;color:#111827;">TOTAL A PAGAR:</span>
-                    <span style="font-size:1.35rem;font-weight:800;color:#7A1C28;">$@Model.Total.ToString("N0") COP</span>
+                    <span style="font-size:1.35rem;font-weight:800;color:#7A1C28;">$@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                 </div>
             </div>
         </div>

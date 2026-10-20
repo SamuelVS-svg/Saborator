@@ -204,6 +204,17 @@ namespace ControlClientesRestaurante.Services
                 throw new InvalidOperationException($"Transición no permitida de '{pedido.Estado}' a '{nuevoEstado}'.");
             }
 
+            // "En camino" solo tiene sentido para domicilios
+            if (string.Equals(nuevoEstado, "EnCamino", StringComparison.OrdinalIgnoreCase) && pedido.TipoEntrega != "Domicilio")
+            {
+                throw new InvalidOperationException("Solo los pedidos a domicilio pueden pasar a 'En camino'.");
+            }
+
+            if (string.Equals(nuevoEstado, "EnCamino", StringComparison.OrdinalIgnoreCase))
+                pedido.FechaDespacho ??= DateTime.Now;
+            if (string.Equals(nuevoEstado, "Entregado", StringComparison.OrdinalIgnoreCase))
+                pedido.FechaEntrega = DateTime.Now;
+
             pedido.Estado = nuevoEstado;
             _repo.Actualizar(pedido);
             _repo.GuardarCambios();
@@ -259,14 +270,86 @@ namespace ControlClientesRestaurante.Services
             if (pedido == null) return (false, "Pedido no encontrado.");
             if (pedido.Estado == "Facturado") return (false, "No se puede modificar un pedido ya facturado.");
             if (pedido.Estado == "Cancelado") return (false, "No se puede modificar un pedido cancelado.");
+            if (pedido.TipoEntrega != "Domicilio") return (false, "Solo los pedidos a domicilio tienen tarifa de envío.");
 
             decimal subtotal = pedido.Lineas.Sum(l => l.PrecioUnitario * l.Cantidad);
             pedido.CostoEnvio = nuevoCostoEnvio >= 0 ? nuevoCostoEnvio : 0;
-            pedido.Total = subtotal + pedido.CostoEnvio;
+            pedido.Total = Math.Max(0, subtotal - pedido.Descuento) + pedido.CostoEnvio;
 
             _repo.Actualizar(pedido);
             _repo.GuardarCambios();
-            return (true, $"Valor de domicilio actualizado a ${pedido.CostoEnvio:N0} COP");
+            return (true, $"Valor de domicilio actualizado a ${(pedido.CostoEnvio).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} COP");
+        }
+
+        // ══ REPARTO A DOMICILIO (ROL DOMICILIARIO) ═══════════════════════
+
+        /// <summary>Domicilios listos en cocina que aún no tienen domiciliario asignado.</summary>
+        public List<Pedido> ObtenerRepartosDisponibles() =>
+            _repo.ObtenerDomicilios()
+                .Where(p => p.TipoEntrega == "Domicilio" && p.Estado == "Listo" && string.IsNullOrEmpty(p.Repartidor))
+                .OrderBy(p => p.FechaCreacion)
+                .ToList();
+
+        /// <summary>Domicilios asignados a un domiciliario (activos y entregados hoy).</summary>
+        public List<Pedido> ObtenerRepartosDe(string repartidor) =>
+            _repo.ObtenerDomicilios()
+                .Where(p => p.TipoEntrega == "Domicilio" &&
+                            string.Equals(p.Repartidor, repartidor, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(p => p.FechaCreacion)
+                .ToList();
+
+        /// <summary>El cajero/administrador asigna un domiciliario a un domicilio que aún no ha salido.</summary>
+        public (bool ok, string mensaje) AsignarRepartidor(int pedidoId, string? repartidor)
+        {
+            var pedido = _repo.ObtenerPorId(pedidoId);
+            if (pedido == null) return (false, "Pedido no encontrado.");
+            if (pedido.TipoEntrega != "Domicilio") return (false, "Solo los pedidos a domicilio se asignan a un domiciliario.");
+
+            var estadosAsignables = new[] { "Pendiente", "EnPreparacion", "Listo" };
+            if (!estadosAsignables.Contains(pedido.Estado))
+                return (false, $"No se puede reasignar un domicilio en estado '{pedido.Estado}'.");
+
+            pedido.Repartidor = string.IsNullOrWhiteSpace(repartidor) ? null : repartidor.Trim();
+            _repo.Actualizar(pedido);
+            _repo.GuardarCambios();
+            return (true, pedido.Repartidor == null
+                ? $"Se quitó el domiciliario del pedido {pedido.Numero}."
+                : $"Pedido {pedido.Numero} asignado a {pedido.Repartidor}.");
+        }
+
+        /// <summary>El domiciliario recoge el pedido listo y sale a entregarlo (Listo → EnCamino).</summary>
+        public (bool ok, string mensaje) IniciarReparto(int pedidoId, string repartidor)
+        {
+            var pedido = _repo.ObtenerPorId(pedidoId);
+            if (pedido == null) return (false, "Pedido no encontrado.");
+            if (pedido.TipoEntrega != "Domicilio") return (false, "Este pedido no es a domicilio.");
+            if (pedido.Estado != "Listo") return (false, $"El pedido {pedido.Numero} aún no está listo para salir (estado: {pedido.Estado}).");
+            if (!string.IsNullOrEmpty(pedido.Repartidor) &&
+                !string.Equals(pedido.Repartidor, repartidor, StringComparison.OrdinalIgnoreCase))
+                return (false, $"El pedido {pedido.Numero} ya está asignado a {pedido.Repartidor}.");
+
+            pedido.Repartidor    = repartidor;
+            pedido.FechaDespacho = DateTime.Now;
+            pedido.Estado        = "EnCamino";
+            _repo.Actualizar(pedido);
+            _repo.GuardarCambios();
+            return (true, $"Pedido {pedido.Numero} en camino. ¡Buen viaje!");
+        }
+
+        /// <summary>Confirma la entrega (EnCamino → Entregado). Solo el domiciliario asignado o un supervisor.</summary>
+        public (bool ok, string mensaje) ConfirmarEntrega(int pedidoId, string usuario, bool esSupervisor)
+        {
+            var pedido = _repo.ObtenerPorId(pedidoId);
+            if (pedido == null) return (false, "Pedido no encontrado.");
+            if (pedido.Estado != "EnCamino") return (false, $"El pedido {pedido.Numero} no está en camino (estado: {pedido.Estado}).");
+            if (!esSupervisor && !string.Equals(pedido.Repartidor, usuario, StringComparison.OrdinalIgnoreCase))
+                return (false, "Solo el domiciliario asignado puede confirmar esta entrega.");
+
+            pedido.Estado       = "Entregado";
+            pedido.FechaEntrega = DateTime.Now;
+            _repo.Actualizar(pedido);
+            _repo.GuardarCambios();
+            return (true, $"Pedido {pedido.Numero} entregado correctamente.");
         }
     }
 }
