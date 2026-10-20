@@ -461,7 +461,8 @@ namespace ControlClientesRestaurante.Services
             var usuarioExistente = _usuarioRepository.ObtenerPorCorreo(correoLimpio);
             if (usuarioExistente != null)
             {
-                return (true, "Ya tenías una cuenta con este correo. Iniciando sesión...", usuarioExistente, _context.Clientes.FirstOrDefault(c => c.Correo == correoLimpio));
+                // Nunca iniciar sesión en una cuenta existente solo por conocer su correo
+                return (false, "Ya existe una cuenta con este correo. Inicia sesión con tu contraseña.", null, null);
             }
 
             var nombreCompleto = $"{nombre.Trim()} {apellido?.Trim()}".Trim();

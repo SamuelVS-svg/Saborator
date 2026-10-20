@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using ControlClientesRestaurante.Models;
 using ControlClientesRestaurante.Services;
 using ControlClientesRestaurante.Repositories;
@@ -17,6 +18,7 @@ namespace ControlClientesRestaurante.Controllers
         private readonly ITwilioService       _twilioService;
         private readonly IConfiguration       _configuration;
         private readonly Data.ApplicationDbContext _context;
+        private readonly IWebHostEnvironment  _env;
 
         public LoginController(
             AutenticacionService auth, 
@@ -25,7 +27,8 @@ namespace ControlClientesRestaurante.Controllers
             IEmailService emailService,
             ITwilioService twilioService,
             IConfiguration configuration,
-            Data.ApplicationDbContext context)
+            Data.ApplicationDbContext context,
+            IWebHostEnvironment env)
         {
             _auth             = auth;
             _usuarioRepo      = usuarioRepo;
@@ -34,6 +37,7 @@ namespace ControlClientesRestaurante.Controllers
             _twilioService    = twilioService;
             _configuration    = configuration;
             _context          = context;
+            _env              = env;
         }
 
         [HttpGet]
@@ -51,6 +55,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> Index(string usuario, string? contraseña, [FromForm(Name = "password")] string? password = null)
         {
             var pass = !string.IsNullOrEmpty(contraseña) ? contraseña : (password ?? string.Empty);
@@ -104,6 +109,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> Registro(
             [FromForm] string  nombreCompleto,
             [FromForm] string? tipoDocumento,
@@ -204,6 +210,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> PrimerIngreso(
             string usuario, string contrasenaActual, string nuevaContrasena, string confirmarContrasena)
         {
@@ -344,6 +351,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> LoginAjax([FromBody] LoginAjaxDto? dto)
         {
             string? usuario = dto?.Usuario;
@@ -385,6 +393,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> RegistroAjax([FromBody] RegistroAjaxDto? dto)
         {
             if (dto == null && Request.HasFormContentType)
@@ -479,6 +488,7 @@ namespace ControlClientesRestaurante.Controllers
         // ── Validación automática mediante Código de 6 Dígitos (OTP) ──────
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> VerificarOtp([FromBody] VerificarOtpDto? dto)
         {
             string? usuarioIdentificador = dto?.Usuario;
@@ -544,6 +554,7 @@ namespace ControlClientesRestaurante.Controllers
         // ── Reenvío de Código OTP por SMS o WhatsApp ─────────────────────
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> ReenviarOtp([FromBody] ReenviarOtpDto? dto)
         {
             string? usuarioIdentificador = dto?.Usuario;
@@ -641,6 +652,7 @@ namespace ControlClientesRestaurante.Controllers
         // ── Reenvío de correo de validación ──────────────────────────────
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> ReenviarVerificacion(string usuarioOCorreo)
         {
             if (string.IsNullOrWhiteSpace(usuarioOCorreo))
@@ -693,6 +705,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost("/api/auth/request-otp")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> ApiRequestOtp([FromBody] ReactOtpRequestDto? dto)
         {
             var phone = new string((dto?.phone ?? "").Where(char.IsDigit).ToArray());
@@ -702,7 +715,7 @@ namespace ControlClientesRestaurante.Controllers
             var channel = string.Equals(dto?.channel, "whatsapp", StringComparison.OrdinalIgnoreCase) ? "whatsapp" : "sms";
             var code = Random.Shared.Next(100000, 999999).ToString("D6");
 
-            HttpContext.Session.SetString($"ReactOtp_{phone}", code);
+            GuardarOtp($"ReactOtp_{phone}", code);
 
             var result = channel == "whatsapp"
                 ? await _twilioService.EnviarOtpWhatsAppAsync(phone, code)
@@ -711,15 +724,20 @@ namespace ControlClientesRestaurante.Controllers
             return Ok(new
             {
                 success = true,
+                // El código solo se muestra en desarrollo; en producción revelarlo permitiría
+                // verificar cualquier número sin tener acceso a él.
                 message = result.ok
                     ? $"Código enviado por {channel.ToUpper()} al +57{phone}."
-                    : $"Modo demostración activo: usa el código {code} para ingresar.",
+                    : (_env.IsDevelopment()
+                        ? $"Modo demostración activo: usa el código {code} para ingresar."
+                        : "No pudimos enviar el código en este momento. Intenta de nuevo en unos minutos."),
                 sid = result.sid
             });
         }
 
         [HttpPost("/api/auth/verify-otp")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> ApiVerifyOtp([FromBody] ReactOtpVerifyDto? dto)
         {
             var phone = new string((dto?.phone ?? "").Where(char.IsDigit).ToArray());
@@ -728,14 +746,13 @@ namespace ControlClientesRestaurante.Controllers
             if (phone.Length != 10 || code.Length != 6)
                 return BadRequest(new { success = false, error = "Datos de verificación incompletos." });
 
-            var storedCode = HttpContext.Session.GetString($"ReactOtp_{phone}");
-            var validLocal = !string.IsNullOrEmpty(storedCode) && storedCode == code;
+            var validLocal = ValidarOtpLocal($"ReactOtp_{phone}", code, out var bloqueadoReact);
+            if (bloqueadoReact)
+                return BadRequest(new { success = false, error = "Demasiados intentos. Solicita un código nuevo." });
             var validTwilio = !validLocal && await _twilioService.VerificarCodigoTwilioAsync(phone, code);
 
             if (!validLocal && !validTwilio)
                 return BadRequest(new { success = false, error = "Código OTP incorrecto o expirado." });
-
-            HttpContext.Session.Remove($"ReactOtp_{phone}");
 
             var userName = !string.IsNullOrWhiteSpace(dto?.name) ? dto.name.Trim() : $"Comensal {phone[^4..]}";
             var token = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{phone}:{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}"));
@@ -776,6 +793,57 @@ namespace ControlClientesRestaurante.Controllers
             });
         }
 
+
+        // ── Códigos OTP: expiran a los 5 minutos y admiten máximo 5 intentos ──
+        private const int OtpMinutosVigencia = 5;
+        private const int OtpMaxIntentos     = 5;
+
+        private void GuardarOtp(string clave, string codigo)
+        {
+            HttpContext.Session.SetString(clave, $"{codigo}|{DateTimeOffset.UtcNow.AddMinutes(OtpMinutosVigencia).ToUnixTimeSeconds()}|0");
+        }
+
+        /// <summary>Valida el OTP guardado en sesión; cuenta intentos y lo invalida al expirar o agotarlos.</summary>
+        private bool ValidarOtpLocal(string clave, string codigo, out bool bloqueado)
+        {
+            bloqueado = false;
+            var guardado = HttpContext.Session.GetString(clave);
+            if (string.IsNullOrEmpty(guardado)) return false;
+
+            var partes = guardado.Split('|');
+            if (partes.Length != 3 || !long.TryParse(partes[1], out var expira) || !int.TryParse(partes[2], out var intentos))
+            {
+                HttpContext.Session.Remove(clave);
+                return false;
+            }
+            if (DateTimeOffset.UtcNow.ToUnixTimeSeconds() > expira)
+            {
+                HttpContext.Session.Remove(clave);
+                return false;
+            }
+            if (partes[0] == codigo)
+            {
+                HttpContext.Session.Remove(clave);
+                return true;
+            }
+
+            intentos++;
+            if (intentos >= OtpMaxIntentos)
+            {
+                HttpContext.Session.Remove(clave);
+                bloqueado = true;
+            }
+            else
+            {
+                HttpContext.Session.SetString(clave, $"{partes[0]}|{expira}|{intentos}");
+            }
+            return false;
+        }
+
+        /// <summary>Solo permite redirigir a rutas del propio sitio (evita redirecciones abiertas).</summary>
+        private string UrlLocalSegura(string? url, string porDefecto) =>
+            !string.IsNullOrWhiteSpace(url) && Url.IsLocalUrl(url) ? url : porDefecto;
+
         // ── Helper centralizado para generar Claims y Cookie ─────────────
         private async Task IniciarSesionClaimsAsync(Usuario usuario, string rol, string nombreMostrar)
         {
@@ -808,86 +876,6 @@ namespace ControlClientesRestaurante.Controllers
             HttpContext.Session.SetString("Rol", rol);
             HttpContext.Session.SetString("FotoPerfil", usuario.FotoPerfil ?? "");
             HttpContext.Session.SetString("Tema", usuario.Tema ?? "clasico");
-        }
-
-        public class SocialAuthDto
-        {
-            public string? Provider { get; set; }
-            public string? Email { get; set; }
-            public string? Name { get; set; }
-            public string? SocialId { get; set; }
-            public string? ReturnUrl { get; set; }
-        }
-
-        public class CompletarRegistroSocialDto
-        {
-            public string? Nombre { get; set; }
-            public string? Apellido { get; set; }
-            public string? Correo { get; set; }
-            public string? PrefijoPais { get; set; }
-            public string? Telefono { get; set; }
-            public string? Password { get; set; }
-            public bool AceptaTerminos { get; set; }
-            public bool AceptaPoliticas { get; set; }
-            public bool AceptaPromociones { get; set; }
-            public string? Provider { get; set; }
-            public string? SocialId { get; set; }
-            public string? ReturnUrl { get; set; }
-        }
-
-        [HttpPost("/Login/SocialAuth")]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> SocialAuth([FromBody] SocialAuthDto? dto)
-        {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.Email))
-            {
-                return BadRequest(new { ok = false, mensaje = "Datos de autenticación social incompletos." });
-            }
-
-            var provider = string.IsNullOrWhiteSpace(dto.Provider) ? "Google" : dto.Provider.Trim();
-            var res = _auth.ValidarOIniciarSocial(provider, dto.Email, dto.Name, dto.SocialId);
-
-            if (!res.ok)
-            {
-                return BadRequest(new { ok = false, mensaje = res.mensaje });
-            }
-
-            if (res.esNuevo)
-            {
-                var partesNombre = (dto.Name ?? "").Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-                var nombre = partesNombre.Length > 0 ? partesNombre[0] : "";
-                var apellido = partesNombre.Length > 1 ? partesNombre[1] : "";
-
-                return Ok(new
-                {
-                    ok = true,
-                    isNew = true,
-                    prefill = new
-                    {
-                        nombre,
-                        apellido,
-                        correo = dto.Email.Trim().ToLowerInvariant(),
-                        provider,
-                        socialId = dto.SocialId
-                    }
-                });
-            }
-
-            var usuarioEntity = res.usuario!;
-            var rol = usuarioEntity.Rol?.NombreRol ?? "Cliente";
-            var nombreMostrar = res.cliente?.Nombre ?? usuarioEntity.NombreUsuario;
-
-            await IniciarSesionClaimsAsync(usuarioEntity, rol, nombreMostrar);
-
-            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, rol, "LOGIN_SOCIAL", "Seguridad", $"Inicio de sesión exitoso con {provider}.");
-
-            return Ok(new
-            {
-                ok = true,
-                isNew = false,
-                mensaje = $"¡Bienvenido de nuevo, {nombreMostrar}!",
-                redirectUrl = dto.ReturnUrl ?? "/"
-            });
         }
 
         public class GoogleDirectAuthDto
@@ -929,6 +917,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost("/Login/GoogleCallback")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> GoogleCallback([FromForm] string? credential, [FromQuery] string? returnUrl = null)
         {
             string? token = credential;
@@ -1116,6 +1105,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost("/Login/GoogleDirectAuth")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> GoogleDirectAuth([FromBody] GoogleDirectAuthDto? dto)
         {
             if (dto != null && !string.IsNullOrWhiteSpace(dto.Credential))
@@ -1128,6 +1118,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost("/Login/EnviarOtpWhatsApp")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> EnviarOtpWhatsApp([FromBody] EnviarOtpWhatsAppDto? dto)
         {
             var phone = new string((dto?.Telefono ?? "").Where(char.IsDigit).ToArray());
@@ -1135,7 +1126,7 @@ namespace ControlClientesRestaurante.Controllers
                 return BadRequest(new { ok = false, mensaje = "Ingresa un número de celular de 10 dígitos (ej. 300 123 4567)." });
 
             var code = Random.Shared.Next(100000, 999999).ToString("D6");
-            HttpContext.Session.SetString($"ClubOtp_{phone}", code);
+            GuardarOtp($"ClubOtp_{phone}", code);
 
             var sendResult = await _twilioService.EnviarOtpWhatsAppAsync(phone, code);
 
@@ -1144,13 +1135,17 @@ namespace ControlClientesRestaurante.Controllers
                 ok = true,
                 mensaje = sendResult.ok
                     ? $"Código de 6 dígitos enviado por WhatsApp al +57 {phone}."
-                    : $"Código generado exitosamente. (Modo prueba: {code})",
-                demoCode = code
+                    : (_env.IsDevelopment()
+                        ? $"Código generado exitosamente. (Modo prueba: {code})"
+                        : "No pudimos enviar el código por WhatsApp. Intenta de nuevo en unos minutos."),
+                // Solo en desarrollo: devolver el código permitiría entrar con cualquier número
+                demoCode = _env.IsDevelopment() && !sendResult.ok ? code : null
             });
         }
 
         [HttpPost("/Login/VerificarOtpWhatsApp")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
         public async Task<IActionResult> VerificarOtpWhatsApp([FromBody] VerificarOtpWhatsAppDto? dto)
         {
             var phone = new string((dto?.Telefono ?? "").Where(char.IsDigit).ToArray());
@@ -1159,14 +1154,13 @@ namespace ControlClientesRestaurante.Controllers
             if (phone.Length != 10 || code.Length != 6)
                 return BadRequest(new { ok = false, mensaje = "Digita el número de celular y los 6 dígitos del código." });
 
-            var storedCode = HttpContext.Session.GetString($"ClubOtp_{phone}");
-            var validLocal = !string.IsNullOrEmpty(storedCode) && storedCode == code;
+            var validLocal = ValidarOtpLocal($"ClubOtp_{phone}", code, out var bloqueadoClub);
+            if (bloqueadoClub)
+                return BadRequest(new { ok = false, mensaje = "Demasiados intentos fallidos. Solicita un código nuevo." });
             var validTwilio = !validLocal && await _twilioService.VerificarCodigoTwilioAsync(phone, code);
 
             if (!validLocal && !validTwilio)
                 return BadRequest(new { ok = false, mensaje = "Código OTP incorrecto o expirado. Solicita uno nuevo." });
-
-            HttpContext.Session.Remove($"ClubOtp_{phone}");
 
             var formattedPhone = $"+57 {phone}";
             var cliente = _context.Clientes.FirstOrDefault(c => c.Telefono.Contains(phone));
@@ -1226,71 +1220,7 @@ namespace ControlClientesRestaurante.Controllers
             {
                 ok = true,
                 mensaje = $"¡Bienvenido al Club Saborator, {nombreMostrar}!",
-                redirectUrl = dto?.ReturnUrl ?? "/#menu"
-            });
-        }
-
-        [HttpPost("/Login/CompletarRegistroSocial")]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> CompletarRegistroSocial([FromBody] CompletarRegistroSocialDto? dto)
-        {
-            if (dto == null)
-            {
-                return BadRequest(new { ok = false, mensaje = "Datos de formulario inválidos." });
-            }
-
-            if (!dto.AceptaTerminos)
-            {
-                return BadRequest(new { ok = false, mensaje = "Debes aceptar los Términos y condiciones del servicio." });
-            }
-
-            if (!dto.AceptaPoliticas)
-            {
-                return BadRequest(new { ok = false, mensaje = "Debes aceptar las Políticas de privacidad y tratamiento de datos personales." });
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.Nombre))
-            {
-                return BadRequest(new { ok = false, mensaje = "Por favor ingresa tu nombre." });
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.Correo) || !dto.Correo.Contains("@"))
-            {
-                return BadRequest(new { ok = false, mensaje = "Por favor ingresa un correo electrónico válido." });
-            }
-
-            if (string.IsNullOrWhiteSpace(dto.Telefono))
-            {
-                return BadRequest(new { ok = false, mensaje = "Por favor ingresa tu número de celular." });
-            }
-
-            var res = _auth.CompletarRegistroSocial(
-                dto.Nombre,
-                dto.Apellido ?? "",
-                dto.Correo,
-                dto.Telefono,
-                dto.PrefijoPais ?? "+57",
-                dto.AceptaPromociones,
-                dto.Password
-            );
-
-            if (!res.ok)
-            {
-                return BadRequest(new { ok = false, mensaje = res.mensaje });
-            }
-
-            var usuarioEntity = res.usuario!;
-            var nombreMostrar = res.cliente?.Nombre ?? usuarioEntity.NombreUsuario;
-
-            await IniciarSesionClaimsAsync(usuarioEntity, "Cliente", nombreMostrar);
-
-            _auditoriaService.Registrar(usuarioEntity.NombreUsuario, "Cliente", "REGISTRO_SOCIAL_COMPLETO", "Seguridad", $"Registro gourmet completado exitosamente vía {dto.Provider ?? "Social/Directo"}.");
-
-            return Ok(new
-            {
-                ok = true,
-                mensaje = "¡Tu cuenta ha sido creada exitosamente! Bienvenido a Saborator.",
-                redirectUrl = dto.ReturnUrl ?? "/"
+                redirectUrl = UrlLocalSegura(dto?.ReturnUrl, "/#menu")
             });
         }
     }
