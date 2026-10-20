@@ -132,12 +132,21 @@
                         <label class="lbl">Nombre libre (sin registro)</label>
                         <input type="text" name="nombreClienteLibre" class="form-control" placeholder="Ej: Juan Pérez" />
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="lbl">Impuesto (%)</label>
                         <input type="number" name="impuestoPorcentaje" id="impuesto"
                                class="form-control" value="0" min="0" max="100" step="0.5" />
                     </div>
-                    <div class="col-md-8 d-flex align-items-end">
+                    <div class="col-md-3">
+                        <label class="lbl" for="metodoPago">Método de pago</label>
+                        <select name="metodoPago" id="metodoPago" class="form-control" required>
+                            @foreach (var m in ControlClientesRestaurante.Services.FacturaService.MetodosPagoCaja)
+                            {
+                                <option value="@m">@m</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
                         <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.52rem .8rem;border:1.5px solid var(--color-text-secondary);border-radius:8px;background:var(--color-bg);width:100%;transition:border-color .2s;">
                             <input type="checkbox" name="incluirPropina" id="chkPropina" value="true"
                                    style="width:16px;height:16px;accent-color:var(--color-brand);cursor:pointer;"

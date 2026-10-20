@@ -110,7 +110,9 @@ namespace ControlClientesRestaurante.Services
                 factura.Numero             = _repo.GenerarNumero();
                 factura.Subtotal           = subtotal;
                 factura.Propina            = propina;
-                factura.Total              = Math.Max(0, subtotal - factura.Descuento) + (subtotal * impuesto / 100m) + propina + factura.CostoEnvio;
+                // El IVA se calcula sobre la base ya descontada (no sobre el subtotal bruto)
+                var baseGravable           = Math.Max(0, subtotal - factura.Descuento);
+                factura.Total              = baseGravable + Math.Round(baseGravable * impuesto / 100m, 2) + propina + factura.CostoEnvio;
                 factura.Lineas             = lineasFactura;
                 factura.UsuarioCajero      = usuarioCajero;
                 factura.Estado             = "Emitida";
@@ -131,6 +133,35 @@ namespace ControlClientesRestaurante.Services
                 tx.Rollback();
                 return (false, $"Error al emitir factura: {ex.Message}", null);
             }
+        }
+
+        public static readonly string[] MetodosPagoCaja = { "Efectivo", "Tarjeta", "Nequi", "Daviplata", "PSE" };
+
+        /// <summary>
+        /// Registra el cobro de una factura emitida en caja como transacción aprobada, para que
+        /// cuente en el cuadre del turno del cajero (antes las ventas facturadas no llegaban a la caja).
+        /// </summary>
+        public void RegistrarCobro(Factura factura, string metodoPago, string usuarioCajero, string? numeroPedido = null, string? mesa = null)
+        {
+            if (!MetodosPagoCaja.Contains(metodoPago)) metodoPago = "Efectivo";
+            _context.TransaccionesPago.Add(new TransaccionPago
+            {
+                ReferenciaTransaccion = $"CAJA-{factura.Numero}",
+                CodigoAprobacion      = factura.Numero,
+                TipoOrigen            = numeroPedido != null ? "Pedido" : "Factura",
+                OrigenId              = factura.Id,
+                Monto                 = factura.Total,
+                MetodoPago            = metodoPago,
+                DetalleMetodo         = $"Cobro en caja ({metodoPago})",
+                NombreCliente         = factura.NombreClienteLibre ?? factura.Cliente?.Nombre ?? "Cliente",
+                Concepto              = $"Factura {factura.Numero}",
+                NumeroPedido          = numeroPedido,
+                NumeroFactura         = factura.Numero,
+                Mesa                  = mesa,
+                Estado                = "Aprobado",
+                UsuarioRegistro       = usuarioCajero
+            });
+            _context.SaveChanges();
         }
 
         /// <summary>Anula la factura y devuelve el stock de cada línea.</summary>

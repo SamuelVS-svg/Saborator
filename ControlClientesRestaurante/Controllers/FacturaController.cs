@@ -196,7 +196,8 @@ namespace ControlClientesRestaurante.Controllers
             [FromForm] decimal impuestoPorcentaje,
             [FromForm] bool    incluirPropina,
             [FromForm] int[]   productoIds,
-            [FromForm] int[]   cantidades)
+            [FromForm] int[]   cantidades,
+            [FromForm] string? metodoPago)
         {
             // Validar IVA con rango [0, 100]
             if (impuestoPorcentaje < 0 || impuestoPorcentaje > 100)
@@ -260,11 +261,15 @@ namespace ControlClientesRestaurante.Controllers
 
             if (!ok) { TempData["Error"] = mensaje; return RedirectToAction("Create"); }
 
+            _facturaService.RegistrarCobro(facturaCreada!, metodoPago ?? "Efectivo", UsuarioActual());
+
             TempData["Mensaje"] = mensaje;
             return RedirectToAction("Detalle", new { id = facturaCreada!.Id });
         }
 
         // ── FACTURAR PEDIDO (cajero convierte pedido "Listo" a factura) ────
+        // Solo POST: emitir una factura cambia datos y no debe dispararse con un enlace.
+        [HttpPost]
         public IActionResult FacturarPedido(int id)
         {
             var pedido = _pedidoService.ObtenerPorId(id);
@@ -302,6 +307,7 @@ namespace ControlClientesRestaurante.Controllers
 
             // Marcar pedido como facturado y liberar la mesa
             _pedidoService.MarcarFacturado(pedido.Id, facturaCreada!.Id);
+            _facturaService.RegistrarCobro(facturaCreada, pedido.MetodoPago, UsuarioActual(), pedido.Numero, pedido.Mesa);
             if (int.TryParse(pedido.Mesa, out int numMesa))
                 _mesaService.LiberarMesa(numMesa);
 

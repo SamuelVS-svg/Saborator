@@ -67,14 +67,7 @@ namespace ControlClientesRestaurante.Services
             if (turno.Estado == "Cerrado")
                 return (false, "Este turno ya se encuentra cerrado.", turno);
 
-            // Calcular ventas del periodo desde transacciones aprobadas
-            var transacciones = _context.TransaccionesPago
-                .Where(t => t.FechaCreacion >= turno.FechaApertura && t.Estado == "Aprobado")
-                .ToList();
-
-            turno.VentasEfectivo = transacciones.Where(t => t.MetodoPago == "Efectivo").Sum(t => t.Monto);
-            turno.VentasTarjeta = transacciones.Where(t => t.MetodoPago == "Tarjeta").Sum(t => t.Monto);
-            turno.VentasTransferencia = transacciones.Where(t => t.MetodoPago == "Nequi" || t.MetodoPago == "Daviplata" || t.MetodoPago == "PSE").Sum(t => t.Monto);
+            CalcularVentas(turno, hasta: DateTime.Now);
 
             turno.EfectivoRealDeclarado = efectivoDeclarado;
             turno.FechaCierre = DateTime.Now;
@@ -99,16 +92,33 @@ namespace ControlClientesRestaurante.Services
 
             if (turno.Estado == "Abierto")
             {
-                var transacciones = _context.TransaccionesPago
-                    .Where(t => t.FechaCreacion >= turno.FechaApertura && t.Estado == "Aprobado")
-                    .ToList();
-
-                turno.VentasEfectivo = transacciones.Where(t => t.MetodoPago == "Efectivo").Sum(t => t.Monto);
-                turno.VentasTarjeta = transacciones.Where(t => t.MetodoPago == "Tarjeta").Sum(t => t.Monto);
-                turno.VentasTransferencia = transacciones.Where(t => t.MetodoPago == "Nequi" || t.MetodoPago == "Daviplata" || t.MetodoPago == "PSE").Sum(t => t.Monto);
+                CalcularVentas(turno, hasta: DateTime.Now);
             }
 
             return turno;
+        }
+
+        /// <summary>
+        /// Ventas del turno. El efectivo cuenta solo lo que cobró ESTE cajero (es el dinero que
+        /// debe tener en su cajón); antes se sumaba el efectivo de todos los cajeros abiertos a la vez.
+        /// Los pagos de Wompi se clasifican como tarjeta/electrónicos (antes no entraban en ningún grupo).
+        /// </summary>
+        private void CalcularVentas(TurnoCaja turno, DateTime hasta)
+        {
+            var transacciones = _context.TransaccionesPago
+                .Where(t => t.FechaCreacion >= turno.FechaApertura && t.FechaCreacion <= hasta && t.Estado == "Aprobado")
+                .ToList();
+
+            bool EsTarjeta(TransaccionPago t) =>
+                t.MetodoPago == "Tarjeta" || t.MetodoPago.StartsWith("Wompi", StringComparison.OrdinalIgnoreCase);
+
+            turno.VentasEfectivo = transacciones
+                .Where(t => t.MetodoPago == "Efectivo" && t.UsuarioRegistro == turno.UsuarioCajero)
+                .Sum(t => t.Monto);
+            turno.VentasTarjeta = transacciones.Where(EsTarjeta).Sum(t => t.Monto);
+            turno.VentasTransferencia = transacciones
+                .Where(t => t.MetodoPago != "Efectivo" && !EsTarjeta(t))
+                .Sum(t => t.Monto);
         }
     }
 }
