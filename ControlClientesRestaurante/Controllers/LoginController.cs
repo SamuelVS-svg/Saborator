@@ -83,6 +83,13 @@ namespace ControlClientesRestaurante.Controllers
             var rol = resultado.Rol ?? "Cliente";
             var nombreMostrar = usuarioEntity.NombreUsuario ?? usuario;
 
+            // Contraseña temporal (asignada por el administrador): debe cambiarla antes de entrar
+            if (usuarioEntity.DebeCambiarContraseña)
+            {
+                HttpContext.Session.SetString("UsuarioPendienteCambio", usuarioEntity.NombreUsuario);
+                return RedirectToAction("PrimerIngreso");
+            }
+
             _auditoriaService.Registrar(
                 usuarioEntity.NombreUsuario ?? usuario,
                 rol,
@@ -200,7 +207,7 @@ namespace ControlClientesRestaurante.Controllers
         [HttpGet]
         public IActionResult PrimerIngreso(string? usuario)
         {
-            var u = usuario ?? HttpContext.Session.GetString("UsuarioPendienteCambio") ?? User.Identity?.Name;
+            var u = HttpContext.Session.GetString("UsuarioPendienteCambio") ?? User.Identity?.Name ?? usuario;
             if (string.IsNullOrWhiteSpace(u))
                 return RedirectToAction("Index");
 
@@ -384,6 +391,12 @@ namespace ControlClientesRestaurante.Controllers
 
             var usuarioEntity = res.Usuario!;
             var rol = res.Rol ?? "Cliente";
+
+            if (usuarioEntity.DebeCambiarContraseña)
+            {
+                HttpContext.Session.SetString("UsuarioPendienteCambio", usuarioEntity.NombreUsuario);
+                return Json(new { ok = true, mensaje = "Debes cambiar tu contraseña temporal.", redirectUrl = Url.Action("PrimerIngreso") });
+            }
 
             await IniciarSesionClaimsAsync(usuarioEntity, rol, usuarioEntity.NombreUsuario);
 

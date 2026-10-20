@@ -2,6 +2,7 @@ using ControlClientesRestaurante.Data;
 using ControlClientesRestaurante.Models;
 using ControlClientesRestaurante.Repositories;
 using ControlClientesRestaurante.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -97,6 +98,20 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             ? CookieSecurePolicy.SameAsRequest
             : CookieSecurePolicy.Always;
         options.Cookie.Name = ".Saborator.Auth";
+
+        // Expulsar de inmediato a cuentas desactivadas o eliminadas (no esperar a que caduque la cookie)
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var nombre = context.Principal?.Identity?.Name;
+            if (string.IsNullOrEmpty(nombre)) return;
+            var repo = context.HttpContext.RequestServices.GetRequiredService<IUsuarioRepository>();
+            var usuario = repo.ObtenerPorNombre(nombre);
+            if (usuario == null || !usuario.Estado)
+            {
+                context.RejectPrincipal();
+                await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+        };
     });
 
 builder.Services.AddSession(options =>

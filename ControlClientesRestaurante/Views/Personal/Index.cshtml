@@ -1,0 +1,189 @@
+@model List<ControlClientesRestaurante.Models.Usuario>
+@using ControlClientesRestaurante.Models
+@{
+    ViewData["Title"] = "Personal";
+    var yo = User.Identity?.Name;
+    string[]? claveTemporal = (TempData["ClaveTemporal"] as string)?.Split('|', 2);
+}
+
+<div class="pg-header">
+    <div class="pg-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div>
+        <div class="pg-title">Personal</div>
+        <div class="pg-sub">Crea cuentas para tu equipo, cambia su rol o desactívalas</div>
+    </div>
+</div>
+<hr class="div-gold" />
+
+@if (claveTemporal != null && claveTemporal.Length == 2)
+{
+    <div class="per-clave" role="status">
+        <div>
+            <strong>Contraseña temporal de @claveTemporal[0]:</strong>
+            <code id="claveTemporal">@claveTemporal[1]</code>
+            <button type="button" class="per-btn-mini" onclick="navigator.clipboard.writeText(document.getElementById('claveTemporal').textContent); this.textContent='Copiada';">Copiar</button>
+        </div>
+        <p>Entrégasela a la persona. Solo se muestra esta vez y deberá cambiarla al iniciar sesión.</p>
+    </div>
+}
+
+<div class="per-card">
+    <h2 class="per-h2">Nueva cuenta</h2>
+    <form asp-action="Crear" method="post" class="per-form">
+        <div>
+            <label class="lbl" for="nombreUsuario">Usuario</label>
+            <input id="nombreUsuario" name="nombreUsuario" class="form-control" required minlength="3" maxlength="40"
+                   pattern="[A-Za-z0-9._\-]+" placeholder="ej. carlos.rojas" autocomplete="off" />
+        </div>
+        <div>
+            <label class="lbl" for="rol">Rol</label>
+            <select id="rol" name="rol" class="form-control" required>
+                @foreach (var r in Roles.Personal)
+                {
+                    <option value="@r" selected="@(r == Roles.Domiciliario)">@r</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="lbl" for="correo">Correo (opcional)</label>
+            <input id="correo" name="correo" type="email" class="form-control" maxlength="150" placeholder="nombre@correo.com" />
+        </div>
+        <div class="per-form-btn">
+            <button type="submit" class="btn-brand">Crear cuenta</button>
+        </div>
+    </form>
+</div>
+
+<div class="tbl-wrap">
+    <table class="tbl">
+        <thead>
+            <tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Creada</th><th class="per-acciones-th">Acciones</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                bool esYo = u.NombreUsuario == yo;
+                <tr class="@(u.Estado ? "" : "per-inactivo")">
+                    <td>
+                        <strong>@u.NombreUsuario</strong>@(esYo ? " (tú)" : "")
+                        @if (!string.IsNullOrEmpty(u.Correo)) { <div class="per-sub">@u.Correo</div> }
+                        @if (u.DebeCambiarContraseña) { <div class="per-sub per-aviso">Pendiente de cambiar contraseña</div> }
+                    </td>
+                    <td>
+                        @if (esYo)
+                        {
+                            @u.Rol?.NombreRol
+                        }
+                        else
+                        {
+                            <form asp-action="CambiarRol" method="post" class="per-inline">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <select name="rol" class="per-select" aria-label="Rol de @u.NombreUsuario" onchange="this.form.submit()">
+                                    @foreach (var r in Roles.Personal)
+                                    {
+                                        <option value="@r" selected="@(r == u.Rol?.NombreRol)">@r</option>
+                                    }
+                                </select>
+                            </form>
+                        }
+                    </td>
+                    <td><span class="per-estado @(u.Estado ? "on" : "off")">@(u.Estado ? "Activa" : "Desactivada")</span></td>
+                    <td>@u.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                    <td class="per-acciones">
+                        <form asp-action="RestablecerContrasena" method="post" class="per-inline"
+                              onsubmit="return confirm('¿Generar una contraseña temporal nueva para @u.NombreUsuario? La actual dejará de funcionar.');">
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit" class="btn-ghost per-btn">Restablecer contraseña</button>
+                        </form>
+                        @if (!esYo)
+                        {
+                            <form asp-action="CambiarEstado" method="post" class="per-inline"
+                                  onsubmit="return confirm('¿@(u.Estado ? "Desactivar" : "Activar") la cuenta de @u.NombreUsuario?');">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn-ghost per-btn @(u.Estado ? "per-btn-danger" : "")">@(u.Estado ? "Desactivar" : "Activar")</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .per-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1.1rem 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+    .per-h2 { font-size: 1rem; font-weight: 800; color: var(--text); margin: 0 0 0.85rem; }
+    .per-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 0.85rem;
+        align-items: end;
+    }
+    .per-form-btn .btn-brand { width: 100%; justify-content: center; }
+
+    .per-clave {
+        background: rgba(16, 185, 129, 0.10);
+        border: 1px solid #10B981;
+        border-radius: 12px;
+        padding: 0.9rem 1.1rem;
+        margin-bottom: 1.25rem;
+        color: var(--text);
+    }
+    .per-clave code {
+        font-size: 1.05rem;
+        font-weight: 800;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 0.15rem 0.5rem;
+        margin: 0 0.4rem;
+        color: var(--brand);
+        user-select: all;
+    }
+    .per-clave p { margin: 0.4rem 0 0; font-size: 0.82rem; color: var(--muted); }
+    .per-btn-mini {
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--text);
+        border-radius: 6px;
+        padding: 0.15rem 0.55rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .per-sub { font-size: 0.76rem; color: var(--muted); }
+    .per-aviso { color: #B45309; font-weight: 600; }
+    .per-inline { display: inline; margin: 0; }
+    .per-select {
+        padding: 0.3rem 0.45rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+    .per-estado {
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+    .per-estado.on  { background: #D1FAE5; color: #065F46; }
+    .per-estado.off { background: #F3F4F6; color: #6B7280; }
+    .per-inactivo td { opacity: 0.6; }
+    .per-acciones { white-space: nowrap; }
+    .per-acciones-th { text-align: left; }
+    .per-btn { padding: 0.35rem 0.7rem; font-size: 0.8rem; border-radius: 8px; }
+    .per-btn-danger { color: #B91C1C; border-color: rgba(185, 28, 28, 0.35); }
+</style>
