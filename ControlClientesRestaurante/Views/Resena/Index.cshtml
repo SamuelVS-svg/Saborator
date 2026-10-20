@@ -130,7 +130,7 @@
                             <div class="review-avatar">
                                 @(string.IsNullOrEmpty(r.NombreCliente) ? "C" : r.NombreCliente.Substring(0, 1).ToUpper())
                             </div>
-                            <div>
+                            <div class="review-author-info">
                                 <div class="review-author-name">
                                     <span>@r.NombreCliente</span>
                                     @if (r.Verificado)
@@ -141,16 +141,15 @@
                                         </span>
                                     }
                                 </div>
+                                <!-- Estrellas -->
+                                <div class="review-stars-wrap">
+                                    @for (int s = 1; s <= 5; s++)
+                                    {
+                                        <svg class="star-icon @(s <= r.Calificacion ? "star-fill" : "star-empty")" width="15" height="15" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    }
+                                </div>
                                 <div class="review-date-txt">@r.FechaCreacion.ToString("dd MMM yyyy · HH:mm")</div>
                             </div>
-                        </div>
-
-                        <!-- Estrellas -->
-                        <div class="review-stars-wrap">
-                            @for (int s = 1; s <= 5; s++)
-                            {
-                                <svg class="star-icon @(s <= r.Calificacion ? "star-fill" : "star-empty")" width="16" height="16" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            }
                         </div>
                     </div>
 
@@ -513,28 +512,40 @@
 
     .review-head {
         display: flex;
-        justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 0.85rem;
-        gap: 0.5rem;
     }
     .review-author-wrap {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.85rem;
+        width: 100%;
+        min-width: 0;
     }
     .review-avatar {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        aspect-ratio: 1 / 1;
+        flex-shrink: 0;
         border-radius: 50%;
         background: linear-gradient(135deg, #6B1E2E 0%, #C8973A 100%);
         color: #FFFDF9;
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 1.05rem;
+        line-height: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 8px rgba(107, 30, 46, 0.2);
+        box-shadow: 0 2px 8px rgba(107, 30, 46, 0.25);
+    }
+    .review-author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.22rem;
+        min-width: 0;
+        flex: 1;
     }
     .review-author-name {
         font-size: 0.95rem;
@@ -542,7 +553,9 @@
         color: var(--ink, #200B10);
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 6px;
+        line-height: 1.25;
     }
     .badge-verificado {
         font-size: 0.68rem;
@@ -555,14 +568,23 @@
         display: inline-flex;
         align-items: center;
         gap: 2px;
+        flex-shrink: 0;
     }
     .review-date-txt {
-        font-size: 0.75rem;
+        font-size: 0.74rem;
         color: var(--muted, #6E5C50);
+        line-height: 1.2;
     }
     .review-stars-wrap {
         display: flex;
-        gap: 2px;
+        align-items: center;
+        gap: 3px;
+        margin: 1px 0;
+    }
+    .review-stars-wrap .star-icon {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
     }
 
     .review-tags-row {
@@ -1031,7 +1053,7 @@
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
             starsHtml += `
-                <svg class="star-icon ${i <= r.calificacion ? 'star-fill' : 'star-empty'}" width="16" height="16" viewBox="0 0 24 24">
+                <svg class="star-icon ${i <= r.calificacion ? 'star-fill' : 'star-empty'}" width="15" height="15" viewBox="0 0 24 24">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                 </svg>
             `;
@@ -1056,7 +1078,7 @@
             <div class="review-head">
                 <div class="review-author-wrap">
                     <div class="review-avatar">${initial}</div>
-                    <div>
+                    <div class="review-author-info">
                         <div class="review-author-name">
                             <span>${r.nombreCliente}</span>
                             <span class="badge-verificado">
@@ -1064,10 +1086,10 @@
                                 Verificado
                             </span>
                         </div>
+                        <div class="review-stars-wrap">${starsHtml}</div>
                         <div class="review-date-txt">${r.fecha || 'Reciente'}</div>
                     </div>
                 </div>
-                <div class="review-stars-wrap">${starsHtml}</div>
             </div>
             <div class="review-tags-row">
                 <span class="review-tag-exp">
