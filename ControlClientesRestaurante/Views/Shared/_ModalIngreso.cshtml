@@ -296,6 +296,16 @@
         }
     });
 
+    // "Iniciar sesión con otra cuenta": el inicio se abre con ?ingresar=1 y muestra este modal
+    (function () {
+        var params = new URLSearchParams(location.search);
+        if (!params.has('ingresar')) return;
+        params.delete('ingresar');
+        var query = params.toString();
+        history.replaceState(null, '', location.pathname + (query ? '?' + query : '') + location.hash);
+        document.addEventListener('DOMContentLoaded', abrirModalIngreso);
+    })();
+
     // Auto-inicializar Google GSI cuando el DOM y el SDK estén listos
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', inicializarGoogleIdentityServices);

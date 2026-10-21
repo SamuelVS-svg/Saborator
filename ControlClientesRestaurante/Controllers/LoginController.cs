@@ -717,8 +717,8 @@ namespace ControlClientesRestaurante.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
-            // "Iniciar sesión con otra cuenta": cierra la sesión y lleva directo al formulario de ingreso
-            return otraCuenta ? RedirectToAction("Index", "Login") : RedirectToAction("Index", "Home");
+            // "Iniciar sesión con otra cuenta": cierra la sesión y abre el modal de ingreso en el inicio
+            return RedirectToAction("Index", "Home", otraCuenta ? new { ingresar = 1 } : null);
         }
 
         // ── Endpoints REST para el Frontend React (/api/auth/*) ───────────
