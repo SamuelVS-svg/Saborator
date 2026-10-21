@@ -3,7 +3,6 @@
    Paleta: Borgoña Profundo (#4A1521, #6B1E2E), Crema Marfil (#FFFDF9, #FAF6F0), Oro (#C8973A, #D4AF37)
    Layout: Login 100% centrado, animaciones suaves (<300ms, cubic-bezier), estados táctiles y accesibilidad
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
     /* Curvas de aceleración precisas de Emil Kowalski */
