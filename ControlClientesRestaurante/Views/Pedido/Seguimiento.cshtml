@@ -21,6 +21,7 @@
         _ => 1
     };
     bool esCancelado = estado == "Cancelado";
+    int segundosEnRuta = estado == "EnCamino" && Model.FechaDespacho.HasValue ? Math.Max(0, (int)(DateTime.Now - Model.FechaDespacho.Value).TotalSeconds) : 0;
 
     string textoEstado = estado switch
     {
@@ -154,12 +155,39 @@
                         <strong>Salida:</strong> Cra 4 Sur # 50D-107, Barranquilla (Sede Central)<br/>
                         <strong>Llegada:</strong> @Model.Direccion @(!string.IsNullOrEmpty(Model.Barrio) ? $"({Model.Barrio})" : "")
                     </div>
-                    <div style="height:160px;border-radius:8px;overflow:hidden;border:1px solid var(--line, #E2D7C8);">
-                        <iframe 
-                            src="https://maps.google.com/maps?q=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
+                    <div id="rutaAviso" class="ruta-aviso" hidden role="status" aria-live="polite">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                        <span><strong>¡Tu domiciliario está afuera!</strong> Sal a recibir tu pedido.</span>
                     </div>
+                    <div class="ruta-mapa" id="rutaMapa">
+                        <svg viewBox="0 0 400 200" role="img" aria-label="Mapa simulado de la ruta del domiciliario" preserveAspectRatio="xMidYMid slice">
+                            <rect width="400" height="200" fill="#EFE8DD"/>
+                            <g fill="#E3D9CA">
+                                <rect x="8" y="8" width="60" height="42" rx="4"/><rect x="82" y="8" width="52" height="42" rx="4"/><rect x="166" y="8" width="66" height="22" rx="4"/>
+                                <rect x="298" y="8" width="94" height="22" rx="4"/><rect x="8" y="64" width="34" height="34" rx="4"/><rect x="82" y="124" width="52" height="30" rx="4"/>
+                                <rect x="166" y="90" width="76" height="52" rx="4"/><rect x="272" y="90" width="52" height="30" rx="4"/><rect x="338" y="130" width="54" height="60" rx="4"/>
+                                <rect x="8" y="170" width="86" height="22" rx="4"/><rect x="166" y="160" width="140" height="32" rx="4"/><rect x="272" y="56" width="34" height="18" rx="4"/>
+                            </g>
+                            <g stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" fill="none">
+                                <path d="M0 62H400"/><path d="M0 152H400"/><path d="M74 0V200"/><path d="M152 0V200"/><path d="M252 0V200"/><path d="M330 0V200"/>
+                            </g>
+                            <path id="rutaCamino" d="M50 152H74V110H152V62H252V40H330H352" fill="none" stroke="#C8973A" stroke-width="3.5" stroke-dasharray="2 7" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+                            <path id="rutaRecorrido" d="M50 152H74V110H152V62H252V40H330H352" fill="none" stroke="var(--brand, #7A1F2B)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0 1000"/>
+                            <g transform="translate(50 152)"><circle r="11" fill="var(--brand, #7A1F2B)"/><path d="M-4-2h8v6h-8z" fill="#fff"/><path d="M-5-2 0-6l5 4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></g>
+                            <text x="50" y="176" text-anchor="middle" font-size="9" font-weight="700" fill="#5B4636">Sede</text>
+                            <g transform="translate(352 40)"><circle id="rutaPulso" r="16" fill="#16A34A" opacity="0"/><path d="M0 -3c-6-12-10-9-10-14a10 10 0 0 1 20 0c0 5-4 2-10 14z" transform="translate(0 9) scale(1)" fill="#DC2626" stroke="#fff" stroke-width="1.5"/><circle cy="-8" r="3.6" fill="#fff"/></g>
+                            <text x="352" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#5B4636">Tu dirección</text>
+                            <g id="rutaMoto" transform="translate(50 152)">
+                                <circle r="15" fill="#fff" stroke="var(--brand, #7A1F2B)" stroke-width="2.5"/>
+                                <g transform="translate(-9 -9) scale(.75)" fill="none" stroke="var(--brand, #7A1F2B)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></g>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="ruta-pie">
+                        <div class="ruta-barra"><div id="rutaBarra"></div></div>
+                        <span id="rutaTexto">Tu pedido aún no ha salido</span>
+                    </div>
+                    <div class="ruta-nota">Simulación ilustrativa del recorrido; no es la posición GPS real.</div>
                 </div>
             }
 
@@ -312,6 +340,20 @@
 
 <!-- Estilos del Tracker -->
 <style>
+    /* Simulación de la ruta del domiciliario */
+    .ruta-mapa { border-radius: 8px; overflow: hidden; border: 1px solid var(--line, #E2D7C8); background: #EFE8DD; }
+    .ruta-mapa svg { display: block; width: 100%; height: auto; }
+    .ruta-pie { display: flex; align-items: center; gap: .6rem; margin-top: .6rem; font-size: .8rem; font-weight: 700; color: var(--text, #3C2A20); }
+    .ruta-barra { flex: 0 0 38%; height: 6px; border-radius: 99px; background: var(--line, #E2D7C8); overflow: hidden; }
+    .ruta-barra > div { height: 100%; width: 0; background: var(--brand, #7A1F2B); border-radius: 99px; transition: width .4s linear; }
+    .ruta-nota { margin-top: .35rem; font-size: .68rem; color: var(--muted, #7A6A5C); }
+    .ruta-aviso { display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem; padding: .7rem .9rem; border-radius: 10px; background: #DCFCE7; border: 1.5px solid #16A34A; color: #14532D; font-size: .88rem; animation: rutaLatido 1.4s ease-in-out infinite; }
+    .ruta-aviso[hidden] { display: none; }
+    .ruta-aviso svg { flex: none; }
+    @@keyframes rutaLatido { 0%, 100% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); } 50% { box-shadow: 0 0 0 8px rgba(22,163,74,0); } }
+    @@keyframes rutaPulsoAnim { 0% { r: 14; opacity: .55; } 100% { r: 30; opacity: 0; } }
+    #rutaPulso.on { animation: rutaPulsoAnim 1.3s ease-out infinite; }
+    @@media (prefers-reduced-motion: reduce) { .ruta-aviso, #rutaPulso.on { animation: none; } }
     .tracker-wrapper {
         max-width: 980px;
         margin: 0 auto;
@@ -578,10 +620,65 @@
     const esDomicilio = @Json.Serialize(esDomicilio);
     let estadoActual = @Json.Serialize(estado);
 
-    function aplicarEstadoVisual(estado, repartidor) {
+
+    // ── Simulación del recorrido del domiciliario ──
+    const RUTA_SEGUNDOS = 90;           // duración simulada de la ruta (demostración)
+    let rutaInicioMs = @(estado == "EnCamino" ? "performance.now() - " + (segundosEnRuta * 1000) : "null");
+    let rutaMotoFuera = false;
+
+    const rutaCamino = document.getElementById('rutaCamino');
+    const rutaRecorrido = document.getElementById('rutaRecorrido');
+    const rutaMoto = document.getElementById('rutaMoto');
+
+    function rutaPintar(frac) {
+        if (!rutaCamino || !rutaMoto) return;
+        const largo = rutaCamino.getTotalLength();
+        const pt = rutaCamino.getPointAtLength(largo * frac);
+        rutaMoto.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+        rutaRecorrido.setAttribute('stroke-dasharray', `${largo * frac} 1000`);
+        const barra = document.getElementById('rutaBarra');
+        if (barra) barra.style.width = Math.round(frac * 100) + '%';
+    }
+
+    function rutaEstado() {
+        const aviso = document.getElementById('rutaAviso');
+        const texto = document.getElementById('rutaTexto');
+        const pulso = document.getElementById('rutaPulso');
+        if (!rutaCamino) return;
+        if (estadoActual === 'Entregado' || estadoActual === 'Facturado') {
+            if (!rutaMotoFuera) { rutaMotoFuera = true; rutaPintar(1); setTimeout(() => { rutaMoto.style.transition = 'opacity .8s'; rutaMoto.style.opacity = '0'; }, 400); }
+            if (aviso) aviso.hidden = true;
+            if (pulso) pulso.classList.remove('on');
+            if (texto) texto.textContent = 'Pedido entregado';
+            const barra = document.getElementById('rutaBarra'); if (barra) barra.style.width = '100%';
+            return;
+        }
+        if (estadoActual !== 'EnCamino' || rutaInicioMs === null) {
+            rutaPintar(0);
+            if (aviso) aviso.hidden = true;
+            if (pulso) pulso.classList.remove('on');
+            if (texto) texto.textContent = 'Tu pedido aún no ha salido';
+            return;
+        }
+        const frac = Math.min(1, (performance.now() - rutaInicioMs) / (RUTA_SEGUNDOS * 1000));
+        rutaPintar(frac);
+        const llego = frac >= 1;
+        const yaAvisado = aviso && !aviso.hidden;
+        if (aviso) aviso.hidden = !llego;
+        if (pulso) pulso.classList.toggle('on', llego);
+        if (texto) texto.textContent = llego ? 'El domiciliario llegó a tu dirección' : 'En camino · ' + Math.round(frac * 100) + '% del recorrido';
+        if (llego && !yaAvisado && navigator.vibrate) { try { navigator.vibrate([200, 100, 200]); } catch (e) {} }
+    }
+    setInterval(rutaEstado, 500);
+    rutaEstado();
+
+    function aplicarEstadoVisual(estado, repartidor, enRutaSeg) {
         // Un cambio a Cancelado (o la reaparición de la página) requiere recargar para mostrar el aviso
         if (estado === "Cancelado" && estadoActual !== "Cancelado") { location.reload(); return; }
+        const veniaEnCamino = estadoActual === 'EnCamino';
         estadoActual = estado;
+        if (estado === 'EnCamino' && !veniaEnCamino) rutaInicioMs = performance.now() - ((enRutaSeg || 0) * 1000);
+        if (estado !== 'EnCamino') rutaInicioMs = null;
 
         let step = 1;
         let texto = "Hemos recibido tu pedido y lo estamos confirmando";
@@ -607,6 +704,7 @@
         // Actualizar texto descriptivo
         const lbl = document.getElementById('labelEstadoTexto');
         if (lbl) lbl.textContent = texto;
+        rutaEstado();
 
         // Actualizar nodos visuales
         const nodes = document.querySelectorAll('.stepper-node');
@@ -643,7 +741,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data && data.estado) {
-                    aplicarEstadoVisual(data.estado, data.repartidor);
+                    aplicarEstadoVisual(data.estado, data.repartidor, data.segundosEnRuta);
                 }
             })
             .catch(err => console.log('Polling check:', err));

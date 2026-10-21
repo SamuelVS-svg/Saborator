@@ -577,6 +577,7 @@ namespace ControlClientesRestaurante.Controllers
                 tipoEntrega = p.TipoEntrega,
                 total       = p.Total,
                 repartidor  = p.Estado == "EnCamino" ? p.Repartidor : null,
+                segundosEnRuta = p.Estado == "EnCamino" && p.FechaDespacho.HasValue ? Math.Max(0, (int)(DateTime.Now - p.FechaDespacho.Value).TotalSeconds) : 0,
                 fecha       = p.FechaCreacion.ToString("HH:mm - dd/MM/yyyy")
             });
         }
