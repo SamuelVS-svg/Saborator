@@ -40,152 +40,6 @@
     <!-- ══ TARJETA CENTRAL DE LOGIN & REGISTRO ═════════════════════════════════ -->
     <main class="gastro-card-wrapper" role="main">
 
-        <!-- ══ MUÑECO INTERACTIVO REFERENTE AL PROYECTO: CHEF BURGUI (SABORATOR) ══ -->
-        <div class="chef-mascot-stage" id="chefMascotContainer" aria-label="Chef Saborator Mascota Interactiva">
-            <!-- Burbuja de diálogo interactiva del chef -->
-            <div class="chef-speech-bubble" id="chefBubble">
-                <span id="chefBubbleText">¡Hola! Bienvenido a Saborator <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg></span>
-            </div>
-
-            <!-- SVG del Muñeco Interactivo: Chef Gourmet de Hamburguesa -->
-            <svg id="chefMascotSvg" class="chef-mascot-svg" viewBox="0 0 220 200" width="190" height="175" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Chef Gourmet Saborator">
-                <defs>
-                    <filter id="chefGlow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#140307" flood-opacity="0.32"/>
-                    </filter>
-                    
-                    <linearGradient id="bunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#F6B865"/>
-                        <stop offset="55%" stop-color="#E2872A"/>
-                        <stop offset="100%" stop-color="#C26A18"/>
-                    </linearGradient>
-
-                    <linearGradient id="hatGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#FFFFFF"/>
-                        <stop offset="85%" stop-color="#FAF6F0"/>
-                        <stop offset="100%" stop-color="#EBE3D3"/>
-                    </linearGradient>
-                    
-                    <linearGradient id="pattyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#5C1B26"/>
-                        <stop offset="100%" stop-color="#3A0D15"/>
-                    </linearGradient>
-
-                    <linearGradient id="goldRibbon" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#C8973A"/>
-                        <stop offset="50%" stop-color="#F3D179"/>
-                        <stop offset="100%" stop-color="#C8973A"/>
-                    </linearGradient>
-                </defs>
-
-                <!-- CUERPO Y CABEZA DEL CHEF -->
-                <g id="chefHeadGroup" class="chef-head-group">
-                    
-                    <!-- Gorro de Chef (Toque Blanche) -->
-                    <g id="chefHat" class="chef-hat">
-                        <path d="M 68 80 C 50 48, 62 20, 85 24 C 95 10, 125 10, 135 24 C 158 20, 170 48, 152 80 Z" fill="url(#hatGrad)" filter="url(#chefGlow)" stroke="#E5DCB8" stroke-width="2"/>
-                        <path d="M 92 24 C 98 45, 100 68, 102 79" stroke="#E5DCB8" stroke-width="1.8" fill="none" opacity="0.6"/>
-                        <path d="M 128 24 C 122 45, 120 68, 118 79" stroke="#E5DCB8" stroke-width="1.8" fill="none" opacity="0.6"/>
-                        <path d="M 68 78 Q 110 84 152 78 L 152 88 Q 110 94 68 88 Z" fill="url(#goldRibbon)" stroke="#A07220" stroke-width="1.2"/>
-                        <circle cx="110" cy="85" r="4.5" fill="#FFFDF9" stroke="#A07220" stroke-width="1"/>
-                        <path d="M 108 83 L 112 87 M 112 83 L 108 87" stroke="#6B1E2E" stroke-width="1.2"/>
-                    </g>
-
-                    <!-- Cabeza / Pan Superior de Hamburguesa -->
-                    <g id="chefFace" class="chef-face">
-                        <path d="M 46 112 C 46 76, 174 76, 174 112 C 174 125, 46 125, 46 112 Z" fill="url(#bunGrad)" stroke="#A65510" stroke-width="2.5" filter="url(#chefGlow)"/>
-
-                        <!-- Semillas de sésamo -->
-                        <ellipse cx="78" cy="88" rx="2.2" ry="1.2" transform="rotate(-15 78 88)" fill="#FFF4D9"/>
-                        <ellipse cx="110" cy="82" rx="2.2" ry="1.2" transform="rotate(5 110 82)" fill="#FFF4D9"/>
-                        <ellipse cx="142" cy="88" rx="2.2" ry="1.2" transform="rotate(20 142 88)" fill="#FFF4D9"/>
-                        <ellipse cx="94" cy="94" rx="2.2" ry="1.2" transform="rotate(-8 94 94)" fill="#FFF4D9"/>
-                        <ellipse cx="128" cy="94" rx="2.2" ry="1.2" transform="rotate(12 128 94)" fill="#FFF4D9"/>
-
-                        <!-- Mejillas sonrosadas (Blush) -->
-                        <ellipse id="blushLeft" cx="68" cy="116" rx="9" ry="6" fill="#FF5252" opacity="0.32"/>
-                        <ellipse id="blushRight" cx="152" cy="116" rx="9" ry="6" fill="#FF5252" opacity="0.32"/>
-
-                        <!-- Cejas animadas -->
-                        <path id="chefBrowLeft" class="chef-brow" d="M 76 96 Q 88 91 100 96" stroke="#5E2C0C" stroke-width="3.2" stroke-linecap="round" fill="none"/>
-                        <path id="chefBrowRight" class="chef-brow" d="M 120 96 Q 132 91 144 96" stroke="#5E2C0C" stroke-width="3.2" stroke-linecap="round" fill="none"/>
-
-                        <!-- Ojos Blancos y Expresiones -->
-                        <g id="chefEyes" class="chef-eyes">
-                            <ellipse id="eyeBgLeft" cx="88" cy="108" rx="14" ry="15" fill="#FFFFFF" stroke="#4A1E08" stroke-width="2.6"/>
-                            <ellipse id="eyeBgRight" cx="132" cy="108" rx="14" ry="15" fill="#FFFFFF" stroke="#4A1E08" stroke-width="2.6"/>
-
-                            <!-- Ojos Felices (Cerrados en arco para celebracion) -->
-                            <path id="eyeHappyLeft" d="M 75 109 Q 88 98 101 109" stroke="#4A1E08" stroke-width="3.5" stroke-linecap="round" fill="none" style="display:none;"/>
-                            <path id="eyeHappyRight" d="M 119 109 Q 132 98 145 109" stroke="#4A1E08" stroke-width="3.5" stroke-linecap="round" fill="none" style="display:none;"/>
-
-                            <!-- Ojos de Error (X de confusión) -->
-                            <g id="eyesError" style="display:none;">
-                                <path d="M 80 101 L 96 115 M 96 101 L 80 115" stroke="#DC2626" stroke-width="3.2" stroke-linecap="round"/>
-                                <path d="M 124 101 L 140 115 M 140 101 L 124 115" stroke="#DC2626" stroke-width="3.2" stroke-linecap="round"/>
-                            </g>
-
-                            <!-- Pupila Izquierda Móvil -->
-                            <g id="chefPupilLeft" class="chef-pupil">
-                                <circle cx="88" cy="108" r="7.5" fill="#1E0E05"/>
-                                <circle cx="85.5" cy="105" r="2.8" fill="#FFFFFF"/>
-                                <circle cx="90.5" cy="111" r="1.3" fill="#FFFFFF"/>
-                            </g>
-
-                            <!-- Pupila Derecha Móvil -->
-                            <g id="chefPupilRight" class="chef-pupil">
-                                <circle cx="132" cy="108" r="7.5" fill="#1E0E05"/>
-                                <circle cx="129.5" cy="105" r="2.8" fill="#FFFFFF"/>
-                                <circle cx="134.5" cy="111" r="1.3" fill="#FFFFFF"/>
-                            </g>
-                        </g>
-
-                        <!-- Bigote Gourmet y Boca -->
-                        <path id="chefMustache" d="M 110 118 Q 100 114 92 119 Q 87 122 93 125 Q 104 123 110 120 Q 116 123 127 125 Q 133 122 128 119 Q 120 114 110 118 Z" fill="#6B1E2E"/>
-                        <path id="chefMouth" d="M 102 124 Q 110 131 118 124" stroke="#4A1E08" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-                        
-                        <!-- Gota de sudor animada para estado de error -->
-                        <path id="chefSweatDrop" d="M 154 90 C 154 90 160 97 160 100 A 4 4 0 0 1 152 100 C 152 97 154 90 154 90 Z" fill="#60A5FA" opacity="0"/>
-                    </g>
-
-                    <!-- Capas de la Hamburguesa Gourmet -->
-                    <g id="chefBurgerLayers">
-                        <path d="M 46 124 Q 60 132 76 124 Q 94 133 110 124 Q 126 133 144 124 Q 160 132 174 124" fill="none" stroke="#48BB78" stroke-width="5.5" stroke-linecap="round"/>
-                        <polygon points="62,125 72,136 82,125" fill="#ECC94B"/>
-                        <polygon points="138,125 148,137 158,125" fill="#ECC94B"/>
-                        <rect x="48" y="128" width="124" height="11" rx="5.5" fill="url(#pattyGrad)"/>
-                    </g>
-
-                    <!-- Uniforme de Chef Blanco -->
-                    <g id="chefTorso">
-                        <path d="M 62 139 L 52 186 Q 110 194 168 186 L 158 139 Z" fill="#FAF6F0" stroke="#E5DCB8" stroke-width="2"/>
-                        <polygon points="96,139 110,154 124,139 116,137 110,143 104,137" fill="#6B1E2E"/>
-                        <circle cx="102" cy="162" r="2.5" fill="#C8973A"/>
-                        <circle cx="118" cy="162" r="2.5" fill="#C8973A"/>
-                        <circle cx="102" cy="174" r="2.5" fill="#C8973A"/>
-                        <circle cx="118" cy="174" r="2.5" fill="#C8973A"/>
-                    </g>
-                </g>
-
-                <!-- BRAZOS Y MANOS INTERACTIVAS QUE SE APOYAN O CUBREN LOS OJOS -->
-                <g id="chefArmLeft" class="chef-arm chef-arm-left">
-                    <path id="armLimbLeft" d="M 60 148 Q 38 166 48 186" stroke="#FAF6F0" stroke-width="12" stroke-linecap="round" fill="none"/>
-                    <g id="chefHandLeft" class="chef-hand" transform="translate(48, 186)">
-                        <ellipse cx="0" cy="0" rx="14" ry="11" fill="#FFFFFF" stroke="#E5DCB8" stroke-width="2"/>
-                        <path d="M -5 -3 Q -2 4 4 1" stroke="#E5DCB8" stroke-width="1.5" fill="none"/>
-                    </g>
-                </g>
-
-                <g id="chefArmRight" class="chef-arm chef-arm-right">
-                    <path id="armLimbRight" d="M 160 148 Q 182 166 172 186" stroke="#FAF6F0" stroke-width="12" stroke-linecap="round" fill="none"/>
-                    <g id="chefHandRight" class="chef-hand" transform="translate(172, 186)">
-                        <ellipse cx="0" cy="0" rx="14" ry="11" fill="#FFFFFF" stroke="#E5DCB8" stroke-width="2"/>
-                        <path d="M 5 -3 Q 2 4 -4 1" stroke="#E5DCB8" stroke-width="1.5" fill="none"/>
-                    </g>
-                </g>
-            </svg>
-        </div>
-
         <div class="form-card" id="authFormCard">
 
             <!-- Marca en Cabecera -->
@@ -566,37 +420,6 @@ function togglePasswordVisibility(inputId, btn) {
         isRevealed = false;
     }
 
-    // Reacción del muñeco interactivo al revelar/ocultar contraseña
-    var mascot = document.getElementById('chefMascotContainer');
-    if (mascot && mascot.classList.contains('chef-cover-eyes')) {
-        if (isRevealed) {
-            mascot.classList.add('chef-peeking');
-            setChefBubble('¡Ajá! Te vi mostrando la clave ');
-        } else {
-            mascot.classList.remove('chef-peeking');
-            setChefBubble('¡Shhh! ¡No miro tu contraseña! ');
-        }
-    }
-}
-
-// ── CONTROL DE LA BURBUJA DE DIÁLOGO DEL CHEF ──────────────────────────────
-var bubbleTimer = null;
-function setChefBubble(text, duration) {
-    var bubbleText = document.getElementById('chefBubbleText');
-    var bubble = document.getElementById('chefBubble');
-    if (!bubbleText || !bubble) return;
-
-    bubbleText.textContent = text;
-    bubble.style.animation = 'none';
-    void bubble.offsetWidth;
-    bubble.style.animation = 'bubble-pop 280ms cubic-bezier(0.34, 1.56, 0.64, 1)';
-
-    if (bubbleTimer) clearTimeout(bubbleTimer);
-    if (duration) {
-        bubbleTimer = setTimeout(function() {
-            bubbleText.textContent = '¡Hola! Bienvenido a Saborator ';
-        }, duration);
-    }
 }
 
 // ── FEEDBACK Y ANIMACIONES INTERACTIVAS DE ACCESO ──────────────────────────
@@ -680,7 +503,7 @@ function validateAndSubmitAuth(event, form, btnId, loadingText, type) {
         }
     }
 
-    // Si hay datos inválidos: Sacudida háptica y reacción del chef
+    // Si hay datos inválidos: Sacudida háptica
     if (invalidInputs.length > 0) {
         if (card) {
             card.classList.remove('shake-error');
@@ -690,8 +513,6 @@ function validateAndSubmitAuth(event, form, btnId, loadingText, type) {
                 card.classList.remove('shake-error');
             }, 450);
         }
-
-        triggerChefError(errorMessage || '¡Revisa los datos marcados en rojo!');
 
         invalidInputs.forEach(function(input, idx) {
             if (input) {
@@ -720,63 +541,12 @@ function validateAndSubmitAuth(event, form, btnId, loadingText, type) {
     isSubmittingAuth = true;
     var btn = document.getElementById(btnId);
 
-    triggerChefSuccess();
 
     triggerAuthCelebration(btn, loadingText, function() {
         form.submit();
     });
 
     return false;
-}
-
-// ── REACCIONES EMOCIONALES DEL CHEF (ERROR Y CELEBRACIÓN) ──────────────────
-function triggerChefError(msg) {
-    var mascot = document.getElementById('chefMascotContainer');
-    var eyesError = document.getElementById('eyesError');
-    var eyeBgLeft = document.getElementById('eyeBgLeft');
-    var eyeBgRight = document.getElementById('eyeBgRight');
-    var pupilLeft = document.getElementById('chefPupilLeft');
-    var pupilRight = document.getElementById('chefPupilRight');
-
-    if (!mascot) return;
-
-    mascot.classList.add('chef-worried');
-    setChefBubble(msg || '¡Uy! Revisa los campos en rojo ', 2800);
-
-    if (eyesError && pupilLeft && pupilRight) {
-        eyesError.style.display = 'block';
-        pupilLeft.style.display = 'none';
-        pupilRight.style.display = 'none';
-    }
-
-    setTimeout(function() {
-        mascot.classList.remove('chef-worried');
-        if (eyesError && pupilLeft && pupilRight) {
-            eyesError.style.display = 'none';
-            pupilLeft.style.display = 'block';
-            pupilRight.style.display = 'block';
-        }
-    }, 1600);
-}
-
-function triggerChefSuccess() {
-    var mascot = document.getElementById('chefMascotContainer');
-    var eyeHappyLeft = document.getElementById('eyeHappyLeft');
-    var eyeHappyRight = document.getElementById('eyeHappyRight');
-    var pupilLeft = document.getElementById('chefPupilLeft');
-    var pupilRight = document.getElementById('chefPupilRight');
-
-    if (!mascot) return;
-
-    mascot.classList.add('chef-celebrating');
-    setChefBubble('¡Excelente! Bienvenido a Saborator ', 4000);
-
-    if (eyeHappyLeft && eyeHappyRight && pupilLeft && pupilRight) {
-        eyeHappyLeft.style.display = 'block';
-        eyeHappyRight.style.display = 'block';
-        pupilLeft.style.display = 'none';
-        pupilRight.style.display = 'none';
-    }
 }
 
 // ── CELEBRACIÓN Y EFECTO DE ÉXITO CON PARTICULAS ────────────────────────────
@@ -908,140 +678,6 @@ function triggerAuthCelebration(btn, text, callback) {
     });
 })();
 
-// ── MUÑECO INTERACTIVO: SEGUIMIENTO DE MIRADA, MANOS Y REACCIONES ───────────
-(function initChefMascot() {
-    var mascot = document.getElementById('chefMascotContainer');
-    var svg = document.getElementById('chefMascotSvg');
-    var pupilLeft = document.getElementById('chefPupilLeft');
-    var pupilRight = document.getElementById('chefPupilRight');
-    var headGroup = document.getElementById('chefHeadGroup');
-
-    if (!mascot || !svg || !pupilLeft || !pupilRight) return;
-
-    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Seguimiento del cursor con los ojos y ligera inclinación de cabeza
-    var eyeTicking = false;
-    window.addEventListener('mousemove', function(e) {
-        if (prefersReduced) return;
-        if (mascot.classList.contains('chef-cover-eyes')) return;
-
-        if (!eyeTicking) {
-            requestAnimationFrame(function() {
-                var rect = svg.getBoundingClientRect();
-
-                // Centro aproximado de los ojos del chef en el viewport
-                var leftEyeX = rect.left + (rect.width * (88 / 220));
-                var leftEyeY = rect.top + (rect.height * (108 / 200));
-
-                var rightEyeX = rect.left + (rect.width * (132 / 220));
-                var rightEyeY = rect.top + (rect.height * (108 / 200));
-
-                // Ojo izquierdo
-                var dxL = e.clientX - leftEyeX;
-                var dyL = e.clientY - leftEyeY;
-                var distL = Math.sqrt(dxL * dxL + dyL * dyL);
-                var angleL = Math.atan2(dyL, dxL);
-                var offsetL = Math.min(distL * 0.04, 5.5);
-
-                pupilLeft.style.transform = 'translate(' + (Math.cos(angleL) * offsetL).toFixed(2) + 'px, ' + (Math.sin(angleL) * offsetL).toFixed(2) + 'px)';
-
-                // Ojo derecho
-                var dxR = e.clientX - rightEyeX;
-                var dyR = e.clientY - rightEyeY;
-                var distR = Math.sqrt(dxR * dxR + dyR * dyR);
-                var angleR = Math.atan2(dyR, dxR);
-                var offsetR = Math.min(distR * 0.04, 5.5);
-
-                pupilRight.style.transform = 'translate(' + (Math.cos(angleR) * offsetR).toFixed(2) + 'px, ' + (Math.sin(angleR) * offsetR).toFixed(2) + 'px)';
-
-                // Suave inclinación de cabeza hacia el cursor
-                if (headGroup && !mascot.classList.contains('chef-looking-down')) {
-                    var normX = (e.clientX - (rect.left + rect.width / 2)) / (window.innerWidth / 2);
-                    headGroup.style.transform = 'rotate(' + (normX * 2.8).toFixed(2) + 'deg)';
-                }
-
-                eyeTicking = false;
-            });
-            eyeTicking = true;
-        }
-    });
-
-    // Reacción a campos de entrada de texto (el chef mira hacia abajo como anotando orden)
-    var textInputs = document.querySelectorAll('#txtUsuarioLogin, #regNombreCompleto, #regTipoDoc, #regDocumento, #regFechaNac, #regTelefono, #regCorreo, #regUsuario');
-    textInputs.forEach(function(inp) {
-        inp.addEventListener('focus', function() {
-            if (mascot.classList.contains('chef-cover-eyes')) return;
-            mascot.classList.add('chef-looking-down');
-
-            // Mirada hacia abajo fija en el formulario
-            pupilLeft.style.transform = 'translate(0px, 4.5px)';
-            pupilRight.style.transform = 'translate(0px, 4.5px)';
-
-            if (inp.id === 'txtUsuarioLogin' || inp.id === 'regUsuario') {
-                setChefBubble('¿Cuál es tu usuario de comensal? ');
-            } else if (inp.id === 'regNombreCompleto') {
-                setChefBubble('¡Un gusto! ¿Cómo te llamas? ');
-            } else if (inp.id === 'regFechaNac') {
-                setChefBubble('Recuerda: Solo mayores de 18 años ');
-            } else if (inp.id === 'regCorreo') {
-                setChefBubble('Te enviaremos la confirmación aquí ');
-            } else {
-                setChefBubble('Anotando tu pedido con atención ');
-            }
-        });
-
-        inp.addEventListener('blur', function() {
-            mascot.classList.remove('chef-looking-down');
-            pupilLeft.style.transform = 'translate(0px, 0px)';
-            pupilRight.style.transform = 'translate(0px, 0px)';
-        });
-    });
-
-    // Reacción a campos de contraseña (el chef se tapa los ojos con las manos)
-    var passwordInputs = document.querySelectorAll('#pwdLogin, #pwdReg, #pwdRegConf');
-    passwordInputs.forEach(function(pInput) {
-        pInput.addEventListener('focus', function() {
-            mascot.classList.remove('chef-looking-down');
-            mascot.classList.add('chef-cover-eyes');
-
-            if (pInput.type === 'text') {
-                mascot.classList.add('chef-peeking');
-                setChefBubble('¡Ajá! Te vi mostrando tu contraseña ');
-            } else {
-                mascot.classList.remove('chef-peeking');
-                setChefBubble('¡Shhh! ¡No miro tu contraseña secreta! ');
-            }
-        });
-
-        pInput.addEventListener('blur', function() {
-            mascot.classList.remove('chef-cover-eyes');
-            mascot.classList.remove('chef-peeking');
-            setChefBubble('¡Tus datos están protegidos! ', 2500);
-        });
-    });
-
-    // Clic en la mascota: frases gourmet y guiño juguetón
-    var chefQuotes = [
-        '¡Las mejores hamburguesas de autor están aquí! ',
-        '¡El secreto es el amor y la sazón de alta cocina! ',
-        '¡Bienvenido a Saborator! Tu mesa te espera ',
-        '¡Cada platillo preparado al instante con pasión! '
-    ];
-    var quoteIdx = 0;
-
-    svg.addEventListener('click', function() {
-        quoteIdx = (quoteIdx + 1) % chefQuotes.length;
-        setChefBubble(chefQuotes[quoteIdx], 3500);
-
-        // Micro rebote
-        svg.style.transform = 'scale(1.08) translateY(-6px)';
-        setTimeout(function() {
-            svg.style.transform = '';
-        }, 220);
-    });
-})();
-
 // ── AUTO-SACUDIDA Y REACCIÓN SI EL SERVIDOR DEVUELVE ERROR ───────────────────
 document.addEventListener('DOMContentLoaded', function() {
     @if (ViewBag.Error != null || ViewBag.ErrorRegistro != null)
@@ -1055,7 +691,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.classList.add('shake-error');
                 setTimeout(function() { card.classList.remove('shake-error'); }, 480);
             }
-            triggerChefError('Hubo un error con tus credenciales');
         }, 120);
         </text>
     }
