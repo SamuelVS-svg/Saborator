@@ -39,7 +39,12 @@ Al final muestra tu URL pública. Las pruebas en el navegador, el celular y la t
 
 4. **Comprobar** en el navegador de tu PC: <http://127.0.0.1:5106/salud> → debe mostrar `{"ok":true,...}`.
 
-5. **Cambia ya las contraseñas** de las cuentas de ejemplo: entra como `admin`, ve a **Cambiar contraseña** y, en **Personal**, desactiva las cuentas que no uses (`cajero`, `mesero`, `cocinero`, `domiciliario`) o restablece sus contraseñas.
+5. **Claves de acceso.** En producción la app NO deja las cuentas de ejemplo con su clave conocida: al arrancar
+   genera claves temporales aleatorias y las escribe en **`publicado\credenciales-iniciales.txt`** (usuario y clave
+   separados por tabulador). Ábrelo, entra con `admin` y esa clave: la app te pedirá cambiarla en el primer ingreso.
+   Después **borra ese archivo**. En **Personal** crea las cuentas reales de tu equipo (cajeros, meseros, cocineros,
+   domiciliarios) y, si existen cuentas de ejemplo que no uses, desactívalas.
+   ⚠️ La clave `Admin#Saborator2026!` que viste en la conversación ya **no** funciona en producción.
 
 ---
 

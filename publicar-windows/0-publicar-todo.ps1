@@ -85,5 +85,6 @@ Write-Host "==============================================================" -For
 Write-Host "Falta que TÚ compruebes:"
 Write-Host "  1. Iniciar sesión en $url y recorrer Dashboard, Domicilios, Cocina y Caja."
 Write-Host "  2. Abrir la URL desde el celular con datos móviles (Wi-Fi apagado)."
-Write-Host "  3. Cambiar la contraseña de 'admin' y desactivar las cuentas de ejemplo en Personal."
+Write-Host "  3. Abrir publicado\credenciales-iniciales.txt, entrar con 'admin' y esa clave temporal (te pedirá cambiarla),"
+Write-Host "     borrar ese archivo y desactivar las cuentas de ejemplo en Personal."
 Write-Host "  4. Registrar la tarea programada (comando en LEEME.md, Fase 6)."
