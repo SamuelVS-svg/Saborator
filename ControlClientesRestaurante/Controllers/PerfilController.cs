@@ -312,25 +312,18 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ActualizarDatosCliente(int? clienteId, string nombre, string telefono, string? correo)
+        public IActionResult ActualizarDatosCliente(string nombre, string telefono, string? correo)
         {
             var nombreUsuario = UsuarioActual();
             var usuario = _usuarioRepo.ObtenerPorNombre(nombreUsuario);
             if (usuario == null) return RedirectToAction("Index", "Login");
 
-            Cliente? cliente = null;
-            if (clienteId.HasValue && clienteId.Value > 0)
-            {
-                cliente = _clienteRepo.ObtenerPorId(clienteId.Value);
-            }
-            if (cliente == null)
-            {
-                cliente = _clienteRepo.ObtenerTodos().FirstOrDefault(c =>
-                    c.Documento == usuario.NombreUsuario ||
-                    (c.Correo != null && c.Correo == usuario.NombreUsuario) ||
-                    c.Nombre == usuario.NombreUsuario)
-                    ?? _clienteRepo.Buscar(usuario.NombreUsuario).FirstOrDefault();
-            }
+            // Anti-IDOR: el cliente se deduce SIEMPRE del usuario autenticado; un id enviado por el navegador se ignora
+            var cliente = _clienteRepo.ObtenerTodos().FirstOrDefault(c =>
+                c.Documento == usuario.NombreUsuario ||
+                (c.Correo != null && c.Correo == usuario.NombreUsuario) ||
+                c.Nombre == usuario.NombreUsuario)
+                ?? _clienteRepo.Buscar(usuario.NombreUsuario).FirstOrDefault();
 
             if (cliente != null)
             {

@@ -23,6 +23,7 @@ namespace ControlClientesRestaurante.Controllers
         // ── API AJAX PÚBLICA PARA CHECKOUT / PEDIDOS ──────────────────────
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("publico")]
         public IActionResult Validar([FromBody] ValidarCuponDto dto)
         {
             if (dto == null)
@@ -78,7 +79,7 @@ namespace ControlClientesRestaurante.Controllers
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Cupon cupon)
+        public IActionResult Create([Bind("Codigo,Descripcion,TipoDescuento,Valor,MontoMinimo,TopeMaximoDescuento,FechaVencimiento,UsosMaximos,Activo")] Cupon cupon)
         {
             if (!ModelState.IsValid)
                 return View(cupon);
@@ -106,7 +107,7 @@ namespace ControlClientesRestaurante.Controllers
         [Authorize(Roles = "Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Cupon cupon)
+        public IActionResult Edit([Bind("Id,Codigo,Descripcion,TipoDescuento,Valor,MontoMinimo,TopeMaximoDescuento,FechaVencimiento,UsosMaximos,Activo")] Cupon cupon)
         {
             if (!ModelState.IsValid)
                 return View(cupon);

@@ -372,7 +372,6 @@
             {
                 <form asp-action="ActualizarDatosCliente" method="post">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="clienteId" value="@cliente.Id" />
                     <div style="margin-bottom:1rem;">
                         <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text,#3C2A20);text-transform:uppercase;margin-bottom:0.35rem;">Nombre Completo *</label>
                         <input type="text" name="nombre" value="@cliente.Nombre" class="input-field" style="width:100%;padding:0.75rem 1rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface,#FFFDF9);color:var(--text,#1C1416);" required />

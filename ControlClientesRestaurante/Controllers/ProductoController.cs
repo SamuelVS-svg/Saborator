@@ -30,7 +30,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public IActionResult Create(Producto producto)
+        public IActionResult Create([Bind("Nombre,Descripcion,Precio,Stock,Categoria,Alergenos,Ingredientes,EsVegetariano,EsLibreGluten,TiempoCoccionMinutos")] Producto producto)
         {
             if (!ModelState.IsValid) return View(producto);
 
@@ -49,7 +49,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Administrador")]
-        public IActionResult Edit(Producto producto)
+        public IActionResult Edit([Bind("Id,Nombre,Descripcion,Precio,Stock,Activo,Categoria,Alergenos,Ingredientes,EsVegetariano,EsLibreGluten,TiempoCoccionMinutos")] Producto producto)
         {
             if (!ModelState.IsValid) return View(producto);
 

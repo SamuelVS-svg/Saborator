@@ -1050,7 +1050,16 @@
         }
     }
 
+    // Escapa texto del usuario antes de insertarlo con innerHTML (prevención de XSS)
+    function escapeHtml(valor) {
+        return String(valor ?? '').replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
     function insertarTarjetaResenaEnGrid(r) {
+        // Las reseñas nuevas quedan pendientes de moderación: el servidor no devuelve la tarjeta
+        if (!r) return;
         const grid = document.getElementById('resenasGridContainer');
         if (!grid) return;
 
@@ -1070,7 +1079,7 @@
         const tagDishHtml = r.platoRecomendado ? `
             <span class="review-tag-dish">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
-                Recomendó: <strong>${r.platoRecomendado}</strong>
+                Recomendó: <strong>${escapeHtml(r.platoRecomendado)}</strong>
             </span>
         ` : '';
 
@@ -1085,28 +1094,28 @@
         card.innerHTML = `
             <div class="review-head">
                 <div class="review-author-wrap">
-                    <div class="review-avatar">${initial}</div>
+                    <div class="review-avatar">${escapeHtml(initial)}</div>
                     <div class="review-author-info">
                         <div class="review-author-name">
-                            <span>${r.nombreCliente}</span>
+                            <span>${escapeHtml(r.nombreCliente)}</span>
                             <span class="badge-verificado">
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                                 Verificado
                             </span>
                         </div>
                         <div class="review-stars-wrap">${starsHtml}</div>
-                        <div class="review-date-txt">${r.fecha || 'Reciente'}</div>
+                        <div class="review-date-txt">${escapeHtml(r.fecha || 'Reciente')}</div>
                     </div>
                 </div>
             </div>
             <div class="review-tags-row">
                 <span class="review-tag-exp">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
-                    <span>${r.tipoExperiencia}</span>
+                    <span>${escapeHtml(r.tipoExperiencia)}</span>
                 </span>
                 ${tagDishHtml}
             </div>
-            <p class="review-body-text">"${r.comentario}"</p>
+            <p class="review-body-text">"${escapeHtml(r.comentario)}"</p>
         `;
 
         grid.insertBefore(card, grid.firstChild);

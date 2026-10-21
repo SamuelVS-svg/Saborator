@@ -95,6 +95,7 @@ namespace ControlClientesRestaurante.Controllers
         [Route("Reserva/Crear")]
         [Route("Reserva/Nueva")]
         [ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("publico")]
         public IActionResult Crear(NuevaReservaViewModel vm)
         {
             // Verificación anti-spam honeypot
@@ -171,6 +172,13 @@ namespace ControlClientesRestaurante.Controllers
         {
             var reserva = _reservaService.ObtenerPorId(id);
             if (reserva == null)
+            {
+                TempData["Error"] = "La reserva solicitada no existe.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Anti-IDOR: los ids son consecutivos; solo quien hizo la reserva (o el administrador) la ve
+            if (!AccesoRecursos.PuedeVerReserva(User, reserva))
             {
                 TempData["Error"] = "La reserva solicitada no existe.";
                 return RedirectToAction("Index", "Home");
@@ -331,6 +339,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Endpoint JSON para Avisos en Tiempo Real (Topbar Staff) ───────
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Avisos()
         {
             var avisos = _reservaService.ObtenerAvisosRecientes();

@@ -61,6 +61,7 @@ namespace ControlClientesRestaurante.Controllers
         // POST: /Resena/CrearApi (vía fetch AJAX desde Home/Index o Resena/Index)
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("resenas")]
         public IActionResult CrearApi([FromBody] CrearResenaDto dto)
         {
             if (dto == null)
@@ -76,12 +77,13 @@ namespace ControlClientesRestaurante.Controllers
 
             var stats = _resenaService.ObtenerEstadisticas();
 
+            // Una reseña pendiente de moderación no se devuelve ni se muestra todavía
             return Json(new
             {
                 ok = true,
                 mensaje,
                 stats,
-                resena = new
+                resena = !resena!.Aprobada ? null : new
                 {
                     resena!.Id,
                     resena.NombreCliente,
@@ -99,6 +101,7 @@ namespace ControlClientesRestaurante.Controllers
         // POST: /Resena/Crear (Fallback formulario HTML clásico)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("resenas")]
         public IActionResult Crear([FromForm] CrearResenaDto dto, string? returnUrl)
         {
             var (ok, mensaje, _) = _resenaService.CrearResena(dto);

@@ -49,6 +49,14 @@ namespace ControlClientesRestaurante.Services
                 return (false, "Tu reseña debe contener al menos 5 caracteres para compartir tu experiencia.", null);
             }
 
+            // Límites de longitud: el servidor no confía en los atributos maxlength del navegador
+            if (dto.NombreCliente.Trim().Length > 80)
+                return (false, "El nombre no puede superar los 80 caracteres.", null);
+            if (dto.Comentario.Trim().Length > 1000)
+                return (false, "La reseña no puede superar los 1000 caracteres.", null);
+            if ((dto.PlatoRecomendado?.Trim().Length ?? 0) > 100 || (dto.TipoExperiencia?.Trim().Length ?? 0) > 50 || (dto.Correo?.Trim().Length ?? 0) > 150)
+                return (false, "Alguno de los datos enviados es demasiado largo.", null);
+
             string tipoExp = string.IsNullOrWhiteSpace(dto.TipoExperiencia) ? "En Restaurante" : dto.TipoExperiencia.Trim();
             string? plato = string.IsNullOrWhiteSpace(dto.PlatoRecomendado) ? null : dto.PlatoRecomendado.Trim();
 
@@ -60,8 +68,9 @@ namespace ControlClientesRestaurante.Services
                 Comentario = dto.Comentario.Trim(),
                 PlatoRecomendado = plato,
                 TipoExperiencia = tipoExp,
-                Aprobada = true,
-                Verificado = true,
+                // Cualquiera puede enviar reseñas sin cuenta: quedan pendientes y las aprueba el administrador
+                Aprobada = false,
+                Verificado = false,
                 FechaCreacion = DateTime.Now
             };
 
@@ -69,11 +78,11 @@ namespace ControlClientesRestaurante.Services
             {
                 _repository.Crear(resena);
                 _repository.GuardarCambios();
-                return (true, "¡Gracias por tu reseña! Tu opinión ha sido publicada con éxito.", resena);
+                return (true, "¡Gracias por tu reseña! Será publicada en cuanto el equipo la revise.", resena);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return (false, $"Error al guardar tu opinión: {ex.Message}", null);
+                return (false, "No pudimos guardar tu opinión. Inténtalo de nuevo en unos minutos.", null);
             }
         }
 

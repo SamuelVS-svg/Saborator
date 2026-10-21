@@ -53,19 +53,9 @@ namespace ControlClientesRestaurante.Controllers
         private bool EsCocinero()     => User.IsInRole(Roles.Cocinero);
         private bool EsDomiciliario() => User.IsInRole(Roles.Domiciliario);
 
-        private const string SesionPedidosOnline = "PedidosOnline";
-
         /// <summary>¿Puede el visitante actual ver los datos personales (dirección, teléfono) del pedido?</summary>
-        private bool PuedeVerDatosPrivados(Pedido pedido)
-        {
-            if (EsAdminOCajero() || EsMesero() || EsCocinero()) return true;
-            if (EsDomiciliario()) return string.Equals(pedido.Repartidor, Usuario(), StringComparison.OrdinalIgnoreCase);
-            if (EstaAutenticado() && pedido.UsuarioMesero == Usuario()) return true;
-
-            // Pedidos hechos sin cuenta desde este mismo navegador
-            var propios = (HttpContext.Session.GetString(SesionPedidosOnline) ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-            return propios.Contains(pedido.Numero);
-        }
+        private bool PuedeVerDatosPrivados(Pedido pedido) =>
+            AccesoRecursos.PuedeVerPedido(User, HttpContext.Session, pedido);
 
         // ── MENU ──────────────────────────────────────────────────────────
         [HttpGet]
@@ -324,6 +314,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("publico")]
         public async Task<IActionResult> ConfirmarCheckout(
             [FromForm] string   tipoEntrega,
             [FromForm] string   nombreCliente,
@@ -476,8 +467,7 @@ namespace ControlClientesRestaurante.Controllers
             await NotificarNuevaComandaSignalR(pedido);
 
             // Recordar el pedido en este navegador para poder mostrar sus datos en el rastreador
-            var previos = HttpContext.Session.GetString(SesionPedidosOnline);
-            HttpContext.Session.SetString(SesionPedidosOnline, string.IsNullOrEmpty(previos) ? pedido.Numero : $"{previos},{pedido.Numero}");
+            AccesoRecursos.RegistrarPedidoEnSesion(HttpContext.Session, pedido.Numero);
 
             TempData["Exito"] = $"¡Pedido {pedido.Numero} recibido con éxito!";
             return RedirectToAction("Seguimiento", new { id = pedido.Numero });
@@ -530,6 +520,12 @@ namespace ControlClientesRestaurante.Controllers
         {
             var p = _pedidoService.ObtenerPorNumero(numero);
             if (p == null) return NotFound(new { error = "Pedido no encontrado" });
+
+            // Los números de pedido son consecutivos: quien no es dueño solo ve el estado, nunca el total ni el repartidor
+            if (!PuedeVerDatosPrivados(p))
+            {
+                return Json(new { numero = p.Numero, estado = p.Estado, tipoEntrega = p.TipoEntrega });
+            }
 
             return Json(new
             {

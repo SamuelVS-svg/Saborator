@@ -139,6 +139,26 @@ builder.Services.AddSession(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    // Formularios y APIs públicas (cupones, reseñas, reservas, pedidos, chat): 30 por minuto por IP
+    options.AddPolicy("publico", httpContext =>
+        System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "desconocido",
+            _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 30,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+    // Reseñas públicas: 5 cada 10 minutos por IP (evita spam)
+    options.AddPolicy("resenas", httpContext =>
+        System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "desconocido",
+            _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0
+            }));
     options.AddPolicy("autenticacion", httpContext =>
         System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(
             httpContext.Connection.RemoteIpAddress?.ToString() ?? "desconocido",
@@ -169,6 +189,7 @@ builder.Services.AddScoped<IResenaRepository, ResenaRepository>();
 
 // Servicios
 builder.Services.AddScoped<ClienteService>();
+builder.Services.AddSingleton<LimitadorIntentos>();
 builder.Services.AddScoped<AutenticacionService>();
 builder.Services.AddScoped<ProductoService>();
 builder.Services.AddScoped<FacturaService>();
