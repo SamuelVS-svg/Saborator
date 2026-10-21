@@ -260,36 +260,6 @@ namespace ControlClientesRestaurante.Controllers
             return Redirect(Roles.PaginaInicio(rol));
         }
 
-        // ── Cambiar rol (solo usuario "admin") ────────────────────────────
-        [HttpPost]
-        public async Task<IActionResult> CambiarRol(string nuevoRol)
-        {
-            var nombreUsuario = User.Identity?.Name ?? HttpContext.Session.GetString("Usuario");
-            if (string.IsNullOrWhiteSpace(nombreUsuario))
-                return RedirectToAction("Index");
-
-            // Solo "admin" puede alternar roles
-            if (nombreUsuario != "admin")
-            {
-                TempData["Error"] = "No tienes permiso para cambiar de rol.";
-                return RedirectToAction("Index", "Perfil");
-            }
-
-            if (!Roles.Personal.Contains(nuevoRol))
-                return BadRequest("Rol no válido.");
-
-            var u = _usuarioRepo.ObtenerPorNombre("admin");
-            if (u != null)
-            {
-                await IniciarSesionClaimsAsync(u, nuevoRol, "Administrador");
-            }
-
-            TempData["Mensaje"] = $"Rol cambiado a: {nuevoRol}";
-
-            // Redirigir a la pantalla principal del nuevo rol
-            return Redirect(Roles.PaginaInicio(nuevoRol));
-        }
-
         // ── Cambiar contraseña (usuario autenticado) ──────────────────────
         [HttpPost]
         public IActionResult CambiarContrasena(
