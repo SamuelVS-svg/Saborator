@@ -591,22 +591,6 @@ html, body {
 .alert-ok  { background: var(--success-bg); border-left: 4px solid var(--success); border-radius: var(--r-control); color: var(--text); padding: 0.85rem 1.15rem; font-size: 0.875rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
 .alert-err { background: var(--danger-bg);  border-left: 4px solid var(--danger);  border-radius: var(--r-control); color: var(--danger-ink); padding: 0.85rem 1.15rem; font-size: 0.875rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
 
-/* Avisos con icono (.alert-pro en Caja; .alerta + .alerta-ok/.alerta-err en Cocina, Domicilios y Reseñas).
-   Estas clases no tenían CSS: el icono SVG, sin tamaño, se estiraba a más de 1000 px. */
-.alert-pro, .alerta {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.65rem;
-    padding: 0.85rem 1.15rem;
-    font-size: 0.875rem;
-    border-radius: var(--r-control);
-    box-shadow: var(--shadow-sm);
-}
-.alert-pro > svg, .alerta > svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
-.alert-pro > span, .alerta > span { min-width: 0; overflow-wrap: anywhere; }
-.alerta-ok  { background: var(--success-bg); border-left: 4px solid var(--success); color: var(--text); }
-.alerta-err { background: var(--danger-bg);  border-left: 4px solid var(--danger);  color: var(--danger-ink); }
-
 /* ── TABLAS CON ESPACIADO ELEGANTE Y MICROINTERACCIÓN ─────────────────── */
 .tbl-wrap {
     border-radius: var(--r-card);
