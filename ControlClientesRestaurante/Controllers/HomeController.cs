@@ -39,7 +39,7 @@ namespace ControlClientesRestaurante.Controllers
         // Dashboard V12 — Centro de Control y Analítica Operativa
         [HttpGet("/Dashboard")]
         [HttpGet("/Home/Dashboard")]
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Dashboard()
         {
             return View();

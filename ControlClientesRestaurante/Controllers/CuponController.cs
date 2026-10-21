@@ -48,7 +48,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         // ── PANEL DE ADMINISTRACIÓN DE CUPONES (MARKETING) ───────────────
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Index()
         {
             var cupones = _cuponService.ObtenerTodos();
