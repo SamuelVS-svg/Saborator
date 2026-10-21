@@ -35,8 +35,13 @@
             <!-- INGRESO CON CORREO O NOMBRE DE USUARIO + CONTRASEÑA -->
             <form id="formKfcLoginClave" onsubmit="ejecutarLoginClaveKfc(event)">
                 <div class="kfc-field-wrap">
-                    <label for="kfcEmailInput">Correo o nombre de usuario *</label>
-                    <input type="text" id="kfcEmailInput" class="kfc-input" placeholder="ejemplo@gmail.com o tu usuario" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+                    <label for="kfcUsuarioInput">Nombre de usuario</label>
+                    <input type="text" id="kfcUsuarioInput" class="kfc-input" placeholder="Tu nombre de usuario" autocomplete="username" autocapitalize="none" spellcheck="false" />
+                </div>
+                <div class="kfc-field-wrap">
+                    <label for="kfcEmailInput">Correo electrónico</label>
+                    <input type="email" id="kfcEmailInput" class="kfc-input" placeholder="ejemplo@gmail.com" autocomplete="email" autocapitalize="none" spellcheck="false" />
+                    <small style="display:block;margin-top:.3rem;font-size:0.72rem;color:#6B7280;">Completa el nombre de usuario o el correo (basta uno de los dos).</small>
                 </div>
                 <div class="kfc-field-wrap">
                     <label for="kfcPassInput">Contraseña *</label>
@@ -97,7 +102,7 @@
         if (overlay) {
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('kfcEmailInput')?.focus(), 120);
+            setTimeout(() => document.getElementById('kfcUsuarioInput')?.focus(), 120);
             // Activar / refrescar selector oficial de cuentas de Google en el dispositivo
             inicializarGoogleIdentityServices();
         }
@@ -115,7 +120,8 @@
     // ── 2. Flujo Correo / Contraseña ──
     async function ejecutarLoginClaveKfc(e) {
         e.preventDefault();
-        const usuario = document.getElementById('kfcEmailInput')?.value.trim();
+        const usuario = document.getElementById('kfcUsuarioInput')?.value.trim()
+            || document.getElementById('kfcEmailInput')?.value.trim();
         const pass = document.getElementById('kfcPassInput')?.value;
         const btn = document.getElementById('btnLoginClaveSubmit');
 
