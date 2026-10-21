@@ -41,7 +41,10 @@ else
             <div class="rep-card rep-card-camino">
                 @await Html.PartialAsync("_RepartoTarjeta", p)
                 <form asp-action="ConfirmarEntrega" method="post" class="rep-actions"
-                      onsubmit="return confirm('¿Confirmas que entregaste el pedido @p.Numero@(p.MetodoPago == "Efectivo" ? $" y recibiste ${(p.Total).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} en efectivo" : "")?');">
+                      data-numero="@p.Numero"
+                      data-cliente="@p.NombreCliente"
+                      data-efectivo="@(p.MetodoPago == "Efectivo" ? "$" + p.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) : "")"
+                      onsubmit="return abrirModalEntrega(this);">
                     <input type="hidden" name="id" value="@p.Id" />
                     <button type="submit" class="rep-btn rep-btn-ok">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -136,7 +139,65 @@ else
     </div>
 }
 
+@* ── MODAL: confirmar entrega (reemplaza el confirm() del navegador) ── *@
+<div class="ent-overlay" id="entOverlay" role="dialog" aria-modal="true" aria-labelledby="entTitulo" hidden>
+    <div class="ent-box">
+        <div class="ent-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3 class="ent-title" id="entTitulo">¿Confirmar entrega?</h3>
+        <p class="ent-text" id="entTexto"></p>
+        <div class="ent-cash" id="entCash" hidden>
+            <span>Cobrar en efectivo</span>
+            <strong id="entMonto"></strong>
+        </div>
+        <div class="ent-btns">
+            <button type="button" class="ent-btn ent-btn-cancel" id="entCancelar">Cancelar</button>
+            <button type="button" class="ent-btn ent-btn-ok" id="entAceptar">Sí, entregado</button>
+        </div>
+    </div>
+</div>
+
 <style>
+    /* Modal de confirmación de entrega */
+    .ent-overlay {
+        position: fixed; inset: 0; z-index: 2000;
+        background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px);
+        display: flex; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .ent-overlay[hidden] { display: none; }
+    .ent-box {
+        width: 100%; max-width: 380px; text-align: center;
+        background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+        padding: 1.6rem 1.4rem 1.3rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        animation: entPop 160ms ease-out;
+    }
+    @@keyframes entPop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .ent-icon {
+        width: 60px; height: 60px; margin: 0 auto 0.9rem; border-radius: 50%;
+        background: rgba(16, 185, 129, 0.15); color: #10B981;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .ent-title { margin: 0 0 0.4rem; font-size: 1.2rem; font-weight: 800; color: var(--text); }
+    .ent-text { margin: 0; font-size: 0.92rem; color: var(--muted); line-height: 1.45; }
+    .ent-cash {
+        margin-top: 1rem; padding: 0.7rem 0.9rem; border-radius: 10px;
+        background: var(--surface-2); border: 1px dashed var(--line);
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 0.85rem; font-weight: 700; color: var(--text);
+    }
+    .ent-cash[hidden] { display: none; }
+    .ent-cash strong { font-size: 1.25rem; color: var(--brand); font-variant-numeric: tabular-nums; }
+    .ent-btns { display: flex; gap: 0.6rem; margin-top: 1.3rem; }
+    .ent-btn {
+        flex: 1; min-height: 46px; border-radius: 10px; font-weight: 700; font-size: 0.92rem;
+        cursor: pointer; transition: filter 120ms ease, transform 120ms ease;
+    }
+    .ent-btn:active { transform: scale(0.98); }
+    .ent-btn-cancel { background: transparent; border: 1px solid var(--line); color: var(--text); }
+    .ent-btn-ok { background: #10B981; border: none; color: #FFF; }
+    .ent-btn-ok:hover { filter: brightness(1.06); }
+
     /* Tarjeta de reparto (partial _RepartoTarjeta) */
     .rt-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
     .rt-code { font-weight: 800; font-size: 1.05rem; color: var(--brand); }
@@ -249,8 +310,42 @@ else
 </style>
 
 <script>
-    // Refresco automático para ver nuevos domicilios listos (no interrumpe si hay un diálogo abierto)
+    // ── Modal de confirmación de entrega ──
+    var entForm = null;
+    var entOverlay = document.getElementById('entOverlay');
+
+    function abrirModalEntrega(form) {
+        entForm = form;
+        var efectivo = form.dataset.efectivo;
+        document.getElementById('entTexto').textContent =
+            'Confirma que entregaste el pedido ' + form.dataset.numero +
+            (form.dataset.cliente ? ' a ' + form.dataset.cliente : '') + '.';
+        document.getElementById('entMonto').textContent = efectivo || '';
+        document.getElementById('entCash').hidden = !efectivo;
+        entOverlay.hidden = false;
+        document.getElementById('entAceptar').focus();
+        return false; // el envío real ocurre al aceptar en el modal
+    }
+
+    function cerrarModalEntrega() {
+        entOverlay.hidden = true;
+        entForm = null;
+    }
+
+    document.getElementById('entCancelar').addEventListener('click', cerrarModalEntrega);
+    document.getElementById('entAceptar').addEventListener('click', function () {
+        var form = entForm;
+        if (!form) return;
+        this.disabled = true;
+        this.textContent = 'Confirmando...';
+        form.onsubmit = null;
+        form.submit();
+    });
+    entOverlay.addEventListener('click', function (e) { if (e.target === entOverlay) cerrarModalEntrega(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !entOverlay.hidden) cerrarModalEntrega(); });
+
+    // Refresco automático para ver nuevos domicilios listos (no recarga si el modal está abierto)
     setInterval(function () {
-        if (document.visibilityState === 'visible') location.reload();
+        if (document.visibilityState === 'visible' && entOverlay.hidden) location.reload();
     }, 30000);
 </script>
