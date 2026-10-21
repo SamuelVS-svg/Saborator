@@ -26,7 +26,10 @@ namespace ControlClientesRestaurante.Services
             if (string.IsNullOrWhiteSpace(nombreUsuario) || string.IsNullOrEmpty(contraseña))
                 return new ResultadoLogin(false, "Por favor ingresa usuario y contraseña.");
 
-            var usuario = _usuarioRepository.ObtenerPorNombre(nombreUsuario.Trim());
+            var identificador = nombreUsuario.Trim();
+            // Permite ingresar con el nombre de usuario o con el correo electrónico
+            var usuario = _usuarioRepository.ObtenerPorNombre(identificador)
+                          ?? (identificador.Contains('@') ? _usuarioRepository.ObtenerPorCorreo(identificador) : null);
             if (usuario == null)
                 return new ResultadoLogin(false, "Usuario o contraseña incorrectos.");
 

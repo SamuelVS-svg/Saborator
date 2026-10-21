@@ -32,11 +32,11 @@
             <!-- Feedback general -->
             <div id="kfcFeedbackBox" class="kfc-feedback-box"></div>
 
-            <!-- INGRESO CON CORREO ELECTRÓNICO + CONTRASEÑA -->
+            <!-- INGRESO CON CORREO O NOMBRE DE USUARIO + CONTRASEÑA -->
             <form id="formKfcLoginClave" onsubmit="ejecutarLoginClaveKfc(event)">
                 <div class="kfc-field-wrap">
-                    <label for="kfcEmailInput">Correo electrónico *</label>
-                    <input type="email" id="kfcEmailInput" class="kfc-input" placeholder="ejemplo@gmail.com" autocomplete="email" required />
+                    <label for="kfcEmailInput">Correo o nombre de usuario *</label>
+                    <input type="text" id="kfcEmailInput" class="kfc-input" placeholder="ejemplo@gmail.com o tu usuario" autocomplete="username" autocapitalize="none" spellcheck="false" required />
                 </div>
                 <div class="kfc-field-wrap">
                     <label for="kfcPassInput">Contraseña *</label>
@@ -120,7 +120,7 @@
         const btn = document.getElementById('btnLoginClaveSubmit');
 
         if (!usuario || !pass) {
-            mostrarKfcFeedback('Por favor digita tu correo y tu contraseña.', false);
+            mostrarKfcFeedback('Por favor digita tu correo o nombre de usuario y tu contraseña.', false);
             return;
         }
 
