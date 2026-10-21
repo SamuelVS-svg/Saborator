@@ -933,8 +933,21 @@
         flex-wrap: wrap;
         gap: 0.4rem;
     }
+    /* La marca ocupa el espacio sobrante (basis 0) para que logo, nombre y
+       acciones queden siempre en la misma fila y centrados verticalmente;
+       así las acciones nunca saltan a una segunda línea. */
+    .lnav-brand {
+        flex: 1 1 0;
+        min-width: 0;
+        gap: 0.5rem;
+    }
     .lnav-name {
         font-size: 1.25rem;
+        line-height: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .lnav-icon {
         width: 32px;
@@ -942,6 +955,7 @@
     }
     .lnav-actions {
         display: flex !important;
+        flex: 0 0 auto;
         gap: 0.35rem;
         margin-left: auto;
     }
