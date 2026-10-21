@@ -666,8 +666,8 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
 .gourmet-brand:active { transform: scale(0.97); }
 
 .gourmet-brand-icon {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   background: rgba(255, 253, 249, 0.12);
   border: 1px solid rgba(200, 151, 58, 0.45);
   border-radius: 11px;
@@ -677,25 +677,26 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
   color: var(--gold, #C8973A);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
-.gourmet-brand-icon svg { width: 24px; height: 22px; fill: currentColor; }
+.gourmet-brand-icon svg { width: 22px; height: 20px; fill: currentColor; }
 
 .gourmet-brand-text { display: flex; flex-direction: column; }
 .gourmet-brand-title {
   font-family: var(--font-serif, 'Instrument Serif', Georgia, serif);
-  font-size: 1.55rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 1.3rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.005em;
   color: var(--on-brand, #FFFDF9);
-  line-height: 1.05;
+  line-height: 1;
 }
 .gourmet-brand-sub {
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   color: var(--gold, #C8973A);
   font-weight: 700;
   line-height: 1;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .gourmet-links {
@@ -920,7 +921,7 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
     min-width: 0;
   }
   .gourmet-brand-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
