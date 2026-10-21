@@ -50,7 +50,7 @@ namespace ControlClientesRestaurante.Services
             if (esLocal && !forzarProd)
             {
                 pubKey = !string.IsNullOrWhiteSpace(_options.SandboxPublicKey) ? _options.SandboxPublicKey : "pub_test_Q5yDA9xoKdePium1amu0Bush320D4HfR";
-                prvKey = !string.IsNullOrWhiteSpace(_options.SandboxPrivateKey) ? _options.SandboxPrivateKey : "prv_test_V0n2v7u96K1F38sLz9G5j7Vb9mC2D4eF";
+                prvKey = _options.SandboxPrivateKey; // se configura en appsettings.Local.json o con Wompi__SandboxPrivateKey
                 ambiente = "sandbox";
             }
 

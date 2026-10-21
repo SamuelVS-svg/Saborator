@@ -11,9 +11,18 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración local opcional (llaves de pruebas, etc.). Está en .gitignore: nunca se sube al repositorio.
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+
 // Soporte multi-puerto para Railway / Contenedores (escucha en $PORT y 8080 simultáneamente)
 var port = Environment.GetEnvironmentVariable("PORT");
-if (!builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(port))
+// SABORATOR_SOLO_LOCAL=true: escucha únicamente en 127.0.0.1 (para publicar detrás de un túnel como Tailscale Funnel)
+var soloLocal = string.Equals(Environment.GetEnvironmentVariable("SABORATOR_SOLO_LOCAL"), "true", StringComparison.OrdinalIgnoreCase);
+if (soloLocal)
+{
+    builder.WebHost.UseUrls($"http://127.0.0.1:{(string.IsNullOrWhiteSpace(port) ? "5200" : port.Trim())}");
+}
+else if (!builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(port))
 {
     var urls = new HashSet<string> { "http://0.0.0.0:8080" };
     if (!string.IsNullOrWhiteSpace(port))
@@ -120,7 +129,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    // Igual que la cookie de autenticación: solo por HTTPS fuera de desarrollo
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
 });
 
 // Límite de intentos para inicio de sesión, registro y códigos OTP (fuerza bruta)
@@ -193,6 +205,18 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
     context.Response.Headers.Append("Permissions-Policy", "camera=(), microphone=(self), geolocation=()");
+    // CSP: las vistas usan scripts y estilos en línea, por eso 'unsafe-inline'; el resto limita de dónde
+    // se puede cargar contenido, quién puede incrustar el sitio y a dónde pueden enviarse formularios.
+    context.Response.Headers.Append("Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline' https://accounts.google.com https://checkout.wompi.co https://www.googletagmanager.com https://unpkg.com; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " +
+        "font-src 'self' data: https://fonts.gstatic.com; " +
+        "img-src 'self' data: blob: https:; " +
+        "media-src 'self' data: blob:; " +
+        "frame-src 'self' https://www.google.com https://maps.google.com https://accounts.google.com https://checkout.wompi.co; " +
+        "connect-src 'self' https://*.wompi.co https://accounts.google.com https://*.googletagmanager.com https://*.google-analytics.com; " +
+        "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.wompi.co");
     await next();
 });
 
@@ -585,8 +609,8 @@ try
     }
     db.SaveChanges();
 
-    // Cuentas de demostración: se crean solo si no existen. Nunca se sobrescribe la
-    // contraseña de una cuenta existente (antes se reiniciaba en cada arranque).
+    // Cuentas de demostración (solo desarrollo). Nunca se sobrescribe la contraseña de una cuenta existente.
+    // En producción NO se crean cuentas con claves conocidas: ver el bloque "Producción" más abajo.
     var cuentasSemilla = new[]
     {
         (Usuario: "admin",        Clave: "Admin#Saborator2026!",        Rol: "Administrador"),
@@ -598,6 +622,7 @@ try
     };
     foreach (var cuenta in cuentasSemilla)
     {
+        if (!app.Environment.IsDevelopment()) break;
         if (db.Usuarios.Any(u => u.NombreUsuario == cuenta.Usuario)) continue;
 
         var rolId = db.Roles.First(r => r.NombreRol == cuenta.Rol).Id;
@@ -612,6 +637,57 @@ try
         });
     }
     db.SaveChanges();
+
+    // ── Producción: cerrar la puerta a las claves de demostración ───────────────
+    // Las claves de las cuentas semilla están en el código fuente (público). Si una cuenta existente
+    // todavía usa esa clave, se reemplaza por una aleatoria y se obliga a cambiarla en el primer ingreso.
+    // Las nuevas claves se escriben en credenciales-iniciales.txt (junto a la aplicación).
+    if (!app.Environment.IsDevelopment())
+    {
+        var nuevasClaves = new List<string>();
+
+        foreach (var cuenta in cuentasSemilla)
+        {
+            var existente = db.Usuarios.FirstOrDefault(u => u.NombreUsuario == cuenta.Usuario);
+            if (existente == null) continue;
+
+            bool claveConocida;
+            try { claveConocida = BCrypt.Net.BCrypt.Verify(cuenta.Clave, existente.ContraseñaHash); }
+            catch { claveConocida = false; }
+            if (!claveConocida) continue;
+
+            var clave = GenerarClaveTemporal();
+            existente.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(clave);
+            existente.DebeCambiarContraseña = true;
+            nuevasClaves.Add($"{cuenta.Usuario}\t{clave}");
+        }
+
+        // Garantizar que exista al menos un administrador activo
+        var rolAdminId = db.Roles.First(r => r.NombreRol == "Administrador").Id;
+        if (!db.Usuarios.Any(u => u.RolId == rolAdminId && u.Estado))
+        {
+            var clave = GenerarClaveTemporal();
+            db.Usuarios.Add(new Usuario
+            {
+                NombreUsuario = "admin",
+                ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(clave),
+                RolId = rolAdminId,
+                DebeCambiarContraseña = true,
+                EmailVerificado = true
+            });
+            nuevasClaves.Add($"admin\t{clave}");
+        }
+
+        if (nuevasClaves.Count > 0)
+        {
+            db.SaveChanges();
+            var ruta = Path.Combine(AppContext.BaseDirectory, "credenciales-iniciales.txt");
+            File.AppendAllText(ruta,
+                $"# {DateTime.Now:yyyy-MM-dd HH:mm} - claves temporales (usuario<TAB>clave). Se piden cambiar al primer ingreso. Borra este archivo despues de usarlas.{Environment.NewLine}" +
+                string.Join(Environment.NewLine, nuevasClaves) + Environment.NewLine);
+            Console.WriteLine($"[Saborator] Se reemplazaron claves de demostracion por claves temporales. Revisa: {ruta}");
+        }
+    }
 
     var cCliente = db.Clientes.FirstOrDefault(c => c.Correo == "cliente@saborator.com" || c.Nombre == "Cliente Saborator");
     if (cCliente == null)
@@ -696,3 +772,13 @@ catch (Exception ex)
 }
 
 app.Run();
+
+// Clave temporal aleatoria (sin caracteres ambiguos) con mayúscula, minúscula, número y símbolo
+static string GenerarClaveTemporal()
+{
+    const string alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+    var chars = new char[14];
+    for (int i = 0; i < chars.Length; i++)
+        chars[i] = alfabeto[System.Security.Cryptography.RandomNumberGenerator.GetInt32(alfabeto.Length)];
+    return new string(chars) + "#" + System.Security.Cryptography.RandomNumberGenerator.GetInt32(10);
+}

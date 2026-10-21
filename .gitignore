@@ -14,3 +14,8 @@ obj/
 cookies.txt
 scratch/
 skills-lock.json
+
+# Secretos y archivos locales (nunca al repositorio)
+appsettings.Local.json
+credenciales-iniciales.txt
+publish/

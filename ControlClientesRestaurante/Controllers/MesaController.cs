@@ -63,7 +63,6 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── POST: /Mesa/CambiarEstadoRapido (Para peticiones JSON directas) ──
         [HttpPost]
-        [IgnoreAntiforgeryToken]
         public IActionResult CambiarEstadoRapido([FromBody] CambiarEstadoDto dto)
         {
             if (dto == null || dto.NumeroMesa < 1 || dto.NumeroMesa > 30 || string.IsNullOrWhiteSpace(dto.NuevoEstado))
