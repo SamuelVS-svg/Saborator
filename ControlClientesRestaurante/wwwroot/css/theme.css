@@ -705,8 +705,22 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
   flex-wrap: nowrap;
   white-space: nowrap;
   min-width: 0;
-  overflow: hidden;
+  /* Si los enlaces no caben se desplazan; la barra solo aparece al pasar el cursor */
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 7px;
+  margin-bottom: -7px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
+.gourmet-links:hover {
+  scrollbar-color: rgba(255, 253, 249, 0.55) transparent;
+}
+.gourmet-links::-webkit-scrollbar { height: 6px; }
+.gourmet-links::-webkit-scrollbar-track { background: transparent; }
+.gourmet-links::-webkit-scrollbar-thumb { background: transparent; border-radius: 99px; }
+.gourmet-links:hover::-webkit-scrollbar-thumb { background: rgba(255, 253, 249, 0.55); }
+.gourmet-links:hover::-webkit-scrollbar-thumb:hover { background: rgba(255, 253, 249, 0.8); }
 
 @media (max-width: 1200px) {
   .gourmet-link {

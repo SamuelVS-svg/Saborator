@@ -140,3 +140,17 @@
         }
     </div>
 </header>
+
+<script>
+    // Con la rueda del ratón sobre los enlaces, la barra se desplaza en horizontal
+    (function () {
+        var links = document.getElementById('gourmetLinks');
+        if (!links) return;
+        links.addEventListener('wheel', function (e) {
+            if (links.scrollWidth <= links.clientWidth) return;
+            if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+            links.scrollLeft += e.deltaY;
+            e.preventDefault();
+        }, { passive: false });
+    })();
+</script>
