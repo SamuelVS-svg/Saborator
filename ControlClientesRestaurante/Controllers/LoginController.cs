@@ -713,11 +713,12 @@ namespace ControlClientesRestaurante.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Logout")]
-        public async Task<IActionResult> LogoutPost()
+        public async Task<IActionResult> LogoutPost(bool otraCuenta = false)
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
+            // "Iniciar sesión con otra cuenta": cierra la sesión y lleva directo al formulario de ingreso
+            return otraCuenta ? RedirectToAction("Index", "Login") : RedirectToAction("Index", "Home");
         }
 
         // ── Endpoints REST para el Frontend React (/api/auth/*) ───────────
