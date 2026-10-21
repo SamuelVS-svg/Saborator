@@ -34,6 +34,7 @@
         </svg>
         <span>Saltar</span>
         <span class="intro-skip-kbd">Esc</span>
+        <span class="intro-skip-hint">Toca para saltar</span>
     </button>
 
     <div class="intro-stage">
@@ -1222,15 +1223,11 @@
         if (counter) counter.textContent = `${count} / 1000`;
     }
 
-
-    // Escapa el texto escrito por el usuario antes de insertarlo como HTML
-    function escaparResena(r) {
-        const esc = v => typeof v === 'string'
-            ? v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
-            : v;
-        const copia = {};
-        Object.keys(r).forEach(k => copia[k] = esc(r[k]));
-        return copia;
+    // Escapa texto del usuario antes de insertarlo con innerHTML (prevención de XSS)
+    function escapeHtml(valor) {
+        return String(valor ?? '').replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
     }
 
     async function enviarResenaHomeAjax(e) {
@@ -1285,7 +1282,6 @@
 
                 const grid = document.getElementById('homeResenasGrid');
                 if (grid && data.resena) {
-                    data.resena = escaparResena(data.resena);
                     let starsHtml = '';
                     for (let s = 1; s <= 5; s++) {
                         starsHtml += `
@@ -1297,7 +1293,7 @@
 
                     const tagDish = data.resena.platoRecomendado ? `
                         <span style="font-size:0.7rem;background:rgba(200,151,58,0.14);color:var(--gold);border:1px solid rgba(200,151,58,0.3);padding:2px 7px;border-radius:6px;font-weight:600;">
-                            Recomendó: <strong>${data.resena.platoRecomendado}</strong>
+                            Recomendó: <strong>${escapeHtml(data.resena.platoRecomendado)}</strong>
                         </span>
                     ` : '';
 
@@ -1312,11 +1308,11 @@
                             <div style="display:flex;align-items:flex-start;margin-bottom:0.75rem;">
                                 <div style="display:flex;align-items:center;gap:0.85rem;width:100%;min-width:0;">
                                     <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #6B1E2E, #C8973A);color:#FFFDF9;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(107,30,46,0.25);">
-                                        ${initial}
+                                        ${escapeHtml(initial)}
                                     </div>
                                     <div style="display:flex;flex-direction:column;gap:0.2rem;min-width:0;flex:1;">
                                         <div style="font-size:0.92rem;font-weight:700;color:var(--text);display:flex;align-items:center;flex-wrap:wrap;gap:6px;line-height:1.25;">
-                                            <span>${data.resena.nombreCliente}</span>
+                                            <span>${escapeHtml(data.resena.nombreCliente)}</span>
                                             <span style="font-size:0.65rem;background:rgba(16,185,129,0.14);color:#10B981;border:1px solid rgba(16,185,129,0.35);border-radius:999px;padding:1px 6px;font-weight:700;display:inline-flex;align-items:center;gap:2px;flex-shrink:0;">
                                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
                                                 Verificado
@@ -1329,12 +1325,12 @@
                             </div>
                             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;">
                                 <span style="font-size:0.7rem;background:var(--surface-2);color:var(--muted);padding:2px 7px;border-radius:6px;font-weight:600;">
-                                    ${data.resena.tipoExperiencia}
+                                    ${escapeHtml(data.resena.tipoExperiencia)}
                                 </span>
                                 ${tagDish}
                             </div>
                             <p style="font-size:0.88rem;color:var(--text);line-height:1.55;margin:0;font-style:italic;">
-                                "${data.resena.comentario}"
+                                "${escapeHtml(data.resena.comentario)}"
                             </p>
                         </div>
                     `;

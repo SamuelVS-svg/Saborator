@@ -410,6 +410,26 @@
     color: rgba(255, 253, 249, 0.9);
 }
 
+/* Aviso de salto: en pantallas táctiles no existe la tecla Esc, así que se pide tocar la pantalla */
+.intro-skip-hint {
+    display: none;
+    font-size: 0.72rem;
+    color: rgba(255, 253, 249, 0.7);
+}
+
+@media (hover: none), (pointer: coarse) {
+    .intro-skip-kbd { display: none; }
+    .intro-skip-hint { display: inline; }
+    .intro-skip-btn {
+        top: calc(1rem + env(safe-area-inset-top, 0px));
+        right: 1rem;
+        min-height: 44px;
+        padding: 0.55rem 1.1rem;
+        font-size: 0.85rem;
+    }
+    .cinematic-intro { cursor: pointer; }
+}
+
 /* ── PROGRESS RING ON SKIP ─────────────────────────────── */
 .skip-timer-ring {
     width: 14px;

@@ -26,7 +26,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Proveedor proveedor)
+        public IActionResult Create([Bind("Nombre,Contacto,Telefono,Correo,Direccion,Nit,Categoria,Notas")] Proveedor proveedor)
         {
             if (!ModelState.IsValid) return View(proveedor);
 
@@ -45,7 +45,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Proveedor proveedor)
+        public IActionResult Edit([Bind("Id,Nombre,Contacto,Telefono,Correo,Direccion,Nit,Categoria,Notas,Activo")] Proveedor proveedor)
         {
             if (!ModelState.IsValid) return View(proveedor);
 

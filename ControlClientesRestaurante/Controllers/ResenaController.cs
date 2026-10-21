@@ -17,7 +17,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         private string Rol() => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? HttpContext.Session.GetString("Rol") ?? "";
-        private bool EsAdminOCajero() => User.IsInRole("Administrador") || User.IsInRole("Cajero") || Rol() == "Administrador" || Rol() == "Cajero";
+        private bool EsAdminOCajero() => EsAdmin();
         private bool EsAdmin() => User.IsInRole("Administrador") || Rol() == "Administrador";
 
         // GET: /Resena
@@ -61,7 +61,7 @@ namespace ControlClientesRestaurante.Controllers
         // POST: /Resena/CrearApi (vía fetch AJAX desde Home/Index o Resena/Index)
         [HttpPost]
         [IgnoreAntiforgeryToken]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("autenticacion")]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("resenas")]
         public IActionResult CrearApi([FromBody] CrearResenaDto dto)
         {
             if (dto == null)
@@ -69,7 +69,7 @@ namespace ControlClientesRestaurante.Controllers
                 return BadRequest(new { ok = false, mensaje = "Datos de reseña inválidos." });
             }
 
-            var (ok, mensaje, resena) = _resenaService.CrearResena(dto, User.Identity?.IsAuthenticated == true);
+            var (ok, mensaje, resena) = _resenaService.CrearResena(dto);
             if (!ok)
             {
                 return Json(new { ok = false, mensaje });
@@ -77,12 +77,12 @@ namespace ControlClientesRestaurante.Controllers
 
             var stats = _resenaService.ObtenerEstadisticas();
 
+            // Una reseña pendiente de moderación no se devuelve ni se muestra todavía
             return Json(new
             {
                 ok = true,
                 mensaje,
                 stats,
-                // Una reseña pendiente de aprobación no se muestra en la página
                 resena = !resena!.Aprobada ? null : new
                 {
                     resena!.Id,
@@ -101,10 +101,10 @@ namespace ControlClientesRestaurante.Controllers
         // POST: /Resena/Crear (Fallback formulario HTML clásico)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("autenticacion")]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("resenas")]
         public IActionResult Crear([FromForm] CrearResenaDto dto, string? returnUrl)
         {
-            var (ok, mensaje, _) = _resenaService.CrearResena(dto, User.Identity?.IsAuthenticated == true);
+            var (ok, mensaje, _) = _resenaService.CrearResena(dto);
             if (ok) TempData["Mensaje"] = mensaje;
             else TempData["Error"] = mensaje;
 
@@ -118,7 +118,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // POST: /Resena/CambiarAprobacion
         [HttpPost]
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public IActionResult CambiarAprobacion(int id, bool aprobada)
         {

@@ -32,12 +32,7 @@ namespace ControlClientesRestaurante.Services
 
         public List<Resena> ObtenerTodas() => _repository.ObtenerTodas();
 
-        /// <param name="autenticado">
-        /// Solo las reseñas de clientes con sesión iniciada se publican al instante y se marcan como
-        /// verificadas; las anónimas quedan pendientes de aprobación del personal (antes cualquiera
-        /// publicaba al instante con la insignia de "Verificado").
-        /// </param>
-        public (bool ok, string mensaje, Resena? resena) CrearResena(CrearResenaDto dto, bool autenticado = false)
+        public (bool ok, string mensaje, Resena? resena) CrearResena(CrearResenaDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.NombreCliente) || dto.NombreCliente.Trim().Length < 2)
             {
@@ -54,11 +49,13 @@ namespace ControlClientesRestaurante.Services
                 return (false, "Tu reseña debe contener al menos 5 caracteres para compartir tu experiencia.", null);
             }
 
-            if (dto.NombreCliente.Trim().Length > 150 || dto.Comentario.Trim().Length > 1000 ||
-                (dto.PlatoRecomendado?.Length ?? 0) > 150 || (dto.TipoExperiencia?.Length ?? 0) > 50 || (dto.Correo?.Length ?? 0) > 150)
-            {
-                return (false, "Tu reseña es demasiado larga (máximo 1000 caracteres de comentario).", null);
-            }
+            // Límites de longitud: el servidor no confía en los atributos maxlength del navegador
+            if (dto.NombreCliente.Trim().Length > 80)
+                return (false, "El nombre no puede superar los 80 caracteres.", null);
+            if (dto.Comentario.Trim().Length > 1000)
+                return (false, "La reseña no puede superar los 1000 caracteres.", null);
+            if ((dto.PlatoRecomendado?.Trim().Length ?? 0) > 100 || (dto.TipoExperiencia?.Trim().Length ?? 0) > 50 || (dto.Correo?.Trim().Length ?? 0) > 150)
+                return (false, "Alguno de los datos enviados es demasiado largo.", null);
 
             string tipoExp = string.IsNullOrWhiteSpace(dto.TipoExperiencia) ? "En Restaurante" : dto.TipoExperiencia.Trim();
             string? plato = string.IsNullOrWhiteSpace(dto.PlatoRecomendado) ? null : dto.PlatoRecomendado.Trim();
@@ -71,8 +68,9 @@ namespace ControlClientesRestaurante.Services
                 Comentario = dto.Comentario.Trim(),
                 PlatoRecomendado = plato,
                 TipoExperiencia = tipoExp,
-                Aprobada = autenticado,
-                Verificado = autenticado,
+                // Cualquiera puede enviar reseñas sin cuenta: quedan pendientes y las aprueba el administrador
+                Aprobada = false,
+                Verificado = false,
                 FechaCreacion = DateTime.Now
             };
 
@@ -80,13 +78,11 @@ namespace ControlClientesRestaurante.Services
             {
                 _repository.Crear(resena);
                 _repository.GuardarCambios();
-                return (true, autenticado
-                    ? "¡Gracias por tu reseña! Tu opinión ha sido publicada con éxito."
-                    : "¡Gracias por tu reseña! La publicaremos en cuanto nuestro equipo la revise.", resena);
+                return (true, "¡Gracias por tu reseña! Será publicada en cuanto el equipo la revise.", resena);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return (false, $"Error al guardar tu opinión: {ex.Message}", null);
+                return (false, "No pudimos guardar tu opinión. Inténtalo de nuevo en unos minutos.", null);
             }
         }
 

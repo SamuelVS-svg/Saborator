@@ -5,7 +5,7 @@ using ControlClientesRestaurante.Services;
 
 namespace ControlClientesRestaurante.Controllers
 {
-    [Authorize(Roles = "Administrador,Cajero")]
+    [Authorize(Roles = "Administrador")]
     public class ClienteController : Controller
     {
         private readonly ClienteService _clienteService;
@@ -29,7 +29,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Cliente cliente)
+        public IActionResult Create([Bind("Nombre,Documento,Telefono,Correo,Direccion,FechaNacimiento")] Cliente cliente)
         {
             cliente.Nombre = AplicarCamelCase(cliente.Nombre);
             if (!ModelState.IsValid) return View(cliente);
@@ -60,7 +60,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Cliente cliente)
+        public IActionResult Edit([Bind("Id,Codigo,Nombre,Documento,Telefono,Correo,Direccion,FechaNacimiento")] Cliente cliente)
         {
             if (!EsAdministrador())
             {

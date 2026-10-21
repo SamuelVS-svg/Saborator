@@ -19,6 +19,7 @@ namespace ControlClientesRestaurante.Controllers
         private readonly IConfiguration       _configuration;
         private readonly Data.ApplicationDbContext _context;
         private readonly IWebHostEnvironment  _env;
+        private readonly LimitadorIntentos    _limitador;
 
         public LoginController(
             AutenticacionService auth, 
@@ -28,8 +29,10 @@ namespace ControlClientesRestaurante.Controllers
             ITwilioService twilioService,
             IConfiguration configuration,
             Data.ApplicationDbContext context,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            LimitadorIntentos limitador)
         {
+            _limitador        = limitador;
             _auth             = auth;
             _usuarioRepo      = usuarioRepo;
             _auditoriaService = auditoriaService;
@@ -39,6 +42,19 @@ namespace ControlClientesRestaurante.Controllers
             _context          = context;
             _env              = env;
         }
+
+        /// <summary>Máximo 3 códigos OTP cada 10 minutos por teléfono o usuario (evita bombardear a una persona).</summary>
+        private bool OtpPermitido(string clave) =>
+            _limitador.PermitirEnVentana("otp:" + clave.Trim().ToLowerInvariant(), 3, TimeSpan.FromMinutes(10));
+
+        private IActionResult OtpDemasiadosEnvios() =>
+            StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                ok = false,
+                success = false,
+                mensaje = "Ya enviamos varios códigos. Espera unos minutos antes de pedir otro.",
+                error = "Ya enviamos varios códigos. Espera unos minutos antes de pedir otro."
+            });
 
         [HttpGet]
         public IActionResult Index(string? tab)
@@ -142,7 +158,7 @@ namespace ControlClientesRestaurante.Controllers
                 docFinal = $"{tipoDocumento.Trim()}-{docFinal}";
             }
 
-            var codigoOtp = Random.Shared.Next(100000, 999999).ToString("D6");
+            var codigoOtp = GeneradorSeguro.CodigoOtp();
             var canal = string.Equals(canalVerificacion, "sms", StringComparison.OrdinalIgnoreCase) ? "sms" : "whatsapp";
 
             var (ok, mensaje, nuevoUsuario, cliente) = _auth.RegistrarCliente(
@@ -443,7 +459,7 @@ namespace ControlClientesRestaurante.Controllers
                 fn = parsedFn;
             }
 
-            var codigoOtp = Random.Shared.Next(100000, 999999).ToString("D6");
+            var codigoOtp = GeneradorSeguro.CodigoOtp();
             var canal = string.Equals(dto.CanalVerificacion, "sms", StringComparison.OrdinalIgnoreCase) ? "sms" : "whatsapp";
 
             var (ok, mensaje, nuevoUsuario, cliente) = _auth.RegistrarCliente(
@@ -582,6 +598,8 @@ namespace ControlClientesRestaurante.Controllers
             if (string.IsNullOrWhiteSpace(usuarioIdentificador))
                 return Json(new { ok = false, mensaje = "Identificador de usuario requerido." });
 
+            if (!OtpPermitido(usuarioIdentificador)) return OtpDemasiadosEnvios();
+
             var (ok, mensaje, nuevoCodigo, usuario, cliente) = _auth.GenerarNuevoCodigoOtp(usuarioIdentificador);
             if (!ok || usuario == null || nuevoCodigo == null)
             {
@@ -713,11 +731,12 @@ namespace ControlClientesRestaurante.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Logout")]
-        public async Task<IActionResult> LogoutPost()
+        public async Task<IActionResult> LogoutPost(bool otraCuenta = false)
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
+            // "Iniciar sesión con otra cuenta": cierra la sesión y abre el modal de ingreso en el inicio
+            return RedirectToAction("Index", "Home", otraCuenta ? new { ingresar = 1 } : null);
         }
 
         // ── Endpoints REST para el Frontend React (/api/auth/*) ───────────
@@ -734,8 +753,10 @@ namespace ControlClientesRestaurante.Controllers
             if (phone.Length != 10)
                 return BadRequest(new { success = false, error = "Número de celular inválido (debe tener 10 dígitos)." });
 
+            if (!OtpPermitido(phone)) return OtpDemasiadosEnvios();
+
             var channel = string.Equals(dto?.channel, "whatsapp", StringComparison.OrdinalIgnoreCase) ? "whatsapp" : "sms";
-            var code = Random.Shared.Next(100000, 999999).ToString("D6");
+            var code = GeneradorSeguro.CodigoOtp();
 
             GuardarOtp($"ReactOtp_{phone}", code);
 
@@ -795,6 +816,7 @@ namespace ControlClientesRestaurante.Controllers
 
         [HttpPost("/api/auth/guest-login")]
         [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("publico")]
         public IActionResult ApiGuestLogin([FromBody] ReactGuestLoginDto? dto)
         {
             var phone = new string((dto?.phone ?? "3000000000").Where(char.IsDigit).ToArray());
@@ -1147,7 +1169,9 @@ namespace ControlClientesRestaurante.Controllers
             if (phone.Length != 10)
                 return BadRequest(new { ok = false, mensaje = "Ingresa un número de celular de 10 dígitos (ej. 300 123 4567)." });
 
-            var code = Random.Shared.Next(100000, 999999).ToString("D6");
+            if (!OtpPermitido(phone)) return OtpDemasiadosEnvios();
+
+            var code = GeneradorSeguro.CodigoOtp();
             GuardarOtp($"ClubOtp_{phone}", code);
 
             var sendResult = await _twilioService.EnviarOtpWhatsAppAsync(phone, code);
@@ -1221,7 +1245,7 @@ namespace ControlClientesRestaurante.Controllers
                 usuario = new Usuario
                 {
                     NombreUsuario = userNameCandidate,
-                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"Otp#{code}!"),
+                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(GeneradorSeguro.ClaveAleatoria()),
                     RolId = rolCliente.Id,
                     Estado = true,
                     Correo = $"{phone}@saborator.club",

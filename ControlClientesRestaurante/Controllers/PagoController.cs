@@ -150,6 +150,12 @@ namespace ControlClientesRestaurante.Controllers
                     TempData["Error"] = "El pedido no fue encontrado.";
                     return RedirectToAction("MisPedidos", "Pedido");
                 }
+                // Anti-IDOR: los ids son consecutivos; solo el dueño (o el personal) puede abrir el pago
+                if (!AccesoRecursos.PuedeVerPedido(User, HttpContext.Session, pedido))
+                {
+                    TempData["Error"] = "No tienes permiso para pagar este pedido.";
+                    return RedirectToAction("Index", "Home");
+                }
                 if (pedido.Estado == "Facturado")
                 {
                     TempData["Mensaje"] = "Este pedido ya se encuentra pagado y facturado.";
@@ -176,6 +182,12 @@ namespace ControlClientesRestaurante.Controllers
                 {
                     TempData["Error"] = "La reserva no fue encontrada.";
                     return RedirectToAction("MisReservas", "Reserva");
+                }
+
+                if (!AccesoRecursos.PuedeVerReserva(User, reserva))
+                {
+                    TempData["Error"] = "No tienes permiso para pagar esta reserva.";
+                    return RedirectToAction("Index", "Home");
                 }
 
                 // Depósito de garantía de reserva estándar según número de personas
@@ -592,6 +604,15 @@ namespace ControlClientesRestaurante.Controllers
 
                         if (pedido != null)
                         {
+                            // El monto pagado debe coincidir con el total del pedido: no se factura un pago menor
+                            long montoEsperado = (long)Math.Round(pedido.Total * 100m);
+                            if (amountInCents != montoEsperado)
+                            {
+                                _logger.LogWarning("Webhook Wompi: monto {Recibido} distinto al esperado {Esperado} para el pedido {Pedido} (tx {TxId}); requiere revisión manual",
+                                    amountInCents, montoEsperado, pedido.Numero, txId);
+                                return Ok(new { status = "amount_mismatch" });
+                            }
+
                             string? numFacturaGenerada = null;
 
                             if (pedido.Estado != "Facturado")
@@ -682,6 +703,14 @@ namespace ControlClientesRestaurante.Controllers
                         var reserva = await _context.Reservas.FirstOrDefaultAsync(r => r.Codigo == reference || reference.StartsWith(r.Codigo));
                         if (reserva != null)
                         {
+                            long depositoEsperado = (long)reserva.NumeroPersonas * 25000L * 100L;
+                            if (amountInCents != depositoEsperado)
+                            {
+                                _logger.LogWarning("Webhook Wompi: monto {Recibido} distinto al depósito esperado {Esperado} de la reserva {Reserva} (tx {TxId}); requiere revisión manual",
+                                    amountInCents, depositoEsperado, reserva.Codigo, txId);
+                                return Ok(new { status = "amount_mismatch" });
+                            }
+
                             reserva.Estado = "Confirmada (Pagada)";
                             reserva.Notas = (reserva.Notas ?? "") + $" [Wompi Pagado: ${(monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Trx: {txId}]".Trim();
                             await _context.SaveChangesAsync();
@@ -704,7 +733,8 @@ namespace ControlClientesRestaurante.Controllers
                 catch (Exception dbEx)
                 {
                     await dbTx.RollbackAsync();
-                    return StatusCode(500, new { error = "Fallo atómico en base de datos: " + dbEx.Message });
+                    _logger.LogError(dbEx, "Webhook Wompi: fallo al registrar la transacción {TxId}", txId);
+                    return StatusCode(500, new { error = "No se pudo registrar la transacción" });
                 }
 
                 // Responder 200 OK siempre para que Wompi confirme la recepción satisfactoria
@@ -712,7 +742,7 @@ namespace ControlClientesRestaurante.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error procesando el webhook de Wompi");
+                _logger.LogError(ex, "Webhook Wompi: error al procesar la notificación");
                 return Ok(new { status = "error_handled" });
             }
         }

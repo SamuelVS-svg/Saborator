@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Marker del repartidor: moto vista desde arriba, la parte delantera apunta al norte.
+     El marker se rota con el rumbo (bearing) hacia el siguiente punto de la ruta. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Círculo de fondo -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,24m-23,0a23,23 0,1 1,46 0a23,23 0,1 1,-46 0" />
+    <path
+        android:fillColor="#1F2430"
+        android:pathData="M24,24m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0" />
+    <!-- Llanta delantera y trasera -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M22.5,6.5h3a1.5,1.5 0,0 1,1.5 1.5v6a1.5,1.5 0,0 1,-1.5 1.5h-3a1.5,1.5 0,0 1,-1.5 -1.5v-6a1.5,1.5 0,0 1,1.5 -1.5z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M22.5,33.5h3a1.5,1.5 0,0 1,1.5 1.5v6a1.5,1.5 0,0 1,-1.5 1.5h-3a1.5,1.5 0,0 1,-1.5 -1.5v-6a1.5,1.5 0,0 1,1.5 -1.5z" />
+    <!-- Cuerpo naranja -->
+    <path
+        android:fillColor="#FF6A00"
+        android:pathData="M24,13c3,0 4.5,2.5 4.5,6v10c0,3.5 -1.5,6 -4.5,6s-4.5,-2.5 -4.5,-6V19c0,-3.5 1.5,-6 4.5,-6z" />
+    <!-- Manubrio -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,17h20v2.4H14z" />
+    <!-- Caja de reparto -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20.5,28h7v6h-7z" />
+</vector>

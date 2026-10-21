@@ -53,19 +53,9 @@ namespace ControlClientesRestaurante.Controllers
         private bool EsCocinero()     => User.IsInRole(Roles.Cocinero);
         private bool EsDomiciliario() => User.IsInRole(Roles.Domiciliario);
 
-        private const string SesionPedidosOnline = "PedidosOnline";
-
         /// <summary>¿Puede el visitante actual ver los datos personales (dirección, teléfono) del pedido?</summary>
-        private bool PuedeVerDatosPrivados(Pedido pedido)
-        {
-            if (EsAdminOCajero() || EsMesero() || EsCocinero()) return true;
-            if (EsDomiciliario()) return string.Equals(pedido.Repartidor, Usuario(), StringComparison.OrdinalIgnoreCase);
-            if (EstaAutenticado() && pedido.UsuarioMesero == Usuario()) return true;
-
-            // Pedidos hechos sin cuenta desde este mismo navegador
-            var propios = (HttpContext.Session.GetString(SesionPedidosOnline) ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-            return propios.Contains(pedido.Numero);
-        }
+        private bool PuedeVerDatosPrivados(Pedido pedido) =>
+            AccesoRecursos.PuedeVerPedido(User, HttpContext.Session, pedido);
 
         /// <summary>Guarda el detalle técnico en el registro del servidor (no se muestra al usuario).</summary>
         private void RegistrarError(Exception ex, int pedidoId) =>
@@ -83,7 +73,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── MENU ──────────────────────────────────────────────────────────
         [HttpGet]
-        [Authorize(Roles = "Mesero,Administrador,Cajero,Cliente")]
+        [Authorize(Roles = "Mesero,Administrador,Cliente")]
         public IActionResult Menu(string? mesa = null)
         {
             // La pantalla "Tomar pedido" con mapa de mesas es exclusiva del personal (mesero/cajero/admin).
@@ -152,7 +142,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Mesero,Administrador,Cajero,Cliente")]
+        [Authorize(Roles = "Mesero,Administrador,Cliente")]
         public async Task<IActionResult> Menu(
             [FromForm] string   mesa,
             [FromForm] string?  nombreCliente,
@@ -361,6 +351,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("publico")]
         public async Task<IActionResult> ConfirmarCheckout(
             [FromForm] string   tipoEntrega,
             [FromForm] string   nombreCliente,
@@ -519,8 +510,7 @@ namespace ControlClientesRestaurante.Controllers
             await NotificarNuevaComandaSignalR(pedido);
 
             // Recordar el pedido en este navegador para poder mostrar sus datos en el rastreador
-            var previos = HttpContext.Session.GetString(SesionPedidosOnline);
-            HttpContext.Session.SetString(SesionPedidosOnline, string.IsNullOrEmpty(previos) ? pedido.Numero : $"{previos},{pedido.Numero}");
+            AccesoRecursos.RegistrarPedidoEnSesion(HttpContext.Session, pedido.Numero);
 
             TempData["Exito"] = $"¡Pedido {pedido.Numero} recibido con éxito!";
             return RedirectToAction("Seguimiento", new { id = pedido.Numero });
@@ -574,6 +564,12 @@ namespace ControlClientesRestaurante.Controllers
             var p = _pedidoService.ObtenerPorNumero(numero);
             if (p == null) return NotFound(new { error = "Pedido no encontrado" });
 
+            // Los números de pedido son consecutivos: quien no es dueño solo ve el estado, nunca el total ni el repartidor
+            if (!PuedeVerDatosPrivados(p))
+            {
+                return Json(new { numero = p.Numero, estado = p.Estado, tipoEntrega = p.TipoEntrega });
+            }
+
             return Json(new
             {
                 numero      = p.Numero,
@@ -587,7 +583,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── PANEL DE GESTIÓN DE DOMICILIOS (RESTAURANTE / MESERO / CAJERO) ─
         [HttpGet]
-        [Authorize(Roles = "Administrador,Cajero,Mesero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Domicilios()
         {
             var domicilios = _pedidoService.ObtenerDomicilios();
@@ -598,7 +594,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador,Cajero,Mesero")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> ActualizarEstadoDomicilio(int id, string nuevoEstado)
         {
             if (string.Equals(nuevoEstado, "EnCamino", StringComparison.OrdinalIgnoreCase))
@@ -634,7 +630,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult AsignarValorDomicilio(int id, decimal nuevoCostoEnvio)
         {
             var (ok, mensaje) = _pedidoService.ActualizarCostoEnvio(id, nuevoCostoEnvio);
@@ -667,7 +663,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── ASIGNAR DOMICILIARIO (CAJERO / ADMIN) ─────────────────────────
         [HttpPost]
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> AsignarRepartidor(int id, string? repartidor)
         {
             if (!string.IsNullOrWhiteSpace(repartidor))
@@ -723,9 +719,9 @@ namespace ControlClientesRestaurante.Controllers
             return View();
         }
 
-        // ── REPORTE DE ENTREGAS POR DOMICILIARIO (ADMIN / CAJERO) ─────────
+        // ── REPORTE DE ENTREGAS POR DOMICILIARIO (ADMIN) ──────────────────
         [HttpGet]
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult ReporteRepartos(DateTime? desde = null, DateTime? hasta = null)
         {
             var d = (desde ?? DateTime.Today.AddDays(-6)).Date;
@@ -786,7 +782,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Domiciliario,Administrador,Cajero")]
+        [Authorize(Roles = "Domiciliario,Administrador")]
         public async Task<IActionResult> ConfirmarEntrega(int id, string? volverA)
         {
             var (ok, mensaje) = _pedidoService.ConfirmarEntrega(id, Usuario(), esSupervisor: EsAdminOCajero());
@@ -825,7 +821,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── PANTALLA DE COCINA (KDS / COMANDAS ACTIVAS) ───────────────────
         [HttpGet]
-        [Authorize(Roles = "Cocinero,Administrador,Mesero")]
+        [Authorize(Roles = "Cocinero,Administrador")]
         public IActionResult Cocina()
         {
             var pedidosCocina = _pedidoService.ObtenerParaCocina();
@@ -864,7 +860,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── API EN TIEMPO REAL PARA LA COCINA (POLLING & ALERTAS) ─────────
         [HttpGet]
-        [Authorize(Roles = "Cocinero,Administrador,Mesero")]
+        [Authorize(Roles = "Cocinero,Administrador")]
         public IActionResult CocinaApi()
         {
             var pedidos = _pedidoService.ObtenerParaCocina();
@@ -895,7 +891,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── RECETARIO Y FICHAS TÉCNICAS PARA EL COCINERO ───────────────────
         [HttpGet]
-        [Authorize(Roles = "Cocinero,Administrador,Mesero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Recetario()
         {
             var productos = _productoService.ObtenerActivos();

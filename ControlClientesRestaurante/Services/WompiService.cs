@@ -144,7 +144,10 @@ namespace ControlClientesRestaurante.Services
                 var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(sb.ToString()));
                 var checksumCalculado = Convert.ToHexString(hashBytes).ToLowerInvariant();
 
-                return string.Equals(checksumCalculado, checksumRecibido, StringComparison.OrdinalIgnoreCase);
+                // Comparación en tiempo constante para no filtrar información por tiempos de respuesta
+                return CryptographicOperations.FixedTimeEquals(
+                    Encoding.UTF8.GetBytes(checksumCalculado),
+                    Encoding.UTF8.GetBytes(checksumRecibido.Trim().ToLowerInvariant()));
             }
             catch (Exception ex)
             {

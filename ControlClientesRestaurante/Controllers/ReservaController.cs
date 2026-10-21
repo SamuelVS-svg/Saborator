@@ -95,6 +95,7 @@ namespace ControlClientesRestaurante.Controllers
         [Route("Reserva/Crear")]
         [Route("Reserva/Nueva")]
         [ValidateAntiForgeryToken]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("publico")]
         public IActionResult Crear(NuevaReservaViewModel vm)
         {
             // Verificación anti-spam honeypot
@@ -182,6 +183,13 @@ namespace ControlClientesRestaurante.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // Anti-IDOR: los ids son consecutivos; solo quien hizo la reserva (o el administrador) la ve
+            if (!AccesoRecursos.PuedeVerReserva(User, reserva))
+            {
+                TempData["Error"] = "La reserva solicitada no existe.";
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(reserva);
         }
 
@@ -215,7 +223,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Cambiar Estado de Reserva (Staff: Confirmada, Completada, No Asistió) ──
         [HttpPost]
-        [Authorize(Roles = "Administrador,Mesero,Cajero")]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public IActionResult CambiarEstado(int id, string nuevoEstado)
         {
@@ -228,7 +236,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Panel Administrativo de Reservas con Filtros (Staff) ───────────
         [HttpGet]
-        [Authorize(Roles = "Administrador,Mesero,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Admin(string? filtro = "hoy", DateTime? fecha = null, string? estado = null, string? buscar = null)
         {
             var reservas = _reservaService.ObtenerTodas();
@@ -290,7 +298,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Exportar Reporte de Reservas a Excel (CSV UTF-8) ───────────────
         [HttpGet]
-        [Authorize(Roles = "Administrador,Mesero,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult ExportarCsv(string? filtro = null, DateTime? fecha = null, string? estado = null, string? buscar = null)
         {
             var reservas = _reservaService.ObtenerTodas();
@@ -337,6 +345,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Endpoint JSON para Avisos en Tiempo Real (Topbar Staff) ───────
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Avisos()
         {
             var avisos = _reservaService.ObtenerAvisosRecientes();

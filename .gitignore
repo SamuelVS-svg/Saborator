@@ -18,3 +18,7 @@ skills-lock.json
 # Publicación local en Windows
 publicado/
 publicar-windows/vigilante.log
+# Secretos y archivos locales (nunca al repositorio)
+appsettings.Local.json
+credenciales-iniciales.txt
+publish/

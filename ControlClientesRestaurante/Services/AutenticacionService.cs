@@ -10,25 +10,46 @@ namespace ControlClientesRestaurante.Services
         private readonly IUsuarioRepository   _usuarioRepository;
         private readonly IClienteRepository   _clienteRepository;
         private readonly ApplicationDbContext _context;
+        private readonly LimitadorIntentos? _limitador;
+        private readonly IHttpContextAccessor? _httpContext;
 
         public AutenticacionService(
             IUsuarioRepository usuarioRepository,
             IClienteRepository clienteRepository,
-            ApplicationDbContext context)
+            ApplicationDbContext context,
+            LimitadorIntentos? limitador = null,
+            IHttpContextAccessor? httpContext = null)
         {
             _usuarioRepository = usuarioRepository;
             _clienteRepository = clienteRepository;
             _context           = context;
+            _limitador         = limitador;
+            _httpContext       = httpContext;
         }
+
+        private string OrigenActual() =>
+            _httpContext?.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "desconocido";
 
         public ResultadoLogin ValidarCredenciales(string? nombreUsuario, string? contraseña)
         {
             if (string.IsNullOrWhiteSpace(nombreUsuario) || string.IsNullOrEmpty(contraseña))
                 return new ResultadoLogin(false, "Por favor ingresa usuario y contraseña.");
 
-            var usuario = _usuarioRepository.ObtenerPorNombre(nombreUsuario.Trim());
+            var identificador = nombreUsuario.Trim();
+            var origen = OrigenActual();
+
+            // Fuerza bruta: tras varios fallos seguidos se bloquea el acceso unos minutos
+            if (_limitador != null && _limitador.LoginBloqueado(identificador, origen, out var minutos))
+                return new ResultadoLogin(false, $"Demasiados intentos fallidos. Espera {minutos} min e inténtalo de nuevo.");
+
+            // Permite ingresar con el nombre de usuario o con el correo electrónico
+            var usuario = _usuarioRepository.ObtenerPorNombre(identificador)
+                          ?? (identificador.Contains('@') ? _usuarioRepository.ObtenerPorCorreo(identificador) : null);
             if (usuario == null)
+            {
+                _limitador?.RegistrarFalloLogin(identificador, origen);
                 return new ResultadoLogin(false, "Usuario o contraseña incorrectos.");
+            }
 
             if (!usuario.Estado)
                 return new ResultadoLogin(false, "Esta cuenta se encuentra inactiva. Contacte al personal.");
@@ -44,7 +65,12 @@ namespace ControlClientesRestaurante.Services
             }
 
             if (!contraseñaCorrecta)
+            {
+                _limitador?.RegistrarFalloLogin(identificador, origen);
                 return new ResultadoLogin(false, "Usuario o contraseña incorrectos.");
+            }
+
+            _limitador?.LoginExitoso(identificador, origen);
 
             // Si es un cliente y no ha verificado su correo electrónico
             if (usuario.Rol?.NombreRol == "Cliente" && !usuario.EmailVerificado)
@@ -129,8 +155,8 @@ namespace ControlClientesRestaurante.Services
             if (usuarioLimpio.Length < 3)
                 return (false, "El nombre de usuario debe tener al menos 3 caracteres.", null, null);
 
-            if (string.IsNullOrWhiteSpace(contraseña) || contraseña.Length < 6)
-                return (false, "La contraseña debe tener al menos 6 caracteres.", null, null);
+            if (string.IsNullOrWhiteSpace(contraseña) || contraseña.Length < 8)
+                return (false, "La contraseña debe tener al menos 8 caracteres.", null, null);
 
             if (contraseña != confirmarContraseña)
                 return (false, "Las contraseñas no coinciden.", null, null);
@@ -350,8 +376,8 @@ namespace ControlClientesRestaurante.Services
             if (!passActualValida)
                 return (false, "La contraseña actual es incorrecta.");
 
-            if (nuevaContrasena.Length < 6)
-                return (false, "La nueva contraseña debe tener al menos 6 caracteres.");
+            if (nuevaContrasena.Length < 8)
+                return (false, "La nueva contraseña debe tener al menos 8 caracteres.");
 
             usuario.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(nuevaContrasena);
             usuario.DebeCambiarContraseña = false;
@@ -467,7 +493,7 @@ namespace ControlClientesRestaurante.Services
             }
 
             // Contraseña segura
-            var passFinal = !string.IsNullOrWhiteSpace(contrasena) && contrasena.Length >= 6 ? contrasena : $"Social#Saborator{Random.Shared.Next(1000, 9999)}!";
+            var passFinal = !string.IsNullOrWhiteSpace(contrasena) && contrasena.Length >= 8 ? contrasena : GeneradorSeguro.ClaveAleatoria();
 
             using var tx = _context.Database.BeginTransaction();
             try

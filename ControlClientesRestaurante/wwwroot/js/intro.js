@@ -34,6 +34,12 @@
             });
         }
 
+        // En pantallas táctiles no hay tecla Esc: tocar cualquier parte de la intro la salta
+        var isTouch = window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches;
+        if (isTouch) {
+            introEl.addEventListener('click', function() { finishIntro(true); }, { once: true });
+        }
+
         // Bind Keyboard: Esc or Space to skip
         function onKeyDown(e) {
             if (e.key === 'Escape' || e.key === ' ' || e.keyCode === 27 || e.keyCode === 32) {
