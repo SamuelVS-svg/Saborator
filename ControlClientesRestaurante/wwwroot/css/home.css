@@ -63,11 +63,12 @@
 .lnav-icon svg { width: 20px; height: 18px; fill: currentColor; }
 .lnav-name {
     font-family: var(--font-serif, 'Instrument Serif', serif);
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.55rem;
+    font-weight: 400;
+    font-style: italic;
     color: var(--text, #1C1416);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
 }
 .lnav-menu-links {
     display: flex !important;
@@ -163,7 +164,7 @@
         font-size: 0.78rem !important;
     }
     .lnav-brand { gap: 0.5rem; }
-    .lnav-name { font-size: 1.35rem; }
+    .lnav-name { font-size: 1.4rem; }
 }
 
 /* Nav botones */

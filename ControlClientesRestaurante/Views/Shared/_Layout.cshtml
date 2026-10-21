@@ -344,7 +344,10 @@ else if (_logado && !_esCliente)
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
     </button>
-    <span class="top-page-title">@(ViewData["Title"]?.ToString() ?? "Saborator")</span>
+    @if (ViewData["OcultarTituloSuperior"] == null)
+    {
+        <span class="top-page-title">@(ViewData["Title"]?.ToString() ?? "Saborator")</span>
+    }
     <div class="top-spacer"></div>
     <div class="top-search">
         <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
