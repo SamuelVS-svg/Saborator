@@ -890,6 +890,33 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
     flex-wrap: wrap;
     gap: 0.45rem;
   }
+  /* La marca ocupa el espacio sobrante (basis 0) para que logo, nombre y
+     acciones queden siempre en la misma fila, centrados verticalmente. */
+  .gourmet-brand {
+    flex: 1 1 0;
+    min-width: 0;
+    gap: 0.5rem;
+  }
+  .gourmet-brand-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .gourmet-brand-text {
+    min-width: 0;
+  }
+  .gourmet-brand-title {
+    font-size: 1.3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gourmet-actions {
+    gap: 0.4rem;
+  }
+  .gourmet-user-name {
+    max-width: 72px;
+  }
   .gourmet-links {
     display: flex !important;
     order: 3;
