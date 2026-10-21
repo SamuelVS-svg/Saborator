@@ -23,7 +23,7 @@
                 </div>
                 <div style="flex:1;min-width:260px;">
                     <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(212,194,165,0.18);border:1px solid rgba(212,194,165,0.4);border-radius:999px;padding:2px 10px;font-size:0.75rem;font-weight:800;color:var(--gold,#D4C2A5);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.04em;">
-                        ✨ Cuenta Creada Exitosamente
+                        <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>Cuenta Creada Exitosamente
                     </div>
                     <h2 style="font-size:1.6rem;font-weight:800;margin:0 0 0.5rem 0;color:#FFFDF9;letter-spacing:-0.02em;">
                         ¡Bienvenido a Saborator, @nombreMostrar!
@@ -242,7 +242,7 @@
                         </div>
                     </div>
                     <span id="toastTemaStatus" style="font-size:0.72rem;font-weight:800;color:#065F46;background:#ECFDF5;padding:3px 8px;border-radius:999px;opacity:0;transition:opacity 200ms ease;">
-                        ✓ Sincronizado
+                        <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><polyline points="20 6 9 17 4 12"/></svg>Sincronizado
                     </span>
                 </div>
 
@@ -414,7 +414,7 @@
                         <span style="font-size:0.85rem;background:var(--success-bg,#ECFDF5);color:var(--success,#065F46);padding:2px 8px;border-radius:999px;font-weight:700;">Activa &amp; Operativa</span>
                     </div>
                     <div style="background:var(--surface-2,#FAF6F0);border:1px dashed var(--line,#E2D7C8);padding:0.85rem;border-radius:10px;font-size:0.78rem;color:var(--muted,#6B7280);margin-top:1.5rem;">
-                        ℹ️ Tu cuenta forma parte del equipo operativo de Saborator. Si necesitas modificar tus credenciales operativas o rol, contacta a Gerencia.
+                        <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Tu cuenta forma parte del equipo operativo de Saborator. Si necesitas modificar tus credenciales operativas o rol, contacta a Gerencia.
                     </div>
                 </div>
             }
@@ -619,7 +619,7 @@
         .then(function(data) {
             var statusToast = document.getElementById('toastTemaStatus');
             if (statusToast) {
-                statusToast.textContent = '✓ Guardado en tu cuenta';
+                statusToast.textContent = 'Guardado en tu cuenta';
                 statusToast.style.opacity = '1';
                 setTimeout(function() {
                     statusToast.style.opacity = '0';

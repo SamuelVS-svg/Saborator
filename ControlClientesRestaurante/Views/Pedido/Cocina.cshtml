@@ -711,13 +711,13 @@
 
         connection.on("NuevaComanda", function (data) {
             playKitchenChime();
-            mostrarNotificacionKds(`🔔 ¡Nueva comanda #${data.numero || ''} recibida!`, 'success');
+            mostrarNotificacionKds(`¡Nueva comanda #${data.numero || ''} recibida!`, 'success');
             // Refrescar para renderizar el ticket con su estructura completa
             setTimeout(() => window.location.reload(), 900);
         });
 
         connection.on("ComandaActualizada", function (data) {
-            mostrarNotificacionKds(`⚡ Comanda #${data.numero || data.id} actualizada: ${data.nuevoEstado}`);
+            mostrarNotificacionKds(`Comanda #${data.numero || data.id} actualizada: ${data.nuevoEstado}`);
             setTimeout(() => window.location.reload(), 900);
         });
 

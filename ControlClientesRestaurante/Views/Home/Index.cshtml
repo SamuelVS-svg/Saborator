@@ -218,27 +218,27 @@
 
     <!-- Menú Desplegable Móvil Completo -->
     <div class="lnav-mobile" id="lnavMobileMenu">
-        <a href="#menu" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')">🍔 La Carta Gourmet</a>
-        <a href="#ubicacion" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')">📍 Sede &amp; Mapa</a>
-        <a href="#resenas" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')">⭐ Reseñas de Clientes</a>
-        <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalModalidad();">🛵 Modalidad / Domicilio</a>
-        <a asp-controller="Pedido" asp-action="Rastrear">⏱️ Rastrear Pedido</a>
-        <a asp-controller="Pago" asp-action="Checkout">💳 Pagar Cuenta</a>
-        <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--gold, #C8973A);font-weight:700;">📅 Reservar Mesa</a>
+        <a href="#menu" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M4 11a8 8 0 0 1 16 0Z"/><path d="M3 14.5h18"/><path d="M4 18h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg>La Carta Gourmet</a>
+        <a href="#ubicacion" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Sede &amp; Mapa</a>
+        <a href="#resenas" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor"/></svg>Reseñas de Clientes</a>
+        <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalModalidad();"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>Modalidad / Domicilio</a>
+        <a asp-controller="Pedido" asp-action="Rastrear"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Rastrear Pedido</a>
+        <a asp-controller="Pago" asp-action="Checkout"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Pagar Cuenta</a>
+        <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--gold, #C8973A);font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reservar Mesa</a>
         @if (_esPersonal)
         {
-            <a href="@Roles.PaginaInicio(_rol)" style="color:var(--gold, #C8973A);font-weight:700;">📊 Mi Panel</a>
+            <a href="@Roles.PaginaInicio(_rol)" style="color:var(--gold, #C8973A);font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Mi Panel</a>
         }
         @if (_autenticado)
         {
-            <a asp-controller="Reserva" asp-action="MisReservas">📋 Mis Reservas</a>
-            <a asp-controller="Pedido" asp-action="MisPedidos">🛍️ Mis Pedidos</a>
-            <a asp-controller="Perfil" asp-action="Index">👤 Mi Perfil (@_usuario)</a>
-            <a asp-controller="Login" asp-action="Logout" style="color:#DC2626;font-weight:700;">🚪 Cerrar Sesión</a>
+            <a asp-controller="Reserva" asp-action="MisReservas"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>Mis Reservas</a>
+            <a asp-controller="Pedido" asp-action="MisPedidos"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Mis Pedidos</a>
+            <a asp-controller="Perfil" asp-action="Index"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mi Perfil (@_usuario)</a>
+            <a asp-controller="Login" asp-action="Logout" style="color:#DC2626;font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Cerrar Sesión</a>
         }
         else
         {
-            <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalIngreso();">👤 Ingresar</a>
+            <a href="javascript:void(0)" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); abrirModalIngreso();"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Ingresar</a>
         }
     </div>
 
@@ -358,10 +358,10 @@
 
                 <div class="d-flex align-items-center gap-2">
                     <button type="button" id="btnToggleVeg" onclick="toggleFiltroDieta('veg')" class="btn-ghost" style="padding:0.35rem 0.75rem;font-size:0.78rem;border-radius:999px;font-weight:700;">
-                        🌱 Solo Veg
+                        <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Solo Veg
                     </button>
                     <button type="button" id="btnToggleGluten" onclick="toggleFiltroDieta('gluten')" class="btn-ghost" style="padding:0.35rem 0.75rem;font-size:0.78rem;border-radius:999px;font-weight:700;">
-                        🌾 Sin TACC
+                        <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z"/></svg>Sin TACC
                     </button>
                 </div>
             </div>
@@ -416,15 +416,15 @@
                             <div class="d-flex flex-wrap gap-1 align-items-center mb-2" style="font-size:0.72rem;">
                                 @if (p.EsVegetariano)
                                 {
-                                    <span style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:4px;padding:1px 5px;font-weight:700;">🌱 Vegetariano</span>
+                                    <span style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:4px;padding:1px 5px;font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Vegetariano</span>
                                 }
                                 @if (p.EsLibreGluten)
                                 {
-                                    <span style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;border-radius:4px;padding:1px 5px;font-weight:700;">🌾 Sin Gluten</span>
+                                    <span style="background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;border-radius:4px;padding:1px 5px;font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z"/></svg>Sin Gluten</span>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(p.Alergenos))
                                 {
-                                    <span style="color:#B45309;font-weight:600;" title="Contiene: @p.Alergenos">⚠️ @p.Alergenos</span>
+                                    <span style="color:#B45309;font-weight:600;" title="Contiene: @p.Alergenos"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>@p.Alergenos</span>
                                 }
                             </div>
 

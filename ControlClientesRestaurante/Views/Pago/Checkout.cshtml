@@ -615,7 +615,7 @@
                     <!-- 1. PANE TARJETA DIRECTA -->
                     <div class="method-pane" id="paneTarjeta">
                         <button type="button" class="btn-fill-demo" onclick="demoLlenarTarjeta()">
-                            🪄 Llenar datos de tarjeta demo (1 clic)
+                            <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>Llenar datos de tarjeta demo (1 clic)
                         </button>
 
                         <!-- Tarjeta interactiva en vivo -->
@@ -683,7 +683,7 @@
                                     </div>
                                 </div>
                                 <button type="button" class="btn-fill-demo" onclick="demoLlenarNequi()" style="margin:0;background:rgba(255,39,114,0.2);border-color:#FF2772;color:#FFF;">
-                                    🪄 Llenar comprobante demo Nequi
+                                    <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>Llenar comprobante demo Nequi
                                 </button>
                             </div>
 
@@ -788,7 +788,7 @@
                                     </div>
                                 </div>
                                 <button type="button" class="btn-fill-demo" onclick="demoLlenarPSE()" style="margin:0;background:rgba(255,204,0,0.2);border-color:#FFCC00;color:#FFF;">
-                                    🪄 Llenar comprobante demo Bancolombia
+                                    <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>Llenar comprobante demo Bancolombia
                                 </button>
                             </div>
 
@@ -883,7 +883,7 @@
                                     </div>
                                 </div>
                                 <button type="button" class="btn-fill-demo" onclick="demoLlenarDaviplata()" style="margin:0;background:rgba(255,255,255,0.2);border-color:#FFF;color:#FFF;">
-                                    🪄 Llenar comprobante demo Daviplata
+                                    <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>Llenar comprobante demo Daviplata
                                 </button>
                             </div>
 
@@ -1142,7 +1142,7 @@
         if (navigator.clipboard) {
             navigator.clipboard.writeText(texto).then(function() {
                 var originalHtml = btn.innerHTML;
-                btn.innerHTML = '✅ Copiado!';
+                btn.innerHTML = '<svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Copiado!';
                 btn.style.filter = 'brightness(1.2)';
                 setTimeout(function() {
                     btn.innerHTML = originalHtml;
@@ -1164,7 +1164,7 @@
         document.execCommand('copy');
         document.body.removeChild(temp);
         var originalHtml = btn.innerHTML;
-        btn.innerHTML = '✅ Copiado!';
+        btn.innerHTML = '<svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Copiado!';
         setTimeout(function() {
             btn.innerHTML = originalHtml;
         }, 2200);

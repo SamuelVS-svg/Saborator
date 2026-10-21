@@ -184,14 +184,14 @@
             </p>
 
             <div class="otp-channel-badge" id="channelBadge">
-                <span>@(canal == "SMS" ? "📱 Código enviado por SMS al celular:" : "💬 Código enviado por WhatsApp al celular:")</span>
+                @Html.Raw(canal == "SMS" ? "<svg class=\"ico\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"vertical-align:-.15em;margin-right:.35em;flex:none\"><rect x=\"5\" y=\"2\" width=\"14\" height=\"20\" rx=\"2\"/><line x1=\"12\" y1=\"18\" x2=\"12.01\" y2=\"18\"/></svg>" : "<svg class=\"ico\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"vertical-align:-.15em;margin-right:.35em;flex:none\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg>")<span>@(canal == "SMS" ? "Código enviado por SMS al celular:" : "Código enviado por WhatsApp al celular:")</span>
                 <strong>+57 @telefono</strong>
             </div>
 
             @if (!string.IsNullOrEmpty(email))
             {
                 <div class="otp-email-sub">
-                    ✉️ También enviamos una copia a: <strong>@email</strong>
+                    <svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>También enviamos una copia a: <strong>@email</strong>
                 </div>
             }
 

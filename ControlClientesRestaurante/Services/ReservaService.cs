@@ -191,7 +191,7 @@ namespace ControlClientesRestaurante.Services
             // Registrar aviso en el sistema para Admin / Mesero / Cajero
             lock (_lockAvisos)
             {
-                _ultimosAvisos.Insert(0, $"✨ ¡Nueva reserva {codigo}! Mesa #{numeroMesa} para {nombreCliente} ({personas} pers.) el {fecha:dd/MM} a las {hora}.");
+                _ultimosAvisos.Insert(0, $"¡Nueva reserva {codigo}! Mesa #{numeroMesa} para {nombreCliente} ({personas} pers.) el {fecha:dd/MM} a las {hora}.");
                 if (_ultimosAvisos.Count > 20) _ultimosAvisos.RemoveAt(_ultimosAvisos.Count - 1);
             }
 
@@ -221,7 +221,7 @@ namespace ControlClientesRestaurante.Services
 
             lock (_lockAvisos)
             {
-                _ultimosAvisos.Insert(0, $"⚠️ Reserva {res.Codigo} cancelada (Mesa #{res.NumeroMesa}).");
+                _ultimosAvisos.Insert(0, $"Reserva {res.Codigo} cancelada (Mesa #{res.NumeroMesa}).");
             }
 
             return (true, $"Reserva {res.Codigo} cancelada.");

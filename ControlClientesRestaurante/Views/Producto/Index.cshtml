@@ -90,7 +90,7 @@ else
                                 </span>
                                 @if (p.TiempoCoccionMinutos > 0)
                                 {
-                                    <span style="margin-left:4px;">⏱️ @p.TiempoCoccionMinutos min</span>
+                                    <span style="margin-left:4px;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>@p.TiempoCoccionMinutos min</span>
                                 }
                             </div>
                         </td>
@@ -98,17 +98,17 @@ else
                             <div class="d-flex flex-wrap gap-1 align-items-center">
                                 @if (p.EsVegetariano)
                                 {
-                                    <span style="font-size:0.7rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:4px;padding:1px 6px;font-weight:700;">🌱 Vegetariano</span>
+                                    <span style="font-size:0.7rem;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:4px;padding:1px 6px;font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Vegetariano</span>
                                 }
                                 @if (p.EsLibreGluten)
                                 {
-                                    <span style="font-size:0.7rem;background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;border-radius:4px;padding:1px 6px;font-weight:700;">🌾 Sin TACC</span>
+                                    <span style="font-size:0.7rem;background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE;border-radius:4px;padding:1px 6px;font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M2 22 16 8"/><path d="M3.47 12.53 5 11l1.53 1.53a3.5 3.5 0 0 1 0 4.94L5 19l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M7.47 8.53 9 7l1.53 1.53a3.5 3.5 0 0 1 0 4.94L9 15l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M11.47 4.53 13 3l1.53 1.53a3.5 3.5 0 0 1 0 4.94L13 11l-1.53-1.53a3.5 3.5 0 0 1 0-4.94Z"/><path d="M20 2h2v2a4 4 0 0 1-4 4h-2V6a4 4 0 0 1 4-4Z"/></svg>Sin TACC</span>
                                 }
                             </div>
                             <div style="font-size:0.78rem;color:var(--c-muted);margin-top:3px;">
                                 @if (!string.IsNullOrWhiteSpace(p.Alergenos))
                                 {
-                                    <span style="color:#B45309;font-weight:600;">⚠️ Alérgenos: @p.Alergenos</span>
+                                    <span style="color:#B45309;font-weight:600;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alérgenos: @p.Alergenos</span>
                                 }
                                 else
                                 {

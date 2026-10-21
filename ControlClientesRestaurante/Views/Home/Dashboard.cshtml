@@ -257,7 +257,7 @@
                                 <span class="v12-bento-metric-lbl">Domicilios entregados</span>
                             </div>
                             <div class="v12-bento-metric-col">
-                                <span class="v12-bento-metric-val">@(statsResenas.TotalResenas > 0 ? $"{statsResenas.Promedio:0.0} ★" : "—")</span>
+                                <span class="v12-bento-metric-val">@(statsResenas.TotalResenas > 0 ? $"{statsResenas.Promedio:0.0}" : "—")@if (statsResenas.TotalResenas > 0) {<svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.12em;margin-left:.3em"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>}</span>
                                 <span class="v12-bento-metric-lbl">Reseñas Clientes</span>
                             </div>
                         </div>

@@ -413,11 +413,11 @@ else
             conn.on('RepartoActualizado', function (d) {
                 if (!d) return;
                 if (d.evento === 'Listo' && !d.repartidor)
-                    avisarYRecargar('🛵 Nuevo domicilio listo para recoger: ' + d.numero + (d.barrio ? ' (' + d.barrio + ')' : ''), true);
+                    avisarYRecargar('Nuevo domicilio listo para recoger: ' + d.numero + (d.barrio ? ' (' + d.barrio + ')' : ''), true);
                 else if (d.evento === 'Asignado' && d.repartidor === miUsuario)
-                    avisarYRecargar('📋 Te asignaron el pedido ' + d.numero, true);
+                    avisarYRecargar('Te asignaron el pedido ' + d.numero, true);
                 else if (d.evento === 'Listo' && d.repartidor === miUsuario)
-                    avisarYRecargar('✅ Tu pedido ' + d.numero + ' está listo para recoger', true);
+                    avisarYRecargar('Tu pedido ' + d.numero + ' está listo para recoger', true);
                 else if ((d.evento === 'EnCamino' || d.evento === 'Asignado') && d.repartidor !== miUsuario)
                     avisarYRecargar('Pedido ' + d.numero + ' tomado por otro domiciliario', false);
             });
