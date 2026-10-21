@@ -138,7 +138,7 @@
                 </div>
 
                 <!-- Tarjeta de Ruta Google Maps desde la Sede -->
-                <div class="tracker-dispatch-box" style="background:var(--surface-2, #FAF6F0);border:1.5px solid var(--line, #E2D7C8);border-radius:12px;padding:1rem;margin:1rem 0;">
+                <div class="tracker-dispatch-box" id="rutaCaja" @(estado == "EnCamino" ? "" : "hidden") style="background:var(--surface-2, #FAF6F0);border:1.5px solid var(--line, #E2D7C8);border-radius:12px;padding:1rem;margin:1rem 0;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.5rem;">
                         <span style="font-size:0.78rem;font-weight:800;color:var(--brand);text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
@@ -341,6 +341,7 @@
 <!-- Estilos del Tracker -->
 <style>
     /* Simulación de la ruta del domiciliario */
+    #rutaCaja[hidden] { display: none !important; }
     .ruta-mapa { border-radius: 8px; overflow: hidden; border: 1px solid var(--line, #E2D7C8); background: #EFE8DD; }
     .ruta-mapa svg { display: block; width: 100%; height: auto; }
     .ruta-pie { display: flex; align-items: center; gap: .6rem; margin-top: .6rem; font-size: .8rem; font-weight: 700; color: var(--text, #3C2A20); }
@@ -640,7 +641,19 @@
         if (barra) barra.style.width = Math.round(frac * 100) + '%';
     }
 
+    let rutaCerrarTimer = null;
     function rutaEstado() {
+        // El recuadro solo existe mientras el domiciliario va en camino; al entregar se despide y se oculta
+        const caja = document.getElementById('rutaCaja');
+        if (caja) {
+            if (estadoActual === 'EnCamino') {
+                if (rutaCerrarTimer) { clearTimeout(rutaCerrarTimer); rutaCerrarTimer = null; }
+                caja.hidden = false;
+            } else if (!caja.hidden && !rutaCerrarTimer) {
+                const entregado = estadoActual === 'Entregado' || estadoActual === 'Facturado';
+                rutaCerrarTimer = setTimeout(function () { caja.hidden = true; rutaCerrarTimer = null; }, entregado ? 4000 : 0);
+            }
+        }
         const aviso = document.getElementById('rutaAviso');
         const texto = document.getElementById('rutaTexto');
         const pulso = document.getElementById('rutaPulso');
