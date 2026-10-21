@@ -94,6 +94,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── EXPORTAR HISTORIAL DE ARQUEOS A EXCEL (CSV UTF-8) ───────────────
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult ExportarHistorialTurnosCsv()
         {
             var historial = _cajaService.ObtenerHistorialTurnos(limite: 200);

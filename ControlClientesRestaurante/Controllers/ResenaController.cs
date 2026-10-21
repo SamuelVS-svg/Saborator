@@ -17,7 +17,7 @@ namespace ControlClientesRestaurante.Controllers
         }
 
         private string Rol() => User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? HttpContext.Session.GetString("Rol") ?? "";
-        private bool EsAdminOCajero() => User.IsInRole("Administrador") || User.IsInRole("Cajero") || Rol() == "Administrador" || Rol() == "Cajero";
+        private bool EsAdminOCajero() => EsAdmin();
         private bool EsAdmin() => User.IsInRole("Administrador") || Rol() == "Administrador";
 
         // GET: /Resena
@@ -115,7 +115,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // POST: /Resena/CambiarAprobacion
         [HttpPost]
-        [Authorize(Roles = "Administrador,Cajero")]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public IActionResult CambiarAprobacion(int id, bool aprobada)
         {

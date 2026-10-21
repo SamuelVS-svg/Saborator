@@ -209,7 +209,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Cambiar Estado de Reserva (Staff: Confirmada, Completada, No Asistió) ──
         [HttpPost]
-        [Authorize(Roles = "Administrador,Mesero,Cajero")]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public IActionResult CambiarEstado(int id, string nuevoEstado)
         {
@@ -222,7 +222,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Panel Administrativo de Reservas con Filtros (Staff) ───────────
         [HttpGet]
-        [Authorize(Roles = "Administrador,Mesero,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Admin(string? filtro = "hoy", DateTime? fecha = null, string? estado = null, string? buscar = null)
         {
             var reservas = _reservaService.ObtenerTodas();
@@ -284,7 +284,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── Exportar Reporte de Reservas a Excel (CSV UTF-8) ───────────────
         [HttpGet]
-        [Authorize(Roles = "Administrador,Mesero,Cajero")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult ExportarCsv(string? filtro = null, DateTime? fecha = null, string? estado = null, string? buscar = null)
         {
             var reservas = _reservaService.ObtenerTodas();

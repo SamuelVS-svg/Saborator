@@ -87,6 +87,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── EXPORTAR REPORTE RESUMIDO A EXCEL (CSV UTF-8) ───────────────────
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult ExportarCsv(DateTime? desde = null, DateTime? hasta = null, string? buscar = null, string? cajero = null)
         {
             var facturas = _facturaService.ObtenerTodas();
@@ -135,6 +136,7 @@ namespace ControlClientesRestaurante.Controllers
 
         // ── EXPORTAR REPORTE DETALLADO POR PRODUCTO (CSV UTF-8) ─────────────
         [HttpGet]
+        [Authorize(Roles = "Administrador")]
         public IActionResult ExportarDetalladoCsv(DateTime? desde = null, DateTime? hasta = null, string? buscar = null, string? cajero = null)
         {
             var facturas = _facturaService.ObtenerTodas();

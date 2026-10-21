@@ -4,7 +4,7 @@ using ControlClientesRestaurante.Services;
 
 namespace ControlClientesRestaurante.Controllers
 {
-    [Authorize(Roles = "Administrador,Cajero,Mesero")]
+    [Authorize(Roles = "Administrador,Mesero")]
     public class MesaController : Controller
     {
         private readonly MesaService _mesaService;
