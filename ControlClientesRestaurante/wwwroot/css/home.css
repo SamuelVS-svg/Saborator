@@ -47,8 +47,8 @@
     flex-shrink: 0;
 }
 .lnav-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     background: var(--brand-soft, rgba(107, 30, 46, 0.1));
     color: var(--brand, #6B1E2E);
     border: 1px solid rgba(107, 30, 46, 0.2);
@@ -60,27 +60,15 @@
     transition: transform 160ms var(--ease);
 }
 .lnav-brand:hover .lnav-icon { transform: scale(1.05); }
-.lnav-icon svg { width: 22px; height: 20px; fill: currentColor; }
-.lnav-text { display: flex; flex-direction: column; }
+.lnav-icon svg { width: 20px; height: 18px; fill: currentColor; }
 .lnav-name {
-    font-family: var(--font-serif, 'Instrument Serif', Georgia, serif);
-    font-size: 1.3rem;
-    font-weight: 400;
-    font-style: italic;
-    color: var(--text, #1C1416);
-    letter-spacing: -0.005em;
-    line-height: 1;
-}
-.lnav-sub {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: #9A6B14;
+    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-size: 1.5rem;
     font-weight: 700;
-    line-height: 1;
-    margin-top: 4px;
+    color: var(--text, #1C1416);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
-[data-theme="dark"] .lnav-sub { color: var(--gold, #C8973A); }
 .lnav-menu-links {
     display: flex !important;
     align-items: center !important;
@@ -175,6 +163,7 @@
         font-size: 0.78rem !important;
     }
     .lnav-brand { gap: 0.5rem; }
+    .lnav-name { font-size: 1.35rem; }
 }
 
 /* Nav botones */
@@ -953,7 +942,7 @@
         gap: 0.5rem;
     }
     .lnav-name {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         line-height: 1;
         min-width: 0;
         overflow: hidden;
