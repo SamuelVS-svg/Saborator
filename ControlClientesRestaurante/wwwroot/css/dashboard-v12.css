@@ -910,65 +910,6 @@
     color: var(--amber);
 }
 
-/* ── 8. BARRA DE NAVEGACIÓN FLOTANTE TIPO PÍLDORA (DOCK INFERIOR) ────────── */
-.v12-pill-dock {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 90;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.65rem;
-    background: rgba(255, 253, 249, 0.78);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
-    border: 1px solid rgba(227, 216, 200, 0.8);
-    border-radius: 9999px;
-    box-shadow: 0 10px 30px -4px rgba(28, 20, 22, 0.12), 0 20px 48px -10px rgba(28, 20, 22, 0.08);
-    transition: transform 200ms ease, box-shadow 200ms ease;
-}
-
-:root[data-theme="dark"] .v12-pill-dock {
-    background: rgba(30, 24, 26, 0.82);
-    border: 1px solid rgba(58, 46, 49, 0.8);
-    box-shadow: 0 10px 36px -4px rgba(0, 0, 0, 0.6), 0 20px 50px -10px rgba(0, 0, 0, 0.7);
-}
-
-.v12-dock-item {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.5rem 0.95rem;
-    border-radius: 9999px;
-    color: var(--muted);
-    font-size: 0.82rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background 200ms ease, color 200ms ease, transform 180ms ease;
-}
-
-.v12-dock-item:hover {
-    color: var(--text);
-    background: rgba(107, 30, 46, 0.08);
-    transform: translateY(-2px);
-}
-
-:root[data-theme="dark"] .v12-dock-item:hover {
-    background: rgba(178, 71, 92, 0.16);
-}
-
-.v12-dock-item.active {
-    background: var(--brand);
-    color: var(--on-brand);
-    box-shadow: 0 4px 14px rgba(107, 30, 46, 0.35);
-}
-
-:root[data-theme="dark"] .v12-dock-item.active {
-    box-shadow: 0 4px 16px rgba(178, 71, 92, 0.45);
-}
-
 /* ── ANIMACIONES ESCALONADAS (FRAMER-MOTION STYLE) ───────────────────────── */
 @keyframes v12FadeSlideUp {
     0% {
@@ -999,7 +940,6 @@
     .glass-card,
     .glass-card-hover,
     .v12-bento-hero,
-    .v12-pill-dock,
     .v12-nav-btn {
         animation: none !important;
         transition: none !important;
@@ -1049,8 +989,5 @@
     }
     .v12-header-center {
         max-width: 100%;
-    }
-    .v12-dock-item span {
-        display: none; /* Solo iconos en dock móvil */
     }
 }
