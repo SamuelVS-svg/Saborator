@@ -54,7 +54,7 @@ html, body {
 .sb-arrow {
     position: absolute;
     right: -13px;
-    top: 50%;
+    top: calc(var(--top-h) + 22px);   /* arriba, justo debajo del logo y sin tocarlo */
     transform: translateY(-50%);
     width: 26px;
     height: 26px;
