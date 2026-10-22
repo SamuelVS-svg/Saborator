@@ -180,6 +180,53 @@ namespace ControlClientesRestaurante.Tests
             Assert.True(svc.CambiarEstadoReserva(reserva.Id, "Completada").ok);
         }
 
+        [Fact]
+        public void Reserva_Reprogramar_AplicaLasReglasDelSalon()
+        {
+            CrearUsuario("ana");
+            var svc = Reservas();
+            var jueves = ProximoDia(DayOfWeek.Thursday);
+            var (_, _, reserva) = svc.CrearReserva("Ana", "300", null, 4, jueves, "19:00", 2, null, "ana");
+            var id = reserva!.Id;
+
+            Assert.False(svc.ReprogramarReserva(id, ProximoDia(DayOfWeek.Monday), "19:00").ok);      // lunes cerrado
+            Assert.False(svc.ReprogramarReserva(id, jueves, "19:15").ok);                            // no es hora de servicio
+            Assert.False(svc.ReprogramarReserva(id, DateTime.Today.AddDays(-1), "19:00").ok);        // pasado
+
+            var (ok, _) = svc.ReprogramarReserva(id, ProximoDia(DayOfWeek.Friday), "20:00");
+            Assert.True(ok);
+            var movida = svc.ObtenerPorId(id)!;
+            Assert.Equal(ProximoDia(DayOfWeek.Friday), movida.Fecha);
+            Assert.Equal("20:00", movida.Hora);
+            Assert.Equal(4, movida.NumeroMesa);                                                      // la mesa se conserva
+        }
+
+        [Fact]
+        public void Reserva_Reprogramar_NoChocaConOtraReservaDeLaMismaMesa_NiMueveCanceladas()
+        {
+            CrearUsuario("ana");
+            var svc = Reservas();
+            var dia = ProximoDia(DayOfWeek.Saturday);
+            var (_, _, a) = svc.CrearReserva("Ana", "300", null, 4, dia, "19:00", 2, null, "ana");
+            var (_, _, b) = svc.CrearReserva("Ana", "300", null, 4, dia, "20:00", 2, null, "ana");
+
+            Assert.False(svc.ReprogramarReserva(b!.Id, dia, "19:00").ok);                            // mesa 4 ya ocupada a las 19:00
+            Assert.True(svc.CancelarReserva(a!.Id, "ana", esStaff: true).ok);
+            Assert.True(svc.ReprogramarReserva(b.Id, dia, "19:00").ok);                              // cancelada = mesa libre
+            Assert.False(svc.ReprogramarReserva(a.Id, dia, "21:00").ok);                             // una cancelada no se mueve
+        }
+
+        [Fact]
+        public void Reserva_AplicarEstado_CancelarYOtrosEstados()
+        {
+            CrearUsuario("ana");
+            var svc = Reservas();
+            var (_, _, reserva) = svc.CrearReserva("Ana", "300", null, 4, ProximoDia(DayOfWeek.Sunday), "19:00", 2, null, "ana");
+            Assert.True(svc.AplicarEstado(reserva!.Id, "No Asistio", "admin").ok);
+            Assert.False(svc.AplicarEstado(reserva.Id, "Inventado", "admin").ok);
+            Assert.Equal(1, svc.ObtenerEnRango(reserva.Fecha, reserva.Fecha.AddDays(1)).Count);
+            Assert.Empty(svc.ObtenerEnRango(reserva.Fecha.AddDays(1), reserva.Fecha.AddDays(2)));
+        }
         // ══ FACTURACIÓN Y CAJA ════════════════════════════════════════════
 
         private Producto CrearProducto(decimal precio, int stock = 50)

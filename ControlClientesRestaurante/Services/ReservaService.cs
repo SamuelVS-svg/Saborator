@@ -246,6 +246,57 @@ namespace ControlClientesRestaurante.Services
             return (true, $"Reserva {res.Codigo} actualizada a '{nuevoEstado}'.");
         }
 
+        /// <summary>Horas en que el salón toma reservas (las mismas que ofrece el formulario público).</summary>
+        public static readonly string[] HorasReserva = { "12:30", "13:30", "14:30", "19:00", "20:00", "21:00", "22:00" };
+
+        /// <summary>Reservas cuyo día cae en [desde, hasta).</summary>
+        public List<Reserva> ObtenerEnRango(DateTime desde, DateTime hasta) =>
+            _reservaRepo.ObtenerTodas().Where(r => r.Fecha.Date >= desde.Date && r.Fecha.Date < hasta.Date).ToList();
+
+        /// <summary>
+        /// Mueve una reserva a otro día/hora (la mesa se conserva). Aplica las mismas reglas que al crearla:
+        /// lunes cerrado, horas del salón, nada en el pasado y la mesa no puede estar ya ocupada en ese horario.
+        /// </summary>
+        public (bool ok, string mensaje) ReprogramarReserva(int id, DateTime fecha, string hora)
+        {
+            var res = _reservaRepo.ObtenerPorId(id);
+            if (res == null) return (false, "Reserva no encontrada.");
+            if (!res.Estado.StartsWith("Confirmada"))
+                return (false, $"La reserva {res.Codigo} está '{res.Estado}' y ya no se puede mover.");
+
+            hora = (hora ?? "").Trim();
+            if (!HorasReserva.Contains(hora))
+                return (false, "Ese horario no es de servicio. Horas: " + string.Join(", ", HorasReserva) + ".");
+            if (fecha.Date < DateTime.Today)
+                return (false, "No se puede mover una reserva al pasado.");
+            if (fecha.DayOfWeek == DayOfWeek.Monday)
+                return (false, "Los lunes el restaurante está cerrado por mantenimiento. Elige otro día.");
+            if (!TimeSpan.TryParseExact(hora, @"hh\:mm", null, out var horaReserva))
+                return (false, "El horario seleccionado no es válido.");
+            if (fecha.Date == DateTime.Today && DateTime.Today.Add(horaReserva) <= DateTime.Now)
+                return (false, "Ese horario de hoy ya pasó. Elige una hora posterior.");
+
+            bool ocupada = _reservaRepo.ObtenerPorFecha(fecha).Any(r =>
+                r.Id != res.Id && r.NumeroMesa == res.NumeroMesa && r.Estado != "Cancelada" &&
+                string.Equals(r.Hora, hora, StringComparison.OrdinalIgnoreCase));
+            if (ocupada)
+                return (false, $"La mesa {res.NumeroMesa} ya está reservada el {fecha:dd/MM/yyyy} a las {hora}.");
+
+            res.Fecha = fecha.Date;
+            res.Hora = hora;
+            _reservaRepo.Actualizar(res);
+            _reservaRepo.GuardarCambios();
+
+            lock (_lockAvisos)
+            {
+                _ultimosAvisos.Insert(0, $"Reserva {res.Codigo} movida al {fecha:dd/MM} a las {hora} (Mesa #{res.NumeroMesa}).");
+            }
+            return (true, $"Reserva {res.Codigo} movida al {fecha:dd/MM/yyyy} a las {hora}.");
+        }
+
+        /// <summary>Cancelada usa la misma regla que el resto del panel; los demás estados van por CambiarEstadoReserva.</summary>
+        public (bool ok, string mensaje) AplicarEstado(int id, string nuevoEstado, string usuario) =>
+            nuevoEstado == "Cancelada" ? CancelarReserva(id, usuario, esStaff: true) : CambiarEstadoReserva(id, nuevoEstado);
         public void CompletarReserva(int id)
         {
             CambiarEstadoReserva(id, "Completada");

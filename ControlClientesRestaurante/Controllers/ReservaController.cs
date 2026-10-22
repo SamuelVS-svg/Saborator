@@ -26,17 +26,20 @@ namespace ControlClientesRestaurante.Controllers
         private readonly IUsuarioRepository _usuarioRepo;
         private readonly IClienteRepository _clienteRepo;
         private readonly IEmailService      _emailService;
+        private readonly IPedidoRepository  _pedidoRepo;
 
         public ReservaController(
             ReservaService reservaService,
             IUsuarioRepository usuarioRepo,
             IClienteRepository clienteRepo,
-            IEmailService emailService)
+            IEmailService emailService,
+            IPedidoRepository pedidoRepo)
         {
             _reservaService = reservaService;
             _usuarioRepo    = usuarioRepo;
             _clienteRepo    = clienteRepo;
             _emailService   = emailService;
+            _pedidoRepo     = pedidoRepo;
         }
 
         private string? UsuarioActual() => User.Identity?.Name ?? HttpContext.Session.GetString("Usuario");
@@ -296,6 +299,115 @@ namespace ControlClientesRestaurante.Controllers
             return View(reservas);
         }
 
+        // ── Calendario (Staff) ────────────────────────────────────────────
+        [HttpGet]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult Calendario()
+        {
+            ViewBag.HorasReserva = ReservaService.HorasReserva;
+            return View();
+        }
+
+        /// <summary>Eventos para FullCalendar: reservas (editables) y pedidos (solo lectura) del rango pedido.</summary>
+        [HttpGet]
+        [Authorize(Roles = "Administrador")]
+        public IActionResult EventosCalendario(DateTime start, DateTime end, bool reservas = true, bool pedidos = true)
+        {
+            // FullCalendar manda instantes ISO con zona; solo importa el día local
+            var desde = start.ToLocalTime().Date;
+            var hasta = end.ToLocalTime().Date;
+            var eventos = new List<object>();
+
+            if (reservas)
+            {
+                foreach (var r in _reservaService.ObtenerEnRango(desde, hasta))
+                {
+                    if (!TimeSpan.TryParseExact(r.Hora, @"hh\:mm", null, out var h)) h = TimeSpan.FromHours(19);
+                    var inicio = r.Fecha.Date.Add(h);
+                    bool activa = r.Estado.StartsWith("Confirmada");
+                    eventos.Add(new
+                    {
+                        id = $"r-{r.Id}",
+                        title = $"Mesa {r.NumeroMesa} · {r.NombreCliente} ({r.NumeroPersonas})",
+                        start = inicio.ToString("s"),
+                        end = inicio.AddMinutes(90).ToString("s"),
+                        classNames = new[] { "ev-reserva", "ev-" + ClaseEstado(r.Estado) },
+                        editable = activa && inicio >= DateTime.Today,
+                        extendedProps = new
+                        {
+                            tipo = "reserva", id = r.Id, codigo = r.Codigo, estado = r.Estado,
+                            mesa = r.NumeroMesa, personas = r.NumeroPersonas, cliente = r.NombreCliente,
+                            telefono = r.Telefono, notas = r.Notas
+                        }
+                    });
+                }
+            }
+
+            if (pedidos)
+            {
+                foreach (var p in _pedidoRepo.ObtenerTodos().Where(p => p.FechaCreacion.Date >= desde && p.FechaCreacion.Date < hasta))
+                {
+                    eventos.Add(new
+                    {
+                        id = $"p-{p.Id}",
+                        title = $"{p.Numero} · {(p.TipoEntrega == "Domicilio" ? "Domicilio" : p.TipoEntrega == "ParaLlevar" ? "Para llevar" : "Mesa " + p.Mesa)}",
+                        start = p.FechaCreacion.ToString("s"),
+                        end = p.FechaCreacion.AddMinutes(30).ToString("s"),
+                        classNames = new[] { "ev-pedido", "ev-ped-" + (p.Estado ?? "").ToLowerInvariant() },
+                        editable = false,
+                        extendedProps = new
+                        {
+                            tipo = "pedido", numero = p.Numero, estado = p.Estado, total = p.Total,
+                            entrega = p.TipoEntrega, cliente = p.NombreCliente
+                        }
+                    });
+                }
+            }
+
+            return Json(eventos);
+        }
+
+        private static string ClaseEstado(string estado) => estado switch
+        {
+            "Completada" => "completada",
+            "No Asistio" => "noasistio",
+            "Cancelada"  => "cancelada",
+            _            => "confirmada"      // Confirmada y Confirmada (Pagada)
+        };
+
+        public class MoverReservaDto { public int Id { get; set; } public DateTime Fecha { get; set; } public string Hora { get; set; } = ""; }
+        public class EstadoReservaDto { public int Id { get; set; } public string Estado { get; set; } = ""; }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Mover([FromBody] MoverReservaDto dto)
+        {
+            var (ok, mensaje) = _reservaService.ReprogramarReserva(dto.Id, dto.Fecha, dto.Hora);
+            return Json(new { ok, mensaje });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        [ValidateAntiForgeryToken]
+        public IActionResult EstadoJson([FromBody] EstadoReservaDto dto)
+        {
+            var (ok, mensaje) = _reservaService.AplicarEstado(dto.Id, dto.Estado, UsuarioActual() ?? "");
+            return Json(new { ok, mensaje });
+        }
+
+        /// <summary>Reserva tomada por el personal desde el calendario; pasa por las mismas reglas que la pública.</summary>
+        [HttpPost]
+        [Authorize(Roles = "Administrador")]
+        [ValidateAntiForgeryToken]
+        public IActionResult CrearManual([FromBody] NuevaReservaViewModel vm)
+        {
+            if (!ReservaService.HorasReserva.Contains((vm.Hora ?? "").Trim()))
+                return Json(new { ok = false, mensaje = "Ese horario no es de servicio." });
+            var (ok, mensaje, reserva) = _reservaService.CrearReserva(
+                vm.NombreCliente, vm.Telefono, vm.Correo, vm.NumeroMesa, vm.Fecha, vm.Hora, vm.NumeroPersonas, vm.Notas, null);
+            return Json(new { ok, mensaje, codigo = reserva?.Codigo });
+        }
         // ── Exportar Reporte de Reservas a Excel (CSV UTF-8) ───────────────
         [HttpGet]
         [Authorize(Roles = "Administrador")]

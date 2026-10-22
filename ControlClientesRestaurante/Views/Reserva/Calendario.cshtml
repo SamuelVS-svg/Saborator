@@ -1,0 +1,347 @@
+@{
+    ViewData["Title"] = "Calendario de Reservas";
+    Layout = "_Layout";
+    var horas = (string[])(ViewBag.HorasReserva ?? new string[0]);
+}
+
+@section Styles {
+<style>
+    /* FullCalendar tomando los colores de Saborator (claro y oscuro) */
+    #calendario {
+        --fc-border-color: var(--line);
+        --fc-page-bg-color: var(--surface);
+        --fc-neutral-bg-color: var(--surface-2, rgba(107,30,46,0.06));
+        --fc-today-bg-color: rgba(212,194,165,0.28);
+        --fc-non-business-color: rgba(107,30,46,0.07);
+        --fc-event-border-color: transparent;
+        --fc-button-bg-color: var(--brand);
+        --fc-button-border-color: var(--brand);
+        --fc-button-hover-bg-color: var(--brand);
+        --fc-button-hover-border-color: var(--brand);
+        --fc-button-active-bg-color: var(--gold);
+        --fc-button-active-border-color: var(--gold);
+        --fc-list-event-hover-bg-color: var(--surface-2, rgba(107,30,46,0.06));
+        color: var(--text);
+        font-family: inherit;
+    }
+    #calendario .fc-toolbar-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+    #calendario .fc-toolbar-title::first-letter { text-transform: uppercase; }
+    #calendario .fc-button { font-size: 0.8rem; font-weight: 700; text-transform: capitalize; border-radius: 8px; }
+    #calendario .fc-button-active, #calendario .fc-button-active:focus { color: #1C1416; }
+    #calendario .fc-button:focus { box-shadow: 0 0 0 3px rgba(107,30,46,0.25); }
+    #calendario .fc-col-header-cell-cushion, #calendario .fc-daygrid-day-number, #calendario .fc-timegrid-slot-label-cushion, #calendario .fc-list-day-text, #calendario .fc-list-day-side-text { color: var(--text); text-decoration: none; text-transform: capitalize; }
+    #calendario .fc-day-mon { background: repeating-linear-gradient(135deg, transparent 0 8px, rgba(107,30,46,0.06) 8px 16px); }
+    #calendario .fc-event { cursor: pointer; font-size: 0.74rem; border-radius: 6px; padding: 1px 4px; }
+    #calendario .fc-event-title, #calendario .fc-event-time { font-weight: 700; }
+
+    /* Mismos estados que la lista de reservas */
+    .ev-reserva.ev-confirmada { background: var(--brand); color: #fff; }
+    .ev-reserva.ev-completada { background: #2E7D52; color: #fff; }
+    .ev-reserva.ev-noasistio  { background: #B7791F; color: #fff; }
+    .ev-reserva.ev-cancelada  { background: #8A7F82; color: #fff; text-decoration: line-through; opacity: .7; }
+    .ev-pedido { background: var(--gold); color: #1C1416; border-left: 3px solid var(--brand); }
+    .ev-pedido.ev-ped-cancelado { opacity: .55; text-decoration: line-through; }
+    .ev-pedido.ev-ped-entregado, .ev-pedido.ev-ped-facturado { border-left-color: #2E7D52; }
+    .ev-pedido .fc-event-main { color: #1C1416; }
+
+    .cal-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card, 14px); padding: 1rem; box-shadow: var(--shadow-sm); }
+    .cal-toolbar { display: flex; flex-wrap: wrap; gap: .9rem 1.4rem; align-items: center; margin-bottom: .85rem; }
+    .cal-check { display: inline-flex; align-items: center; gap: .4rem; font-size: .84rem; font-weight: 700; color: var(--text); cursor: pointer; }
+    .cal-leyenda { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .76rem; color: var(--muted); }
+    .cal-leyenda i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+    .cal-resumen { margin-left: auto; font-size: .82rem; color: var(--muted); font-weight: 600; }
+    .cal-modal .modal-content { background: var(--surface); color: var(--text); border: 1px solid var(--line); border-radius: 14px; }
+    .cal-modal .modal-header, .cal-modal .modal-footer { border-color: var(--line); }
+    .cal-modal label { font-size: .78rem; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: .2rem; }
+    .cal-modal .form-control, .cal-modal .form-select { background: var(--surface); color: var(--text); border-color: var(--line); }
+    .cal-dato { display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-bottom: 1px dashed var(--line); font-size: .9rem; }
+    .cal-dato span:first-child { color: var(--muted); font-weight: 700; }
+    .cal-dato span:last-child { font-weight: 800; text-align: right; }
+    .cal-acciones { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .cal-ayuda { font-size: .78rem; color: var(--muted); margin-top: .75rem; }
+    @@media (max-width: 640px) { .cal-resumen { margin-left: 0; width: 100%; } #calendario .fc-toolbar { flex-direction: column; gap: .5rem; } }
+</style>
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+    <div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div>
+            <div class="pg-title">Calendario de Reservas &amp; Pedidos</div>
+            <div class="pg-sub">Arrastra una reserva para moverla, haz clic en un día para crear una y en un evento para gestionarla</div>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-controller="Reserva" asp-action="Admin" class="btn-ghost" style="padding:0.48rem 0.9rem;font-size:0.82rem;display:inline-flex;align-items:center;gap:0.4rem;">
+            <span>Ver como lista</span>
+        </a>
+    </div>
+</div>
+<hr class="div-gold" />
+
+<div class="cal-card">
+    <div class="cal-toolbar">
+        <label class="cal-check"><input type="checkbox" id="verReservas" checked /> Reservas</label>
+        <label class="cal-check"><input type="checkbox" id="verPedidos" checked /> Pedidos</label>
+        <div class="cal-leyenda">
+            <span><i style="background:var(--brand)"></i>Confirmada</span>
+            <span><i style="background:#2E7D52"></i>Completada</span>
+            <span><i style="background:#B7791F"></i>No asistió</span>
+            <span><i style="background:#8A7F82"></i>Cancelada</span>
+            <span><i style="background:var(--gold);border-left:3px solid var(--brand)"></i>Pedido</span>
+        </div>
+        <div class="cal-resumen" id="calResumen">Cargando…</div>
+    </div>
+    <div id="calendario"></div>
+    <div class="cal-ayuda">Los lunes el restaurante está cerrado (franja rayada). Las reservas solo se toman en las horas de servicio: @string.Join(", ", horas). Los pedidos se muestran a la hora en que se crearon y no se pueden mover.</div>
+</div>
+
+<div id="afTokenCalendario" hidden>@Html.AntiForgeryToken()</div>
+
+<!-- Detalle / gestión de una reserva -->
+<div class="modal fade cal-modal" id="modalReserva" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title" id="mrTitulo">Reserva</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+            <div class="modal-body">
+                <div id="mrDatos"></div>
+                <div class="cal-acciones" id="mrAcciones"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Crear reserva desde el calendario -->
+<div class="modal fade cal-modal" id="modalNueva" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" id="formNueva" autocomplete="off">
+            <div class="modal-header"><h5 class="modal-title">Nueva reserva</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button></div>
+            <div class="modal-body">
+                <div class="row g-2">
+                    <div class="col-7"><label for="nvFecha">Fecha</label><input type="date" class="form-control" id="nvFecha" required /></div>
+                    <div class="col-5">
+                        <label for="nvHora">Hora</label>
+                        <select class="form-select" id="nvHora" required>
+                            @foreach (var h in horas) { <option value="@h">@h</option> }
+                        </select>
+                    </div>
+                    <div class="col-12"><label for="nvNombre">Nombre</label><input type="text" class="form-control" id="nvNombre" maxlength="150" required /></div>
+                    <div class="col-6"><label for="nvTelefono">Teléfono</label><input type="tel" class="form-control" id="nvTelefono" maxlength="50" required /></div>
+                    <div class="col-6"><label for="nvPersonas">Personas</label><input type="number" class="form-control" id="nvPersonas" min="1" max="12" value="2" required /></div>
+                    <div class="col-12">
+                        <label for="nvMesa">Mesa disponible</label>
+                        <select class="form-select" id="nvMesa" required><option value="">Elige fecha y hora…</option></select>
+                    </div>
+                    <div class="col-12"><label for="nvNotas">Notas (opcional)</label><input type="text" class="form-control" id="nvNotas" maxlength="500" /></div>
+                </div>
+                <div class="text-danger small mt-2" id="nvError" hidden></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn-gold" id="nvGuardar">Guardar reserva</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script src="~/lib/fullcalendar/index.global.min.js"></script>
+<script src="~/lib/fullcalendar/es.global.min.js"></script>
+<script>
+(function () {
+    const HORAS = @Json.Serialize(horas);
+    const token = () => document.querySelector('#afTokenCalendario input[name="__RequestVerificationToken"]')?.value || '';
+    const aviso = (tipo, msg) => { if (typeof showToast === 'function') showToast(tipo, msg); else alert(msg); };
+    const pad = n => String(n).padStart(2, '0');
+    const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    const hm  = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+    const hoy = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+    const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const moneda = v => '$' + Number(v || 0).toLocaleString('es-CO') + ' COP';
+
+    async function post(url, datos) {
+        const r = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'RequestVerificationToken': token() },
+            body: JSON.stringify(datos)
+        });
+        if (!r.ok) throw new Error('Error ' + r.status);
+        return r.json();
+    }
+
+    // Reglas del salón, las mismas que valida el servidor: lunes cerrado, horas de servicio, nada en el pasado
+    function motivoNoPermitido(fecha, hora) {
+        if (fecha.getDay() === 1) return 'Los lunes el restaurante está cerrado por mantenimiento.';
+        if (HORAS.indexOf(hora) < 0) return 'Ese horario no es de servicio. Horas: ' + HORAS.join(', ') + '.';
+        const [h, m] = hora.split(':').map(Number);
+        const inicio = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate(), h, m);
+        if (inicio <= new Date()) return 'Ese horario ya pasó.';
+        return null;
+    }
+
+    const modalReserva = new bootstrap.Modal(document.getElementById('modalReserva'));
+    const modalNueva = new bootstrap.Modal(document.getElementById('modalNueva'));
+    let calendario;
+
+    calendario = new FullCalendar.Calendar(document.getElementById('calendario'), {
+        locale: 'es',
+        firstDay: 1,
+        initialView: window.innerWidth < 700 ? 'listWeek' : 'dayGridMonth',
+        height: 'auto',
+        nowIndicator: true,
+        navLinks: true,
+        dayMaxEvents: 3,
+        slotMinTime: '11:30:00',
+        slotMaxTime: '23:30:00',
+        slotDuration: '00:30:00',
+        snapDuration: '00:30:00',
+        allDaySlot: false,
+        eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        buttonText: { today: 'Hoy', month: 'Mes', week: 'Semana', day: 'Día', list: 'Lista' },
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek' },
+        businessHours: [
+            { daysOfWeek: [2, 3, 4], startTime: '12:00', endTime: '22:00' },
+            { daysOfWeek: [5, 6],    startTime: '12:00', endTime: '23:00' },
+            { daysOfWeek: [0],       startTime: '12:00', endTime: '21:30' }
+        ],
+        events: function (info, ok, fail) {
+            const q = new URLSearchParams({
+                start: info.start.toISOString(), end: info.end.toISOString(),
+                reservas: document.getElementById('verReservas').checked,
+                pedidos: document.getElementById('verPedidos').checked
+            });
+            fetch('/Reserva/EventosCalendario?' + q, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+                .then(ok).catch(e => { aviso('error', 'No se pudieron cargar los eventos del calendario.'); fail(e); });
+        },
+        eventsSet: function (evs) {
+            const r = evs.filter(e => e.extendedProps.tipo === 'reserva' && !e.classNames.includes('ev-cancelada')).length;   // las canceladas no cuentan
+            const p = evs.filter(e => e.extendedProps.tipo === 'pedido').length;
+            document.getElementById('calResumen').textContent = r + (r === 1 ? ' reserva' : ' reservas') + ' · ' + p + (p === 1 ? ' pedido' : ' pedidos');
+        },
+        // Arrastrar una reserva: solo a horas de servicio, nunca lunes ni pasado
+        eventAllow: function (drop, evento) {
+            if (evento.extendedProps.tipo !== 'reserva') return false;
+            return motivoNoPermitido(drop.start, hm(drop.start)) === null;
+        },
+        eventDrop: async function (info) {
+            const e = info.event;
+            try {
+                const r = await post('/Reserva/Mover', { id: e.extendedProps.id, fecha: ymd(e.start), hora: hm(e.start) });
+                aviso(r.ok ? 'success' : 'error', r.mensaje);
+                if (!r.ok) info.revert();
+                calendario.refetchEvents();
+            } catch (err) { info.revert(); aviso('error', 'No se pudo mover la reserva.'); }
+        },
+        dateClick: function (info) {
+            const fecha = info.date;
+            const hora = info.allDay ? '19:00' : hm(fecha);
+            const horaSel = HORAS.indexOf(hora) >= 0 ? hora : '19:00';
+            const motivo = motivoNoPermitido(fecha, horaSel);
+            if (motivo) { aviso('error', motivo); return; }
+            abrirNueva(fecha, horaSel);
+        },
+        eventClick: function (info) {
+            info.jsEvent.preventDefault();
+            const e = info.event, p = e.extendedProps;
+            if (p.tipo === 'pedido') abrirPedido(p); else abrirReserva(e);
+        }
+    });
+    calendario.render();
+    ['verReservas', 'verPedidos'].forEach(id => document.getElementById(id).addEventListener('change', () => calendario.refetchEvents()));
+
+    function fila(k, v) { return '<div class="cal-dato"><span>' + k + '</span><span>' + v + '</span></div>'; }
+
+    function abrirPedido(p) {
+        document.getElementById('mrTitulo').textContent = 'Pedido ' + p.numero;
+        document.getElementById('mrDatos').innerHTML =
+            fila('Estado', esc(p.estado)) + fila('Entrega', esc(p.entrega === 'Domicilio' ? 'Domicilio' : p.entrega === 'ParaLlevar' ? 'Para llevar' : 'En mesa')) +
+            fila('Cliente', esc(p.cliente || '—')) + fila('Total', moneda(p.total));
+        document.getElementById('mrAcciones').innerHTML =
+            '<a class="btn-gold" style="padding:.45rem .9rem;font-size:.82rem;" href="/Pedido/Seguimiento/' + encodeURIComponent(p.numero) + '">Ver seguimiento</a>';
+        modalReserva.show();
+    }
+
+    function abrirReserva(ev) {
+        const p = ev.extendedProps;
+        const activa = String(p.estado).indexOf('Confirmada') === 0;
+        document.getElementById('mrTitulo').textContent = 'Reserva ' + p.codigo;
+        document.getElementById('mrDatos').innerHTML =
+            fila('Estado', esc(p.estado)) + fila('Fecha', ev.start.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })) +
+            fila('Hora', hm(ev.start)) + fila('Mesa', '#' + p.mesa) + fila('Personas', p.personas) +
+            fila('Comensal', esc(p.cliente)) + fila('Teléfono', esc(p.telefono)) + (p.notas ? fila('Notas', esc(p.notas)) : '');
+        const tel = String(p.telefono).replace(/\D/g, '');
+        let h = '<a class="btn-ghost" style="padding:.45rem .9rem;font-size:.82rem;" target="_blank" rel="noopener" href="https://wa.me/' + (tel.length === 10 ? '57' + tel : tel) + '">WhatsApp</a>';
+        if (activa) {
+            h += '<button type="button" class="btn-gold" style="padding:.45rem .9rem;font-size:.82rem;" data-estado="Completada">Marcar completada</button>';
+            h += '<button type="button" class="btn-ghost" style="padding:.45rem .9rem;font-size:.82rem;" data-estado="No Asistio">No asistió</button>';
+            h += '<button type="button" class="btn-ghost" style="padding:.45rem .9rem;font-size:.82rem;color:var(--danger);" data-estado="Cancelada">Cancelar reserva</button>';
+        }
+        const cont = document.getElementById('mrAcciones');
+        cont.innerHTML = h;
+        cont.querySelectorAll('[data-estado]').forEach(b => b.addEventListener('click', async function () {
+            const nuevo = this.dataset.estado;
+            if (nuevo === 'Cancelada' && !confirm('¿Cancelar la reserva ' + p.codigo + '?')) return;
+            try {
+                const r = await post('/Reserva/EstadoJson', { id: p.id, estado: nuevo });
+                aviso(r.ok ? 'success' : 'error', r.mensaje);
+                if (r.ok) { modalReserva.hide(); calendario.refetchEvents(); }
+            } catch (e) { aviso('error', 'No se pudo actualizar la reserva.'); }
+        }));
+        modalReserva.show();
+    }
+
+    // ── Crear reserva ────────────────────────────────────────────────────
+    const f = id => document.getElementById(id);
+    function abrirNueva(fecha, hora) {
+        f('formNueva').reset();
+        f('nvFecha').value = ymd(fecha);
+        f('nvFecha').min = ymd(hoy());
+        f('nvHora').value = hora;
+        f('nvError').hidden = true;
+        cargarMesas();
+        modalNueva.show();
+    }
+    async function cargarMesas() {
+        const sel = f('nvMesa'), personas = parseInt(f('nvPersonas').value, 10) || 1;
+        const previa = sel.value;
+        sel.innerHTML = '<option value="">Buscando mesas…</option>';
+        try {
+            const r = await fetch('/Reserva/MesasDisponibles?fecha=' + f('nvFecha').value + '&hora=' + encodeURIComponent(f('nvHora').value));
+            const mesas = (await r.json()).filter(m => m.disponible && m.capacidad >= personas);
+            sel.innerHTML = mesas.length
+                ? '<option value="">Elige una mesa…</option>' + mesas.map(m => '<option value="' + m.numero + '">Mesa ' + m.numero + ' · ' + esc(m.zona) + ' (hasta ' + m.capacidad + ')</option>').join('')
+                : '<option value="">No hay mesas libres para ' + personas + ' personas</option>';
+            if (previa) sel.value = previa;
+        } catch (e) { sel.innerHTML = '<option value="">No se pudieron consultar las mesas</option>'; }
+    }
+    ['nvFecha', 'nvHora', 'nvPersonas'].forEach(id => f(id).addEventListener('change', () => {
+        const d = new Date(f('nvFecha').value + 'T00:00:00');
+        const err = f('nvError');
+        const motivo = f('nvFecha').value ? motivoNoPermitido(d, f('nvHora').value) : null;
+        err.hidden = !motivo; err.textContent = motivo || '';
+        if (!motivo) cargarMesas();
+    }));
+    f('formNueva').addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        const err = f('nvError'), btn = f('nvGuardar');
+        const d = new Date(f('nvFecha').value + 'T00:00:00');
+        const motivo = motivoNoPermitido(d, f('nvHora').value);
+        if (motivo) { err.textContent = motivo; err.hidden = false; return; }
+        btn.disabled = true;
+        try {
+            const r = await post('/Reserva/CrearManual', {
+                fecha: f('nvFecha').value, hora: f('nvHora').value, numeroMesa: parseInt(f('nvMesa').value, 10) || 0,
+                numeroPersonas: parseInt(f('nvPersonas').value, 10), nombreCliente: f('nvNombre').value.trim(),
+                telefono: f('nvTelefono').value.trim(), notas: f('nvNotas').value.trim() || null
+            });
+            if (r.ok) { aviso('success', r.mensaje); modalNueva.hide(); calendario.refetchEvents(); }
+            else { err.textContent = r.mensaje; err.hidden = false; }
+        } catch (e) { err.textContent = 'No se pudo guardar la reserva.'; err.hidden = false; }
+        finally { btn.disabled = false; }
+    });
+})();
+</script>
+}
