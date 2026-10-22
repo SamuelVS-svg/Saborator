@@ -46,6 +46,9 @@ namespace ControlClientesRestaurante.Services
             if (lineasValidas.Count == 0)
                 return (false, "La factura debe tener al menos un producto con cantidad mayor a cero.", null);
 
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return strategy.Execute<(bool, string, Factura?)>(() =>
+            {
             using var tx = _context.Database.BeginTransaction();
             try
             {
@@ -133,6 +136,7 @@ namespace ControlClientesRestaurante.Services
                 tx.Rollback();
                 return (false, $"Error al emitir factura: {ex.Message}", null);
             }
+            });
         }
 
         public static readonly string[] MetodosPagoCaja = { "Efectivo", "Tarjeta", "Nequi", "Daviplata", "PSE" };

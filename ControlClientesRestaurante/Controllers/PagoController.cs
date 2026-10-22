@@ -166,6 +166,7 @@ namespace ControlClientesRestaurante.Controllers
                 vm.Monto = pedido.Total;
                 vm.Concepto = $"Consumo Restaurante Saborator - Pedido {pedido.Numero}";
                 vm.NombreCliente = pedido.NombreCliente;
+                vm.Telefono = pedido.Telefono;
                 vm.Mesa = pedido.Mesa;
                 ViewBag.ReferenciaPago = pedido.Numero;
                 ViewBag.MontoEnCentavos = (long)(pedido.Total * 100);
@@ -582,7 +583,6 @@ namespace ControlClientesRestaurante.Controllers
                 }
 
                 // ── 3. OPERACIÓN ATÓMICA EN BASE DE DATOS (BEGIN TRANSACTION) ──────────────
-                await using var dbTx = await _context.Database.BeginTransactionAsync();
                 try
                 {
                     if (status == "APPROVED" && !string.IsNullOrWhiteSpace(reference))
@@ -674,7 +674,6 @@ namespace ControlClientesRestaurante.Controllers
                             }
 
                             await _context.SaveChangesAsync();
-                            await dbTx.CommitAsync();
 
                             // Envío de correo electrónico asíncrono no bloqueante
                             if (!string.IsNullOrWhiteSpace(customerEmail))
@@ -715,7 +714,6 @@ namespace ControlClientesRestaurante.Controllers
                             reserva.Estado = "Confirmada (Pagada)";
                             reserva.Notas = (reserva.Notas ?? "") + $" [Wompi Pagado: ${(monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Trx: {txId}]".Trim();
                             await _context.SaveChangesAsync();
-                            await dbTx.CommitAsync();
                             return Ok(new { status = "success", message = $"Reserva {reserva.Codigo} confirmada con éxito." });
                         }
                     }
@@ -727,13 +725,11 @@ namespace ControlClientesRestaurante.Controllers
                             trxFallida.Estado = "Rechazado";
                             trxFallida.DetalleMetodo = $"Transacción declinada por Wompi ({status})";
                             await _context.SaveChangesAsync();
-                            await dbTx.CommitAsync();
                         }
                     }
                 }
                 catch (Exception dbEx)
                 {
-                    await dbTx.RollbackAsync();
                     _logger.LogError(dbEx, "Webhook Wompi: fallo al registrar la transacción {TxId}", txId);
                     return StatusCode(500, new { error = "No se pudo registrar la transacción" });
                 }
@@ -944,14 +940,18 @@ namespace ControlClientesRestaurante.Controllers
             if (pedido.Estado == "Facturado") return null;
 
             var lineas = pedido.Lineas.Select(l => (l.ProductoId, l.Cantidad)).ToList();
-            var (ok, _, facturaCreada) = _facturaService.Emitir(
+            var (ok, mensaje, facturaCreada) = _facturaService.Emitir(
                 new Factura { ImpuestoPorcentaje = 0 }, lineas,
                 usuarioCajero: usuarioCajero,
                 clienteId: null,
                 nombreClienteLibre: pedido.NombreCliente,
                 descontarStock: false);
 
-            if (!ok || facturaCreada == null) return null;
+            if (!ok || facturaCreada == null)
+            {
+                _logger.LogError("No se pudo facturar el pedido {Pedido} tras el pago: {Mensaje}", pedido.Numero, mensaje);
+                return null;
+            }
 
             _pedidoService.MarcarFacturado(pedido.Id, facturaCreada.Id);
             if (int.TryParse(pedido.Mesa, out int numMesa))

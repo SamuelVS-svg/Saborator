@@ -262,7 +262,6 @@ namespace ControlClientesRestaurante.Controllers
             }
 
             ViewBag.EsAdminOCajero = EsAdminOCajero();
-            ViewBag.WompiPublicKey = _config["Wompi:PublicKey"] ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw";
             ViewBag.WompiCurrency  = _config["Wompi:Currency"] ?? "COP";
             return View(pedido);
         }
@@ -544,7 +543,6 @@ namespace ControlClientesRestaurante.Controllers
                 return View("Rastrear");
             }
 
-            ViewBag.WompiPublicKey = _config["Wompi:PublicKey"] ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw";
             ViewBag.WompiCurrency  = _config["Wompi:Currency"] ?? "COP";
             ViewBag.DatosPrivados  = PuedeVerDatosPrivados(pedido);
             return View(pedido);
