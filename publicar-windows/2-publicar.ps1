@@ -5,8 +5,9 @@ $ErrorActionPreference = "Stop"
 $raiz      = Split-Path -Parent $PSScriptRoot
 $proyecto  = Join-Path $raiz "ControlClientesRestaurante\ControlClientesRestaurante.csproj"
 $destino   = Join-Path $raiz "publicado"
+$ejecutablePublicado = Join-Path $destino "ControlClientesRestaurante.exe"   # solo se vigila la copia publicada, no tu desarrollo
 
-if (Get-Process -Name "ControlClientesRestaurante" -ErrorAction SilentlyContinue) {
+if (Get-Process -Name "ControlClientesRestaurante" -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $ejecutablePublicado }) {
     Write-Host "Saborator está en ejecución. Deténlo antes de publicar (cierra su ventana o el vigilante)." -ForegroundColor Red
     exit 1
 }

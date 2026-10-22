@@ -7,6 +7,7 @@
 
 $raiz       = Split-Path -Parent $PSScriptRoot
 $iniciar    = Join-Path $PSScriptRoot "3-iniciar-saborator.ps1"
+$ejecutablePublicado = Join-Path (Join-Path $raiz "publicado") "ControlClientesRestaurante.exe"   # solo se vigila la copia publicada, no tu desarrollo
 $registro   = Join-Path $PSScriptRoot "vigilante.log"
 $urlSalud   = "http://127.0.0.1:5107/salud"
 $fallos     = 0
@@ -19,7 +20,7 @@ function Escribir($texto) {
 }
 
 function Arrancar {
-    Get-Process -Name "ControlClientesRestaurante" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    Get-Process -Name "ControlClientesRestaurante" -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $ejecutablePublicado } | Stop-Process -Force -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 2
     $script:proceso = Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$iniciar`"" -WindowStyle Minimized -PassThru
     Escribir "Saborator iniciado (PID del lanzador $($script:proceso.Id)). Esperando a que responda..."
@@ -27,7 +28,7 @@ function Arrancar {
 }
 
 Escribir "Vigilante iniciado."
-if (-not (Get-Process -Name "ControlClientesRestaurante" -ErrorAction SilentlyContinue)) { Arrancar }
+if (-not (Get-Process -Name "ControlClientesRestaurante" -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $ejecutablePublicado })) { Arrancar }
 
 while ($true) {
     try {
