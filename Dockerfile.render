@@ -1,0 +1,19 @@
+# Imagen ligera para demostraciones en Render (sin el módulo React, que no forma parte del sitio principal).
+# El Dockerfile original sigue siendo el completo.
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY ControlClientesRestaurante/ControlClientesRestaurante.csproj ControlClientesRestaurante/
+RUN dotnet restore ControlClientesRestaurante/ControlClientesRestaurante.csproj
+COPY ControlClientesRestaurante/ ControlClientesRestaurante/
+RUN dotnet publish ControlClientesRestaurante/ControlClientesRestaurante.csproj -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+RUN mkdir -p /app/wwwroot/uploads/avatars /data
+COPY --from=build /app/publish .
+ENV ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_HTTP_PORTS="" \
+    SABORATOR_FORZAR_SQLITE=true \
+    SABORATOR_DATA_DIR=/data
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "ControlClientesRestaurante.dll"]

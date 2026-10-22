@@ -743,7 +743,11 @@ try
         var rolAdminId = db.Roles.First(r => r.NombreRol == "Administrador").Id;
         if (!db.Usuarios.Any(u => u.RolId == rolAdminId && u.Estado))
         {
-            var clave = GenerarClaveTemporal();
+            // SABORATOR_ADMIN_CLAVE_INICIAL permite fijar la clave inicial del administrador por variable de entorno
+            // (útil en hosting sin acceso a archivos). Debe tener 12 o más caracteres; se pide cambiarla al primer ingreso.
+            var claveFijada = Environment.GetEnvironmentVariable("SABORATOR_ADMIN_CLAVE_INICIAL");
+            bool usaClaveFijada = !string.IsNullOrWhiteSpace(claveFijada) && claveFijada.Trim().Length >= 12;
+            var clave = usaClaveFijada ? claveFijada!.Trim() : GenerarClaveTemporal();
             db.Usuarios.Add(new Usuario
             {
                 NombreUsuario = "admin",
@@ -752,12 +756,15 @@ try
                 DebeCambiarContraseña = true,
                 EmailVerificado = true
             });
-            nuevasClaves.Add($"admin\t{clave}");
+            if (usaClaveFijada)
+                Console.WriteLine("[Saborator] Administrador 'admin' creado con la clave de SABORATOR_ADMIN_CLAVE_INICIAL (se pedirá cambiarla).");
+            else
+                nuevasClaves.Add($"admin\t{clave}");
         }
 
+        db.SaveChanges();
         if (nuevasClaves.Count > 0)
         {
-            db.SaveChanges();
             var ruta = Path.Combine(AppContext.BaseDirectory, "credenciales-iniciales.txt");
             File.AppendAllText(ruta,
                 $"# {DateTime.Now:yyyy-MM-dd HH:mm} - claves temporales (usuario<TAB>clave). Se piden cambiar al primer ingreso. Borra este archivo despues de usarlas.{Environment.NewLine}" +
