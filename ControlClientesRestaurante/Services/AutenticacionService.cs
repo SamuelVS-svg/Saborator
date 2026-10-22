@@ -456,20 +456,6 @@ namespace ControlClientesRestaurante.Services
             }
             catch { passActualValida = false; }
 
-            if (!passActualValida)
-            {
-                var usuarioNorm = usuario.NombreUsuario.ToLower().Trim();
-                bool esPasswordClasica =
-                    (usuarioNorm == "admin" && (contrasenaActual == "admin123" || contrasenaActual == "Admin#Saborator2026!")) ||
-                    (usuarioNorm == "cajero" && (contrasenaActual == "cajero123" || contrasenaActual == "Cajero#Saborator2026!")) ||
-                    (usuarioNorm == "mesero" && (contrasenaActual == "mesero123" || contrasenaActual == "Mesero#Saborator2026!")) ||
-                    (usuarioNorm == "cocinero" && (contrasenaActual == "cocinero123" || contrasenaActual == "Cocinero#Saborator2026!"));
-
-                if (esPasswordClasica)
-                {
-                    passActualValida = true;
-                }
-            }
 
             if (!passActualValida)
                 return (false, "La contraseña actual es incorrecta.");
