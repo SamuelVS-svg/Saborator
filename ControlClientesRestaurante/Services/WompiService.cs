@@ -48,7 +48,9 @@ namespace ControlClientesRestaurante.Services
             // Para que el widget cargue y funcione sin quedarse congelado en desarrollo,
             // usamos llaves sandbox en localhost salvo que se fuerce producción por variable de entorno.
             bool forzarProd = string.Equals(Environment.GetEnvironmentVariable("WOMPI_FORCE_PROD"), "true", StringComparison.OrdinalIgnoreCase);
-            if (esLocal && !forzarProd)
+            // Si ya configuraste tus propias llaves de pruebas (pub_test_...), se respetan también en localhost
+            bool llavesDePruebasPropias = pubKey.StartsWith("pub_test_", StringComparison.Ordinal);
+            if (esLocal && !forzarProd && !llavesDePruebasPropias)
             {
                 pubKey = !string.IsNullOrWhiteSpace(_options.SandboxPublicKey) ? _options.SandboxPublicKey : "pub_test_Q5yDA9xoKdePium1amu0Bush320D4HfR";
                 // Las llaves privadas (aunque sean de pruebas) no van en el código: variable de entorno o appsettings
