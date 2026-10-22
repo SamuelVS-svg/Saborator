@@ -68,13 +68,16 @@ namespace ControlClientesRestaurante.Services
             bool simulacionActiva = string.Equals(Environment.GetEnvironmentVariable("WOMPI_PERMITIR_SIMULACION"), "true", StringComparison.OrdinalIgnoreCase)
                                     || _options.PermitirSimulacion
                                     || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Development", StringComparison.OrdinalIgnoreCase);
-            bool permitirSimulacion = simulacionActiva && string.Equals(ambiente, "sandbox", StringComparison.OrdinalIgnoreCase);
+            // WOMPI_MODO_DEMO=true: demostración pública sin llaves de pruebas. Fuerza el checkout simulado en cualquier entorno
+            // (nunca se abre el widget real, así que no hay cobros). Cualquiera podría "aprobar" pedidos: solo para demos.
+            bool modoDemo = string.Equals(Environment.GetEnvironmentVariable("WOMPI_MODO_DEMO"), "true", StringComparison.OrdinalIgnoreCase);
+            bool permitirSimulacion = modoDemo || (simulacionActiva && string.Equals(ambiente, "sandbox", StringComparison.OrdinalIgnoreCase));
 
             return new WompiSettings
             {
                 PermitirSimulacion = permitirSimulacion,
                 // Sin llaves de pruebas propias no hay widget real que abrir: se usa el checkout simulado
-                SimularPasarela = permitirSimulacion && !llavesDePruebasPropias,
+                SimularPasarela = modoDemo || (permitirSimulacion && !llavesDePruebasPropias),
                 PublicKey = pubKey,
                 PrivateKey = prvKey,
                 Environment = ambiente,

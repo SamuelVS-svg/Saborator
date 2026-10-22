@@ -25,3 +25,4 @@ publish/
 
 # Despliegue: secretos y respaldos
 deploy/oracle/.env
+paquete-portatil/
