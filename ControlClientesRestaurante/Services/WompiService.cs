@@ -34,7 +34,8 @@ namespace ControlClientesRestaurante.Services
             var envPublicKey = Environment.GetEnvironmentVariable("WOMPI_PUBLIC_KEY");
             var envPrivateKey = Environment.GetEnvironmentVariable("WOMPI_PRIVATE_KEY");
             var envIntegritySecret = Environment.GetEnvironmentVariable("WOMPI_INTEGRITY_SECRET");
-            var envEventSecret = Environment.GetEnvironmentVariable("WOMPI_EVENT_SECRET");
+            var envEventSecret = Environment.GetEnvironmentVariable("WOMPI_EVENTS_SECRET")
+                              ?? Environment.GetEnvironmentVariable("WOMPI_EVENT_SECRET");
             var envAmbiente = Environment.GetEnvironmentVariable("WOMPI_ENVIRONMENT");
 
             var pubKey = !string.IsNullOrWhiteSpace(envPublicKey) ? envPublicKey : _options.PublicKey;
@@ -55,8 +56,20 @@ namespace ControlClientesRestaurante.Services
                 ambiente = "sandbox";
             }
 
+            // Una llave de pruebas (pub_test_...) siempre opera contra la API sandbox, sin importar el entorno declarado
+            if (pubKey.StartsWith("pub_test_", StringComparison.Ordinal))
+            {
+                ambiente = "sandbox";
+            }
+
+            // La aprobación simulada (para demostraciones) solo existe en sandbox y solo si se activa de forma explícita
+            bool simulacionActiva = string.Equals(Environment.GetEnvironmentVariable("WOMPI_PERMITIR_SIMULACION"), "true", StringComparison.OrdinalIgnoreCase)
+                                    || _options.PermitirSimulacion;
+            bool permitirSimulacion = simulacionActiva && string.Equals(ambiente, "sandbox", StringComparison.OrdinalIgnoreCase);
+
             return new WompiSettings
             {
+                PermitirSimulacion = permitirSimulacion,
                 PublicKey = pubKey,
                 PrivateKey = prvKey,
                 Environment = ambiente,
@@ -74,6 +87,9 @@ namespace ControlClientesRestaurante.Services
 
             var config = ObtenerConfiguracion();
             var secreto = config.IntegritySecret ?? string.Empty;
+            // Sin secreto de integridad no se envía firma (el widget sandbox funciona sin ella si el comercio no la exige)
+            if (string.IsNullOrWhiteSpace(secreto))
+                return string.Empty;
 
             // Especificación oficial de Wompi:
             // SHA256(Referencia + MontoEnCentavos + Moneda + SecretoIntegridad)

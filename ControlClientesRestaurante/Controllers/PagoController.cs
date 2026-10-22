@@ -135,6 +135,7 @@ namespace ControlClientesRestaurante.Controllers
             ViewBag.WompiCurrency = wompiConfig.Currency;
             ViewBag.WompiEnv = wompiConfig.Environment;
             ViewBag.EsLocal = esLocal;
+            ViewBag.PermitirSimulacion = wompiConfig.PermitirSimulacion;
 
             var vm = new CheckoutRequestViewModel
             {
@@ -757,135 +758,264 @@ namespace ControlClientesRestaurante.Controllers
                 return RedirectToAction("MisPedidos", "Pedido");
             }
 
-            try
+            // El estado se confirma siempre contra la API de Wompi: jamás se da un pago por aprobado por defecto
+            var tx = await _wompiService.ConsultarTransaccionAsync(id);
+            if (tx == null)
             {
-                // Consultar estado oficial en la API de Wompi con la llave privada
-                var tx = await _wompiService.ConsultarTransaccionAsync(id);
-                string txStatus = tx?.Status ?? "APPROVED";
-                string? reference = tx?.Reference;
-                long amountInCents = tx?.AmountInCents ?? 0;
-                string paymentMethodType = tx?.PaymentMethodType ?? "Wompi Gateway";
-                string? customerEmail = tx?.CustomerEmail;
+                TempData["Error"] = "No pudimos confirmar el pago con Wompi en este momento. Si el cobro se realizó, se confirmará automáticamente en unos minutos.";
+                return RedirectToAction("MisPedidos", "Pedido");
+            }
 
-                if (txStatus == "APPROVED")
+            if (tx.Status != "APPROVED")
+            {
+                if (tx.Status is "DECLINED" or "ERROR" or "VOIDED")
+                    TempData["Error"] = $"La transacción #{id} no fue aprobada por Wompi ({tx.Status}).";
+                else
+                    TempData["Mensaje"] = $"La transacción #{id} está en estado {tx.Status}. Te confirmaremos cuando se apruebe.";
+                return RedirectToAction("MisPedidos", "Pedido");
+            }
+
+            string? reference = tx.Reference;
+            long amountInCents = tx.AmountInCents;
+            string paymentMethodType = tx.PaymentMethodType ?? "Wompi";
+            string? customerEmail = tx.CustomerEmail;
+
+            if (string.IsNullOrWhiteSpace(reference))
+            {
+                TempData["Error"] = "La transacción no trae una referencia válida.";
+                return RedirectToAction("MisPedidos", "Pedido");
+            }
+
+            var pedido = await BuscarPedidoPorReferenciaAsync(reference);
+            if (pedido != null)
+            {
+                if (!AccesoRecursos.PuedeVerPedido(User, HttpContext.Session, pedido))
                 {
-                    Pedido? pedido = null;
-                    if (!string.IsNullOrEmpty(reference))
-                    {
-                        if (reference.StartsWith("PED-", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var partes = reference.Split('-');
-                            var numBusqueda = partes.Length >= 2 ? $"{partes[0]}-{partes[1]}" : reference;
-                            pedido = await _context.Pedidos.Include(p => p.Lineas).FirstOrDefaultAsync(p => p.Numero == numBusqueda || p.Numero == reference);
-                        }
-                        else if (int.TryParse(reference, out int idPed))
-                            pedido = await _context.Pedidos.Include(p => p.Lineas).FirstOrDefaultAsync(p => p.Id == idPed);
-                        else
-                            pedido = await _context.Pedidos.Include(p => p.Lineas).FirstOrDefaultAsync(p => p.Numero == reference);
-                    }
-
-                    if (pedido == null)
-                    {
-                        pedido = await _context.Pedidos.Include(p => p.Lineas)
-                            .Where(p => p.Estado != "Facturado")
-                            .OrderByDescending(p => p.Id)
-                            .FirstOrDefaultAsync();
-                    }
-
-                    if (pedido != null)
-                    {
-                        string? numFacturaGenerada = null;
-                        if (pedido.Estado != "Facturado")
-                        {
-                            var lineas = pedido.Lineas.Select(l => (l.ProductoId, l.Cantidad)).ToList();
-                            var factura = new Factura { ImpuestoPorcentaje = 0 };
-                            var (ok, _, facturaCreada) = _facturaService.Emitir(
-                                factura, lineas,
-                                usuarioCajero: "Wompi_Widget",
-                                clienteId: null,
-                                nombreClienteLibre: pedido.NombreCliente,
-                                descontarStock: false);
-
-                            if (ok && facturaCreada != null)
-                            {
-                                numFacturaGenerada = facturaCreada.Numero;
-                                _pedidoService.MarcarFacturado(pedido.Id, facturaCreada.Id);
-                                if (int.TryParse(pedido.Mesa, out int numMesa))
-                                {
-                                    _mesaService.LiberarMesa(numMesa);
-                                }
-                            }
-                        }
-
-                        // Registrar transacción en base de datos si no existe
-                        var trxExistente = await _context.TransaccionesPago.FirstOrDefaultAsync(t => t.CodigoAprobacion == id || t.ReferenciaTransaccion == reference);
-                        if (trxExistente == null)
-                        {
-                            var nuevaTrx = new TransaccionPago
-                            {
-                                ReferenciaTransaccion = reference ?? ("WOMPI-" + id),
-                                CodigoAprobacion = id,
-                                TipoOrigen = "Pedido",
-                                OrigenId = pedido.Id,
-                                Monto = amountInCents > 0 ? (amountInCents / 100m) : pedido.Total,
-                                MetodoPago = $"Wompi ({paymentMethodType})",
-                                DetalleMetodo = $"Pago confirmado Wompi ID: {id}",
-                                NombreCliente = pedido.NombreCliente ?? "Cliente Gourmet",
-                                Correo = customerEmail,
-                                Telefono = pedido.Telefono,
-                                Concepto = $"Consumo Restaurante Saborator - Pedido {pedido.Numero}",
-                                NumeroPedido = pedido.Numero,
-                                NumeroFactura = numFacturaGenerada,
-                                Mesa = pedido.Mesa,
-                                Estado = "Aprobado",
-                                UsuarioRegistro = "Retorno_Wompi"
-                            };
-                            _context.TransaccionesPago.Add(nuevaTrx);
-                            await _context.SaveChangesAsync();
-                        }
-
-                        var comprobante = new ComprobantePagoViewModel
-                        {
-                            ReferenciaTransaccion = reference ?? ("WOMPI-" + id),
-                            CodigoAprobacion = id,
-                            FechaHora = DateTime.Now,
-                            Monto = amountInCents > 0 ? (amountInCents / 100m) : pedido.Total,
-                            MetodoPago = $"Wompi ({paymentMethodType})",
-                            DetalleMetodo = $"Transacción aprobada oficialmente por Wompi Bancolombia (ID: {id})",
-                            NombreCliente = pedido.NombreCliente ?? "Cliente Gourmet",
-                            Correo = customerEmail,
-                            Telefono = pedido.Telefono,
-                            Concepto = $"Consumo Restaurante Saborator - Pedido {pedido.Numero}",
-                            NumeroPedido = pedido.Numero,
-                            NumeroFactura = numFacturaGenerada,
-                            Mesa = pedido.Mesa,
-                            Items = pedido.Lineas.Select(l => new ItemResumenViewModel
-                            {
-                                Nombre = l.NombreProducto,
-                                Cantidad = l.Cantidad,
-                                Precio = l.PrecioUnitario
-                            }).ToList()
-                        };
-
-                        TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(comprobante);
-                        TempData["Mensaje"] = $"¡Pago de ${(comprobante.Monto).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} procesado y aprobado con éxito por Wompi!";
-                        return RedirectToAction("Comprobante");
-                    }
+                    TempData["Error"] = "No tienes permiso para ver este pago.";
+                    return RedirectToAction("Index", "Home");
                 }
-                else if (txStatus == "DECLINED")
+
+                long montoEsperado = (long)Math.Round(pedido.Total * 100m);
+                if (amountInCents != montoEsperado)
                 {
-                    TempData["Error"] = $"La transacción #{id} fue rechazada por la pasarela de pagos Wompi.";
+                    _logger.LogWarning("Retorno Wompi: monto {Recibido} distinto al esperado {Esperado} para el pedido {Pedido} (tx {TxId})",
+                        amountInCents, montoEsperado, pedido.Numero, id);
+                    TempData["Error"] = "El monto pagado no coincide con el total del pedido; nuestro equipo lo revisará.";
                     return RedirectToAction("MisPedidos", "Pedido");
                 }
-            }
-            catch
-            {
-                TempData["Mensaje"] = $"Transacción Wompi registrada: {id}.";
+
+                string? numFactura = FacturarPedidoPagado(pedido, "Wompi_Widget");
+                string metodo = $"Wompi ({paymentMethodType})";
+                await RegistrarTransaccionAprobadaAsync(reference, id, pedido, amountInCents / 100m, metodo,
+                    $"Pago confirmado Wompi ID: {id}", customerEmail, numFactura, "Retorno_Wompi");
+
+                var comprobante = ComprobanteDePedido(pedido, reference, id, amountInCents / 100m, metodo,
+                    $"Transacción aprobada oficialmente por Wompi (ID: {id})", customerEmail, numFactura);
+                TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(comprobante);
+                TempData["Mensaje"] = $"¡Pago de ${comprobante.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} aprobado por Wompi!";
+                return RedirectToAction("Comprobante");
             }
 
-            TempData["Mensaje"] = $"Transacción Wompi {id} procesada.";
+            var reserva = await _context.Reservas.Include(r => r.Usuario)
+                .FirstOrDefaultAsync(r => reference.StartsWith(r.Codigo));
+            if (reserva != null)
+            {
+                if (!AccesoRecursos.PuedeVerReserva(User, reserva))
+                {
+                    TempData["Error"] = "No tienes permiso para ver este pago.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                long depositoEsperado = (long)reserva.NumeroPersonas * 25000L * 100L;
+                if (amountInCents != depositoEsperado)
+                {
+                    _logger.LogWarning("Retorno Wompi: monto {Recibido} distinto al depósito esperado {Esperado} de la reserva {Reserva} (tx {TxId})",
+                        amountInCents, depositoEsperado, reserva.Codigo, id);
+                    TempData["Error"] = "El monto pagado no coincide con el depósito de la reserva; nuestro equipo lo revisará.";
+                    return RedirectToAction("MisReservas", "Reserva");
+                }
+
+                reserva.Estado = "Confirmada (Pagada)";
+                reserva.Notas = ((reserva.Notas ?? "") + $" [Wompi Pagado: ${(amountInCents / 100m).ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Trx: {id}]").Trim();
+                await _context.SaveChangesAsync();
+                TempData["Mensaje"] = $"¡Depósito aprobado! Tu reserva {reserva.Codigo} quedó confirmada.";
+                return RedirectToAction("MisReservas", "Reserva");
+            }
+
+            TempData["Mensaje"] = $"Transacción Wompi {id} aprobada. Si no ves el cambio, se reflejará en unos minutos.";
             return RedirectToAction("MisPedidos", "Pedido");
         }
+
+        // ── APROBACIÓN SIMULADA (SOLO DEMOSTRACIONES EN SANDBOX) ────────────────
+        // Respaldo por si falla la red con Wompi durante una presentación. No existe en producción:
+        // requiere llave de pruebas (sandbox) y WOMPI_PERMITIR_SIMULACION=true.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AprobarSimulado(string tipoOrigen, int? origenId)
+        {
+            bool esLocal = Request.Host.Host.Contains("localhost") || Request.Host.Host.Contains("127.0.0.1");
+            if (!_wompiService.ObtenerConfiguracion(esLocal).PermitirSimulacion)
+                return NotFound();
+
+            string refSim = "SIM-" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + Random.Shared.Next(100, 999);
+            const string metodo = "Simulado (demostración)";
+            const string detalle = "Aprobación simulada para demostración, sin cobro real";
+
+            if (string.Equals(tipoOrigen, "Pedido", StringComparison.OrdinalIgnoreCase) && origenId.HasValue)
+            {
+                var pedido = _pedidoService.ObtenerPorId(origenId.Value);
+                if (pedido == null || !AccesoRecursos.PuedeVerPedido(User, HttpContext.Session, pedido))
+                {
+                    TempData["Error"] = "No tienes permiso para pagar este pedido.";
+                    return RedirectToAction("Index", "Home");
+                }
+                if (pedido.Estado == "Facturado")
+                {
+                    TempData["Mensaje"] = "Este pedido ya se encuentra pagado y facturado.";
+                    return RedirectToAction("Detalle", "Pedido", new { id = pedido.Id });
+                }
+
+                string? numFactura = FacturarPedidoPagado(pedido, "Pago_Simulado");
+                await RegistrarTransaccionAprobadaAsync(refSim, "SIMULADO", pedido, pedido.Total, metodo, detalle,
+                    null, numFactura, UsuarioActual());
+
+                TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(
+                    ComprobanteDePedido(pedido, refSim, "SIMULADO", pedido.Total, metodo, detalle, null, numFactura));
+                TempData["Mensaje"] = "Pago simulado aprobado (modo demostración).";
+                return RedirectToAction("Comprobante");
+            }
+
+            if (string.Equals(tipoOrigen, "Reserva", StringComparison.OrdinalIgnoreCase) && origenId.HasValue)
+            {
+                var reserva = _reservaService.ObtenerPorId(origenId.Value);
+                if (reserva == null || !AccesoRecursos.PuedeVerReserva(User, reserva))
+                {
+                    TempData["Error"] = "No tienes permiso para pagar esta reserva.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                decimal deposito = reserva.NumeroPersonas * 25000m;
+                reserva.Estado = "Confirmada (Pagada)";
+                reserva.Notas = ((reserva.Notas ?? "") + $" [Depósito simulado (demostración): ${deposito.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Ref: {refSim}]").Trim();
+                _context.TransaccionesPago.Add(new TransaccionPago
+                {
+                    ReferenciaTransaccion = refSim,
+                    CodigoAprobacion = "SIMULADO",
+                    TipoOrigen = "Reserva",
+                    OrigenId = reserva.Id,
+                    Monto = deposito,
+                    MetodoPago = metodo,
+                    DetalleMetodo = detalle,
+                    NombreCliente = reserva.NombreCliente,
+                    Correo = reserva.Correo,
+                    Telefono = reserva.Telefono,
+                    Concepto = $"Depósito de Reserva Exclusiva #{reserva.Codigo}",
+                    CodigoReserva = reserva.Codigo,
+                    Mesa = reserva.NumeroMesa.ToString(),
+                    Estado = "Aprobado",
+                    UsuarioRegistro = UsuarioActual()
+                });
+                await _context.SaveChangesAsync();
+
+                TempData["Mensaje"] = $"Depósito simulado aprobado (modo demostración). Reserva {reserva.Codigo} confirmada.";
+                return RedirectToAction("MisReservas", "Reserva");
+            }
+
+            TempData["Error"] = "La aprobación simulada solo aplica a pedidos y reservas.";
+            return RedirectToAction("Checkout", new { tipo = tipoOrigen, id = origenId });
+        }
+
+        // ── AUXILIARES DE CONFIRMACIÓN DE PAGO ──────────────────────────────────
+        private async Task<Pedido?> BuscarPedidoPorReferenciaAsync(string reference)
+        {
+            var consulta = _context.Pedidos.Include(p => p.Lineas);
+            if (reference.StartsWith("PED-", StringComparison.OrdinalIgnoreCase))
+            {
+                var partes = reference.Split('-');
+                var numBusqueda = partes.Length >= 2 ? $"{partes[0]}-{partes[1]}" : reference;
+                return await consulta.FirstOrDefaultAsync(p => p.Numero == numBusqueda || p.Numero == reference);
+            }
+            return await consulta.FirstOrDefaultAsync(p => p.Numero == reference);
+        }
+
+        /// <summary>Emite la factura del pedido y libera su mesa. Devuelve el número de factura (null si ya estaba facturado).</summary>
+        private string? FacturarPedidoPagado(Pedido pedido, string usuarioCajero)
+        {
+            if (pedido.Estado == "Facturado") return null;
+
+            var lineas = pedido.Lineas.Select(l => (l.ProductoId, l.Cantidad)).ToList();
+            var (ok, _, facturaCreada) = _facturaService.Emitir(
+                new Factura { ImpuestoPorcentaje = 0 }, lineas,
+                usuarioCajero: usuarioCajero,
+                clienteId: null,
+                nombreClienteLibre: pedido.NombreCliente,
+                descontarStock: false);
+
+            if (!ok || facturaCreada == null) return null;
+
+            _pedidoService.MarcarFacturado(pedido.Id, facturaCreada.Id);
+            if (int.TryParse(pedido.Mesa, out int numMesa))
+            {
+                _mesaService.LiberarMesa(numMesa);
+            }
+            return facturaCreada.Numero;
+        }
+
+        /// <summary>Marca como aprobada la transacción pre-registrada (o crea una nueva) para conciliación contable.</summary>
+        private async Task RegistrarTransaccionAprobadaAsync(string referencia, string codigoAprobacion, Pedido pedido,
+            decimal monto, string metodo, string detalle, string? correo, string? numFactura, string usuario)
+        {
+            var trx = await _context.TransaccionesPago.FirstOrDefaultAsync(t => t.ReferenciaTransaccion == referencia);
+            if (trx == null)
+            {
+                trx = new TransaccionPago
+                {
+                    ReferenciaTransaccion = referencia,
+                    TipoOrigen = "Pedido",
+                    OrigenId = pedido.Id,
+                    NombreCliente = pedido.NombreCliente ?? "Cliente Saborator",
+                    Telefono = pedido.Telefono,
+                    Concepto = $"Consumo Restaurante Saborator - Pedido {pedido.Numero}",
+                    NumeroPedido = pedido.Numero,
+                    Mesa = pedido.Mesa,
+                    UsuarioRegistro = usuario
+                };
+                _context.TransaccionesPago.Add(trx);
+            }
+
+            trx.CodigoAprobacion = codigoAprobacion;
+            trx.Monto = monto;
+            trx.MetodoPago = metodo;
+            trx.DetalleMetodo = detalle;
+            trx.Correo = correo ?? trx.Correo;
+            trx.Estado = "Aprobado";
+            if (!string.IsNullOrEmpty(numFactura)) trx.NumeroFactura = numFactura;
+            await _context.SaveChangesAsync();
+        }
+
+        private static ComprobantePagoViewModel ComprobanteDePedido(Pedido pedido, string referencia, string codigo,
+            decimal monto, string metodo, string detalle, string? correo, string? numFactura) => new()
+        {
+            ReferenciaTransaccion = referencia,
+            CodigoAprobacion = codigo,
+            FechaHora = DateTime.Now,
+            Monto = monto,
+            MetodoPago = metodo,
+            DetalleMetodo = detalle,
+            NombreCliente = pedido.NombreCliente ?? "Cliente Saborator",
+            Correo = correo,
+            Telefono = pedido.Telefono,
+            Concepto = $"Consumo Restaurante Saborator - Pedido {pedido.Numero}",
+            NumeroPedido = pedido.Numero,
+            NumeroFactura = numFactura,
+            Mesa = pedido.Mesa,
+            Items = pedido.Lineas.Select(l => new ItemResumenViewModel
+            {
+                Nombre = l.NombreProducto,
+                Cantidad = l.Cantidad,
+                Precio = l.PrecioUnitario
+            }).ToList()
+        };
 
         // ── COMPROBANTE DIGITAL DE PAGO ───────────────────────────────────────
         [HttpGet]

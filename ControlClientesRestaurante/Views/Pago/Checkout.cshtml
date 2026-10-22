@@ -609,6 +609,19 @@
                                 </button>
                             </div>
 
+                            @if ((ViewBag.PermitirSimulacion as bool?) == true && Model.OrigenId.HasValue && (Model.TipoOrigen == "Pedido" || Model.TipoOrigen == "Reserva"))
+                            {
+                                <!-- Respaldo para demostraciones: solo existe en sandbox con WOMPI_PERMITIR_SIMULACION=true -->
+                                <div style="margin-top:1.25rem;border:1px dashed var(--brand,#6B1E2E);border-radius:10px;padding:0.9rem;text-align:center;">
+                                    <div style="font-size:0.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand,#6B1E2E);margin-bottom:0.35rem;">Modo demostración</div>
+                                    <p style="font-size:0.8rem;color:var(--muted,#6E5D53);margin:0 0 0.6rem;">Si falla la conexión con Wompi, puedes aprobar este pago de forma simulada. No se realiza ningún cobro real.</p>
+                                    <button type="button" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;"
+                                            onclick="var f=document.getElementById('formPasarela'); f.action='@Url.Action("AprobarSimulado", "Pago")'; f.submit();">
+                                        Aprobación manual / simulada
+                                    </button>
+                                </div>
+                            }
+
                         </div>
                     </div>
 
