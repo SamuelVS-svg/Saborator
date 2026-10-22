@@ -24,13 +24,13 @@ New-Item -ItemType Directory -Force -Path $Carpeta | Out-Null
 $archivo = Join-Path $Carpeta ("{0}_{1}.bak" -f $BaseDatos, (Get-Date -Format "yyyyMMdd_HHmmss"))
 
 Write-Host "Respaldando $BaseDatos en $archivo ..."
-sqlcmd -S $Servidor -E -b -Q "BACKUP DATABASE [$BaseDatos] TO DISK = N'$archivo' WITH INIT, CHECKSUM"
+sqlcmd -S $Servidor -E -C -b -Q "BACKUP DATABASE [$BaseDatos] TO DISK = N'$archivo' WITH INIT, CHECKSUM"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "El respaldo FALLÓ. No arranques la versión nueva hasta resolverlo." -ForegroundColor Red
     exit 1
 }
 
-sqlcmd -S $Servidor -E -b -Q "RESTORE VERIFYONLY FROM DISK = N'$archivo'"
+sqlcmd -S $Servidor -E -C -b -Q "RESTORE VERIFYONLY FROM DISK = N'$archivo'"
 if ($LASTEXITCODE -ne 0) {
     Write-Host "El archivo de respaldo no pasó la verificación." -ForegroundColor Red
     exit 1
