@@ -609,7 +609,7 @@
                                 </button>
                             </div>
 
-                            @if ((ViewBag.PermitirSimulacion as bool?) == true && Model.OrigenId.HasValue && (Model.TipoOrigen == "Pedido" || Model.TipoOrigen == "Reserva"))
+                            @if ((ViewBag.PermitirSimulacion as bool?) == true && (ViewBag.SimularWompi as bool?) != true && Model.OrigenId.HasValue && (Model.TipoOrigen == "Pedido" || Model.TipoOrigen == "Reserva"))
                             {
                                 <!-- Respaldo para demostraciones: solo existe en sandbox con WOMPI_PERMITIR_SIMULACION=true -->
                                 <div style="margin-top:1.25rem;border:1px dashed var(--brand,#6B1E2E);border-radius:10px;padding:0.9rem;text-align:center;">
@@ -1043,6 +1043,8 @@
     var watchdogTimer = null;
 
     async function ejecutarWidgetWompiCheckout() {
+        // Sin llaves reales de pruebas: se abre el checkout simulado de Wompi
+        if (window.SIMULAR_WOMPI) { abrirSimuladorWompi(); return; }
         var btn = document.getElementById('btnWompiLauncher');
         var btnTexto = document.getElementById('btnWompiTexto');
         var fallback = document.getElementById('wompiFallbackNotice');
@@ -1324,4 +1326,212 @@
         }
         return true;
     }
+</script>
+
+@* ══ CHECKOUT WOMPI SIMULADO (solo demostración, sin cobro real) ══════════════ *@
+<style>
+    .sw-backdrop { position: fixed; inset: 0; background: rgba(10, 27, 20, 0.72); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .sw-backdrop.open { display: flex; }
+    .sw-card { background: var(--surface, #FFFDF9); color: var(--text, #1C1416); width: 100%; max-width: 440px; max-height: 94vh; overflow-y: auto; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+    .sw-head { background: #0A1B14; color: #fff; padding: 1rem 1.25rem; border-radius: 18px 18px 0 0; display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
+    .sw-head b { font-size: 1.05rem; letter-spacing: .02em; }
+    .sw-head small { display: block; color: #00E5A3; font-weight: 700; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+    .sw-close { background: transparent; border: 0; color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer; }
+    .sw-body { padding: 1.1rem 1.25rem 1.3rem; }
+    .sw-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .9rem; font-weight: 800; }
+    .sw-total span:last-child { font-size: 1.35rem; color: #00805A; }
+    .sw-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-bottom: .9rem; }
+    .sw-tab { border: 1.5px solid var(--cream-line, #D4C6B2); background: transparent; color: inherit; border-radius: 10px; padding: .55rem .3rem; font-weight: 700; font-size: .82rem; cursor: pointer; }
+    .sw-tab.active { border-color: #00B37E; background: rgba(0, 229, 163, .14); color: #00805A; }
+    .sw-field { margin-bottom: .7rem; }
+    .sw-field label { display: block; font-size: .74rem; font-weight: 700; margin-bottom: .25rem; color: var(--muted, #6E5D53); }
+    .sw-field input, .sw-field select { width: 100%; padding: .6rem .7rem; border: 1.5px solid var(--cream-line, #D4C6B2); border-radius: 9px; background: var(--surface, #FFFDF9); color: inherit; font-size: .92rem; }
+    .sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+    .sw-hint { font-size: .74rem; color: var(--muted, #6E5D53); background: rgba(0, 229, 163, .08); border: 1px dashed #00B37E; border-radius: 9px; padding: .55rem .65rem; margin-bottom: .8rem; }
+    .sw-hint button { background: none; border: 0; padding: 0; color: #00805A; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: inherit; }
+    .sw-pay { width: 100%; margin-top: .4rem; padding: .8rem; border: 0; border-radius: 10px; font-weight: 900; font-size: 1rem; cursor: pointer; background: linear-gradient(135deg, #00E5A3, #00B37E); color: #0A1B14; }
+    .sw-pay:disabled { opacity: .6; cursor: default; }
+    .sw-err { color: #B42318; font-size: .8rem; font-weight: 700; margin: .2rem 0 .4rem; display: none; }
+    .sw-state { text-align: center; padding: 2rem 1rem; }
+    .sw-spin { width: 46px; height: 46px; border: 4px solid rgba(0, 179, 126, .25); border-top-color: #00B37E; border-radius: 50%; margin: 0 auto 1rem; animation: swspin .8s linear infinite; }
+    .sw-result-ico { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; color: #fff; }
+    @@keyframes swspin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="sw-backdrop" id="swBackdrop" role="dialog" aria-modal="true" aria-labelledby="swTitulo">
+    <div class="sw-card">
+        <div class="sw-head">
+            <div><b id="swTitulo">Wompi</b><small>Checkout de demostración &middot; sin cobro real</small></div>
+            <button type="button" class="sw-close" onclick="cerrarSimuladorWompi()" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="sw-body">
+            <div id="swFormulario">
+                <div class="sw-total"><span>Total a pagar</span><span>$@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span></div>
+
+                <div class="sw-tabs" role="tablist">
+                    <button type="button" class="sw-tab active" data-m="Tarjeta" onclick="swMetodo('Tarjeta')">Tarjeta</button>
+                    <button type="button" class="sw-tab" data-m="Nequi" onclick="swMetodo('Nequi')">Nequi</button>
+                    <button type="button" class="sw-tab" data-m="PSE" onclick="swMetodo('PSE')">PSE</button>
+                </div>
+
+                <div id="swTarjeta">
+                    <div class="sw-hint">Datos de prueba: <button type="button" onclick="swLlenar('ok')">tarjeta que aprueba</button> &middot; <button type="button" onclick="swLlenar('no')">tarjeta que rechaza</button></div>
+                    <div class="sw-field"><label for="swNumero">Número de tarjeta</label><input id="swNumero" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" autocomplete="off" /></div>
+                    <div class="sw-field"><label for="swNombre">Nombre en la tarjeta</label><input id="swNombre" placeholder="Como aparece en la tarjeta" autocomplete="off" /></div>
+                    <div class="sw-row">
+                        <div class="sw-field"><label for="swExp">Vencimiento</label><input id="swExp" inputmode="numeric" maxlength="5" placeholder="MM/AA" autocomplete="off" /></div>
+                        <div class="sw-field"><label for="swCvc">CVC</label><input id="swCvc" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="off" /></div>
+                    </div>
+                </div>
+
+                <div id="swNequi" style="display:none;">
+                    <div class="sw-hint">Datos de prueba: <button type="button" onclick="swLlenar('ok')">número que aprueba</button> &middot; <button type="button" onclick="swLlenar('no')">número que rechaza</button></div>
+                    <div class="sw-field"><label for="swCel">Celular Nequi</label><input id="swCel" inputmode="numeric" maxlength="10" placeholder="3991111111" autocomplete="off" /></div>
+                </div>
+
+                <div id="swPSE" style="display:none;">
+                    <div class="sw-hint">Elige un banco de prueba para aprobar o rechazar el pago.</div>
+                    <div class="sw-field"><label for="swBanco">Banco</label>
+                        <select id="swBanco">
+                            <option value="ok">Banco que aprueba (prueba)</option>
+                            <option value="no">Banco que rechaza (prueba)</option>
+                        </select>
+                    </div>
+                    <div class="sw-field"><label for="swPersona">Tipo de persona</label>
+                        <select id="swPersona"><option>Natural</option><option>Jurídica</option></select>
+                    </div>
+                </div>
+
+                <div class="sw-err" id="swErr"></div>
+                <button type="button" class="sw-pay" onclick="swPagar()">Pagar $@Model.Monto.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</button>
+            </div>
+
+            <div id="swProcesando" class="sw-state" style="display:none;">
+                <div class="sw-spin"></div>
+                <div style="font-weight:800;">Procesando tu pago con Wompi&hellip;</div>
+                <div style="font-size:.8rem;color:var(--muted,#6E5D53);margin-top:.3rem;">Simulación: no se realiza ningún cobro.</div>
+            </div>
+
+            <div id="swResultado" class="sw-state" style="display:none;">
+                <div class="sw-result-ico" id="swIco"></div>
+                <div style="font-weight:900;font-size:1.1rem;" id="swMsg"></div>
+                <div style="font-size:.8rem;color:var(--muted,#6E5D53);margin:.4rem 0 1rem;" id="swSub"></div>
+                <button type="button" class="sw-pay" id="swContinuar">Continuar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.SIMULAR_WOMPI = @(ViewBag.SimularWompi == true ? "true" : "false");
+    var swMetodoActual = 'Tarjeta';
+
+    function swMetodo(m) {
+        swMetodoActual = m;
+        document.querySelectorAll('.sw-tab').forEach(function (b) { b.classList.toggle('active', b.dataset.m === m); });
+        ['Tarjeta', 'Nequi', 'PSE'].forEach(function (x) { document.getElementById('sw' + x).style.display = x === m ? 'block' : 'none'; });
+        document.getElementById('swErr').style.display = 'none';
+    }
+
+    function swLlenar(tipo) {
+        if (swMetodoActual === 'Tarjeta') {
+            document.getElementById('swNumero').value = tipo === 'ok' ? '4242 4242 4242 4242' : '4111 1111 1111 1111';
+            document.getElementById('swNombre').value = document.getElementById('pNombre')?.value || 'Cliente de Prueba';
+            document.getElementById('swExp').value = '12/30';
+            document.getElementById('swCvc').value = '123';
+        } else if (swMetodoActual === 'Nequi') {
+            document.getElementById('swCel').value = tipo === 'ok' ? '3991111111' : '3992222222';
+        }
+    }
+
+    function swError(msg) {
+        var e = document.getElementById('swErr');
+        e.textContent = msg;
+        e.style.display = 'block';
+    }
+
+    function abrirSimuladorWompi() {
+        document.getElementById('swFormulario').style.display = 'block';
+        document.getElementById('swProcesando').style.display = 'none';
+        document.getElementById('swResultado').style.display = 'none';
+        document.getElementById('swErr').style.display = 'none';
+        document.getElementById('swBackdrop').classList.add('open');
+    }
+
+    function cerrarSimuladorWompi() {
+        document.getElementById('swBackdrop').classList.remove('open');
+        var btn = document.getElementById('btnWompiLauncher');
+        if (btn) btn.disabled = false;
+    }
+
+    // Reglas del sandbox de Wompi: 4242… y 3991111111 aprueban; 4111… y 3992222222 rechazan
+    function swResultadoPrueba() {
+        if (swMetodoActual === 'Tarjeta') {
+            var n = document.getElementById('swNumero').value.replace(/\D/g, '');
+            var exp = document.getElementById('swExp').value.trim();
+            var cvc = document.getElementById('swCvc').value.trim();
+            if (n.length < 13 || n.length > 19) return { error: 'Revisa el número de tarjeta.' };
+            if (!document.getElementById('swNombre').value.trim()) return { error: 'Escribe el nombre que aparece en la tarjeta.' };
+            if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(exp)) return { error: 'El vencimiento debe tener el formato MM/AA.' };
+            if (!/^\d{3,4}$/.test(cvc)) return { error: 'Revisa el CVC.' };
+            return { resultado: n.indexOf('4111') === 0 ? 'DECLINED' : 'APPROVED' };
+        }
+        if (swMetodoActual === 'Nequi') {
+            var c = document.getElementById('swCel').value.replace(/\D/g, '');
+            if (c.length !== 10) return { error: 'El celular de Nequi debe tener 10 dígitos.' };
+            return { resultado: c === '3992222222' ? 'DECLINED' : 'APPROVED' };
+        }
+        return { resultado: document.getElementById('swBanco').value === 'no' ? 'DECLINED' : 'APPROVED' };
+    }
+
+    function swPagar() {
+        var r = swResultadoPrueba();
+        if (r.error) { swError(r.error); return; }
+
+        document.getElementById('swFormulario').style.display = 'none';
+        document.getElementById('swProcesando').style.display = 'block';
+
+        setTimeout(function () {
+            document.getElementById('swProcesando').style.display = 'none';
+            var aprobado = r.resultado === 'APPROVED';
+            var ico = document.getElementById('swIco');
+            ico.style.background = aprobado ? '#00B37E' : '#D92D20';
+            ico.textContent = aprobado ? '✓' : '✕';
+            document.getElementById('swMsg').textContent = aprobado ? 'Transacción aprobada' : 'Transacción rechazada';
+            document.getElementById('swSub').textContent = aprobado
+                ? 'Wompi (simulado) aprobó tu pago.'
+                : 'Wompi (simulado) rechazó el pago. Puedes intentar con otro método.';
+            document.getElementById('swResultado').style.display = 'block';
+            document.getElementById('swContinuar').onclick = function () { swEnviar(r.resultado); };
+        }, 1800);
+    }
+
+    // Envía el resultado al servidor: es quien registra el pago, factura el pedido y genera el comprobante
+    function swEnviar(resultado) {
+        var token = document.querySelector('#formPasarela input[name="__RequestVerificationToken"]');
+        var campos = {
+            __RequestVerificationToken: token ? token.value : '',
+            tipoOrigen: '@Model.TipoOrigen',
+            origenId: '@(Model.OrigenId.HasValue ? Model.OrigenId.Value.ToString() : "")',
+            metodo: swMetodoActual,
+            resultado: resultado,
+            nombreCliente: document.getElementById('pNombre')?.value || '',
+            correo: document.getElementById('pCorreo')?.value || '',
+            telefono: document.getElementById('pTel')?.value || ''
+        };
+        var f = document.createElement('form');
+        f.method = 'post';
+        f.action = '@Url.Action("AprobarSimulado", "Pago")';
+        Object.keys(campos).forEach(function (k) {
+            var i = document.createElement('input');
+            i.type = 'hidden'; i.name = k; i.value = campos[k];
+            f.appendChild(i);
+        });
+        document.body.appendChild(f);
+        f.submit();
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') cerrarSimuladorWompi();
+    });
 </script>

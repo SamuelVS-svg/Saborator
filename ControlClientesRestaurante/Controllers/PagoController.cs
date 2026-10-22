@@ -136,6 +136,7 @@ namespace ControlClientesRestaurante.Controllers
             ViewBag.WompiEnv = wompiConfig.Environment;
             ViewBag.EsLocal = esLocal;
             ViewBag.PermitirSimulacion = wompiConfig.PermitirSimulacion;
+            ViewBag.SimularWompi = wompiConfig.SimularPasarela;
 
             var vm = new CheckoutRequestViewModel
             {
@@ -842,20 +843,32 @@ namespace ControlClientesRestaurante.Controllers
             return RedirectToAction("MisPedidos", "Pedido");
         }
 
-        // ── APROBACIÓN SIMULADA (SOLO DEMOSTRACIONES EN SANDBOX) ────────────────
-        // Respaldo por si falla la red con Wompi durante una presentación. No existe en producción:
-        // requiere llave de pruebas (sandbox) y WOMPI_PERMITIR_SIMULACION=true.
+        // ── PASARELA WOMPI SIMULADA (SOLO DEMOSTRACIONES EN SANDBOX) ────────────
+        // Recibe el resultado del simulador de checkout (aprobado o rechazado) cuando no hay llaves reales de Wompi
+        // o falla la red durante una presentación. No existe en producción: requiere sandbox y
+        // WOMPI_PERMITIR_SIMULACION=true (o entorno Development). No se realiza ningún cobro.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AprobarSimulado(string tipoOrigen, int? origenId)
+        public async Task<IActionResult> AprobarSimulado(string tipoOrigen, int? origenId, string? metodo, string? resultado,
+            string? nombreCliente, string? correo, string? telefono)
         {
             bool esLocal = Request.Host.Host.Contains("localhost") || Request.Host.Host.Contains("127.0.0.1");
             if (!_wompiService.ObtenerConfiguracion(esLocal).PermitirSimulacion)
                 return NotFound();
 
+            string metodoLimpio = metodo switch
+            {
+                "Tarjeta" or "Nequi" or "PSE" => metodo,
+                _ => "Manual"
+            };
+            bool rechazado = string.Equals(resultado, "DECLINED", StringComparison.OrdinalIgnoreCase);
+
             string refSim = "SIM-" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + Random.Shared.Next(100, 999);
-            const string metodo = "Simulado (demostración)";
-            const string detalle = "Aprobación simulada para demostración, sin cobro real";
+            string metodoTxt = metodoLimpio == "Manual" ? "Simulado (demostración)" : $"Wompi simulado ({metodoLimpio})";
+            string detalle = metodoLimpio == "Manual"
+                ? "Aprobación simulada para demostración, sin cobro real"
+                : $"Pago simulado con {metodoLimpio} en el checkout de demostración de Wompi, sin cobro real";
+            string codigo = rechazado ? "RECHAZADO" : "SIMULADO";
 
             if (string.Equals(tipoOrigen, "Pedido", StringComparison.OrdinalIgnoreCase) && origenId.HasValue)
             {
@@ -871,12 +884,20 @@ namespace ControlClientesRestaurante.Controllers
                     return RedirectToAction("Detalle", "Pedido", new { id = pedido.Id });
                 }
 
+                if (rechazado)
+                {
+                    await RegistrarTransaccionRechazadaAsync(refSim, tipoOrigen, pedido.Id, pedido.Total, metodoTxt,
+                        pedido.NombreCliente ?? "Cliente Saborator", correo, pedido.Telefono, $"Pedido {pedido.Numero}");
+                    TempData["Error"] = "Wompi (simulado) rechazó la transacción. Intenta con otro método de pago.";
+                    return RedirectToAction("Checkout", new { tipo = "Pedido", id = pedido.Id });
+                }
+
                 string? numFactura = FacturarPedidoPagado(pedido, "Pago_Simulado");
-                await RegistrarTransaccionAprobadaAsync(refSim, "SIMULADO", pedido, pedido.Total, metodo, detalle,
-                    null, numFactura, UsuarioActual());
+                await RegistrarTransaccionAprobadaAsync(refSim, "SIMULADO", pedido, pedido.Total, metodoTxt, detalle,
+                    correo, numFactura, UsuarioActual());
 
                 TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(
-                    ComprobanteDePedido(pedido, refSim, "SIMULADO", pedido.Total, metodo, detalle, null, numFactura));
+                    ComprobanteDePedido(pedido, refSim, "SIMULADO", pedido.Total, metodoTxt, detalle, correo, numFactura));
                 TempData["Mensaje"] = "Pago simulado aprobado (modo demostración).";
                 return RedirectToAction("Comprobante");
             }
@@ -891,6 +912,14 @@ namespace ControlClientesRestaurante.Controllers
                 }
 
                 decimal deposito = reserva.NumeroPersonas * 25000m;
+                if (rechazado)
+                {
+                    await RegistrarTransaccionRechazadaAsync(refSim, tipoOrigen, reserva.Id, deposito, metodoTxt,
+                        reserva.NombreCliente, reserva.Correo, reserva.Telefono, $"Reserva {reserva.Codigo}");
+                    TempData["Error"] = "Wompi (simulado) rechazó la transacción. Intenta con otro método de pago.";
+                    return RedirectToAction("Checkout", new { tipo = "Reserva", id = reserva.Id });
+                }
+
                 reserva.Estado = "Confirmada (Pagada)";
                 reserva.Notas = ((reserva.Notas ?? "") + $" [Depósito simulado (demostración): ${deposito.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)} Ref: {refSim}]").Trim();
                 _context.TransaccionesPago.Add(new TransaccionPago
@@ -900,7 +929,7 @@ namespace ControlClientesRestaurante.Controllers
                     TipoOrigen = "Reserva",
                     OrigenId = reserva.Id,
                     Monto = deposito,
-                    MetodoPago = metodo,
+                    MetodoPago = metodoTxt,
                     DetalleMetodo = detalle,
                     NombreCliente = reserva.NombreCliente,
                     Correo = reserva.Correo,
@@ -917,8 +946,77 @@ namespace ControlClientesRestaurante.Controllers
                 return RedirectToAction("MisReservas", "Reserva");
             }
 
-            TempData["Error"] = "La aprobación simulada solo aplica a pedidos y reservas.";
-            return RedirectToAction("Checkout", new { tipo = tipoOrigen, id = origenId });
+            // Pago directo / consumo libre (el monto lo define el servidor, igual que en la sesión real de Wompi)
+            const decimal montoDirecto = 35000m;
+            const string conceptoDirecto = "Experiencia Gastronómica Saborator";
+            string nombre = string.IsNullOrWhiteSpace(nombreCliente) ? "Cliente Saborator" : nombreCliente.Trim();
+
+            if (rechazado)
+            {
+                await RegistrarTransaccionRechazadaAsync(refSim, "Directo", null, montoDirecto, metodoTxt,
+                    nombre, correo, telefono, conceptoDirecto);
+                TempData["Error"] = "Wompi (simulado) rechazó la transacción. Intenta con otro método de pago.";
+                return RedirectToAction("Checkout");
+            }
+
+            _context.TransaccionesPago.Add(new TransaccionPago
+            {
+                ReferenciaTransaccion = refSim,
+                CodigoAprobacion = "SIMULADO",
+                TipoOrigen = "Directo",
+                Monto = montoDirecto,
+                MetodoPago = metodoTxt,
+                DetalleMetodo = detalle,
+                NombreCliente = nombre,
+                Correo = correo,
+                Telefono = telefono,
+                Concepto = conceptoDirecto,
+                Estado = "Aprobado",
+                UsuarioRegistro = UsuarioActual()
+            });
+            await _context.SaveChangesAsync();
+
+            TempData["ComprobanteJson"] = System.Text.Json.JsonSerializer.Serialize(new ComprobantePagoViewModel
+            {
+                ReferenciaTransaccion = refSim,
+                CodigoAprobacion = "SIMULADO",
+                FechaHora = DateTime.Now,
+                Monto = montoDirecto,
+                MetodoPago = metodoTxt,
+                DetalleMetodo = detalle,
+                NombreCliente = nombre,
+                Correo = correo,
+                Telefono = telefono,
+                Concepto = conceptoDirecto,
+                Items = new List<ItemResumenViewModel>
+                {
+                    new() { Nombre = "Bono / Consumo en Sala", Cantidad = 1, Precio = montoDirecto }
+                }
+            });
+            TempData["Mensaje"] = "Pago simulado aprobado (modo demostración).";
+            return RedirectToAction("Comprobante");
+        }
+
+        private async Task RegistrarTransaccionRechazadaAsync(string referencia, string tipoOrigen, int? origenId, decimal monto,
+            string metodo, string nombre, string? correo, string? telefono, string concepto)
+        {
+            _context.TransaccionesPago.Add(new TransaccionPago
+            {
+                ReferenciaTransaccion = referencia,
+                CodigoAprobacion = "RECHAZADO",
+                TipoOrigen = tipoOrigen,
+                OrigenId = origenId,
+                Monto = monto,
+                MetodoPago = metodo,
+                DetalleMetodo = "Transacción rechazada en el checkout de demostración de Wompi",
+                NombreCliente = nombre,
+                Correo = correo,
+                Telefono = telefono,
+                Concepto = concepto,
+                Estado = "Rechazado",
+                UsuarioRegistro = UsuarioActual()
+            });
+            await _context.SaveChangesAsync();
         }
 
         // ── AUXILIARES DE CONFIRMACIÓN DE PAGO ──────────────────────────────────

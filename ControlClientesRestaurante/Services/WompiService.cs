@@ -66,12 +66,15 @@ namespace ControlClientesRestaurante.Services
 
             // La aprobación simulada (para demostraciones) solo existe en sandbox y solo si se activa de forma explícita
             bool simulacionActiva = string.Equals(Environment.GetEnvironmentVariable("WOMPI_PERMITIR_SIMULACION"), "true", StringComparison.OrdinalIgnoreCase)
-                                    || _options.PermitirSimulacion;
+                                    || _options.PermitirSimulacion
+                                    || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Development", StringComparison.OrdinalIgnoreCase);
             bool permitirSimulacion = simulacionActiva && string.Equals(ambiente, "sandbox", StringComparison.OrdinalIgnoreCase);
 
             return new WompiSettings
             {
                 PermitirSimulacion = permitirSimulacion,
+                // Sin llaves de pruebas propias no hay widget real que abrir: se usa el checkout simulado
+                SimularPasarela = permitirSimulacion && !llavesDePruebasPropias,
                 PublicKey = pubKey,
                 PrivateKey = prvKey,
                 Environment = ambiente,
