@@ -127,3 +127,24 @@ Para dejar de publicar: `tailscale funnel reset`
 2. `tailscale status` (¿conectado?) y `tailscale funnel status` (¿Funnel on?).
 3. Si Funnel está apagado: `tailscale funnel --bg 5106`
 4. Si no hay internet: cambia al hotspot del celular; Tailscale se reconecta solo en ~1 minuto.
+
+---
+
+## Actualizaciones automáticas (para desarrollo con `dotnet run`)
+
+Si trabajas con la carpeta del repositorio y `dotnet run` (no con la versión publicada), puedes dejar que tu PC
+traiga sola los cambios nuevos de GitHub:
+
+- **Doble clic en `actualizar-y-correr.bat`** (carpeta del proyecto), o en PowerShell:
+  ```powershell
+  cd publicar-windows
+  .\5-auto-actualizar.ps1
+  ```
+- Cada minuto revisa GitHub. Si hay cambios nuevos, **respalda la base de datos, detiene la app, trae los cambios,
+  compila y la vuelve a arrancar**. Después solo refrescas el navegador (**Ctrl + F5**).
+- **Protecciones:** no actualiza si tienes cambios sin guardar, si tienes commits locales sin subir, si tu copia y
+  GitHub divergieron o si el respaldo falla. Si la versión nueva **no compila**, vuelve a la anterior y la deja corriendo.
+- Prueba sin cambiar nada: `.\5-auto-actualizar.ps1 -SoloVerificar`. Omitir el respaldo: `-SinRespaldo`.
+  Otra rama o intervalo: `-Rama main -Intervalo 120`.
+- Lo que hace queda en `publicar-windows\auto-actualizar.log`. Para detenerlo: **Ctrl + C** (la app sigue corriendo).
+- Solo trae cambios de **tu rama en tu repositorio de GitHub**. Si algún día no quieres que se apliquen solos, no lo ejecutes.
