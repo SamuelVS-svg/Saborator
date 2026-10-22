@@ -13,6 +13,9 @@
     // Fuera del inicio, los enlaces a secciones de la página apuntan a "/#seccion"
     var _esInicio = ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index";
     var _ancla = _esInicio ? "" : "/";
+    var _ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var _act = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    string Actual(string c, string a) => _ctrl == c && _act == a ? "page" : null;
 }
 
 <link rel="stylesheet" href="~/css/nav-inicio.css" asp-append-version="true" />
@@ -39,11 +42,11 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
                 <span id="navModalityText">Domicilio</span>
             </a>
-            <a asp-controller="Pedido" asp-action="Rastrear" class="lnav-item">
+            <a asp-controller="Pedido" asp-action="Rastrear" class="lnav-item" aria-current="@Actual("Pedido", "Rastrear")">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <span>Rastrear Pedido</span>
             </a>
-            <a asp-controller="Pago" asp-action="Checkout" class="lnav-item">
+            <a asp-controller="Pago" asp-action="Checkout" class="lnav-item" aria-current="@Actual("Pago", "Checkout")">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                 <span>Pagar Cuenta</span>
             </a>
@@ -53,11 +56,11 @@
             </a>
             @if (_autenticado)
             {
-                <a asp-controller="Reserva" asp-action="MisReservas" class="lnav-item">
+                <a asp-controller="Reserva" asp-action="MisReservas" class="lnav-item" aria-current="@Actual("Reserva", "MisReservas")">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.3"><polyline points="20 6 9 17 4 12"/></svg>
                     <span>Mis Reservas</span>
                 </a>
-                <a asp-controller="Pedido" asp-action="MisPedidos" class="lnav-item">
+                <a asp-controller="Pedido" asp-action="MisPedidos" class="lnav-item" aria-current="@Actual("Pedido", "MisPedidos")">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.3"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
                     <span>Mis Pedidos</span>
                 </a>

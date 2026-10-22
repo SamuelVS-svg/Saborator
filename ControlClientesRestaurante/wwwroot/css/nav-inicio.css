@@ -445,3 +445,15 @@
 @media (max-width: 1120px) {
     .lnav-spacer { height: 98px; }
 }
+
+/* Página actual resaltada */
+.lnav-menu-links a.lnav-item[aria-current="page"] {
+    color: var(--brand, #6B1E2E) !important;
+    background: rgba(107, 30, 46, 0.1) !important;
+    border: 1px solid rgba(107, 30, 46, 0.28) !important;
+}
+[data-theme="dark"] .lnav-menu-links a.lnav-item[aria-current="page"] {
+    color: var(--gold, #C8973A) !important;
+    background: rgba(200, 151, 58, 0.16) !important;
+    border-color: rgba(200, 151, 58, 0.5) !important;
+}

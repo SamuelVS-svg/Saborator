@@ -531,11 +531,11 @@
                         <div class="form-group-pago">
                             <label for="pNombre">Nombre del Pagador *</label>
                             <input type="text" name="NombreCliente" id="pNombre" class="input-pago" 
-                                   value="@(Model.NombreCliente ?? "Comensal Saborator")" required placeholder="Tu nombre completo" />
+                                   value="@Model.NombreCliente" required placeholder="Tu nombre completo" />
                         </div>
                         <div class="form-group-pago">
                             <label for="pDoc">Documento / C.C. *</label>
-                            <input type="text" name="Documento" id="pDoc" class="input-pago" value="1020304050" required placeholder="Ej: 1020304050" />
+                            <input type="text" name="Documento" id="pDoc" class="input-pago" required placeholder="Ej: 1020304050" />
                         </div>
                     </div>
 
@@ -543,12 +543,12 @@
                         <div class="form-group-pago">
                             <label for="pCorreo">Correo Electrónico *</label>
                             <input type="email" name="Correo" id="pCorreo" class="input-pago" 
-                                   value="@(Model.Correo ?? "cliente@saborator.com")" required placeholder="Para tu comprobante digital" />
+                                   value="@Model.Correo" required placeholder="Para tu comprobante digital" />
                         </div>
                         <div class="form-group-pago">
                             <label for="pTel">Teléfono / Celular *</label>
                             <input type="tel" name="Telefono" id="pTel" class="input-pago" 
-                                   value="@(Model.Telefono ?? "3201234567")" required placeholder="3201234567" />
+                                   value="@Model.Telefono" required placeholder="3201234567" />
                         </div>
                     </div>
 
