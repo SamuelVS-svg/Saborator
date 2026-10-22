@@ -1,4 +1,4 @@
-﻿# Vigilante: mantiene Saborator en marcha. Cada 30 segundos consulta http://127.0.0.1:5106/salud;
+﻿# Vigilante: mantiene Saborator en marcha. Cada 30 segundos consulta http://127.0.0.1:5107/salud;
 # si la app no responde 2 veces seguidas (o no está corriendo), la reinicia.
 # Escribe lo que hace en publicar-windows\vigilante.log
 #
@@ -8,7 +8,7 @@
 $raiz       = Split-Path -Parent $PSScriptRoot
 $iniciar    = Join-Path $PSScriptRoot "3-iniciar-saborator.ps1"
 $registro   = Join-Path $PSScriptRoot "vigilante.log"
-$urlSalud   = "http://127.0.0.1:5106/salud"
+$urlSalud   = "http://127.0.0.1:5107/salud"
 $fallos     = 0
 $proceso    = $null
 

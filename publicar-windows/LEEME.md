@@ -35,9 +35,9 @@ Al final muestra tu URL pública. Las pruebas en el navegador, el celular y la t
    ```powershell
    .\3-iniciar-saborator.ps1
    ```
-   ✅ En la ventana debe aparecer `Now listening on: http://127.0.0.1:5106` y `Hosting environment: Production`.
+   ✅ En la ventana debe aparecer `Now listening on: http://127.0.0.1:5107` y `Hosting environment: Production`.
 
-4. **Comprobar** en el navegador de tu PC: <http://127.0.0.1:5106/salud> → debe mostrar `{"ok":true,...}`.
+4. **Comprobar** en el navegador de tu PC: <http://127.0.0.1:5107/salud> → debe mostrar `{"ok":true,...}`.
 
 5. **Claves de acceso.** En producción la app NO deja las cuentas de ejemplo con su clave conocida: al arrancar
    genera claves temporales aleatorias y las escribe en **`publicado\credenciales-iniciales.txt`** (usuario y clave
@@ -66,13 +66,13 @@ Al final muestra tu URL pública. Las pruebas en el navegador, el celular y la t
 
 Con Saborator en marcha (Fase 2, paso 3):
 ```powershell
-tailscale funnel --bg 5106
+tailscale funnel --bg 5107
 tailscale funnel status
 ```
 ✅ `funnel status` debe mostrar algo como:
 ```
 https://tu-equipo.tu-tailnet.ts.net (Funnel on)
-|-- / proxy http://127.0.0.1:5106
+|-- / proxy http://127.0.0.1:5107
 ```
 Esa es tu **URL pública**.
 
@@ -88,7 +88,7 @@ Para dejar de publicar: `tailscale funnel reset`
 2. Abre `https://tu-equipo.tu-tailnet.ts.net/`, inicia sesión con `admin` y recorre: Dashboard, Domicilios, Cocina, Caja.
 3. Cookies seguras: en Chrome, **F12 → Application → Cookies** → `.Saborator.Auth` debe tener marcada la columna **Secure**.
 4. Desde el **celular con datos móviles (Wi-Fi apagado)** abre la URL: debe cargar con el candado de HTTPS.
-5. Comprueba que **no** se puede entrar por la red local: desde otro equipo de tu Wi-Fi, `http://IP-DE-TU-PC:5106` **no** debe abrir.
+5. Comprueba que **no** se puede entrar por la red local: desde otro equipo de tu Wi-Fi, `http://IP-DE-TU-PC:5107` **no** debe abrir.
 
 ---
 
@@ -121,9 +121,9 @@ Para dejar de publicar: `tailscale funnel reset`
 - [ ] **Respaldo** de la base de datos esa mañana: `.\1-respaldar-bd.ps1`
 
 **Si el enlace deja de responder:**
-1. ¿Responde `http://127.0.0.1:5106/salud` en tu PC?
+1. ¿Responde `http://127.0.0.1:5107/salud` en tu PC?
    - **No** → la app cayó: mira `vigilante.log`; si el vigilante no está corriendo, ejecuta `.\4-vigilante.ps1`.
    - **Sí** → el problema es Tailscale: sigue con 2.
 2. `tailscale status` (¿conectado?) y `tailscale funnel status` (¿Funnel on?).
-3. Si Funnel está apagado: `tailscale funnel --bg 5106`
+3. Si Funnel está apagado: `tailscale funnel --bg 5107`
 4. Si no hay internet: cambia al hotspot del celular; Tailscale se reconecta solo en ~1 minuto.

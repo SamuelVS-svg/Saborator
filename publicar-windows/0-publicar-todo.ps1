@@ -5,7 +5,7 @@
 #   powershell -ExecutionPolicy Bypass -File .\0-publicar-todo.ps1
 
 $ErrorActionPreference = "Stop"
-$puerto = 5106
+$puerto = 5107
 
 function Fase($n, $texto) { Write-Host "`n=== Fase ${n}: $texto ===" -ForegroundColor Cyan }
 function Ok($texto)       { Write-Host "  OK  $texto" -ForegroundColor Green }

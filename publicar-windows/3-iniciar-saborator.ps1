@@ -13,7 +13,7 @@ if (-not (Test-Path $ejecutable)) {
 }
 
 $env:ASPNETCORE_ENVIRONMENT = "Production"   # sin modo depuración
-$env:SABORATOR_PUERTO       = "5106"         # puerto local (solo 127.0.0.1)
+$env:SABORATOR_PUERTO       = "5107"         # puerto local (solo 127.0.0.1)
 $env:SABORATOR_PROXY_HTTPS  = "true"         # detrás de Tailscale Funnel todo el tráfico público es HTTPS
 
 # Secretos: NO los escribas aquí. Defínelos como variables de entorno de tu usuario de Windows
