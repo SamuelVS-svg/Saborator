@@ -1,0 +1,6 @@
+# Caddy obtiene y renueva solo el certificado HTTPS (Let's Encrypt) para el dominio indicado en .env (DOMINIO).
+# Los WebSockets de SignalR (cocina, repartos, seguimiento) pasan sin configuración extra.
+{$DOMINIO} {
+	encode gzip
+	reverse_proxy saborator:8080
+}

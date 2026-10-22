@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection;
 using ControlClientesRestaurante.Data;
 using ControlClientesRestaurante.Models;
 using ControlClientesRestaurante.Repositories;
@@ -60,11 +61,14 @@ builder.Services.AddSignalR();
 // Detectar si SQL Server está disponible o usar SQLite embebido automáticamente en la nube
 var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
 bool useSqlite = false;
+// SABORATOR_FORZAR_SQLITE=true usa SQLite aunque haya SQL Server (hosting gratuito o pruebas en Windows)
+bool forzarSqlite = string.Equals(Environment.GetEnvironmentVariable("SABORATOR_FORZAR_SQLITE"), "true", StringComparison.OrdinalIgnoreCase);
 
-if (!OperatingSystem.IsWindows() &&
+if (forzarSqlite ||
+    (!OperatingSystem.IsWindows() &&
     (string.IsNullOrWhiteSpace(rawConnStr) ||
      rawConnStr.Contains("SQLEXPRESS", StringComparison.OrdinalIgnoreCase) ||
-     rawConnStr.Contains("Trusted_Connection=True", StringComparison.OrdinalIgnoreCase)))
+     rawConnStr.Contains("Trusted_Connection=True", StringComparison.OrdinalIgnoreCase))))
 {
     useSqlite = true;
     Console.WriteLine("[Saborator] Entorno Linux detectado sin cadena SQL Server remota; activando base de datos SQLite integrada.");
@@ -85,7 +89,16 @@ else if (!OperatingSystem.IsWindows())
     }
 }
 
-var sqliteDbPath = Path.Combine(AppContext.BaseDirectory, "saborator.db");
+// SABORATOR_DB_PATH permite guardar la base SQLite en un volumen persistente (por ejemplo /data/saborator.db)
+var sqliteDbPath = Environment.GetEnvironmentVariable("SABORATOR_DB_PATH");
+if (string.IsNullOrWhiteSpace(sqliteDbPath))
+{
+    var carpetaBd = Environment.GetEnvironmentVariable("SABORATOR_DATA_DIR");
+    sqliteDbPath = Path.Combine(string.IsNullOrWhiteSpace(carpetaBd) ? AppContext.BaseDirectory : carpetaBd, "saborator.db");
+    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(sqliteDbPath))!);
+}
+else
+    Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(sqliteDbPath))!);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -140,6 +153,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 var cookiePolicy = builder.Environment.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
 builder.Services.AddAntiforgery(options => options.Cookie.SecurePolicy = cookiePolicy);
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.CookieTempDataProviderOptions>(options => options.Cookie.SecurePolicy = cookiePolicy);
+
+// SABORATOR_DATA_DIR: carpeta persistente (volumen) donde se guardan las claves de cifrado de cookies y tokens.
+// Sin esto, en un contenedor las claves se regeneran en cada reinicio y todos los usuarios pierden la sesión.
+var carpetaDatos = Environment.GetEnvironmentVariable("SABORATOR_DATA_DIR");
+if (!string.IsNullOrWhiteSpace(carpetaDatos))
+{
+    var carpetaClaves = Path.Combine(carpetaDatos, "keys");
+    Directory.CreateDirectory(carpetaClaves);
+    builder.Services.AddDataProtection()
+        .SetApplicationName("Saborator")
+        .PersistKeysToFileSystem(new DirectoryInfo(carpetaClaves));
+}
 
 builder.Services.AddSession(options =>
 {

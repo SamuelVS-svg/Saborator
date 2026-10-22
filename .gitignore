@@ -22,3 +22,6 @@ publicar-windows/vigilante.log
 appsettings.Local.json
 credenciales-iniciales.txt
 publish/
+
+# Despliegue: secretos y respaldos
+deploy/oracle/.env

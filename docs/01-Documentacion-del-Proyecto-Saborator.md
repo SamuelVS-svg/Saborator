@@ -50,7 +50,7 @@ El sistema cubre los siguientes módulos:
 | Carta digital y página de inicio | Presentación del menú por categorías, ingredientes, alérgenos y precios; reseñas de clientes y ubicación de la sede. |
 | Reservas | Selección de fecha, turno y número de personas; plano interactivo de mesas; confirmación y consulta de reservas; gestión administrativa. |
 | Pedidos | Toma de pedidos por el mesero, pedidos en línea del cliente (domicilio o para llevar), cupones de descuento y seguimiento por código. |
-| Cocina | Tablero de comandas en tiempo real con estados de preparación y recetario. |
+| Cocina | Tablero de comandas en tiempo real con estados de preparación; recetario de platos para el administrador. |
 | Domicilios | Tarifas por barrio, asignación de repartidor, ruta y confirmación de entrega. |
 | Caja y facturación | Apertura y cierre de turno con arqueo, emisión y anulación de facturas, propinas e informes exportables. |
 | Pagos en línea | Pasarela Wompi (tarjeta, Nequi, PSE) con modo de pruebas y modo de demostración simulado. |

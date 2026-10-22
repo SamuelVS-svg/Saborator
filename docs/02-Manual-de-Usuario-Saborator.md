@@ -181,10 +181,8 @@ Cuando la mesa pida la cuenta, avise a caja: el cajero factura el pedido de esa 
 
 **[Insertar captura: tablero de cocina]**
 
-### 5.2 Recetario
-La opción **Recetario** permite consultar los ingredientes y la preparación de cada plato, útil para estandarizar la calidad.
-
 > Si un pedido debe cancelarse, solo el cajero o el administrador pueden hacerlo; avíseles.
+> El **Recetario** (fichas técnicas de los platos) es una opción del administrador, no del cocinero.
 
 ---
 
@@ -277,7 +275,11 @@ En **Reservas (administración)** vea las reservas por día, cambie su estado (c
 ### 7.9 Domicilios
 En **Domicilios** el administrador ajusta el valor del envío de un pedido, asigna el repartidor y actualiza el estado del domicilio.
 
-### 7.10 Reseñas
+### 7.10 Recetario y reporte de repartos
+- **Recetario Carta:** fichas técnicas de los platos (ingredientes y preparación), para estandarizar la calidad en cocina.
+- **Reporte de repartos:** entregas de los domiciliarios por rango de fechas.
+
+### 7.11 Reseñas
 En **Reseñas** apruebe, oculte o elimine los comentarios de los clientes antes de que se publiquen en la página de inicio.
 
 ---
@@ -289,7 +291,7 @@ En **Reseñas** apruebe, oculte o elimine los comentarios de los clientes antes 
 1. En **Repartos** aparecen los domicilios **listos para recoger** o asignados a usted; el panel avisa en tiempo real cuando llega uno nuevo.
 2. Pulse **Tomar y salir a entregar** para asignárselo; el pedido pasa a **En camino** y el cliente puede ver el avance.
 3. Entregue el pedido y pulse **Confirmar entrega**; pasa a **Entregado**.
-4. Consulte el **reporte de repartos** por rango de fechas para ver sus entregas.
+4. El **reporte de repartos** por rango de fechas lo consulta el administrador.
 
 **[Insertar captura: panel de repartos]**
 
