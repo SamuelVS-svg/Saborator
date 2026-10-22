@@ -1117,7 +1117,15 @@
             }
 
             if (sesion.customerData) {
-                configWompi.customerData = sesion.customerData;
+                // El widget rechaza campos vacíos: solo se envían los datos que el cliente sí escribió
+                var cliente = {};
+                Object.keys(sesion.customerData).forEach(function (k) {
+                    var v = sesion.customerData[k];
+                    if (v !== null && v !== undefined && String(v).trim() !== '') cliente[k] = v;
+                });
+                if (!cliente.phoneNumber) { delete cliente.phoneNumber; delete cliente.phoneNumberPrefix; }
+                if (!cliente.legalId) { delete cliente.legalIdType; }
+                if (Object.keys(cliente).length > 0) configWompi.customerData = cliente;
             }
 
             var checkout = new WidgetCheckout(configWompi);
