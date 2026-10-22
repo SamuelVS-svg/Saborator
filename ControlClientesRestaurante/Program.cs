@@ -292,7 +292,7 @@ app.Use(async (context, next) =>
         "img-src 'self' data: blob: https:; " +
         "media-src 'self' data: blob:; " +
         "frame-src 'self' https://www.google.com https://maps.google.com https://accounts.google.com https://checkout.wompi.co; " +
-        "connect-src 'self' https://*.wompi.co https://accounts.google.com https://*.googletagmanager.com https://*.google-analytics.com; " +
+        "connect-src 'self' " + (app.Environment.IsDevelopment() ? "ws://localhost:* wss://localhost:* " : "") + "https://nominatim.openstreetmap.org https://router.project-osrm.org https://*.wompi.co https://accounts.google.com https://*.googletagmanager.com https://*.google-analytics.com; " +
         "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.wompi.co");
     await next();
 });
