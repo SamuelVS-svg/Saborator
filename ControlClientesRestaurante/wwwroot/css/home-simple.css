@@ -1,0 +1,67 @@
+/* ==========================================================================
+   INICIO SIMPLE · Portada corta inspirada en el flujo de pedido de las cadenas
+   de comida rápida: un banner, "¿Cómo te gustaría ordenar hoy?" y la carta.
+   Sede, reseñas y demás información se abren solo cuando se piden.
+   Todos los colores salen de los tokens (theme.css).
+   ========================================================================== */
+
+/* ── Banner ────────────────────────────────────────────────────────────── */
+.home-hero { padding: 1.25rem 1rem 0; max-width: 1180px; margin: 0 auto; }
+.home-banner {
+  position: relative; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 1rem; overflow: hidden;
+  min-height: 300px; padding: 2rem 2.25rem; border-radius: 28px; color: #fff;
+  background: radial-gradient(120% 140% at 85% 20%, #8D6E63 0%, #5D4037 45%, #3E2723 100%);
+  box-shadow: var(--shadow-md);
+}
+.home-banner-copy { position: relative; z-index: 1; }
+.home-eyebrow { display: inline-block; margin-bottom: .6rem; padding: .25rem .8rem; border-radius: 999px; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #3E2723; background: var(--gold); }
+.home-banner h1 { margin: 0 0 .6rem; font-family: var(--font-serif, Georgia, serif); font-weight: 400; font-size: clamp(2rem, 4.4vw, 3.2rem); line-height: 1.05; color: #fff; }
+.home-banner h1 em { color: var(--gold); font-style: italic; }
+.home-banner p { max-width: 34ch; margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; color: rgba(255, 255, 255, .86); }
+.home-cta {
+  display: inline-flex; align-items: center; gap: .5rem; padding: .8rem 1.6rem; border-radius: 999px; border: 0; cursor: pointer;
+  font: inherit; font-weight: 800; color: #3E2723; background: var(--gold); text-decoration: none; box-shadow: var(--shadow-sm);
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+.home-cta:hover { filter: brightness(1.06); box-shadow: var(--shadow); transform: translateY(-1px); }
+.home-banner-dish { position: relative; z-index: 0; justify-self: end; width: min(100%, 360px); aspect-ratio: 1; border-radius: 50%; object-fit: cover; border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+
+/* ── ¿Cómo te gustaría ordenar hoy? ────────────────────────────────────── */
+.home-order { padding: 2.25rem 0 1rem; text-align: center; }
+.home-order-title { margin: 0 0 1.1rem; font-size: 1.15rem; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: var(--text); }
+.home-order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; max-width: 760px; margin: 0 auto; }
+.home-order-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; min-height: 132px; padding: 1.1rem 1rem;
+  border: 0; border-radius: 22px; cursor: pointer; font: inherit; color: #fff; background: var(--brand); box-shadow: var(--shadow);
+  transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.home-order-card:hover { background: var(--brand-hover); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.home-order-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: .2rem; border-radius: 50%; color: #3E2723; background: var(--gold); }
+.home-order-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.home-order-name { font-size: 1.05rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; }
+.home-order-sub { max-width: 26ch; font-size: .8rem; line-height: 1.3; color: rgba(255, 255, 255, .78); }
+.home-order-wide {
+  display: flex; align-items: center; justify-content: center; gap: .6rem; grid-column: 1 / -1; min-height: 56px; padding: .8rem 1rem; border-radius: 999px;
+  font-weight: 800; letter-spacing: .03em; text-transform: uppercase; text-decoration: none; color: var(--ink); background: var(--surface); border: 2px solid var(--line-2);
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.home-order-wide:hover { background: var(--brand-soft); border-color: var(--brand); }
+.home-order-wide svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Secciones que se abren solo al pedirlas (sede, reseñas) ───────────── */
+.home-extra { display: none; }
+.home-extra.is-open { display: block; }
+.home-extra-back {
+  display: inline-flex; align-items: center; gap: .4rem; margin: 1rem auto .5rem; padding: .5rem 1.1rem; border: 1px solid var(--line-2); border-radius: 999px;
+  background: var(--surface); color: var(--ink); font: inherit; font-weight: 700; font-size: .85rem; cursor: pointer;
+}
+.home-extra-back:hover { background: var(--brand-soft); }
+.home-extra.is-open { padding-top: 0; }
+.home-extra > .home-extra-back { display: flex; width: max-content; }
+
+@media (max-width: 760px) {
+  .home-banner { grid-template-columns: 1fr; padding: 1.5rem 1.25rem; text-align: left; min-height: 0; }
+  .home-banner-dish { justify-self: center; width: min(70%, 240px); order: -1; }
+  .home-order-grid { grid-template-columns: 1fr; }
+  .home-order-card { min-height: 112px; }
+}
