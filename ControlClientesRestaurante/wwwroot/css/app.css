@@ -54,7 +54,7 @@ html, body {
 .sb-arrow {
     position: absolute;
     right: -13px;
-    top: calc(var(--top-h) + 22px);   /* arriba, justo debajo del logo y sin tocarlo */
+    top: 16px;   /* arriba del todo, por encima del bloque del logo y el rol */
     transform: translateY(-50%);
     width: 26px;
     height: 26px;
@@ -143,6 +143,11 @@ html, body {
 }
 .sidebar.open .sb-section { color: rgba(228, 214, 190, 0.78); } /* Champaña / crema dorado */
 .sb-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+
+/* Rol(es) que usan cada módulo del menú */
+.sb-item .sb-lbl { display: flex !important; flex-direction: column; line-height: 1.2 !important; }
+.sb-item .sb-lbl .sb-rol { display: block; font-size: 0.6rem !important; font-weight: 700 !important; letter-spacing: 0.07em !important; text-transform: uppercase !important; opacity: 0.6; margin-top: 2px; line-height: 1.1; color: inherit; }
+.sb-item.active .sb-lbl .sb-rol { opacity: 0.85; }
 
 .sb-item {
     display: flex;
@@ -917,3 +922,26 @@ html, body {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* ── DIÁLOGOS (reemplazan alert/confirm del navegador) ──────────────────── */
+.dlg-fondo { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(28, 20, 22, 0.55); backdrop-filter: blur(3px); animation: dlgFondo 160ms ease-out; }
+.dlg-fondo[hidden] { display: none; }
+.dlg { width: min(420px, 100%); background: var(--surface, #FFFDF9); color: var(--text, #1C1416); border: 1px solid var(--line, #E3D8C8); border-radius: 16px; padding: 1.6rem 1.5rem 1.25rem; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); text-align: center; animation: dlgEntra 200ms cubic-bezier(.2,.9,.3,1.2); }
+.dlg-icono { width: 52px; height: 52px; margin: 0 auto 0.85rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--brand-soft, rgba(107, 30, 46, 0.1)); color: var(--brand, #6B1E2E); }
+.dlg[data-tono="peligro"] .dlg-icono { background: rgba(214, 69, 61, 0.13); color: var(--danger, #D6453D); }
+.dlg-icono svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dlg-titulo { font-size: 1.12rem; font-weight: 800; margin: 0 0 0.45rem; color: var(--text, #1C1416); }
+.dlg-mensaje { font-size: 0.92rem; line-height: 1.5; color: var(--muted, #5E5357); margin: 0 0 1.25rem; white-space: pre-line; overflow-wrap: anywhere; }
+.dlg-acciones { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+.dlg-btn { min-width: 120px; padding: 0.62rem 1.1rem; border-radius: 10px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border: 1px solid transparent; transition: filter 120ms ease, transform 100ms ease; }
+.dlg-btn:hover { filter: brightness(1.06); }
+.dlg-btn:active { transform: scale(0.97); }
+.dlg-btn:focus-visible { outline: 3px solid rgba(212, 194, 165, 0.9); outline-offset: 2px; }
+.dlg-btn[hidden] { display: none; }
+.dlg-btn-sec { background: var(--surface-2, #EFE6D8); color: var(--text, #1C1416); border-color: var(--line, #E3D8C8); }
+.dlg-btn-pri { background: var(--brand, #6B1E2E); color: #fff; }
+.dlg-btn-peligro { background: var(--danger, #D6453D); color: #fff; }
+html.dlg-abierto { overflow: hidden; }
+@keyframes dlgFondo { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dlgEntra { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .dlg-fondo, .dlg { animation: none; } }

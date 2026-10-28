@@ -195,7 +195,7 @@
 
                             @if (esAdmin)
                             {
-                                <form asp-action="Eliminar" method="post" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar esta reseña permanentemente?');">
+                                <form asp-action="Eliminar" method="post" style="display:inline;" data-confirm="¿Seguro que deseas eliminar esta reseña permanentemente?" data-confirm-titulo="Eliminar reseña" data-confirm-ok="Sí, eliminar" data-confirm-peligro="true">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@r.Id" />
                                     <button type="submit" class="btn-micro-admin btn-danger">Eliminar</button>

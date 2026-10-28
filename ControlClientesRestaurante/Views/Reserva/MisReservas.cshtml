@@ -76,7 +76,7 @@
 
                             @if (r.Estado == "Confirmada" && r.Fecha.Date >= DateTime.Today)
                             {
-                                <form asp-controller="Reserva" asp-action="Cancelar" method="post" style="margin:0;" onsubmit="return confirm('¿Seguro que deseas cancelar esta reserva?');">
+                                <form asp-controller="Reserva" asp-action="Cancelar" method="post" style="margin:0;" data-confirm="¿Seguro que deseas cancelar esta reserva?" data-confirm-titulo="Cancelar reserva" data-confirm-ok="Sí, cancelar" data-confirm-peligro="true">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@r.Id" />
                                     <button type="submit" style="background:none;border:none;color:#DC2626;font-size:0.8rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;">

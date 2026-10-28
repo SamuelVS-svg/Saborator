@@ -153,7 +153,7 @@
 (function () {
     const HORAS = @Json.Serialize(horas);
     const token = () => document.querySelector('#afTokenCalendario input[name="__RequestVerificationToken"]')?.value || '';
-    const aviso = (tipo, msg) => { if (typeof showToast === 'function') showToast(tipo, msg); else alert(msg); };
+    const aviso = (tipo, msg) => { if (typeof showToast === 'function') showToast(tipo === 'success' ? 'ok' : tipo, msg); else alert(msg); };
     const pad = n => String(n).padStart(2, '0');
     const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
     const hm  = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
@@ -283,7 +283,7 @@
         cont.innerHTML = h;
         cont.querySelectorAll('[data-estado]').forEach(b => b.addEventListener('click', async function () {
             const nuevo = this.dataset.estado;
-            if (nuevo === 'Cancelada' && !confirm('¿Cancelar la reserva ' + p.codigo + '?')) return;
+            if (nuevo === 'Cancelada' && !(await Saborator.confirmar('¿Cancelar la reserva ' + p.codigo + '? La mesa quedará libre para ese horario.', { titulo: 'Cancelar reserva', aceptar: 'Sí, cancelar', peligro: true }))) return;
             try {
                 const r = await post('/Reserva/EstadoJson', { id: p.id, estado: nuevo });
                 aviso(r.ok ? 'success' : 'error', r.mensaje);

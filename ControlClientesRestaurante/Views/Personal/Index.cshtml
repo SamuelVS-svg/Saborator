@@ -93,14 +93,14 @@
                     <td>@u.FechaCreacion.ToString("dd/MM/yyyy")</td>
                     <td class="per-acciones">
                         <form asp-action="RestablecerContrasena" method="post" class="per-inline"
-                              onsubmit="return confirm('¿Generar una contraseña temporal nueva para @u.NombreUsuario? La actual dejará de funcionar.');">
+                              data-confirm="¿Generar una contraseña temporal nueva para @u.NombreUsuario? La actual dejará de funcionar." data-confirm-titulo="Contraseña temporal" data-confirm-ok="Sí, generar" data-confirm-peligro="true">
                             <input type="hidden" name="id" value="@u.Id" />
                             <button type="submit" class="btn-ghost per-btn">Restablecer contraseña</button>
                         </form>
                         @if (!esYo)
                         {
                             <form asp-action="CambiarEstado" method="post" class="per-inline"
-                                  onsubmit="return confirm('¿@(u.Estado ? "Desactivar" : "Activar") la cuenta de @u.NombreUsuario?');">
+                                  data-confirm="¿@(u.Estado ? "Desactivar" : "Activar") la cuenta de @u.NombreUsuario?" data-confirm-titulo="@(u.Estado ? "Desactivar" : "Activar") cuenta" data-confirm-ok="Sí, @(u.Estado ? "desactivar" : "activar")" data-confirm-peligro="@(u.Estado ? "true" : "false")">
                                 <input type="hidden" name="id" value="@u.Id" />
                                 <button type="submit" class="btn-ghost per-btn @(u.Estado ? "per-btn-danger" : "")">@(u.Estado ? "Desactivar" : "Activar")</button>
                             </form>

@@ -242,7 +242,7 @@ else
                                         </button>
                                     </form>
 
-                                    <form asp-action="Cancelar" method="post" style="margin:0;" onsubmit="return confirm('¿Cancelar esta reserva?');">
+                                    <form asp-action="Cancelar" method="post" style="margin:0;" data-confirm="¿Cancelar esta reserva? La mesa quedará libre para ese horario." data-confirm-titulo="Cancelar reserva" data-confirm-ok="Sí, cancelar" data-confirm-peligro="true">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@r.Id" />
                                         <button type="submit" class="btn-ghost" title="Cancelar reserva" style="padding:0.28rem 0.55rem;font-size:0.75rem;color:#EF4444;border-color:rgba(239,68,68,0.3);">
