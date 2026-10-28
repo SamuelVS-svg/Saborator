@@ -26,3 +26,6 @@ publish/
 # Despliegue: secretos y respaldos
 deploy/oracle/.env
 paquete-portatil/
+
+# Fotos de perfil subidas por los usuarios (no van al repositorio)
+ControlClientesRestaurante/wwwroot/uploads/avatars/
