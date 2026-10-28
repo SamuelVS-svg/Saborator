@@ -108,8 +108,8 @@
 .combos-title { margin: 0 0 1rem; font-size: 1.15rem; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; color: var(--text); text-align: center; }
 .combos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
 .combo-card { display: flex; flex-direction: column; overflow: hidden; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
-.combo-card-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 3px; height: 130px; background: #3E2615; }
-.combo-card-photos img { width: 100%; height: 100%; object-fit: cover; }
+.combo-card-photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); grid-auto-rows: 78px; gap: 3px; max-height: 159px; overflow: hidden; background: var(--marron-oscuro, #3E2615); }
+.combo-card-photos img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
 .combo-card-body { display: flex; flex: 1; flex-direction: column; gap: .35rem; padding: 1rem 1.1rem 1.1rem; }
 .combo-tag { align-self: flex-start; padding: .15rem .6rem; border-radius: 999px; background: var(--gold); color: #3E2615; font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .combo-card h4 { margin: .15rem 0 0; font-size: 1.1rem; font-weight: 800; color: var(--text); }
