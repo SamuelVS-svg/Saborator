@@ -24,7 +24,7 @@
   transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
 }
 .home-cta:hover { filter: brightness(1.06); box-shadow: var(--shadow); transform: translateY(-1px); }
-.home-banner-dish { position: relative; z-index: 0; justify-self: end; width: min(100%, 380px); aspect-ratio: 1; border-radius: 50%; object-fit: cover; border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+.home-banner-dish { position: relative; z-index: 0; justify-self: end; width: min(100%, 380px); aspect-ratio: 1; border-radius: 50%; object-fit: contain; background: #000; border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
 
 /* ── ¿Cómo te gustaría ordenar hoy? ────────────────────────────────────── */
 .home-order { padding: 2.25rem 0 1rem; text-align: center; }
@@ -32,10 +32,10 @@
 .home-order-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; max-width: 760px; margin: 0 auto; }
 .home-order-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3rem; min-height: 132px; padding: 1.1rem 1rem;
-  border: 0; border-radius: 12px; cursor: pointer; font: inherit; color: #fff; background: var(--brand); box-shadow: var(--shadow);
+  border: 0; border-radius: 12px; cursor: pointer; font: inherit; color: #fff; background: var(--marron, #6B4226); box-shadow: var(--shadow);
   transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease;
 }
-.home-order-card:hover { background: var(--brand-hover); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.home-order-card:hover { background: var(--marron-oscuro, #3E2615); box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .home-order-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: .2rem; border-radius: 50%; color: #3E2615; background: var(--gold); }
 .home-order-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .home-order-name { font-size: 1.05rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; }
@@ -81,7 +81,7 @@
 
 .home-slide-photos { position: relative; justify-self: end; width: min(100%, 420px); aspect-ratio: 1.15; margin-right: .5rem; }
 .home-slide-photos img {
-  position: absolute; object-fit: cover; border-radius: 50%; border: 5px solid rgba(255, 255, 255, .94); background: #000;
+  position: absolute; object-fit: contain; border-radius: 50%; border: 5px solid rgba(255, 255, 255, .94); background: #000;
   box-shadow: 0 14px 30px rgba(0, 0, 0, .4);
 }
 .home-slide-photos img:nth-child(1) { width: 62%; aspect-ratio: 1; left: 0; top: 14%; z-index: 2; }
