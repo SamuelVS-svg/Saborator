@@ -117,12 +117,25 @@
     stroke: var(--gold, #E3A72F);
 }
 
+@media (max-width: 1560px) {
+    .lnav-item svg { display: none !important; }
+    .lnav-name { font-size: 1.35rem; }
+    .lnav-actions { gap: 0.4rem; }
+    .lnav-menu-links { gap: 0.1rem !important; }
+    .lnav-menu-links a,
+    .lnav-item { font-size: 0.76rem !important; padding: 0.28rem 0.3rem !important; }
+}
+
 @media (max-width: 1400px) {
-    .lnav-menu-links { gap: 0.35rem !important; }
+    .lnav-user-tag span { display: none; }
+    .lnav-name { font-size: 1.2rem; }
+    .lnav-btn-p { padding: 0.35rem 0.7rem !important; font-size: 0.78rem !important; }
+    .lnav-menu-links { gap: 0.15rem !important; }
+    .lnav-user-tag { padding: 0.4rem 0.55rem; }
     .lnav-menu-links a,
     .lnav-item {
-        font-size: 0.8rem !important;
-        padding: 0.28rem 0.42rem !important;
+        font-size: 0.76rem !important;
+        padding: 0.28rem 0.3rem !important;
     }
     .lnav-item svg {
         width: 12px !important;
@@ -137,8 +150,8 @@
     .lnav-menu-links { gap: 0.3rem !important; }
     .lnav-menu-links a,
     .lnav-item {
-        font-size: 0.78rem !important;
-        padding: 0.25rem 0.38rem !important;
+        font-size: 0.74rem !important;
+        padding: 0.25rem 0.26rem !important;
     }
     .lnav-btn-p {
         padding: 0.35rem 0.8rem !important;
