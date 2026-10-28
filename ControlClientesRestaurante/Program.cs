@@ -232,6 +232,7 @@ builder.Services.AddScoped<ClienteService>();
 builder.Services.AddSingleton<LimitadorIntentos>();
 builder.Services.AddScoped<AutenticacionService>();
 builder.Services.AddScoped<ProductoService>();
+builder.Services.AddScoped<ComboService>();
 builder.Services.AddScoped<FacturaService>();
 builder.Services.AddScoped<PedidoService>();
 builder.Services.AddScoped<ProveedorService>();

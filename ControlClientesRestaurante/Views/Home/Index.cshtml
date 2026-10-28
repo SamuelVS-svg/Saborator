@@ -1,4 +1,5 @@
 @inject ControlClientesRestaurante.Services.ProductoService _productoSvc
+@inject ControlClientesRestaurante.Services.ComboService _comboSvc
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var pagina = (ViewBag.Pagina as string) ?? "inicio";
@@ -24,6 +25,7 @@
     var _esPersonal = Roles.EsPersonal(_rol);
 
     var productos = _productoSvc.ObtenerTodos().Where(p => p.Activo).ToList();
+    var combos = _comboSvc.Disponibles();
     var resenas = ViewBag.Resenas as List<ControlClientesRestaurante.Models.Resena> ?? new List<ControlClientesRestaurante.Models.Resena>();
     var resenaStats = ViewBag.ResenaStats as ControlClientesRestaurante.Services.ResenaEstadisticasDto ?? new ControlClientesRestaurante.Services.ResenaEstadisticasDto();
 }
@@ -129,6 +131,8 @@
 }
 
 <link rel="stylesheet" href="~/css/home-simple.css" asp-append-version="true" />
+<script>window.SABORATOR_COMBOS = @Html.Raw(_comboSvc.DisponiblesJson());</script>
+<script src="~/js/combos.js" asp-append-version="true"></script>
 
 <div class="landing">
 
@@ -138,16 +142,54 @@
     {
     <!-- ══ INICIO SIMPLE: banner + cómo quieres ordenar (el resto se abre bajo demanda) ═══ -->
     <section class="hero home-hero" id="inicio">
-        <div class="home-banner">
-            <div class="home-banner-copy">
-                <span class="home-eyebrow">Alta cocina · Barranquilla</span>
-                <h1>Alta cocina<br /><em>hecha con pasión</em></h1>
-                <p>Pide a domicilio con seguimiento en vivo o reserva tu mesa.</p>
-                <a href="/Carta" class="home-cta">Ver la carta
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </a>
+        <div class="home-carousel" id="homeCarousel" role="region" aria-roledescription="carrusel" aria-label="Ofertas y combos de Saborator" tabindex="0">
+            <div class="home-carousel-track">
+                <div class="home-slide">
+                    <div class="home-banner">
+                        <div class="home-banner-copy">
+                            <span class="home-eyebrow">Alta cocina · Barranquilla</span>
+                            <h1>Alta cocina<br /><em>hecha con pasión</em></h1>
+                            <p>Pide a domicilio con seguimiento en vivo o reserva tu mesa.</p>
+                            <a href="/Carta" class="home-cta">Ver la carta
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </a>
+                        </div>
+                        <img src="/img/hamburguesa.jpg" alt="Hamburguesa de autor Saborator" class="home-banner-dish" />
+                    </div>
+                </div>
+                @foreach (var c in combos.Where(x => x.HayStock))
+                {
+                    <div class="home-slide">
+                        <div class="home-slide-combo">
+                            <div class="home-slide-copy">
+                                <span class="home-eyebrow">@c.Etiqueta</span>
+                                <h2>@c.Nombre</h2>
+                                <p>@c.Descripcion</p>
+                                <div class="home-slide-price">
+                                    <strong>$@c.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</strong>
+                                    @if (c.Ahorro > 0)
+                                    {
+                                        <del>$@c.PrecioNormal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</del>
+                                        <span>Ahorras $@c.Ahorro.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
+                                    }
+                                </div>
+                                <button type="button" class="home-cta" onclick="pedirCombo('@c.Id')">Pide aquí
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </button>
+                            </div>
+                            <div class="home-slide-photos" aria-hidden="true">
+                                @foreach (var img in c.Lineas.Select(l => l.Imagen).Distinct().Take(4))
+                                {
+                                    <img src="@img" alt="" loading="lazy" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-            <img src="/img/hamburguesa.jpg" alt="Hamburguesa de autor Saborator" class="home-banner-dish" />
+            <button type="button" class="home-carousel-nav prev" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <button type="button" class="home-carousel-nav next" aria-label="Diapositiva siguiente"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+            <div class="home-carousel-dots" role="group" aria-label="Elegir diapositiva"></div>
         </div>
 
         <div class="home-order">
@@ -182,6 +224,39 @@
                 <p class="section-sub">Elaborada artesanalmente con productos frescos de temporada</p>
             </div>
 
+            @if (combos.Count > 0)
+            {
+            <div class="combos-row" id="combosRow">
+                <h3 class="combos-title">Combos Saborator</h3>
+                <div class="combos-grid">
+                    @foreach (var c in combos)
+                    {
+                        <article class="combo-card @(c.HayStock ? "" : "agotado")">
+                            <div class="combo-card-photos" aria-hidden="true">
+                                @foreach (var img in c.Lineas.Select(l => l.Imagen).Distinct().Take(4))
+                                {
+                                    <img src="@img" alt="" loading="lazy" />
+                                }
+                            </div>
+                            <div class="combo-card-body">
+                                <span class="combo-tag">@c.Etiqueta</span>
+                                <h4>@c.Nombre</h4>
+                                <p>@c.Descripcion</p>
+                                <div class="combo-card-price">
+                                    <strong>$@c.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</strong>
+                                    @if (c.Ahorro > 0)
+                                    {
+                                        <del>$@c.PrecioNormal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</del>
+                                        <span>Ahorras $@c.Ahorro.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
+                                    }
+                                </div>
+                                <button type="button" class="btn-gold" onclick="pedirCombo('@c.Id')" disabled="@(!c.HayStock)">@(c.HayStock ? "Agregar combo" : "Agotado")</button>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </div>
+            }
             <!-- Filtros por Categoría y Preferencias Dietarias -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
                 <div class="d-flex flex-wrap gap-2" id="cartaCategoryFilter">
@@ -1315,6 +1390,14 @@
         guardarCart();
     }
 
+    // Agrega al carrito los productos de un combo; el ahorro se aplica solo (ver combos.js)
+    function pedirCombo(id) {
+        const combo = window.SaboratorCombos && SaboratorCombos.porId(id);
+        if (!combo) return;
+        combo.lineas.forEach(l => { for (let k = 0; k < l.cantidad; k++) cartAgregar(l.productoId, l.nombre, l.precioUnitario, l.imagen); });
+        abrirDrawerCarrito();
+    }
+
     function cartEliminar(id) {
         cart = cart.filter(x => x.id !== id);
         guardarCart();
@@ -1324,7 +1407,8 @@
         const totalItems = cart.reduce((acc, x) => acc + x.cantidad, 0);
         const subtotal = cart.reduce((acc, x) => acc + (x.precio * x.cantidad), 0);
         const envio = (modalidadEntrega === 'Domicilio' && totalItems > 0) ? costoEnvioGuardado : 0;
-        const totalFinal = subtotal + envio;
+        const ahorroCombos = (window.SaboratorCombos ? SaboratorCombos.descuento(cart) : { total: 0, detalle: [] });
+        const totalFinal = Math.max(0, subtotal - ahorroCombos.total) + envio;
 
         // 1. Badge Navbar
         const navBadge = document.getElementById('navCartCount');
@@ -1339,7 +1423,7 @@
             if (totalItems > 0) {
                 floatBar.classList.add('visible');
                 document.getElementById('floatItemCount').textContent = totalItems;
-                document.getElementById('floatSubtotalVal').textContent = `$${subtotal.toLocaleString('es-CO')} COP`;
+                document.getElementById('floatSubtotalVal').textContent = `$${(subtotal - ahorroCombos.total).toLocaleString('es-CO')} COP`;
                 document.getElementById('floatModeVal').textContent = modalidadEntrega === 'Domicilio' 
                     ? `Domicilio ($${costoEnvioGuardado.toLocaleString('es-CO')} - ${barrioGuardado})` 
                     : (modalidadEntrega === 'ParaLlevar' ? 'Retiro en Restaurante' : 'En Mesa');
@@ -1349,10 +1433,10 @@
         }
 
         // 3. Renderizar items en Drawer
-        renderDrawerItems(subtotal, envio, totalFinal);
+        renderDrawerItems(subtotal, envio, totalFinal, ahorroCombos);
     }
 
-    function renderDrawerItems(subtotal, envio, totalFinal) {
+    function renderDrawerItems(subtotal, envio, totalFinal, ahorroCombos) {
         const list = document.getElementById('drawerItemsList');
         if (!list) return;
 
@@ -1395,6 +1479,15 @@
         }
 
         document.getElementById('drawerSubtotal').textContent = `$${subtotal.toLocaleString('es-CO')} COP`;
+        const filaCombo = document.getElementById('drawerComboRow');
+        if (filaCombo) {
+            const ahorro = ahorroCombos && ahorroCombos.total > 0 ? ahorroCombos : null;
+            filaCombo.style.display = ahorro ? 'flex' : 'none';
+            if (ahorro) {
+                document.getElementById('drawerComboLabel').textContent = ahorro.detalle.map(d => (d.veces > 1 ? d.veces + ' × ' : '') + d.nombre).join(' + ');
+                document.getElementById('drawerComboVal').textContent = `-$${ahorro.total.toLocaleString('es-CO')} COP`;
+            }
+        }
         document.getElementById('drawerShipping').textContent = envio > 0 ? `$${envio.toLocaleString('es-CO')} COP (${barrioGuardado})` : 'Gratis ($0)';
         document.getElementById('drawerTotal').textContent = `$${totalFinal.toLocaleString('es-CO')} COP`;
 
@@ -1736,6 +1829,10 @@
                 <div class="drawer-total-row">
                     <span>Subtotal</span>
                     <span id="drawerSubtotal">$0 COP</span>
+                </div>
+                <div class="drawer-total-row combo-ahorro" id="drawerComboRow" style="display:none;">
+                    <span id="drawerComboLabel">Ahorro por combo</span>
+                    <span id="drawerComboVal">-$0 COP</span>
                 </div>
                 <div class="drawer-total-row" id="drawerShippingRow">
                     <span>Costo de Envío</span>

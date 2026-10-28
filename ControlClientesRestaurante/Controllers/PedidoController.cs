@@ -19,6 +19,7 @@ namespace ControlClientesRestaurante.Controllers
         private readonly IConfiguration _config;
         private readonly IHubContext<CocinaHub> _cocinaHub;
         private readonly IUsuarioRepository _usuarioRepo;
+        private readonly ComboService _comboService;
 
         public PedidoController(
             PedidoService   pedidoService,
@@ -28,7 +29,8 @@ namespace ControlClientesRestaurante.Controllers
             AuditoriaService auditoriaService,
             IConfiguration config,
             IHubContext<CocinaHub> cocinaHub,
-            IUsuarioRepository usuarioRepo)
+            IUsuarioRepository usuarioRepo,
+            ComboService comboService)
         {
             _pedidoService   = pedidoService;
             _productoService = productoService;
@@ -38,6 +40,7 @@ namespace ControlClientesRestaurante.Controllers
             _config          = config;
             _cocinaHub       = cocinaHub;
             _usuarioRepo     = usuarioRepo;
+            _comboService    = comboService;
         }
 
         // La identidad y el rol se toman únicamente de la cookie de autenticación:
@@ -452,6 +455,10 @@ namespace ControlClientesRestaurante.Controllers
                 }
             }
 
+            // ── COMBOS: el ahorro se calcula aquí con los precios reales, nunca con lo que envía el navegador ──
+            var ahorroCombos = _comboService.CalcularDescuento(lineas.Select(l => (l.productoId, l.cantidad))).Descuento;
+            var descuentoTotal = Math.Min(subtotalProductos, descuentoCupon + ahorroCombos);
+
             // ── TARIFA DE DOMICILIO SEGURA (PROTECCIÓN CONTRA MANIPULACIÓN DEL CLIENTE) ──
             decimal costoEnvioFinal = 0;
             if (tipoEntrega == "Domicilio")
@@ -485,7 +492,7 @@ namespace ControlClientesRestaurante.Controllers
                 metodoPago: metodoPago,
                 costoEnvio: costoEnvioFinal,
                 pagaCon: pagaCon,
-                descuento: descuentoCupon,
+                descuento: descuentoTotal,
                 codigoCupon: cuponAplicado);
 
             if (!ok || pedido == null)

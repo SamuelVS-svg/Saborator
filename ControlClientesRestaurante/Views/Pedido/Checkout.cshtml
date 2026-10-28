@@ -9,6 +9,10 @@
     bool esCliente = ViewBag.EsCliente == true;
 }
 
+@inject ControlClientesRestaurante.Services.ComboService _comboSvc
+<script>window.SABORATOR_COMBOS = @Html.Raw(_comboSvc.DisponiblesJson());</script>
+<script src="~/js/combos.js" asp-append-version="true"></script>
+
 <div class="checkout-wrapper">
 
     <!-- Encabezado Gastronómico estilo KFC -->
@@ -378,6 +382,10 @@
                         <div class="summary-row discount" id="filaDescuentoCupon" style="display:none;color:#16A34A;font-weight:700;">
                             <span id="lblDescuentoCupon">Descuento Promocional</span>
                             <span id="descuentoVal">-$0 COP</span>
+                        </div>
+                        <div class="summary-row discount" id="filaDescuentoCombo" style="display:none;color:#16A34A;font-weight:700;">
+                            <span id="lblDescuentoCombo">Ahorro por combo</span>
+                            <span id="descuentoComboVal">-$0 COP</span>
                         </div>
                         <div class="summary-row" id="filaCostoEnvio">
                             <span>Costo de Domicilio</span>
@@ -1200,7 +1208,17 @@
         container.innerHTML = htmlItems;
         inputsContainer.innerHTML = htmlInputs;
 
-        const totalFinal = Math.max(0, subtotal - descuento) + (tipoEntregaActual === 'Domicilio' ? costoEnvio : 0);
+        // Ahorro por combos (el servidor lo vuelve a calcular con los precios reales)
+        const combos = window.SaboratorCombos ? SaboratorCombos.descuento(cart) : { total: 0, detalle: [] };
+        const filaCombo = document.getElementById('filaDescuentoCombo');
+        if (filaCombo) {
+            filaCombo.style.display = combos.total > 0 ? 'flex' : 'none';
+            if (combos.total > 0) {
+                document.getElementById('lblDescuentoCombo').textContent = combos.detalle.map(d => (d.veces > 1 ? d.veces + ' × ' : '') + d.nombre).join(' + ');
+                document.getElementById('descuentoComboVal').textContent = `-$${combos.total.toLocaleString('es-CO')} COP`;
+            }
+        }
+        const totalFinal = Math.max(0, subtotal - (descuento + combos.total)) + (tipoEntregaActual === 'Domicilio' ? costoEnvio : 0);
         document.getElementById('subtotalVal').textContent = `$${subtotal.toLocaleString('es-CO')} COP`;
         document.getElementById('totalFinalVal').textContent = `$${totalFinal.toLocaleString('es-CO')} COP`;
 
