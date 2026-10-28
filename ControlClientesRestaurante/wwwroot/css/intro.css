@@ -268,7 +268,7 @@
 }
 
 .intro-brand-title {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-size: clamp(2.4rem, 6.5vw, 3.8rem);
     font-weight: 400;
     letter-spacing: 0.08em;

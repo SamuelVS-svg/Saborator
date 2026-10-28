@@ -25,7 +25,7 @@
   --r-ctl:12px; --r-card:12px; --r-big:12px;
   --font:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'Geist Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
-  --serif:'Poppins', system-ui, sans-serif;
+  --serif:'Playfair Display',Georgia,serif;
   --dock-space:128px;
   color-scheme:light;
 }
