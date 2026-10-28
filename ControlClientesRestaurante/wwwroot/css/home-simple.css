@@ -136,18 +136,6 @@
 }
 @media (prefers-reduced-motion: reduce) { .home-carousel-track { transition: none; } }
 
-/* ══ CONCEPTO COMIDA RÁPIDA ═══════════════════════════════════════════════════════════════════════
-   Títulos en Poppins pesado y en mayúsculas (en lugar de la serif elegante): directo, grande y con apetito. */
-.home-banner h1,
-.home-slide-combo h2,
-.home-page .section-title,
-.lnav-name {
-  font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-style: normal; text-transform: uppercase; letter-spacing: .01em;
-}
-.home-banner h1 { line-height: 1.02; font-size: clamp(2.2rem, 4.8vw, 3.6rem); }
-.home-banner h1 em { font-style: normal; }
-.home-page .section-title { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
-
 /* ══ Buscador de la carta ═════════════════════════════════════════════════════════════════════════ */
 .carta-buscar { position: relative; display: flex; align-items: center; max-width: 640px; margin: 0 auto 1.25rem; }
 .carta-buscar-ico { position: absolute; left: 1rem; width: 20px; height: 20px; fill: none; stroke: var(--muted); stroke-width: 2.2; stroke-linecap: round; pointer-events: none; }
