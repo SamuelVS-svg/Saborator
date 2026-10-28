@@ -26,11 +26,11 @@
         flex-wrap: wrap;
         gap: 1.25rem;
         margin-bottom: 2rem;
-        background: linear-gradient(135deg, var(--brand, #6B1E2E) 0%, #4A121E 100%);
-        color: #FFFDF9;
+        background: linear-gradient(135deg, var(--brand, #5D4037) 0%, #4A121E 100%);
+        color: #FFFFFF;
         padding: 2rem 2.25rem;
         border-radius: var(--r-card, 16px);
-        box-shadow: 0 10px 30px rgba(107, 30, 46, 0.15);
+        box-shadow: 0 10px 30px rgba(93, 64, 55, 0.15);
         position: relative;
         overflow: hidden;
     }
@@ -41,7 +41,7 @@
         right: -60px;
         width: 220px;
         height: 220px;
-        background: radial-gradient(circle, rgba(200, 151, 58, 0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255, 179, 0, 0.2) 0%, transparent 70%);
         border-radius: 50%;
         pointer-events: none;
     }
@@ -53,7 +53,7 @@
         line-height: 1.1;
     }
     .md-header-subtitle {
-        color: rgba(255, 253, 249, 0.82);
+        color: rgba(255, 255, 255, 0.82);
         font-size: .92rem;
         max-width: 650px;
         margin: 0;
@@ -78,15 +78,15 @@
         transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .btn-header-primary {
-        background: var(--gold, #C8973A);
-        color: #FFFDF9;
+        background: var(--gold, #FFB300);
+        color: #FFFFFF;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     }
     .btn-header-primary:hover {
         background: #D4A346;
-        color: #FFFDF9;
+        color: #FFFFFF;
         transform: translateY(-2px);
-        box-shadow: 0 6px 18px rgba(200, 151, 58, 0.35);
+        box-shadow: 0 6px 18px rgba(255, 179, 0, 0.35);
     }
 
     /* KPI Summary Cards */
@@ -97,7 +97,7 @@
         margin-bottom: 2rem;
     }
     .kpi-card {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1px solid var(--line, #E5DCB8);
         border-radius: var(--r-control, 12px);
         padding: 1.1rem 1.25rem;
@@ -124,7 +124,7 @@
         font-size: 1.65rem;
         font-weight: 700;
         line-height: 1;
-        color: var(--ink, #1C1416);
+        color: var(--ink, #2B1B15);
     }
     .kpi-lbl {
         font-size: .75rem;
@@ -160,19 +160,19 @@
         font-weight: 600;
         text-decoration: none;
         border: 1px solid var(--line, #E5DCB8);
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         color: var(--c-muted, #7A6355);
         transition: all 140ms ease;
     }
     .filter-pill:hover {
-        border-color: var(--brand, #6B1E2E);
-        color: var(--brand, #6B1E2E);
+        border-color: var(--brand, #5D4037);
+        color: var(--brand, #5D4037);
     }
     .filter-pill.active {
-        background: var(--brand, #6B1E2E);
-        border-color: var(--brand, #6B1E2E);
-        color: #FFFDF9;
-        box-shadow: 0 2px 8px rgba(107, 30, 46, 0.25);
+        background: var(--brand, #5D4037);
+        border-color: var(--brand, #5D4037);
+        color: #FFFFFF;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.25);
     }
     .filter-pill .count {
         background: rgba(0, 0, 0, 0.08);
@@ -181,8 +181,8 @@
         font-size: .72rem;
     }
     .filter-pill.active .count {
-        background: rgba(255, 253, 249, 0.25);
-        color: #FFFDF9;
+        background: rgba(255, 255, 255, 0.25);
+        color: #FFFFFF;
     }
 
     /* Grilla de Mesas */
@@ -194,7 +194,7 @@
 
     /* Tarjeta de Mesa */
     .mesa-card {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1.5px solid var(--line, #E5DCB8);
         border-radius: var(--r-card, 16px);
         padding: 1.25rem;
@@ -208,7 +208,7 @@
     }
     .mesa-card:hover {
         transform: translateY(-3px);
-        border-color: var(--gold, #C8973A);
+        border-color: var(--gold, #FFB300);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
 
@@ -233,17 +233,17 @@
         width: 32px;
         height: 32px;
         border-radius: 8px;
-        background: var(--surface-2, #EFE8DA);
+        background: var(--surface-2, #F3ECE5);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--brand, #6B1E2E);
+        color: var(--brand, #5D4037);
     }
     .mc-num {
         font-family: var(--font-serif, 'Instrument Serif', Georgia, serif);
         font-size: 1.6rem;
         font-weight: 600;
-        color: var(--ink, #1C1416);
+        color: var(--ink, #2B1B15);
         line-height: 1;
     }
     .mc-badge {
@@ -276,8 +276,8 @@
     .mc-body {
         font-size: .85rem;
         color: var(--c-muted, #7A6355);
-        background: var(--surface-2, #FAF6F0);
-        border: 1px solid var(--line-2, #EFE8DA);
+        background: var(--surface-2, #FAF6F2);
+        border: 1px solid var(--line-2, #F3ECE5);
         padding: .85rem .95rem;
         border-radius: 10px;
         min-height: 70px;
@@ -295,7 +295,7 @@
     }
     .mc-info-main {
         font-weight: 600;
-        color: var(--ink, #1C1416);
+        color: var(--ink, #2B1B15);
         font-size: .9rem;
     }
     .mc-info-sub {
@@ -322,8 +322,8 @@
         padding: .5rem .75rem;
         border-radius: 8px;
         border: 1.5px solid var(--line, #E5DCB8);
-        background: var(--surface, #FFFDF9);
-        color: var(--ink, #1C1416);
+        background: var(--surface, #FFFFFF);
+        color: var(--ink, #2B1B15);
         font-size: .84rem;
         font-weight: 600;
         outline: none;
@@ -331,8 +331,8 @@
         transition: border-color 140ms ease, box-shadow 140ms ease;
     }
     .mc-select:focus {
-        border-color: var(--brand, #6B1E2E);
-        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.12);
+        border-color: var(--brand, #5D4037);
+        box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.12);
     }
 
     /* Botones de acción rápida */
@@ -342,27 +342,27 @@
         gap: .35rem;
     }
     .mc-q-btn {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1px solid var(--line, #E5DCB8);
         border-radius: 6px;
         padding: .35rem .25rem;
         font-size: .68rem;
         font-weight: 700;
-        color: var(--ink, #1C1416);
+        color: var(--ink, #2B1B15);
         cursor: pointer;
         text-align: center;
         transition: all 120ms ease;
         user-select: none;
     }
     .mc-q-btn:hover {
-        border-color: var(--brand, #6B1E2E);
-        color: var(--brand, #6B1E2E);
+        border-color: var(--brand, #5D4037);
+        color: var(--brand, #5D4037);
         transform: translateY(-1px);
     }
     .mc-q-btn.active {
-        background: var(--brand, #6B1E2E);
-        color: #FFFDF9;
-        border-color: var(--brand, #6B1E2E);
+        background: var(--brand, #5D4037);
+        color: #FFFFFF;
+        border-color: var(--brand, #5D4037);
     }
 
     /* Pie de tarjeta */
@@ -385,22 +385,22 @@
         transition: all 140ms ease;
     }
     .mc-action-order {
-        background: var(--brand, #6B1E2E);
-        color: #FFFDF9;
+        background: var(--brand, #5D4037);
+        color: #FFFFFF;
     }
     .mc-action-order:hover {
         background: #842539;
-        color: #FFFDF9;
+        color: #FFFFFF;
         transform: translateY(-1px);
     }
     .mc-action-view {
-        background: var(--surface-2, #EFE8DA);
-        color: var(--ink, #1C1416);
-        border: 1px solid var(--line-2, #DDD4A8);
+        background: var(--surface-2, #F3ECE5);
+        color: var(--ink, #2B1B15);
+        border: 1px solid var(--line-2, #F1E4B3);
     }
     .mc-action-view:hover {
-        background: var(--line-2, #DDD4A8);
-        color: var(--ink, #1C1416);
+        background: var(--line-2, #F1E4B3);
+        color: var(--ink, #2B1B15);
     }
 
     /* Toast Flotante */
@@ -409,8 +409,8 @@
         bottom: 2rem;
         right: 2rem;
         background: #18060A;
-        color: #FFFDF9;
-        border-left: 4px solid var(--gold, #C8973A);
+        color: #FFFFFF;
+        border-left: 4px solid var(--gold, #FFB300);
         padding: .85rem 1.4rem;
         border-radius: 10px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
@@ -439,7 +439,7 @@
         <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" style="border-radius:12px;background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46;display:flex;align-items:center;gap:8px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             <div><strong>Éxito:</strong> @TempData["Mensaje"]</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Cerrar"></button>
         </div>
     }
     @if (TempData["Error"] != null)
@@ -447,7 +447,7 @@
         <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-radius:12px;background:#FFF1F2;border:1px solid #FECDD3;color:#9F1239;display:flex;align-items:center;gap:8px;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div><strong>Atención:</strong> @TempData["Error"]</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            <button type="button" class="btn-close" data-dismiss="alert" aria-label="Cerrar"></button>
         </div>
     }
 
@@ -465,7 +465,7 @@
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
                 <span>Tomar Nuevo Pedido</span>
             </a>
-            <a asp-controller="Reserva" asp-action="Admin" class="btn-header-action" style="background:rgba(255,253,249,0.15);border:1px solid rgba(255,253,249,0.3);color:#FFFDF9;">
+            <a asp-controller="Reserva" asp-action="Admin" class="btn-header-action" style="background:rgba(255, 255, 255,0.15);border:1px solid rgba(255, 255, 255,0.3);color:#FFFFFF;">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span>Ver Reservas</span>
             </a>
@@ -475,7 +475,7 @@
     <!-- Tarjetas de Resumen KPI -->
     <div class="kpi-grid">
         <div class="kpi-card">
-            <div class="kpi-icon" style="background:rgba(107,30,46,0.1);color:var(--brand,#6B1E2E);">
+            <div class="kpi-icon" style="background:rgba(93, 64, 55,0.1);color:var(--brand,#5D4037);">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
             </div>
             <div>
@@ -658,7 +658,7 @@
 
 <!-- Toast flotante de notificación rápida -->
 <div id="mesaToast" class="mesa-toast">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold,#C8973A)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold,#FFB300)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
     <span id="mesaToastMsg">Mesa actualizada</span>
 </div>
 
