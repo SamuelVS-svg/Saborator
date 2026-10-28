@@ -62,12 +62,13 @@
 /* ══ Pasarela de imágenes (carrusel de ofertas y combos) ══════════════════════════════════════════ */
 .home-carousel { position: relative; overflow: hidden; border-radius: 28px; box-shadow: var(--shadow-md); background: #3E2723; }
 .home-carousel-track { display: flex; transition: transform .6s cubic-bezier(.2, 0, 0, 1); will-change: transform; }
-.home-slide { flex: 0 0 100%; min-width: 0; }
-.home-carousel .home-banner { border-radius: 0; box-shadow: none; min-height: 340px; }
+.home-slide { flex: 0 0 100%; min-width: 0; display: flex; }
+.home-slide > .home-banner, .home-slide > .home-slide-combo { flex: 1 1 auto; min-width: 0; }   /* cada diapositiva llena todo el alto del carrusel */
+.home-carousel .home-banner { border-radius: 0; box-shadow: none; min-height: 360px; padding: 2.5rem 4.75rem 3.5rem; }
 
 /* Diapositiva de combo */
 .home-slide-combo {
-  display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 1rem; min-height: 340px; padding: 2rem 2.5rem 3rem; color: #fff;
+  display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 1rem; min-height: 360px; padding: 2.5rem 4.75rem 3.5rem; color: #fff;
   background: radial-gradient(120% 140% at 85% 15%, #8D6E63 0%, #5D4037 45%, #3E2723 100%);
 }
 .home-slide-copy { position: relative; z-index: 1; }
@@ -78,7 +79,7 @@
 .home-slide-price del { color: rgba(255, 255, 255, .6); font-size: 1.05rem; }
 .home-slide-price span { padding: .2rem .7rem; border-radius: 999px; background: rgba(255, 193, 7, .2); color: #FFE082; font-size: .8rem; font-weight: 800; }
 
-.home-slide-photos { position: relative; justify-self: end; width: min(100%, 380px); aspect-ratio: 1.15; }
+.home-slide-photos { position: relative; justify-self: end; width: min(100%, 360px); aspect-ratio: 1.15; margin-right: .5rem; }
 .home-slide-photos img {
   position: absolute; object-fit: cover; border-radius: 50%; border: 5px solid rgba(255, 255, 255, .94); background: #000;
   box-shadow: 0 14px 30px rgba(0, 0, 0, .4);
@@ -124,9 +125,9 @@
 .drawer-total-row.combo-ahorro { color: #2E7D52; font-weight: 700; }
 
 @media (max-width: 760px) {
-  .home-slide-combo { grid-template-columns: 1fr; padding: 1.5rem 1.25rem 3rem; min-height: 0; }
+  .home-slide-combo { grid-template-columns: 1fr; padding: 1.5rem 3.25rem 3.25rem; min-height: 0; }
   .home-slide-photos { justify-self: center; width: min(86%, 300px); order: -1; }
-  .home-carousel .home-banner { min-height: 0; padding-bottom: 3rem; }
+  .home-carousel .home-banner { min-height: 0; padding: 1.5rem 3.25rem 3.25rem; }
   .home-carousel-nav { width: 36px; height: 36px; margin-top: -18px; }
 }
 @media (prefers-reduced-motion: reduce) { .home-carousel-track { transition: none; } }
