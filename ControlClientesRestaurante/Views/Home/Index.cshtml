@@ -224,7 +224,7 @@
                 <p class="section-sub">Hamburguesas, salchipapas, perros y bebidas, recién hechos</p>
             </div>
 
-            <!-- Buscador de la carta -->
+            <!-- Buscador de la carta (también llega aquí lo que se escribe en la barra superior: /Carta?q=…) -->
             <div class="carta-buscar" role="search">
                 <svg class="carta-buscar-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="search" id="cartaBuscar" class="carta-buscar-input" placeholder="Buscar en la carta: hamburguesa, papas, combo…" autocomplete="off" aria-label="Buscar en la carta" oninput="buscarEnCarta(this.value)" />
@@ -401,15 +401,9 @@
 
                 // Desde la lupa de la barra superior: /Carta?buscar=1 deja el cursor en la caja
                 document.addEventListener('DOMContentLoaded', () => {
-                    if (new URLSearchParams(location.search).has('buscar')) abrirBuscadorCarta();
+                    const q = new URLSearchParams(location.search).get('q');
+                    if (q) { buscarEnCarta(q); document.getElementById('cartaBuscar')?.scrollIntoView({ block: 'center' }); }
                 });
-                function abrirBuscadorCarta() {
-                    const caja = document.getElementById('cartaBuscar');
-                    if (!caja) return false;
-                    caja.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => caja.focus(), 350);
-                    return true;
-                }
             </script>
 
         </div>

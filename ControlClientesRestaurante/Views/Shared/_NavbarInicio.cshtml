@@ -55,9 +55,9 @@
 
         <div class="lnav-actions">
             <!-- Buscar en la carta -->
-            <a href="/Carta?buscar=1" class="lnav-cart-btn lnav-search-btn" aria-label="Buscar en la carta" title="Buscar" onclick="if (typeof abrirBuscadorCarta === 'function' && abrirBuscadorCarta()) { return false; }">
+            <button type="button" class="lnav-cart-btn lnav-search-btn" id="lnavBuscarBtn" aria-label="Buscar en la carta" aria-expanded="false" aria-controls="lnavBuscar" title="Buscar">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </a>
+            </button>
 
             <!-- Botón de Modo Oscuro / Claro -->
             <button type="button" class="theme-toggle-btn" onclick="toggleModoOscuro()" title="Cambiar modo de luz u oscuro" aria-label="Cambiar modo de luz u oscuro">
@@ -100,6 +100,14 @@
                 <span></span><span></span><span></span>
             </button>
         </div>
+
+        <!-- Barra de búsqueda (aparece sobre la cabecera al pulsar la lupa) -->
+        <div class="lnav-buscar" id="lnavBuscar" role="search" hidden>
+            <svg class="lnav-buscar-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="lnavBuscarInput" class="lnav-buscar-input" placeholder="¿Qué se te antoja? Hamburguesa, papas, combo…" autocomplete="off" aria-label="Buscar en la carta" aria-controls="lnavBuscarRes" />
+            <button type="button" class="lnav-buscar-cerrar" id="lnavBuscarCerrar" aria-label="Cerrar búsqueda">&times;</button>
+            <div class="lnav-buscar-res" id="lnavBuscarRes" role="listbox" hidden></div>
+        </div>
     </nav>
 
     <!-- Menú Desplegable Móvil Completo -->
@@ -131,4 +139,5 @@
 @if (!_esInicio)
 {
     <div class="lnav-spacer" aria-hidden="true"></div>
+    <script src="~/js/buscador-nav.js" asp-append-version="true"></script>
 }

@@ -9,10 +9,14 @@ namespace ControlClientesRestaurante.Controllers
     public class HomeController : Controller
     {
         private readonly Services.ResenaService _resenaService;
+        private readonly Services.ProductoService _productoService;
+        private readonly Services.ComboService _comboService;
 
-        public HomeController(Services.ResenaService resenaService)
+        public HomeController(Services.ResenaService resenaService, Services.ProductoService productoService, Services.ComboService comboService)
         {
             _resenaService = resenaService;
+            _productoService = productoService;
+            _comboService = comboService;
         }
 
         // Página principal pública — no requiere autenticación
@@ -38,6 +42,31 @@ namespace ControlClientesRestaurante.Controllers
             ViewBag.Resenas = _resenaService.ObtenerAprobadas();
             ViewBag.ResenaStats = _resenaService.ObtenerEstadisticas();
             return View("Index");
+        }
+
+        // Buscador de la barra superior: platos y combos que coinciden con lo escrito (público, solo lectura)
+        [HttpGet("/Home/BuscarCarta")]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("publico")]
+        public IActionResult BuscarCarta(string? q)
+        {
+            var termino = QuitarAcentos((q ?? "").Trim());
+            if (termino.Length < 2 || termino.Length > 60) return Json(Array.Empty<object>());
+
+            var platos = _productoService.ObtenerTodos().Where(p => p.Activo)
+                .Where(p => QuitarAcentos($"{p.Nombre} {p.Descripcion} {p.Categoria}").Contains(termino))
+                .Select(p => new { tipo = "plato", id = p.Id.ToString(), nombre = p.Nombre, detalle = p.Categoria ?? "", precio = p.Precio, imagen = Services.ComboService.ImagenPorNombre(p.Nombre) });
+
+            var combos = _comboService.Disponibles()
+                .Where(c => QuitarAcentos($"{c.Nombre} {c.Descripcion}").Contains(termino))
+                .Select(c => new { tipo = "combo", id = c.Id, nombre = c.Nombre, detalle = c.Descripcion, precio = c.Precio, imagen = c.Lineas.FirstOrDefault()?.Imagen ?? "/img/hamburguesa.jpg" });
+
+            return Json(combos.Concat(platos).Take(8));
+        }
+
+        private static string QuitarAcentos(string texto)
+        {
+            var d = texto.ToLowerInvariant().Normalize(System.Text.NormalizationForm.FormD);
+            return new string(d.Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray());
         }
 
         // Vista preservada de información técnica y módulos del sistema de gestión
