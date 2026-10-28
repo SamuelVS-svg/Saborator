@@ -46,7 +46,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     if (enContenedor)
     {
         // El proxy de Railway no tiene una IP fija conocida
-        options.KnownNetworks.Clear();
+        options.KnownIPNetworks.Clear();
         options.KnownProxies.Clear();
     }
     // En el equipo propio se conservan los valores por defecto: solo se confía en las cabeceras

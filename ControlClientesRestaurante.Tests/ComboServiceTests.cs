@@ -46,7 +46,10 @@ namespace ControlClientesRestaurante.Tests
 
             var inactiva = Carta();
             inactiva.Single(p => p.Nombre == "Hamburguesa").Activo = false;
-            Assert.Empty(ComboService.Resolver(inactiva).Where(c => c.Id is "clasico" or "duo" or "familiar"));
+            var idsInactiva = ComboService.Resolver(inactiva).Select(c => c.Id).ToList();
+            Assert.DoesNotContain("clasico", idsInactiva);
+            Assert.DoesNotContain("duo", idsInactiva);
+            Assert.DoesNotContain("familiar", idsInactiva);
         }
 
         [Fact]

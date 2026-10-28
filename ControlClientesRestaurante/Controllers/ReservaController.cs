@@ -402,10 +402,11 @@ namespace ControlClientesRestaurante.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CrearManual([FromBody] NuevaReservaViewModel vm)
         {
-            if (!ReservaService.HorasReserva.Contains((vm.Hora ?? "").Trim()))
+            var hora = (vm.Hora ?? "").Trim();
+            if (!ReservaService.HorasReserva.Contains(hora))
                 return Json(new { ok = false, mensaje = "Ese horario no es de servicio." });
             var (ok, mensaje, reserva) = _reservaService.CrearReserva(
-                vm.NombreCliente, vm.Telefono, vm.Correo, vm.NumeroMesa, vm.Fecha, vm.Hora, vm.NumeroPersonas, vm.Notas, null);
+                vm.NombreCliente, vm.Telefono, vm.Correo, vm.NumeroMesa, vm.Fecha, hora, vm.NumeroPersonas, vm.Notas, null);
             return Json(new { ok, mensaje, codigo = reserva?.Codigo });
         }
         // ── Exportar Reporte de Reservas a Excel (CSV UTF-8) ───────────────

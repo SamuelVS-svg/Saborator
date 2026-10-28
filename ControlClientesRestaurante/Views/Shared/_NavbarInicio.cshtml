@@ -15,10 +15,10 @@
     var _ancla = _esInicio ? "" : "/";
     var _ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var _act = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-    string Actual(string c, string a) => _ctrl == c && _act == a ? "page" : null;
+    string? Actual(string c, string a) => _ctrl == c && _act == a ? "page" : null;
     // Páginas públicas del inicio (cada una tiene su propia dirección: /Carta, /Sede, ...)
     var _pag = (ViewBag.Pagina as string) ?? (_ctrl == "Home" && _act == "Index" ? "inicio" : "");
-    string Pag(string p) => _pag == p ? "page" : null;
+    string? Pag(string p) => _pag == p ? "page" : null;
 }
 
 <link rel="stylesheet" href="~/css/nav-inicio.css" asp-append-version="true" />

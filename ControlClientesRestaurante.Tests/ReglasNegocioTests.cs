@@ -224,7 +224,7 @@ namespace ControlClientesRestaurante.Tests
             var (_, _, reserva) = svc.CrearReserva("Ana", "300", null, 4, ProximoDia(DayOfWeek.Sunday), "19:00", 2, null, "ana");
             Assert.True(svc.AplicarEstado(reserva!.Id, "No Asistio", "admin").ok);
             Assert.False(svc.AplicarEstado(reserva.Id, "Inventado", "admin").ok);
-            Assert.Equal(1, svc.ObtenerEnRango(reserva.Fecha, reserva.Fecha.AddDays(1)).Count);
+            Assert.Single(svc.ObtenerEnRango(reserva.Fecha, reserva.Fecha.AddDays(1)));
             Assert.Empty(svc.ObtenerEnRango(reserva.Fecha.AddDays(1), reserva.Fecha.AddDays(2)));
         }
         // ══ FACTURACIÓN Y CAJA ════════════════════════════════════════════
