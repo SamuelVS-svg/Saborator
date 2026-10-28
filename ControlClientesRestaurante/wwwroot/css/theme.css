@@ -93,8 +93,8 @@
 
 :root[data-theme="dark"],
 :root[data-theme="noche"] {
-  --brand:        #8D6E63;
-  --brand-hover:  #A1887F;
+  --brand:        #8B5A36;
+  --brand-hover:  #A56E43;
   --ink:          #F4C95D;
   --brand-soft:   rgba(244, 201, 93,.16);
   --on-brand:     #FFFFFF;
