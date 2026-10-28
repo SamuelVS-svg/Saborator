@@ -6,7 +6,8 @@
    ========================================================================== */
 
 /* ── Banner ────────────────────────────────────────────────────────────── */
-.home-hero { padding: 0; max-width: none; margin: 0; }
+.home-hero { padding: 61px 0 0; max-width: none; margin: 0; }   /* deja libre la barra fija para que no tape el banner */
+@media (max-width: 1120px) { .home-hero { padding-top: 98px; } }
 .home-banner {
   position: relative; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 1rem; overflow: hidden;
   min-height: 300px; padding: 2rem 2.25rem; border-radius: 12px; color: #fff;
