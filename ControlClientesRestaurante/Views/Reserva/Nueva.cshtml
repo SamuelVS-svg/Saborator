@@ -1,6 +1,6 @@
 @model ControlClientesRestaurante.Controllers.NuevaReservaViewModel
 @{
-    ViewData["Title"] = "Reservar Mesa — Experiencia Gastronómica";
+    ViewData["Title"] = "Reservar Mesa";
     Layout = "_Layout";
     var fechaActual = (DateTime)(ViewBag.FechaSeleccionada ?? DateTime.Today);
     string horaActual = (string)(ViewBag.HoraSeleccionada ?? "19:00");
@@ -71,7 +71,7 @@
                             <option value="13:30" selected="@(horaActual=="13:30")">01:30 PM (Almuerzo)</option>
                             <option value="14:30" selected="@(horaActual=="14:30")">02:30 PM (Almuerzo)</option>
                         </optgroup>
-                        <optgroup label="Cena Gourmet">
+                        <optgroup label="Cena">
                             <option value="19:00" selected="@(horaActual=="19:00")">07:00 PM (Cena)</option>
                             <option value="20:00" selected="@(horaActual=="20:00")">08:00 PM (Cena)</option>
                             <option value="21:00" selected="@(horaActual=="21:00")">09:00 PM (Cena)</option>
@@ -140,7 +140,7 @@
                     <div class="cinema-screen-arch"></div>
                     <div class="cinema-screen-label">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        Cocina de Autor &amp; Cava Principal
+                        Cocina &amp; Barra
                     </div>
                 </div>
 

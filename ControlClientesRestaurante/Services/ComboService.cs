@@ -39,7 +39,7 @@ namespace ControlClientesRestaurante.Services
                 new ComboItemDef("Hamburguesa", 2), new ComboItemDef("Perro Caliente", 1),
                 new ComboItemDef("Papas a la Francesa", 2), new ComboItemDef("Pepsi", 2),
             }),
-            new("duo", "Combo Dúo Gourmet", "Hamburguesa, salchipapa y 2 Coca-Cola", "Para dos", 22000m, new[]
+            new("duo", "Combo Dúo", "Hamburguesa, salchipapa y 2 Coca-Cola", "Para dos", 22000m, new[]
             {
                 new ComboItemDef("Hamburguesa", 1), new ComboItemDef("Salchipapa", 1), new ComboItemDef("Coca-Cola", 2),
             }),

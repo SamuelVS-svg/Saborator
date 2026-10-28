@@ -1,4 +1,4 @@
-<!-- ══ FOOTER DE ALTA COCINA (PLANTILLA BORGOÑA Y CREMA) ═══════════════════ -->
+<!-- ══ FOOTER (PLANTILLA BORGOÑA Y CREMA) ═══════════════════ -->
 <footer class="gourmet-footer">
     <div class="gourmet-footer-top">
         <div class="gourmet-footer-grid">
@@ -9,10 +9,10 @@
                     <span>Saborator</span>
                 </div>
                 <p class="gourmet-footer-tagline">
-                    Experiencia gastronómica contemporánea de autor. Creaciones culinarias de vanguardia, hamburguesas gourmet y reserva de salón exclusivo en tiempo real.
+                    Hamburguesas, salchipapas y perros calientes hechos al momento. Pide a domicilio, recoge en sede o reserva tu mesa en tiempo real.
                 </p>
                 <div class="gourmet-footer-badges">
-                    <span class="gourmet-chip"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M4 11a8 8 0 0 1 16 0Z"/><path d="M3 14.5h18"/><path d="M4 18h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg>Alta Cocina de Autor</span>
+                    <span class="gourmet-chip"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M4 11a8 8 0 0 1 16 0Z"/><path d="M3 14.5h18"/><path d="M4 18h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg>Hecho al momento</span>
                     <span class="gourmet-chip"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></svg>Salón 30 Mesas</span>
                     <span class="gourmet-chip"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>Despacho Seguro</span>
                 </div>
@@ -20,10 +20,10 @@
 
             <!-- Columna 2: Navegación Rápida -->
             <div class="gourmet-col-links">
-                <h4 class="gourmet-footer-title">Experiencia Gastronómica</h4>
+                <h4 class="gourmet-footer-title">Pide y disfruta</h4>
                 <ul class="gourmet-link-list">
-                    <li><a href="/">Carta &amp; Creaciones</a></li>
-                    <li><a asp-controller="Reserva" asp-action="Nueva">Reserva de Mesas Exclusivas</a></li>
+                    <li><a href="/">La Carta</a></li>
+                    <li><a asp-controller="Reserva" asp-action="Nueva">Reservar mesa</a></li>
                     <li><a asp-controller="Pedido" asp-action="Checkout" asp-route-tipo="Domicilio">Hacer Pedido</a></li>
                     <li><a asp-controller="Pago" asp-action="Checkout">Pasarela de Pago Wompi</a></li>
                     <li><a asp-controller="Pedido" asp-action="Rastrear">Rastreador de Domicilios</a></li>
@@ -48,7 +48,7 @@
                     </li>
                     <li>
                         <strong>Lunes:</strong>
-                        <span style="color:var(--gold,#E3A72F);font-weight:600;">Mantenimiento Culinario</span>
+                        <span style="color:var(--gold,#E3A72F);font-weight:600;">Cerrado</span>
                     </li>
                 </ul>
             </div>
@@ -66,7 +66,7 @@
                 <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                     <a href="https://wa.me/573225254289" target="_blank" rel="noopener noreferrer" class="gourmet-btn-wa">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                        <span>WhatsApp Concierge</span>
+                        <span>Escríbenos por WhatsApp</span>
                     </a>
                 </div>
             </div>
@@ -77,7 +77,7 @@
     <div class="gourmet-footer-bottom">
         <div class="gourmet-footer-bottom-inner">
             <div class="gourmet-copy">
-                &copy; @DateTime.Now.Year <strong>Saborator Alta Cocina S.A.S.</strong> · Todos los derechos reservados.
+                &copy; @DateTime.Now.Year <strong>Saborator</strong> · Todos los derechos reservados.
             </div>
             <div class="gourmet-legal-links">
                 <a asp-controller="Home" asp-action="Terminos">Términos &amp; Condiciones</a>

@@ -22,7 +22,7 @@
             Saborator Domicilios &amp; Para Llevar
         </div>
         <h1 class="checkout-title">Finalizar Tu Pedido</h1>
-        <p class="checkout-sub">Elige tu modalidad de entrega, ingresa tus datos y disfruta de la mejor alta cocina en tu puerta o en mesa.</p>
+        <p class="checkout-sub">Elige cómo recibir tu pedido, ingresa tus datos y listo: te lo llevamos a tu puerta o a tu mesa.</p>
     </div>
 
     @if (TempData["Error"] != null)
@@ -1106,7 +1106,7 @@
             container.innerHTML = `
                 <div style="text-align:center;padding:2rem 0;color:rgba(255, 255, 255,0.5);">
                     <p style="margin:0 0 0.5rem;font-size:0.95rem;">Tu carrito está vacío</p>
-                    <a href="/Carta" style="color:var(--gold);text-decoration:none;font-weight:700;font-size:0.85rem;">← Ver Carta Gastronómica</a>
+                    <a href="/Carta" style="color:var(--gold);text-decoration:none;font-weight:700;font-size:0.85rem;">← Ver la Carta</a>
                 </div>
             `;
             document.getElementById('subtotalVal').textContent = '$0 COP';

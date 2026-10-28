@@ -38,16 +38,16 @@
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Alta Cocina & Gestión")</title>
-    <meta name="description" content="Restaurante Saborator — Experiencia gastronómica de alta cocina, carta de autor de hamburguesas gourmet y reservas de mesa exclusivas en línea con plano interactivo." />
+    <title>@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Hamburguesas, salchipapas y perros")</title>
+    <meta name="description" content="Restaurante Saborator en Barranquilla: hamburguesas, salchipapas y perros calientes. Pide a domicilio con seguimiento en vivo, recoge en sede o reserva tu mesa en línea." />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#6B4226" />
     <link rel="canonical" href="@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)" />
 
     <!-- Open Graph / Redes Sociales -->
     <meta property="og:type" content="restaurant" />
-    <meta property="og:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Alta Cocina & Experiencia")" />
-    <meta property="og:description" content="Descubre la carta de autor de Saborator y reserva tu turno en nuestro salón exclusivo en tiempo real." />
+    <meta property="og:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Pide ya")" />
+    <meta property="og:description" content="Mira la carta de Saborator, pide a domicilio y reserva tu mesa en línea." />
     <meta property="og:url" content="@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.Path)" />
     <meta property="og:image" content="@(Context.Request.Scheme)://@(Context.Request.Host)/img/logo-burger-gold.png" />
     <meta property="og:site_name" content="Saborator Restaurante" />
@@ -55,8 +55,8 @@
 
     <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Alta Cocina")" />
-    <meta name="twitter:description" content="Experiencia culinaria de autor y reservas en línea en Saborator." />
+    <meta name="twitter:title" content="@(ViewData["Title"] != null ? $"{ViewData["Title"]} — Saborator" : "Saborator — Pide ya")" />
+    <meta name="twitter:description" content="Pide a domicilio y reserva tu mesa en Saborator." />
     <meta name="twitter:image" content="@(Context.Request.Scheme)://@(Context.Request.Host)/img/logo-burger-gold.png" />
 
     <!-- Favicon & PWA Icons -->
@@ -107,8 +107,8 @@
       "@@type": "Restaurant",
       "name": "Saborator",
       "image": "@(Context.Request.Scheme)://@(Context.Request.Host)/img/logo-burger-gold.png",
-      "description": "Alta cocina, hamburguesas y creaciones gastronómicas de autor con reserva de mesas.",
-      "servesCuisine": "Gourmet, Hamburguesas de Autor, Cocina Contemporánea",
+      "description": "Hamburguesas, salchipapas y perros calientes con domicilio y reserva de mesas.",
+      "servesCuisine": "Hamburguesas, Salchipapas, Comida rápida",
       "priceRange": "$$",
       "currenciesAccepted": "COP",
       "paymentAccepted": "Cash, Credit Card, Debit Card, Nequi, Daviplata",
