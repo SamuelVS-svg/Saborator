@@ -30,32 +30,6 @@
     </div>
 </div>
 
-<!-- COMPONENTE FLOTANTE COOKIES (ESTILO WHATSAPP: CIRCULAR, CON MANIJA DE PUNTOS Y ARRASTRABLE LIBREMENTE) -->
-<div class="luxury-cookie-wrap" id="cookieConcierge" role="button" tabindex="0" title="Arrastra para mover · Haz clic para configurar Cookies" aria-label="Preferencias de Cookies Saborator">
-    <div class="cookie-drag-handle" title="Arrastrar">
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
-            <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
-            <circle cx="5" cy="19" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>
-        </svg>
-    </div>
-
-    <button type="button" id="cookieConciergeBtn" class="luxury-cookie-btn" aria-label="Configuración de Cookies">
-        <span class="cookie-ping-ring"></span>
-        <svg class="cookie-icon-svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
-            <circle cx="8.5" cy="8.5" r="1" fill="currentColor"/>
-            <circle cx="15.5" cy="15.5" r="1" fill="currentColor"/>
-            <circle cx="12" cy="12" r="1" fill="currentColor"/>
-        </svg>
-        <span class="cookie-tooltip">
-            <strong>Cookies &amp; Privacidad</strong>
-            <small>Configurar preferencias</small>
-        </span>
-    </button>
-</div>
-
 <!-- MODAL DE PREFERENCIAS GRANULARES DE COOKIES -->
 <div class="cookie-modal-overlay" id="cookieModalOverlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle">
     <div class="cookie-modal-card">
@@ -238,116 +212,6 @@
         border: none;
         cursor: pointer;
         text-decoration: underline;
-    }
-
-    /* ── COMPONENTE FLOTANTE COOKIES (ESTILO WHATSAPP CON ANILLO DE PULSO Y MANIJA) ── */
-    .luxury-cookie-wrap {
-        position: fixed;
-        bottom: 24px;
-        left: 24px;
-        z-index: 9985;
-        cursor: grab;
-        user-select: none;
-        touch-action: none;
-        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .luxury-cookie-wrap:active {
-        cursor: grabbing;
-        transform: scale(0.96);
-    }
-    .luxury-cookie-wrap.is-dragging {
-        cursor: grabbing;
-        transform: scale(1.08);
-        box-shadow: 0 16px 36px rgba(255, 179, 0, 0.6);
-    }
-    .cookie-drag-handle {
-        position: absolute;
-        top: -6px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(255, 179, 0, 0.9);
-        color: #18060A;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 6px;
-        padding: 1px 3px;
-        opacity: 0;
-        transition: opacity 160ms ease;
-        pointer-events: none;
-        z-index: 3;
-    }
-    .luxury-cookie-wrap:hover .cookie-drag-handle {
-        opacity: 0.95;
-    }
-    .luxury-cookie-btn {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #FFB300, #8E631A);
-        color: #FFFFFF;
-        box-shadow: 0 8px 24px rgba(255, 179, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        cursor: pointer;
-        padding: 0;
-        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-    }
-    .luxury-cookie-btn:hover {
-        transform: scale(1.06) translateY(-2px);
-        box-shadow: 0 12px 30px rgba(255, 179, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
-        color: #FFFFFF;
-    }
-    .cookie-ping-ring {
-        position: absolute;
-        inset: -4px;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 179, 0, 0.5);
-        animation: cookiePulse 3s infinite cubic-bezier(0.24, 0, 0.38, 1);
-        pointer-events: none;
-    }
-    @@keyframes cookiePulse {
-        0% { transform: scale(0.95); opacity: 0.8; }
-        50% { transform: scale(1.25); opacity: 0; }
-        100% { transform: scale(0.95); opacity: 0; }
-    }
-    .cookie-tooltip {
-        position: absolute;
-        left: 64px;
-        background: rgba(24, 6, 10, 0.94);
-        border: 1px solid rgba(255, 179, 0, 0.4);
-        color: #FFFFFF;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 0.78rem;
-        white-space: nowrap;
-        pointer-events: none;
-        opacity: 0;
-        transform: translateX(-6px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-        display: flex;
-        flex-direction: column;
-        line-height: 1.3;
-        z-index: 10;
-        text-align: left;
-    }
-    .cookie-tooltip small {
-        color: #9A6700;
-        font-size: 0.7rem;
-    }
-    .luxury-cookie-wrap:hover .cookie-tooltip {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    @@media (max-width: 768px) {
-        .luxury-cookie-btn { width: 48px; height: 48px; }
-        .cookie-tooltip { display: none; }
-    }
-    @@media (prefers-reduced-motion: reduce) {
-        .cookie-ping-ring { animation: none; }
-        .luxury-cookie-btn { transition: none; }
     }
 
     /* ── MODAL DE PREFERENCIAS ── */
@@ -638,115 +502,12 @@
 
     window.abrirConfiguracionCookies = window.abrirModalPreferenciasCookies;
 
-    // ── MOTOR ARRASTRABLE (DRAG & DROP) EXACTO AL DE WHATSAPP CONCIERGE ──
-    const cookieWrap = document.getElementById('cookieConcierge');
-    const cookieBtn = document.getElementById('cookieConciergeBtn');
-
-    let isDraggingCookie = false;
-    let cookieStartX = 0, cookieStartY = 0;
-    let cookieInitialLeft = 0, cookieInitialTop = 0;
-
-    function inicializarPosicionCookie() {
-        if (!cookieWrap) return;
-        const guardadaX = localStorage.getItem('saborator_cookie_pos_x');
-        const guardadaY = localStorage.getItem('saborator_cookie_pos_y');
-
-        if (guardadaX !== null && guardadaY !== null) {
-            const x = Math.min(Math.max(10, parseInt(guardadaX)), window.innerWidth - 64);
-            const y = Math.min(Math.max(10, parseInt(guardadaY)), window.innerHeight - 64);
-            cookieWrap.style.left = x + 'px';
-            cookieWrap.style.top = y + 'px';
-            cookieWrap.style.right = 'auto';
-            cookieWrap.style.bottom = 'auto';
-        }
-    }
-
-    function onCookiePointerDown(e) {
-        if (e.button !== undefined && e.button !== 0) return;
-        isDraggingCookie = false;
-
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        cookieStartX = clientX;
-        cookieStartY = clientY;
-
-        const rect = cookieWrap.getBoundingClientRect();
-        cookieInitialLeft = rect.left;
-        cookieInitialTop = rect.top;
-
-        window.addEventListener('mousemove', onCookiePointerMove, { passive: false });
-        window.addEventListener('mouseup', onCookiePointerUp);
-        window.addEventListener('touchmove', onCookiePointerMove, { passive: false });
-        window.addEventListener('touchend', onCookiePointerUp);
-    }
-
-    function onCookiePointerMove(e) {
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        const deltaX = clientX - cookieStartX;
-        const deltaY = clientY - cookieStartY;
-
-        if (Math.hypot(deltaX, deltaY) > 5) {
-            isDraggingCookie = true;
-            cookieWrap.classList.add('is-dragging');
-            if (e.cancelable) e.preventDefault();
-
-            let nuevoX = cookieInitialLeft + deltaX;
-            let nuevoY = cookieInitialTop + deltaY;
-
-            const pad = 8;
-            nuevoX = Math.max(pad, Math.min(window.innerWidth - cookieWrap.offsetWidth - pad, nuevoX));
-            nuevoY = Math.max(pad, Math.min(window.innerHeight - cookieWrap.offsetHeight - pad, nuevoY));
-
-            cookieWrap.style.left = nuevoX + 'px';
-            cookieWrap.style.top = nuevoY + 'px';
-            cookieWrap.style.right = 'auto';
-            cookieWrap.style.bottom = 'auto';
-        }
-    }
-
-    function onCookiePointerUp() {
-        window.removeEventListener('mousemove', onCookiePointerMove);
-        window.removeEventListener('mouseup', onCookiePointerUp);
-        window.removeEventListener('touchmove', onCookiePointerMove);
-        window.removeEventListener('touchend', onCookiePointerUp);
-
-        cookieWrap.classList.remove('is-dragging');
-
-        if (isDraggingCookie) {
-            const rect = cookieWrap.getBoundingClientRect();
-            localStorage.setItem('saborator_cookie_pos_x', Math.round(rect.left));
-            localStorage.setItem('saborator_cookie_pos_y', Math.round(rect.top));
-        }
-    }
-
-    if (cookieWrap) {
-        cookieWrap.addEventListener('mousedown', onCookiePointerDown);
-        cookieWrap.addEventListener('touchstart', onCookiePointerDown, { passive: true });
-    }
-
-    if (cookieBtn) {
-        // Prevenir modal si fue un arrastre, o abrirlo en click simple
-        cookieBtn.addEventListener('click', (e) => {
-            if (isDraggingCookie) {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }
-            abrirModalPreferenciasCookies();
-            e.preventDefault();
-        });
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
         const consent = obtenerConsentimiento();
         if (!consent) {
             const banner = document.getElementById('cookieBanner');
             if (banner) banner.style.display = 'block';
         }
-        inicializarPosicionCookie();
     });
 })();
 </script>
