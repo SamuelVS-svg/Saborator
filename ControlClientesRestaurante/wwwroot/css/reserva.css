@@ -5,17 +5,17 @@
 
 .reserva-page {
     min-height: 100vh;
-    background: var(--bg, #F5EFE6);
-    background-image: radial-gradient(circle at 1px 1px, rgba(107, 30, 46, 0.045) 1px, transparent 0);
+    background: var(--bg, #F7F2EE);
+    background-image: radial-gradient(circle at 1px 1px, rgba(93, 64, 55, 0.045) 1px, transparent 0);
     background-size: 24px 24px;
-    color: var(--text, #1C1416);
+    color: var(--text, #2B1B15);
     font-family: var(--font-ui, 'Geist', sans-serif);
     padding-bottom: 5rem;
 }
 
 :root[data-theme="dark"] .reserva-page {
     background: radial-gradient(ellipse 95% 85% at 50% 15%, #240910 0%, #150508 55%, #0B0204 100%);
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 /* ── NAVBAR COMENSAL / CLIENTE (ESTILO CINE) ─────────────── */
@@ -27,7 +27,7 @@
     background: rgba(20, 5, 8, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(200, 151, 58, 0.35);
+    border-bottom: 1px solid rgba(255, 179, 0, 0.35);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -38,19 +38,19 @@
     align-items: center;
     gap: 0.65rem;
     text-decoration: none;
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 .cinema-brand-icon {
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(200, 151, 58, 0.35) 0%, rgba(107, 30, 46, 0.5) 100%);
-    border: 1px solid rgba(200, 151, 58, 0.5);
+    background: linear-gradient(135deg, rgba(255, 179, 0, 0.35) 0%, rgba(93, 64, 55, 0.5) 100%);
+    border: 1px solid rgba(255, 179, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--gold, #C8973A);
+    color: var(--gold, #FFB300);
 }
 
 .cinema-brand-icon svg { width: 24px; height: 22px; fill: currentColor; }
@@ -60,7 +60,7 @@
     font-size: 1.55rem;
     font-style: italic;
     letter-spacing: -0.01em;
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 .cinema-links {
@@ -82,7 +82,7 @@
 
 .cinema-link:hover,
 .cinema-link.active {
-    color: #E2B968;
+    color: #FFCA28;
 }
 
 .cinema-auth-actions {
@@ -105,9 +105,9 @@
     gap: 0.5rem;
     padding: 0.4rem 1.1rem;
     border-radius: 9999px;
-    background: rgba(200, 151, 58, 0.18);
-    border: 1px solid rgba(200, 151, 58, 0.45);
-    color: var(--gold, #C8973A);
+    background: rgba(255, 179, 0, 0.18);
+    border: 1px solid rgba(255, 179, 0, 0.45);
+    color: var(--gold, #FFB300);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -123,24 +123,24 @@
     font-weight: 400;
     line-height: 1.05;
     margin-bottom: 0.85rem;
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
 }
 
 .reserva-title span {
     font-style: italic;
-    color: var(--gold, #C8973A);
+    color: var(--gold, #FFB300);
 }
 
 .reserva-subtitle {
-    color: var(--muted, #5E5357);
+    color: var(--muted, #6B5A52);
     font-size: 1.05rem;
     line-height: 1.65;
     margin: 0;
     font-weight: 400;
 }
 
-:root[data-theme="dark"] .reserva-title { color: #FFFDF9; }
-:root[data-theme="dark"] .reserva-subtitle { color: #F0E2D2; }
+:root[data-theme="dark"] .reserva-title { color: #FFFFFF; }
+:root[data-theme="dark"] .reserva-subtitle { color: #F3E6DA; }
 
 /* ── BARRA DE PASOS GUIADOS ──────────────────────────────── */
 .steps-bar {
@@ -159,24 +159,24 @@
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--muted, #6E5C50);
-    background: var(--surface-2, rgba(107, 30, 46, 0.06));
+    background: var(--surface-2, rgba(93, 64, 55, 0.06));
     padding: 0.35rem 0.95rem;
     border-radius: 999px;
-    border: 1px solid var(--line, rgba(107, 30, 46, 0.12));
+    border: 1px solid var(--line, rgba(93, 64, 55, 0.12));
 }
 
 .step-chip.active {
-    color: #FFFDF9;
-    background: var(--brand, #6B1E2E);
-    border-color: #E2B968;
-    box-shadow: 0 0 12px rgba(200, 151, 58, 0.35);
+    color: #FFFFFF;
+    background: var(--brand, #5D4037);
+    border-color: #FFCA28;
+    box-shadow: 0 0 12px rgba(255, 179, 0, 0.35);
 }
 
 .step-chip .step-num {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #E2B968;
+    background: #FFCA28;
     color: #1A080C;
     display: flex;
     align-items: center;
@@ -186,23 +186,23 @@
 }
 
 .step-chip:not(.active) .step-num {
-    background: var(--line, rgba(107, 30, 46, 0.15));
-    color: var(--text, #1C1416);
+    background: var(--line, rgba(93, 64, 55, 0.15));
+    color: var(--text, #2B1B15);
 }
 
 :root[data-theme="dark"] .step-chip {
     color: #CBB9A8;
-    background: rgba(255, 253, 249, 0.06);
-    border-color: rgba(255, 253, 249, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 :root[data-theme="dark"] .step-chip.active {
-    background: rgba(200, 151, 58, 0.22);
+    background: rgba(255, 179, 0, 0.22);
 }
 
 :root[data-theme="dark"] .step-chip:not(.active) .step-num {
-    background: rgba(255, 253, 249, 0.2);
-    color: #FFFDF9;
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
 }
 
 /* ── LAYOUT PRINCIPAL DE RESERVA (2 COLUMNAS) ────────────── */
@@ -224,20 +224,20 @@
 
 /* ── PANEL DE SELECCIÓN (IZQUIERDA) ──────────────────────── */
 .reserva-stage-card {
-    background: var(--surface, #FFFDF9);
-    border: 1.5px solid var(--line, #E3D8C8);
+    background: var(--surface, #FFFFFF);
+    border: 1.5px solid var(--line, #E8DDD4);
     border-radius: 20px;
     padding: 2.25rem;
-    box-shadow: 0 16px 48px rgba(44, 10, 18, 0.05);
+    box-shadow: 0 16px 48px rgba(38, 24, 18, 0.05);
     position: relative;
-    color: var(--text, #1C1416);
+    color: var(--text, #2B1B15);
 }
 
 :root[data-theme="dark"] .reserva-stage-card {
     background: #1A070D;
-    border-color: rgba(200, 151, 58, 0.35);
+    border-color: rgba(255, 179, 0, 0.35);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 /* ── PASO 1: CONTROLES DE FECHA, TURNO Y PERSONAS ────────── */
@@ -247,7 +247,7 @@
     gap: 1.5rem;
     margin-bottom: 1.75rem;
     padding-bottom: 1.75rem;
-    border-bottom: 1px solid var(--line, #E3D8C8);
+    border-bottom: 1px solid var(--line, #E8DDD4);
 }
 
 .r-control-group label {
@@ -256,7 +256,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
     margin-bottom: 0.55rem;
 }
 
@@ -264,9 +264,9 @@
 
 .r-input, .r-select {
     width: 100%;
-    background: var(--surface-2, #EFE6D8);
-    border: 1.5px solid var(--line-2, #D4C6B2);
-    color: var(--text, #1C1416);
+    background: var(--surface-2, #F1E9E2);
+    border: 1.5px solid var(--line-2, #D9CBBF);
+    color: var(--text, #2B1B15);
     padding: 0.75rem 1rem;
     border-radius: 10px;
     font-family: inherit;
@@ -279,13 +279,13 @@
 :root[data-theme="dark"] .r-input,
 :root[data-theme="dark"] .r-select {
     background: #110306;
-    border-color: rgba(200, 151, 58, 0.5);
+    border-color: rgba(255, 179, 0, 0.5);
     color: #FFFFFF;
 }
 
 .r-input:focus, .r-select:focus {
-    border-color: #E2B968;
-    box-shadow: 0 0 0 3.5px rgba(200, 151, 58, 0.3);
+    border-color: #FFCA28;
+    box-shadow: 0 0 0 3.5px rgba(255, 179, 0, 0.3);
 }
 
 .r-select option {
@@ -297,8 +297,8 @@
 
 /* ── BOTÓN SIGUIENTE PASO (DESBLOQUEO DE MESAS) ─────────── */
 .next-step-banner {
-    background: linear-gradient(135deg, rgba(200, 151, 58, 0.18) 0%, rgba(107, 30, 46, 0.25) 100%);
-    border: 1.5px solid #E2B968;
+    background: linear-gradient(135deg, rgba(255, 179, 0, 0.18) 0%, rgba(93, 64, 55, 0.25) 100%);
+    border: 1.5px solid #FFCA28;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
     margin-bottom: 2rem;
@@ -319,7 +319,7 @@
     width: 42px;
     height: 42px;
     border-radius: 10px;
-    background: #E2B968;
+    background: #FFCA28;
     color: #1A080C;
     display: flex;
     align-items: center;
@@ -331,20 +331,20 @@
     margin: 0 0 0.2rem;
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
 }
 
 .next-step-text p {
     margin: 0;
     font-size: 0.86rem;
-    color: var(--muted, #5E5357);
+    color: var(--muted, #6B5A52);
 }
 
-:root[data-theme="dark"] .next-step-text h4 { color: #FFFDF9; }
-:root[data-theme="dark"] .next-step-text p { color: #F0E2D2; }
+:root[data-theme="dark"] .next-step-text h4 { color: #FFFFFF; }
+:root[data-theme="dark"] .next-step-text p { color: #F3E6DA; }
 
 .btn-next-action {
-    background: #E2B968;
+    background: #FFCA28;
     color: #1A080C;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -355,7 +355,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 16px rgba(200, 151, 58, 0.35);
+    box-shadow: 0 4px 16px rgba(255, 179, 0, 0.35);
     transition: background-color 150ms ease, transform 140ms ease;
     white-space: nowrap;
 }
@@ -383,7 +383,7 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 16px;
-    border: 1px dashed rgba(200, 151, 58, 0.45);
+    border: 1px dashed rgba(255, 179, 0, 0.45);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -403,26 +403,26 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(200, 151, 58, 0.25) 0%, rgba(107, 30, 46, 0.4) 100%);
-    border: 2px solid #E2B968;
-    color: #E2B968;
+    background: linear-gradient(135deg, rgba(255, 179, 0, 0.25) 0%, rgba(93, 64, 55, 0.4) 100%);
+    border: 2px solid #FFCA28;
+    color: #FFCA28;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1.25rem;
-    box-shadow: 0 0 20px rgba(200, 151, 58, 0.35);
+    box-shadow: 0 0 20px rgba(255, 179, 0, 0.35);
 }
 
 .lock-title {
     font-family: var(--font-serif);
     font-size: 1.85rem;
     font-weight: 400;
-    color: #FFFDF9;
+    color: #FFFFFF;
     margin-bottom: 0.5rem;
 }
 
 .lock-desc {
-    color: #F0E2D2;
+    color: #F3E6DA;
     font-size: 0.95rem;
     max-width: 440px;
     margin: 0 auto 1.5rem;
@@ -440,9 +440,9 @@
     width: 80%;
     height: 18px;
     margin: 0 auto 0.75rem;
-    border-top: 3.5px solid #E2B968;
+    border-top: 3.5px solid #FFCA28;
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    box-shadow: 0 -8px 24px rgba(200, 151, 58, 0.45);
+    box-shadow: 0 -8px 24px rgba(255, 179, 0, 0.45);
 }
 
 .cinema-screen-label {
@@ -450,7 +450,7 @@
     font-weight: 800;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -465,12 +465,12 @@
     gap: 2rem;
     margin-bottom: 2rem;
     font-size: 0.85rem;
-    color: var(--text, #1C1416);
+    color: var(--text, #2B1B15);
     font-weight: 600;
     flex-wrap: wrap;
 }
 
-:root[data-theme="dark"] .reserva-legend { color: #FFFDF9; }
+:root[data-theme="dark"] .reserva-legend { color: #FFFFFF; }
 
 .legend-item {
     display: flex;
@@ -485,24 +485,24 @@
 }
 
 .legend-dot.disponible {
-    background: rgba(200, 151, 58, 0.35);
-    border: 2px solid #E2B968;
+    background: rgba(255, 179, 0, 0.35);
+    border: 2px solid #FFCA28;
 }
 
 .legend-dot.reservada {
-    background: rgba(107, 30, 46, 0.12);
-    border: 2px solid rgba(107, 30, 46, 0.3);
+    background: rgba(93, 64, 55, 0.12);
+    border: 2px solid rgba(93, 64, 55, 0.3);
 }
 
 :root[data-theme="dark"] .legend-dot.reservada {
-    background: rgba(255, 253, 249, 0.15);
-    border-color: rgba(255, 253, 249, 0.35);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.35);
 }
 
 .legend-dot.seleccionada {
-    background: #E2B968;
+    background: #FFCA28;
     border: 2px solid #FFFFFF;
-    box-shadow: 0 0 12px rgba(200, 151, 58, 0.9);
+    box-shadow: 0 0 12px rgba(255, 179, 0, 0.9);
 }
 
 /* ── PLANO DE SALA / MESAS ───────────────────────────────── */
@@ -522,13 +522,13 @@
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #E2B968;
+    color: #FFCA28;
 }
 
 .zone-line {
     flex: 1;
     height: 1.5px;
-    background: rgba(200, 151, 58, 0.28);
+    background: rgba(255, 179, 0, 0.28);
 }
 
 .tables-grid {
@@ -542,7 +542,7 @@
     position: relative;
     aspect-ratio: 1;
     background: #1C080E;
-    border: 1.8px solid rgba(200, 151, 58, 0.5);
+    border: 1.8px solid rgba(255, 179, 0, 0.5);
     border-radius: 14px;
     display: flex;
     flex-direction: column;
@@ -576,9 +576,9 @@
 @media (hover: hover) and (pointer: fine) {
     .table-node.disponible:hover {
         transform: translateY(-3px);
-        border-color: #FFFDF9;
-        background: rgba(200, 151, 58, 0.3);
-        box-shadow: 0 6px 18px rgba(200, 151, 58, 0.4);
+        border-color: #FFFFFF;
+        background: rgba(255, 179, 0, 0.3);
+        box-shadow: 0 6px 18px rgba(255, 179, 0, 0.4);
     }
 }
 
@@ -588,9 +588,9 @@
 
 /* Mesa Seleccionada */
 .table-node.selected {
-    background: linear-gradient(135deg, #F5D38A 0%, #C8973A 100%);
+    background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
     border-color: #FFFFFF;
-    box-shadow: 0 0 20px rgba(200, 151, 58, 0.85);
+    box-shadow: 0 0 20px rgba(255, 179, 0, 0.85);
     transform: scale(1.06);
 }
 
@@ -606,8 +606,8 @@
 
 /* Mesa Ocupada / Reservada */
 .table-node.ocupada {
-    background: rgba(107, 30, 46, 0.06);
-    border-color: rgba(107, 30, 46, 0.2);
+    background: rgba(93, 64, 55, 0.06);
+    border-color: rgba(93, 64, 55, 0.2);
     opacity: 0.65;
     cursor: not-allowed;
 }
@@ -621,8 +621,8 @@
 }
 
 :root[data-theme="dark"] .table-node.ocupada {
-    background: rgba(255, 253, 249, 0.05);
-    border-color: rgba(255, 253, 249, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
     opacity: 0.45;
 }
 
@@ -636,7 +636,7 @@
 
 /* ── BOLETO DIGITAL / TICKET EN VIVO (DERECHA) ───────────── */
 .reserva-ticket-card {
-    background: #FFFDF9;
+    background: #FFFFFF;
     color: #1A080C;
     border-radius: 20px;
     padding: 2.25rem 1.85rem;
@@ -672,7 +672,7 @@
     font-family: var(--font-serif, 'Instrument Serif', serif);
     font-size: 2rem;
     font-style: italic;
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
     margin-bottom: 0.25rem;
 }
 
@@ -690,7 +690,7 @@
     font-size: 1.05rem;
     font-weight: 800;
     color: #1A080C;
-    background: rgba(107, 30, 46, 0.08);
+    background: rgba(93, 64, 55, 0.08);
     padding: 0.3rem 0.75rem;
     border-radius: 6px;
     display: inline-block;
@@ -722,7 +722,7 @@
 }
 
 .t-row .t-val.highlight {
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
     font-size: 1.3rem;
     font-family: var(--font-serif, 'Instrument Serif', serif);
 }
@@ -736,13 +736,13 @@
     display: block;
     font-size: 0.8rem;
     font-weight: 700;
-    color: #2D181D;
+    color: #2F211B;
     margin-bottom: 0.4rem;
 }
 
 .ticket-input {
     width: 100%;
-    background: #FAF6F0;
+    background: #FAF6F2;
     border: 1.5px solid #D5C4B2;
     color: #1A080C;
     padding: 0.65rem 0.85rem;
@@ -755,29 +755,29 @@
 }
 
 .ticket-input:focus {
-    border-color: var(--brand, #6B1E2E);
-    background: #FFFDF9;
-    box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.12);
+    border-color: var(--brand, #5D4037);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.12);
 }
 
 .btn-confirm-reserva {
     width: 100%;
     padding: 0.95rem 1.25rem;
     border-radius: 11px;
-    background: var(--brand, #6B1E2E);
+    background: var(--brand, #5D4037);
     border: none;
-    color: #FFFDF9;
+    color: #FFFFFF;
     font-weight: 800;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(107, 30, 46, 0.35);
+    box-shadow: 0 6px 18px rgba(93, 64, 55, 0.35);
     transition: background-color 160ms var(--ease, ease),
                 transform 140ms var(--ease, ease);
     margin-top: 0.5rem;
 }
 
 .btn-confirm-reserva:hover {
-    background: #8E2C3F;
+    background: #4E342E;
 }
 
 .btn-confirm-reserva:active {
@@ -806,7 +806,7 @@
 }
 
 .auth-modal-box {
-    background: #FFFDF9;
+    background: #FFFFFF;
     color: #1A080C;
     width: 100%;
     max-width: 480px;
@@ -844,7 +844,7 @@
     font-family: var(--font-serif, 'Instrument Serif', serif);
     font-size: 2.2rem;
     font-style: italic;
-    color: var(--brand, #6B1E2E);
+    color: var(--brand, #5D4037);
     margin-bottom: 0.25rem;
 }
 
@@ -866,7 +866,7 @@
 .auth-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background: #EFE6D8;
+    background: #F1E9E2;
     border-radius: 11px;
     padding: 4px;
     margin-bottom: 1.5rem;
@@ -879,14 +879,14 @@
     border-radius: 8px;
     font-size: 0.88rem;
     font-weight: 700;
-    color: #5E5357;
+    color: #6B5A52;
     cursor: pointer;
     transition: all 160ms ease;
 }
 
 .auth-tab-btn.active {
-    background: #FFFDF9;
-    color: var(--brand, #6B1E2E);
+    background: #FFFFFF;
+    color: var(--brand, #5D4037);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -932,13 +932,13 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #F5D38A 0%, #C8973A 100%);
+    background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
     color: #1A080C;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.35rem;
-    box-shadow: 0 8px 24px rgba(200, 151, 58, 0.45);
+    box-shadow: 0 8px 24px rgba(255, 179, 0, 0.45);
 }
 
 .confirm-seal svg { width: 36px; height: 36px; stroke-width: 2.5; }
@@ -946,12 +946,12 @@
 /* ── DARK THEME PARA TICKET Y MODAL ──────────────────────── */
 :root[data-theme="dark"] .reserva-ticket-card {
     background: #1A070D;
-    color: #FFFDF9;
-    border: 1.5px solid rgba(200, 151, 58, 0.35);
+    color: #FFFFFF;
+    border: 1.5px solid rgba(255, 179, 0, 0.35);
 }
 
 :root[data-theme="dark"] .ticket-header {
-    border-bottom: 2px dashed rgba(200, 151, 58, 0.35);
+    border-bottom: 2px dashed rgba(255, 179, 0, 0.35);
 }
 
 :root[data-theme="dark"] .ticket-header::before,
@@ -960,16 +960,16 @@
 }
 
 :root[data-theme="dark"] .ticket-brand {
-    color: var(--gold, #C8973A);
+    color: var(--gold, #FFB300);
 }
 
 :root[data-theme="dark"] .ticket-tag {
-    color: #F5D38A;
+    color: #FFE082;
 }
 
 :root[data-theme="dark"] .ticket-code {
-    color: #F5D38A;
-    background: rgba(200, 151, 58, 0.15);
+    color: #FFE082;
+    background: rgba(255, 179, 0, 0.15);
 }
 
 :root[data-theme="dark"] .t-row .t-label {
@@ -977,11 +977,11 @@
 }
 
 :root[data-theme="dark"] .t-row .t-val {
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 :root[data-theme="dark"] .t-row .t-val.highlight {
-    color: var(--gold, #C8973A);
+    color: var(--gold, #FFB300);
 }
 
 :root[data-theme="dark"] .ticket-form-group label {
@@ -990,23 +990,23 @@
 
 :root[data-theme="dark"] .ticket-input {
     background: #110306;
-    border-color: rgba(200, 151, 58, 0.4);
+    border-color: rgba(255, 179, 0, 0.4);
     color: #FFFFFF;
 }
 
 :root[data-theme="dark"] .ticket-input:focus {
-    border-color: #E2B968;
+    border-color: #FFCA28;
     background: #1C080E;
 }
 
 :root[data-theme="dark"] .auth-modal-box {
     background: #1A070D;
-    color: #FFFDF9;
-    border: 1.5px solid rgba(200, 151, 58, 0.35);
+    color: #FFFFFF;
+    border: 1.5px solid rgba(255, 179, 0, 0.35);
 }
 
 :root[data-theme="dark"] .auth-modal-title {
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 :root[data-theme="dark"] .auth-modal-desc {
@@ -1022,6 +1022,6 @@
 }
 
 :root[data-theme="dark"] .auth-tab-btn.active {
-    background: #2D0F17;
-    color: #F5D38A;
+    background: #2B1B15;
+    color: #FFE082;
 }

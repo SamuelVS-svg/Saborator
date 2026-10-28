@@ -316,9 +316,9 @@
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        background: rgba(200, 151, 58, 0.12);
-        color: var(--gold, #C8973A);
-        border: 1px solid rgba(200, 151, 58, 0.35);
+        background: rgba(255, 179, 0, 0.12);
+        color: var(--gold, #FFB300);
+        border: 1px solid rgba(255, 179, 0, 0.35);
         padding: 0.3rem 0.85rem;
         border-radius: 999px;
         font-size: 0.76rem;
@@ -356,10 +356,10 @@
 
     .resenas-score-card {
         background: #18060A;
-        border: 1.5px solid rgba(200, 151, 58, 0.35);
+        border: 1.5px solid rgba(255, 179, 0, 0.35);
         border-radius: 20px;
         padding: 2rem;
-        color: #FFFDF9;
+        color: #FFFFFF;
         text-align: center;
         display: flex;
         flex-direction: column;
@@ -372,7 +372,7 @@
         font-size: 4.5rem;
         font-weight: 700;
         line-height: 1;
-        color: var(--gold, #C8973A);
+        color: var(--gold, #FFB300);
         margin-bottom: 0.5rem;
     }
     .stars-gold-row {
@@ -386,16 +386,16 @@
         transition: transform 120ms ease;
     }
     .star-fill { fill: #F59E0B; stroke: #D97706; }
-    .star-empty { fill: rgba(255,253,249,0.15); stroke: rgba(255,253,249,0.3); }
+    .star-empty { fill: rgba(255, 255, 255,0.15); stroke: rgba(255, 255, 255,0.3); }
 
     .score-total-txt {
         font-size: 0.85rem;
-        color: rgba(255, 253, 249, 0.75);
+        color: rgba(255, 255, 255, 0.75);
         margin-bottom: 1.5rem;
     }
 
     .btn-nueva-resena {
-        background: linear-gradient(135deg, #C8973A 0%, #DFB460 100%);
+        background: linear-gradient(135deg, #FFB300 0%, #FFCA28 100%);
         border: none;
         border-radius: 10px;
         color: #18060A;
@@ -406,17 +406,17 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 4px 16px rgba(200, 151, 58, 0.3);
+        box-shadow: 0 4px 16px rgba(255, 179, 0, 0.3);
         transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease;
     }
     .btn-nueva-resena:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(200, 151, 58, 0.45);
+        box-shadow: 0 8px 22px rgba(255, 179, 0, 0.45);
     }
     .btn-nueva-resena:active { transform: scale(0.97); }
 
     .resenas-bars-card {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1px solid var(--line, #E2D7C8);
         border-radius: 20px;
         padding: 2rem;
@@ -441,13 +441,13 @@
     .bar-track {
         flex: 1;
         height: 10px;
-        background: var(--surface-2, #F2EBE1);
+        background: var(--surface-2, #F4EDE7);
         border-radius: 999px;
         overflow: hidden;
     }
     .bar-fill {
         height: 100%;
-        background: linear-gradient(90deg, #F59E0B 0%, #C8973A 100%);
+        background: linear-gradient(90deg, #F59E0B 0%, #FFB300 100%);
         border-radius: 999px;
         transition: width 400ms cubic-bezier(0.23, 1, 0.32, 1);
     }
@@ -474,7 +474,7 @@
         flex-wrap: wrap;
     }
     .chip-filter {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1.5px solid var(--line, #E2D7C8);
         padding: 0.45rem 0.95rem;
         border-radius: 999px;
@@ -485,12 +485,12 @@
         transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
     }
     .chip-filter:hover {
-        border-color: var(--gold, #C8973A);
+        border-color: var(--gold, #FFB300);
     }
     .chip-filter.active {
-        background: var(--brand, #6B1E2E);
-        color: #FFFDF9;
-        border-color: var(--brand, #6B1E2E);
+        background: var(--brand, #5D4037);
+        color: #FFFFFF;
+        border-color: var(--brand, #5D4037);
     }
     .chip-filter:active { transform: scale(0.97); }
 
@@ -503,7 +503,7 @@
     }
 
     .review-card {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1px solid var(--line, #E2D7C8);
         border-radius: 18px;
         padding: 1.5rem;
@@ -538,15 +538,15 @@
         aspect-ratio: 1 / 1;
         flex-shrink: 0;
         border-radius: 50%;
-        background: linear-gradient(135deg, #6B1E2E 0%, #C8973A 100%);
-        color: #FFFDF9;
+        background: linear-gradient(135deg, #5D4037 0%, #FFB300 100%);
+        color: #FFFFFF;
         font-weight: 800;
         font-size: 1.05rem;
         line-height: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 8px rgba(107, 30, 46, 0.25);
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.25);
     }
     .review-author-info {
         display: flex;
@@ -603,7 +603,7 @@
     }
     .review-tag-exp {
         font-size: 0.72rem;
-        background: var(--surface-2, #F5ECE0);
+        background: var(--surface-2, #F4ECE5);
         color: var(--text, #6E5C50);
         border: 1px solid var(--line, transparent);
         padding: 2px 8px;
@@ -615,9 +615,9 @@
     }
     .review-tag-dish {
         font-size: 0.72rem;
-        background: rgba(200, 151, 58, 0.14);
-        color: var(--gold, #C8973A);
-        border: 1px solid rgba(200, 151, 58, 0.32);
+        background: rgba(255, 179, 0, 0.14);
+        color: var(--gold, #FFB300);
+        border: 1px solid rgba(255, 179, 0, 0.32);
         padding: 2px 8px;
         border-radius: 6px;
         font-weight: 600;
@@ -636,19 +636,19 @@
     }
 
     html[data-theme="dark"] .review-card {
-        background: var(--surface, #1A1316);
-        border-color: rgba(200, 151, 58, 0.25);
+        background: var(--surface, #1E1612);
+        border-color: rgba(255, 179, 0, 0.25);
     }
     html[data-theme="dark"] .review-body-text {
-        color: #F5EFE6 !important;
+        color: #F7F2EE !important;
     }
     html[data-theme="dark"] .review-author-name {
-        color: #FFFDF9 !important;
+        color: #FFFFFF !important;
     }
     html[data-theme="dark"] .review-tag-exp {
-        background: rgba(255, 253, 249, 0.08);
+        background: rgba(255, 255, 255, 0.08);
         color: #E2D7C8;
-        border-color: rgba(255, 253, 249, 0.15);
+        border-color: rgba(255, 255, 255, 0.15);
     }
 
     .review-admin-actions {
@@ -692,7 +692,7 @@
         to { opacity: 1; }
     }
     .modal-resena-box {
-        background: var(--surface, #FFFDF9);
+        background: var(--surface, #FFFFFF);
         border: 1.5px solid var(--line, #E2D7C8);
         border-radius: 24px;
         padding: 2.25rem;
@@ -732,8 +732,8 @@
         gap: 4px;
         font-size: 0.72rem;
         font-weight: 700;
-        color: var(--gold, #C8973A);
-        background: rgba(200, 151, 58, 0.12);
+        color: var(--gold, #FFB300);
+        background: rgba(255, 179, 0, 0.12);
         padding: 2px 8px;
         border-radius: 999px;
         text-transform: uppercase;
@@ -742,7 +742,7 @@
     .modal-resena-title {
         font-family: var(--font-serif, 'Instrument Serif', serif);
         font-size: 2rem;
-        color: var(--ink, #6B1E2E);
+        color: var(--ink, #5D4037);
         margin: 0 0 0.25rem;
     }
     .modal-resena-sub {
@@ -754,7 +754,7 @@
     /* Star Picker */
     .star-picker-wrap {
         text-align: center;
-        background: var(--surface-2, #FAF6F0);
+        background: var(--surface-2, #FAF6F2);
         border: 1px dashed var(--line, #E2D7C8);
         border-radius: 14px;
         padding: 1.15rem;
@@ -786,8 +786,8 @@
     .btn-pick-star svg {
         width: 32px;
         height: 32px;
-        fill: rgba(200, 151, 58, 0.2);
-        stroke: #C8973A;
+        fill: rgba(255, 179, 0, 0.2);
+        stroke: #FFB300;
         transition: fill 120ms ease;
     }
     .btn-pick-star.active svg,
@@ -799,7 +799,7 @@
         display: block;
         font-size: 0.82rem;
         font-weight: 700;
-        color: var(--gold, #C8973A);
+        color: var(--gold, #FFB300);
         margin-top: 0.5rem;
     }
 
@@ -827,15 +827,15 @@
         border: 1.5px solid var(--line, #E2D7C8);
         border-radius: 10px;
         font-size: 0.88rem;
-        background: var(--surface-2, #FFFDF9);
+        background: var(--surface-2, #FFFFFF);
         color: var(--text, #200B10);
         box-sizing: border-box;
         transition: border-color 140ms ease, box-shadow 140ms ease;
     }
     .input-resena-field:focus {
-        border-color: var(--gold, #C8973A);
+        border-color: var(--gold, #FFB300);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.15);
+        box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.15);
     }
     .input-textarea {
         resize: vertical;
@@ -861,23 +861,23 @@
     }
     .btn-cancelar-modal:active { transform: scale(0.97); }
     .btn-submit-resena {
-        background: linear-gradient(135deg, #6B1E2E 0%, #86273A 100%);
+        background: linear-gradient(135deg, #5D4037 0%, #5D4037 100%);
         border: none;
         border-radius: 10px;
         padding: 0.75rem 1.4rem;
         font-size: 0.88rem;
         font-weight: 700;
-        color: #FFFDF9;
+        color: #FFFFFF;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        box-shadow: 0 4px 14px rgba(107, 30, 46, 0.3);
+        box-shadow: 0 4px 14px rgba(93, 64, 55, 0.3);
         transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms ease;
     }
     .btn-submit-resena:hover {
         transform: translateY(-1px);
-        box-shadow: 0 8px 20px rgba(107, 30, 46, 0.4);
+        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.4);
     }
     .btn-submit-resena:active { transform: scale(0.97); }
 

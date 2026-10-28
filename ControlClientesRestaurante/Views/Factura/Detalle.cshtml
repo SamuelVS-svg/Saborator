@@ -16,7 +16,7 @@
 
     <div class="d-flex flex-wrap gap-2">
         <!-- Botón de Descarga Nativa PDF -->
-        <button type="button" id="btnDescargarPdf" onclick="descargarFacturaPdf()" class="btn-brand" style="padding:.4rem .95rem;font-size:.82rem;gap:.4rem;display:inline-flex;align-items:center;background:var(--color-brand, #7A1C28);border-color:var(--color-brand, #7A1C28);color:#FFF;">
+        <button type="button" id="btnDescargarPdf" onclick="descargarFacturaPdf()" class="btn-brand" style="padding:.4rem .95rem;font-size:.82rem;gap:.4rem;display:inline-flex;align-items:center;background:var(--color-brand, #5D4037);border-color:var(--color-brand, #5D4037);color:#FFF;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span id="btnPdfTexto">Descargar Factura PDF</span>
         </button>
@@ -54,7 +54,7 @@
         font-family: 'Playfair Display', Georgia, serif;
         font-size: 1.6rem;
         font-weight: 800;
-        color: #7A1C28;
+        color: #5D4037;
         letter-spacing: -0.5px;
         margin: 0;
     }
@@ -129,7 +129,7 @@
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.5rem;border-bottom:1.5px solid #F3F4F6;padding-bottom:1.5rem;">
             <div>
                 <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.35rem;">
-                    <div style="width:38px;height:38px;background:#7A1C28;color:#C8973A;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <div style="width:38px;height:38px;background:#5D4037;color:#9A6700;border-radius:10px;display:flex;align-items:center;justify-content:center;">
                         <partial name="_LogoBurger" />
                     </div>
                     <div>
@@ -147,7 +147,7 @@
             <div style="text-align:right;">
                 <div style="display:inline-block;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:6px 14px;margin-bottom:6px;">
                     <span style="font-size:0.75rem;color:#6B7280;font-weight:700;display:block;">FACTURA DE VENTA</span>
-                    <strong style="font-family:monospace;font-size:1.15rem;color:#7A1C28;">@Model.Numero</strong>
+                    <strong style="font-family:monospace;font-size:1.15rem;color:#5D4037;">@Model.Numero</strong>
                 </div>
                 <div style="font-size:.78rem;color:#6B7280;">
                     Fecha: <strong>@Model.FechaCreacion.ToString("dd/MM/yyyy")</strong><br />
@@ -249,7 +249,7 @@
                 {
                     <div style="display:flex;justify-content:space-between;padding:.3rem 0;font-size:.88rem;color:#4B5563;">
                         <span>Servicio Domicilio Express:</span>
-                        <strong style="color:#C8973A;">$@Model.CostoEnvio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
+                        <strong style="color:#9A6700;">$@Model.CostoEnvio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</strong>
                     </div>
                 }
 
@@ -271,7 +271,7 @@
 
                 <div style="border-top:2px solid #111827;margin:.6rem 0;padding-top:.6rem;display:flex;justify-content:space-between;align-items:center;">
                     <span style="font-size:1.05rem;font-weight:800;color:#111827;">TOTAL A PAGAR:</span>
-                    <span style="font-size:1.35rem;font-weight:800;color:#7A1C28;">$@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
+                    <span style="font-size:1.35rem;font-weight:800;color:#5D4037;">$@Model.Total.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                 </div>
             </div>
         </div>

@@ -7,12 +7,12 @@
 /* ── Clase Reutilizable Glassmorphism (.glass-card) ─────────────────────── */
 .glass-card {
     position: relative;
-    background: rgba(255, 253, 249, 0.65);
+    background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(227, 216, 200, 0.65);
     border-radius: 1.25rem; /* rounded-2xl */
-    box-shadow: 0 4px 20px -2px rgba(28, 20, 22, 0.05), 0 12px 32px -4px rgba(28, 20, 22, 0.07);
+    box-shadow: 0 4px 20px -2px rgba(43, 27, 21, 0.05), 0 12px 32px -4px rgba(43, 27, 21, 0.07);
     transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), 
                 box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1), 
                 border-color 250ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -27,13 +27,13 @@
 
 .glass-card-hover:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 28px -4px rgba(28, 20, 22, 0.12), 0 20px 40px -8px rgba(28, 20, 22, 0.08);
-    border-color: rgba(107, 30, 46, 0.3);
+    box-shadow: 0 12px 28px -4px rgba(43, 27, 21, 0.12), 0 20px 40px -8px rgba(43, 27, 21, 0.08);
+    border-color: rgba(93, 64, 55, 0.3);
 }
 
 :root[data-theme="dark"] .glass-card-hover:hover {
     box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.6), 0 24px 48px -8px rgba(0, 0, 0, 0.7);
-    border-color: rgba(178, 71, 92, 0.4);
+    border-color: rgba(161, 136, 127, 0.4);
 }
 
 /* ── Fondo Inmersivo a Pantalla Completa con Mesh & Blur ─────────────────── */
@@ -43,9 +43,9 @@
     width: 100%;
     background-color: var(--bg);
     background-image: 
-        radial-gradient(circle at 12% 15%, rgba(107, 30, 46, 0.09) 0%, transparent 45%),
-        radial-gradient(circle at 88% 85%, rgba(201, 168, 106, 0.11) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(107, 30, 46, 0.03) 0%, transparent 60%);
+        radial-gradient(circle at 12% 15%, rgba(93, 64, 55, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 88% 85%, rgba(255, 202, 40, 0.11) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(93, 64, 55, 0.03) 0%, transparent 60%);
     background-attachment: fixed;
     color: var(--text);
     font-family: var(--font, 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
@@ -54,9 +54,9 @@
 
 :root[data-theme="dark"] .v12-dashboard-wrapper {
     background-image: 
-        radial-gradient(circle at 12% 15%, rgba(178, 71, 92, 0.14) 0%, transparent 45%),
-        radial-gradient(circle at 88% 85%, rgba(201, 168, 106, 0.09) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(178, 71, 92, 0.04) 0%, transparent 60%);
+        radial-gradient(circle at 12% 15%, rgba(161, 136, 127, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 88% 85%, rgba(255, 202, 40, 0.09) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(161, 136, 127, 0.04) 0%, transparent 60%);
 }
 
 /* ── Estructura de Layout V12 ────────────────────────────────────────────── */
@@ -73,7 +73,7 @@
     left: 0;
     bottom: 0;
     width: 72px;
-    background: rgba(255, 253, 249, 0.75);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border-right: 1px solid rgba(227, 216, 200, 0.7);
@@ -82,7 +82,7 @@
     align-items: center;
     padding: 1.25rem 0;
     z-index: 80;
-    box-shadow: 2px 0 16px rgba(28, 20, 22, 0.03);
+    box-shadow: 2px 0 16px rgba(43, 27, 21, 0.03);
 }
 
 :root[data-theme="dark"] .v12-sidebar {
@@ -103,12 +103,12 @@
     margin-bottom: 2rem;
     text-decoration: none;
     transition: transform 200ms ease, box-shadow 200ms ease;
-    box-shadow: 0 4px 12px rgba(107, 30, 46, 0.25);
+    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.25);
 }
 
 .v12-sidebar-brand:hover {
     transform: scale(1.06);
-    box-shadow: 0 6px 18px rgba(107, 30, 46, 0.35);
+    box-shadow: 0 6px 18px rgba(93, 64, 55, 0.35);
 }
 
 .v12-nav-group {
@@ -138,22 +138,22 @@
 
 .v12-nav-btn:hover {
     color: var(--text);
-    background: rgba(107, 30, 46, 0.08);
+    background: rgba(93, 64, 55, 0.08);
     transform: scale(1.05);
 }
 
 :root[data-theme="dark"] .v12-nav-btn:hover {
-    background: rgba(178, 71, 92, 0.15);
+    background: rgba(161, 136, 127, 0.15);
 }
 
 .v12-nav-btn.active {
     background: var(--brand);
     color: var(--on-brand);
-    box-shadow: 0 4px 14px rgba(107, 30, 46, 0.35);
+    box-shadow: 0 4px 14px rgba(93, 64, 55, 0.35);
 }
 
 :root[data-theme="dark"] .v12-nav-btn.active {
-    box-shadow: 0 4px 16px rgba(178, 71, 92, 0.4);
+    box-shadow: 0 4px 16px rgba(161, 136, 127, 0.4);
 }
 
 /* Tooltips de Sidebar */
@@ -276,7 +276,7 @@
     color: var(--text);
     cursor: pointer;
     border: 1px solid rgba(227, 216, 200, 0.6);
-    background: rgba(255, 253, 249, 0.6);
+    background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(16px);
     transition: transform 180ms ease, background 180ms ease;
     text-decoration: none;
@@ -294,13 +294,13 @@
 
 :root[data-theme="dark"] .v12-header-btn {
     background: rgba(30, 24, 26, 0.75);
-    border-color: rgba(200, 151, 58, 0.35);
+    border-color: rgba(255, 179, 0, 0.35);
     color: var(--gold);
 }
 
 .v12-header-btn:hover {
     transform: translateY(-2px);
-    background: rgba(107, 30, 46, 0.08);
+    background: rgba(93, 64, 55, 0.08);
     color: var(--gold);
 }
 
@@ -325,7 +325,7 @@
     justify-content: center;
     font-weight: 700;
     font-size: 0.9rem;
-    box-shadow: 0 2px 8px rgba(107, 30, 46, 0.25);
+    box-shadow: 0 2px 8px rgba(93, 64, 55, 0.25);
     flex-shrink: 0;
 }
 
@@ -385,8 +385,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(107, 30, 46, 0.1);
-    border: 1px solid rgba(200, 151, 58, 0.25);
+    background: rgba(93, 64, 55, 0.1);
+    border: 1px solid rgba(255, 179, 0, 0.25);
     color: var(--brand);
     transition: transform 200ms ease;
     flex-shrink: 0;
@@ -402,8 +402,8 @@
 }
 
 :root[data-theme="dark"] .v12-stat-icon-wrap {
-    background: rgba(200, 151, 58, 0.16);
-    border-color: rgba(200, 151, 58, 0.38);
+    background: rgba(255, 179, 0, 0.16);
+    border-color: rgba(255, 179, 0, 0.38);
     color: var(--gold);
 }
 
@@ -485,7 +485,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 10px 30px -6px rgba(107, 30, 46, 0.4);
+    box-shadow: 0 10px 30px -6px rgba(93, 64, 55, 0.4);
     position: relative;
     overflow: hidden;
     transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -493,7 +493,7 @@
 
 .v12-bento-hero:hover {
     transform: translateY(-4px);
-    box-shadow: 0 16px 36px -6px rgba(107, 30, 46, 0.55);
+    box-shadow: 0 16px 36px -6px rgba(93, 64, 55, 0.55);
 }
 
 .v12-bento-hero-bg {
@@ -510,7 +510,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: rgba(255, 253, 249, 0.16);
+    background: rgba(255, 255, 255, 0.16);
     color: var(--gold);
     font-size: 0.74rem;
     font-weight: 700;
@@ -627,7 +627,7 @@
 }
 
 .v12-cal-btn:hover {
-    background: rgba(107, 30, 46, 0.08);
+    background: rgba(93, 64, 55, 0.08);
     color: var(--text);
 }
 
@@ -669,7 +669,7 @@
     background: var(--brand);
     color: var(--on-brand);
     font-weight: 800;
-    box-shadow: 0 2px 8px rgba(107, 30, 46, 0.3);
+    box-shadow: 0 2px 8px rgba(93, 64, 55, 0.3);
 }
 
 .v12-cal-day.has-event::after {
@@ -711,13 +711,13 @@
 .v12-chart-filters {
     display: flex;
     gap: 0.35rem;
-    background: rgba(107, 30, 46, 0.05);
+    background: rgba(93, 64, 55, 0.05);
     padding: 0.2rem;
     border-radius: 8px;
 }
 
 :root[data-theme="dark"] .v12-chart-filters {
-    background: rgba(178, 71, 92, 0.1);
+    background: rgba(161, 136, 127, 0.1);
 }
 
 .v12-chart-filter-btn {
@@ -842,7 +842,7 @@
     gap: 0.85rem;
     padding: 0.65rem;
     border-radius: 12px;
-    background: rgba(255, 253, 249, 0.4);
+    background: rgba(255, 255, 255, 0.4);
     border: 1px solid rgba(227, 216, 200, 0.4);
     transition: background 180ms ease, transform 180ms ease;
 }
@@ -853,7 +853,7 @@
 }
 
 .v12-event-item:hover {
-    background: rgba(107, 30, 46, 0.06);
+    background: rgba(93, 64, 55, 0.06);
     transform: translateX(3px);
 }
 

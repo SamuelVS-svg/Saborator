@@ -39,11 +39,11 @@
     inset: 0;
     pointer-events: none;
     background-image: 
-        radial-gradient(1px 1px at 20% 30%, rgba(200, 151, 58, 0.35) 1px, transparent 0),
-        radial-gradient(1px 1px at 40% 70%, rgba(255, 253, 249, 0.25) 1px, transparent 0),
-        radial-gradient(1.5px 1.5px at 75% 25%, rgba(200, 151, 58, 0.4) 1px, transparent 0),
-        radial-gradient(1px 1px at 85% 65%, rgba(255, 253, 249, 0.2) 1px, transparent 0),
-        radial-gradient(1.5px 1.5px at 30% 85%, rgba(200, 151, 58, 0.3) 1px, transparent 0);
+        radial-gradient(1px 1px at 20% 30%, rgba(255, 179, 0, 0.35) 1px, transparent 0),
+        radial-gradient(1px 1px at 40% 70%, rgba(255, 255, 255, 0.25) 1px, transparent 0),
+        radial-gradient(1.5px 1.5px at 75% 25%, rgba(255, 179, 0, 0.4) 1px, transparent 0),
+        radial-gradient(1px 1px at 85% 65%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
+        radial-gradient(1.5px 1.5px at 30% 85%, rgba(255, 179, 0, 0.3) 1px, transparent 0);
     background-size: 300px 300px;
     opacity: 0.6;
     animation: ambientFloat 20s linear infinite;
@@ -59,7 +59,7 @@
     position: absolute;
     width: min(650px, 90vw);
     height: min(650px, 90vw);
-    background: radial-gradient(circle, rgba(200, 151, 58, 0.16) 0%, rgba(107, 30, 46, 0.22) 45%, transparent 72%);
+    background: radial-gradient(circle, rgba(255, 179, 0, 0.16) 0%, rgba(93, 64, 55, 0.22) 45%, transparent 72%);
     border-radius: 50%;
     filter: blur(40px);
     pointer-events: none;
@@ -212,7 +212,7 @@
     width: 140px;
     height: 140px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(200, 151, 58, 0.5) 0%, rgba(200, 151, 58, 0.15) 45%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 179, 0, 0.5) 0%, rgba(255, 179, 0, 0.15) 45%, transparent 70%);
     animation: haloPulse 4.2s ease forwards;
     pointer-events: none;
 }
@@ -231,7 +231,7 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    border: 1.5px solid rgba(200, 151, 58, 0.7);
+    border: 1.5px solid rgba(255, 179, 0, 0.7);
     opacity: 0;
     pointer-events: none;
     animation: shockwaveExpand 4.2s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
@@ -241,7 +241,7 @@
     0%, 42% {
         opacity: 0;
         transform: scale(0.6);
-        border-color: rgba(255, 253, 249, 0.9);
+        border-color: rgba(255, 255, 255, 0.9);
     }
     48% {
         opacity: 0.85;
@@ -249,7 +249,7 @@
     75% {
         opacity: 0;
         transform: scale(3.2);
-        border-color: rgba(200, 151, 58, 0);
+        border-color: rgba(255, 179, 0, 0);
     }
     100% {
         opacity: 0;
@@ -272,18 +272,18 @@
     font-size: clamp(2.4rem, 6.5vw, 3.8rem);
     font-weight: 400;
     letter-spacing: 0.08em;
-    color: #FFFDF9;
+    color: #FFFFFF;
     margin: 0;
     line-height: 1;
-    text-shadow: 0 4px 24px rgba(200, 151, 58, 0.35);
+    text-shadow: 0 4px 24px rgba(255, 179, 0, 0.35);
     animation: brandTitleReveal 4.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: transform, opacity, letter-spacing;
 }
 
 .intro-brand-title span {
     font-style: italic;
-    color: #E2B968;
-    background: linear-gradient(135deg, #FFFDF9 20%, #E2B968 60%, #C8973A 100%);
+    color: #FFCA28;
+    background: linear-gradient(135deg, #FFFFFF 20%, #FFCA28 60%, #FFB300 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -318,7 +318,7 @@
     font-weight: 600;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: rgba(255, 253, 249, 0.65);
+    color: rgba(255, 255, 255, 0.65);
     margin: 0;
     display: flex;
     align-items: center;
@@ -332,7 +332,7 @@
     display: inline-block;
     width: 24px;
     height: 1px;
-    background: rgba(200, 151, 58, 0.45);
+    background: rgba(255, 179, 0, 0.45);
 }
 
 @keyframes brandSubReveal {
@@ -362,11 +362,11 @@
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    background: rgba(255, 253, 249, 0.08);
-    border: 1px solid rgba(255, 253, 249, 0.16);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: rgba(255, 253, 249, 0.85);
+    color: rgba(255, 255, 255, 0.85);
     padding: 0.45rem 0.95rem;
     border-radius: 9999px;
     font-family: 'Geist', sans-serif;
@@ -389,9 +389,9 @@
 
 @media (hover: hover) and (pointer: fine) {
     .intro-skip-btn:hover {
-        background: rgba(255, 253, 249, 0.16);
-        border-color: rgba(200, 151, 58, 0.5);
-        color: #FFFDF9;
+        background: rgba(255, 255, 255, 0.16);
+        border-color: rgba(255, 179, 0, 0.5);
+        color: #FFFFFF;
         transform: translateY(-1px);
     }
 }
@@ -403,18 +403,18 @@
 .intro-skip-kbd {
     font-family: 'Geist Mono', monospace;
     font-size: 0.65rem;
-    background: rgba(255, 253, 249, 0.12);
-    border: 1px solid rgba(255, 253, 249, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
     padding: 0.1rem 0.35rem;
-    color: rgba(255, 253, 249, 0.9);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Aviso de salto: en pantallas táctiles no existe la tecla Esc, así que se pide tocar la pantalla */
 .intro-skip-hint {
     display: none;
     font-size: 0.72rem;
-    color: rgba(255, 253, 249, 0.7);
+    color: rgba(255, 255, 255, 0.7);
 }
 
 @media (hover: none), (pointer: coarse) {
@@ -439,7 +439,7 @@
 
 .skip-timer-circle {
     fill: none;
-    stroke: var(--gold, #C8973A);
+    stroke: var(--gold, #FFB300);
     stroke-width: 2.2;
     stroke-dasharray: 38;
     stroke-dashoffset: 38;
@@ -458,7 +458,7 @@
     gap: 0.35rem;
     background: none;
     border: none;
-    color: var(--muted, #5E5357);
+    color: var(--muted, #6B5A52);
     font-family: inherit;
     font-size: 0.78rem;
     font-weight: 500;
@@ -476,8 +476,8 @@
 
 @media (hover: hover) and (pointer: fine) {
     .replay-intro-btn:hover {
-        color: var(--brand, #6B1E2E);
-        background: rgba(107, 30, 46, 0.05);
+        color: var(--brand, #5D4037);
+        background: rgba(93, 64, 55, 0.05);
     }
 }
 

@@ -6,16 +6,16 @@
 
 <style>
     .checkout-hero {
-        background: var(--bg, #F5EFE6);
-        background-image: radial-gradient(circle at 1px 1px, rgba(107, 30, 46, 0.045) 1px, transparent 0);
+        background: var(--bg, #F7F2EE);
+        background-image: radial-gradient(circle at 1px 1px, rgba(93, 64, 55, 0.045) 1px, transparent 0);
         background-size: 24px 24px;
         padding: 2.5rem 1rem 3.5rem;
-        color: var(--text, #1C1416);
+        color: var(--text, #2B1B15);
         min-height: 90vh;
     }
     :root[data-theme="dark"] .checkout-hero {
-        background: radial-gradient(circle at 50% 20%, rgba(107, 30, 46, 0.45) 0%, rgba(24, 6, 10, 0.98) 75%);
-        color: #FFFDF9;
+        background: radial-gradient(circle at 50% 20%, rgba(93, 64, 55, 0.45) 0%, rgba(24, 6, 10, 0.98) 75%);
+        color: #FFFFFF;
     }
     .checkout-container {
         max-width: 1100px;
@@ -30,27 +30,27 @@
         align-items: center;
         gap: 0.5rem;
         padding: 0.35rem 1rem;
-        background: rgba(200, 151, 58, 0.15);
-        border: 1px solid rgba(200, 151, 58, 0.35);
+        background: rgba(255, 179, 0, 0.15);
+        border: 1px solid rgba(255, 179, 0, 0.35);
         border-radius: 999px;
-        color: var(--brand, #6B1E2E);
+        color: var(--brand, #5D4037);
         font-size: 0.8rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.1em;
         margin-bottom: 0.75rem;
     }
-    :root[data-theme="dark"] .checkout-tag { color: #F0E2D2; }
+    :root[data-theme="dark"] .checkout-tag { color: #F3E6DA; }
     .checkout-title {
         font-family: 'Instrument Serif', Georgia, serif;
         font-size: clamp(2.2rem, 4vw, 3rem);
         font-weight: 400;
         margin: 0 0 0.5rem;
-        color: var(--brand, #6B1E2E);
+        color: var(--brand, #5D4037);
     }
-    :root[data-theme="dark"] .checkout-title { color: #FFFDF9; }
+    :root[data-theme="dark"] .checkout-title { color: #FFFFFF; }
     .checkout-title span {
-        color: #C8973A;
+        color: #9A6700;
         font-style: italic;
     }
     .checkout-grid {
@@ -71,12 +71,12 @@
 
     /* Tarjeta de Métodos de Pago */
     .payment-card {
-        background: var(--surface, #FFFDF9);
-        border: 1.5px solid var(--line, #E3D8C8);
+        background: var(--surface, #FFFFFF);
+        border: 1.5px solid var(--line, #E8DDD4);
         border-radius: 18px;
         padding: 2rem;
-        color: var(--text, #1C1416);
-        box-shadow: 0 14px 32px -8px rgba(44, 10, 18, 0.06);
+        color: var(--text, #2B1B15);
+        box-shadow: 0 14px 32px -8px rgba(38, 24, 18, 0.06);
         width: 100%;
         max-width: 100%;
         min-width: 0;
@@ -85,8 +85,8 @@
     }
     :root[data-theme="dark"] .payment-card {
         background: rgba(30, 10, 16, 0.85);
-        border-color: rgba(200, 151, 58, 0.25);
-        color: #FFFDF9;
+        border-color: rgba(255, 179, 0, 0.25);
+        color: #FFFFFF;
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
     }
     .methods-nav {
@@ -110,9 +110,9 @@
         }
     }
     .method-tab {
-        background: var(--surface-2, #EFE6D8);
-        border: 1.5px solid var(--line-2, #D4C6B2);
-        color: var(--text, #1C1416);
+        background: var(--surface-2, #F1E9E2);
+        border: 1.5px solid var(--line-2, #D9CBBF);
+        color: var(--text, #2B1B15);
         padding: 0.75rem 0.35rem;
         border-radius: 14px;
         font-size: 0.78rem;
@@ -128,25 +128,25 @@
         min-height: 82px;
     }
     :root[data-theme="dark"] .method-tab {
-        background: rgba(255, 253, 249, 0.05);
-        border-color: rgba(255, 253, 249, 0.12);
-        color: #FFFDF9;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: #FFFFFF;
     }
     .method-tab:hover {
-        background: rgba(200, 151, 58, 0.15);
-        border-color: #C8973A;
+        background: rgba(255, 179, 0, 0.15);
+        border-color: #FFB300;
         transform: translateY(-2px);
     }
     .method-tab.active {
-        background: linear-gradient(135deg, rgba(200, 151, 58, 0.18), rgba(107, 30, 46, 0.25));
-        border-color: #C8973A;
-        color: var(--brand, #6B1E2E);
-        box-shadow: 0 4px 18px rgba(200, 151, 58, 0.28);
-        outline: 2px solid #C8973A;
+        background: linear-gradient(135deg, rgba(255, 179, 0, 0.18), rgba(93, 64, 55, 0.25));
+        border-color: #FFB300;
+        color: var(--brand, #5D4037);
+        box-shadow: 0 4px 18px rgba(255, 179, 0, 0.28);
+        outline: 2px solid #FFB300;
     }
     :root[data-theme="dark"] .method-tab.active {
-        color: #FFFDF9;
-        background: linear-gradient(135deg, rgba(200, 151, 58, 0.25), rgba(107, 30, 46, 0.5));
+        color: #FFFFFF;
+        background: linear-gradient(135deg, rgba(255, 179, 0, 0.25), rgba(93, 64, 55, 0.5));
     }
     .method-tab svg,
     .method-tab-logo {
@@ -176,10 +176,10 @@
     /* Visualización interactiva de tarjeta */
     .card-visual {
         background: linear-gradient(135deg, #1C050B 0%, #4A121F 50%, #150307 100%);
-        border: 1px solid rgba(200, 151, 58, 0.45);
+        border: 1px solid rgba(255, 179, 0, 0.45);
         border-radius: 14px;
         padding: 1.5rem;
-        color: #FFFDF9;
+        color: #FFFFFF;
         margin-bottom: 1.75rem;
         position: relative;
         overflow: hidden;
@@ -192,7 +192,7 @@
         right: -20%;
         width: 200px;
         height: 200px;
-        background: radial-gradient(circle, rgba(200, 151, 58, 0.25) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255, 179, 0, 0.25) 0%, transparent 70%);
         pointer-events: none;
     }
     .cv-top {
@@ -212,7 +212,7 @@
         font-weight: 800;
         font-size: 1.15rem;
         letter-spacing: 0.05em;
-        color: #C8973A;
+        color: #9A6700;
     }
     .cv-number {
         font-family: 'Geist Mono', monospace;
@@ -227,7 +227,7 @@
         font-size: 0.78rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: rgba(255, 253, 249, 0.85);
+        color: rgba(255, 255, 255, 0.85);
     }
 
     .form-group-pago {
@@ -237,63 +237,63 @@
         display: block;
         font-size: 0.82rem;
         font-weight: 700;
-        color: var(--brand, #6B1E2E);
+        color: var(--brand, #5D4037);
         margin-bottom: 0.4rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
-    :root[data-theme="dark"] .form-group-pago label { color: #F0E2D2; }
+    :root[data-theme="dark"] .form-group-pago label { color: #F3E6DA; }
     .input-pago {
         width: 100%;
-        background: var(--surface-2, #EFE6D8);
-        border: 1.5px solid var(--line-2, #D4C6B2);
-        color: var(--text, #1C1416);
+        background: var(--surface-2, #F1E9E2);
+        border: 1.5px solid var(--line-2, #D9CBBF);
+        color: var(--text, #2B1B15);
         border-radius: 10px;
         padding: 0.75rem 1rem;
         font-size: 0.92rem;
         transition: border-color 0.16s ease, box-shadow 0.16s ease;
     }
     :root[data-theme="dark"] .input-pago {
-        background: rgba(255, 253, 249, 0.07);
-        border-color: rgba(255, 253, 249, 0.2);
-        color: #FFFDF9;
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
     }
     .input-pago:focus {
         outline: none;
-        border-color: var(--brand, #6B1E2E);
-        background: #FFFDF9;
-        box-shadow: 0 0 0 3px rgba(107, 30, 46, 0.18);
+        border-color: var(--brand, #5D4037);
+        background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.18);
     }
     :root[data-theme="dark"] .input-pago:focus {
-        border-color: #C8973A;
-        background: rgba(255, 253, 249, 0.12);
-        box-shadow: 0 0 0 3px rgba(200, 151, 58, 0.25);
+        border-color: #FFB300;
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 3px rgba(255, 179, 0, 0.25);
     }
     .input-pago option {
-        background: var(--surface, #FFFDF9);
-        color: var(--text, #1C1416);
+        background: var(--surface, #FFFFFF);
+        color: var(--text, #2B1B15);
     }
     :root[data-theme="dark"] .input-pago option {
         background: #18060A;
-        color: #FFFDF9;
+        color: #FFFFFF;
     }
 
     /* Resumen de orden */
     .summary-card {
-        background: var(--surface, #FFFDF9);
-        border: 1.5px solid var(--line, #E3D8C8);
+        background: var(--surface, #FFFFFF);
+        border: 1.5px solid var(--line, #E8DDD4);
         border-radius: 18px;
         padding: 1.75rem;
-        box-shadow: 0 14px 32px -8px rgba(44, 10, 18, 0.06);
+        box-shadow: 0 14px 32px -8px rgba(38, 24, 18, 0.06);
         position: sticky;
         top: 24px;
-        color: var(--text, #1C1416);
+        color: var(--text, #2B1B15);
     }
     :root[data-theme="dark"] .summary-card {
         background: rgba(30, 10, 16, 0.85);
-        border-color: rgba(200, 151, 58, 0.25);
+        border-color: rgba(255, 179, 0, 0.25);
         box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-        color: #FFFDF9;
+        color: #FFFFFF;
     }
     .summary-title {
         font-family: 'Instrument Serif', Georgia, serif;
@@ -301,12 +301,12 @@
         font-weight: 400;
         margin: 0 0 1rem;
         padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--line, #E3D8C8);
-        color: var(--brand, #6B1E2E);
+        border-bottom: 1px solid var(--line, #E8DDD4);
+        color: var(--brand, #5D4037);
     }
     :root[data-theme="dark"] .summary-title {
-        border-bottom-color: rgba(200, 151, 58, 0.2);
-        color: #FFFDF9;
+        border-bottom-color: rgba(255, 179, 0, 0.2);
+        color: #FFFFFF;
     }
     .summary-item {
         display: flex;
@@ -314,10 +314,10 @@
         align-items: flex-start;
         padding: 0.6rem 0;
         font-size: 0.88rem;
-        border-bottom: 1px dashed var(--line, #E3D8C8);
+        border-bottom: 1px dashed var(--line, #E8DDD4);
     }
     :root[data-theme="dark"] .summary-item {
-        border-bottom-color: rgba(255, 253, 249, 0.1);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
     }
     .summary-item:last-child {
         border-bottom: none;
@@ -325,7 +325,7 @@
     .summary-total {
         margin-top: 1.25rem;
         padding-top: 1rem;
-        border-top: 2px solid #C8973A;
+        border-top: 2px solid #FFB300;
         display: flex;
         justify-content: space-between;
         align-items: baseline;
@@ -333,13 +333,13 @@
     .summary-total .val {
         font-family: 'Instrument Serif', Georgia, serif;
         font-size: 2rem;
-        color: #C8973A;
+        color: #9A6700;
         font-weight: 700;
     }
 
     .btn-pagar-now {
         width: 100%;
-        background: linear-gradient(135deg, #C8973A, #A67520);
+        background: linear-gradient(135deg, #FFB300, #A67520);
         color: #18060A;
         font-size: 1rem;
         font-weight: 700;
@@ -351,13 +351,13 @@
         align-items: center;
         justify-content: center;
         gap: 0.65rem;
-        box-shadow: 0 8px 25px rgba(200, 151, 58, 0.35);
+        box-shadow: 0 8px 25px rgba(255, 179, 0, 0.35);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         margin-top: 1.5rem;
     }
     .btn-pagar-now:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(200, 151, 58, 0.5);
+        box-shadow: 0 12px 30px rgba(255, 179, 0, 0.5);
     }
     .security-badge {
         display: flex;
@@ -369,12 +369,12 @@
         margin-top: 1.25rem;
         text-align: center;
     }
-    :root[data-theme="dark"] .security-badge { color: rgba(255, 253, 249, 0.65); }
+    :root[data-theme="dark"] .security-badge { color: rgba(255, 255, 255, 0.65); }
 
     .btn-fill-demo {
-        background: rgba(200, 151, 58, 0.12);
-        border: 1px dashed #C8973A;
-        color: var(--brand, #6B1E2E);
+        background: rgba(255, 179, 0, 0.12);
+        border: 1px dashed #FFB300;
+        color: var(--brand, #5D4037);
         padding: 0.35rem 0.75rem;
         border-radius: 8px;
         font-size: 0.75rem;
@@ -386,9 +386,9 @@
         margin-bottom: 1rem;
         transition: all 0.16s ease;
     }
-    :root[data-theme="dark"] .btn-fill-demo { color: #F0E2D2; }
+    :root[data-theme="dark"] .btn-fill-demo { color: #F3E6DA; }
     .btn-fill-demo:hover {
-        background: rgba(200, 151, 58, 0.25);
+        background: rgba(255, 179, 0, 0.25);
     }
     .pago-grid-2 {
         display: grid;
@@ -518,9 +518,9 @@
                         <button type="button" class="method-tab" onclick="seleccionarMetodo('Efectivo', this)">
                             <svg viewBox="0 0 44 28" class="method-tab-logo" fill="none">
                                 <rect width="44" height="28" rx="6" fill="#201115"/>
-                                <rect x="8" y="6" width="28" height="16" rx="3" stroke="#C8973A" stroke-width="1.8" fill="rgba(200,151,58,0.12)"/>
-                                <circle cx="22" cy="14" r="3.5" stroke="#C8973A" stroke-width="1.6"/>
-                                <path d="M12 10V10.1M32 18V18.1" stroke="#C8973A" stroke-width="2" stroke-linecap="round"/>
+                                <rect x="8" y="6" width="28" height="16" rx="3" stroke="#FFB300" stroke-width="1.8" fill="rgba(255, 179, 0,0.12)"/>
+                                <circle cx="22" cy="14" r="3.5" stroke="#FFB300" stroke-width="1.6"/>
+                                <path d="M12 10V10.1M32 18V18.1" stroke="#FFB300" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                             <span>En Mesa</span>
                         </button>
@@ -554,7 +554,7 @@
 
                     <!-- 0. PANE WOMPI OFICIAL (BANCOLOMBIA) -->
                     <div class="method-pane active" id="paneWompi">
-                        <div style="background:rgba(200,151,58,0.1);border:1.5px solid #C8973A;border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;text-align:center;box-sizing:border-box;max-width:100%;">
+                        <div style="background:rgba(255, 179, 0,0.1);border:1.5px solid #FFB300;border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;text-align:center;box-sizing:border-box;max-width:100%;">
                             
                             <!-- Logo oficial de Wompi Bancolombia -->
                             <div style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.5rem;background:#000;border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;margin-bottom:1.25rem;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
@@ -565,7 +565,7 @@
                                 </svg>
                             </div>
 
-                            <h3 style="font-size:1.3rem;font-weight:800;margin:0 0 0.4rem;color:var(--brand, #6B1E2E);">Pasarela Oficial Wompi Bancolombia</h3>
+                            <h3 style="font-size:1.3rem;font-weight:800;margin:0 0 0.4rem;color:var(--brand, #5D4037);">Pasarela Oficial Wompi Bancolombia</h3>
                             <p style="font-size:0.9rem;max-width:520px;margin:0 auto 1.25rem;line-height:1.5;color:var(--muted, #6E5D53);">
                                 Conéctate con la pasarela oficial para procesar transacciones seguras con Nequi, PSE, Tarjetas y Botón Bancolombia:
                             </p>
@@ -597,14 +597,14 @@
                             </button>
 
                             <!-- Banner de fallback inteligente en caso de demora o adblocker -->
-                            <div id="wompiFallbackNotice" style="display:none;margin-top:1.25rem;background:rgba(200,151,58,0.15);border:1px dashed #C8973A;border-radius:10px;padding:0.9rem;text-align:center;">
-                                <div style="font-size:0.85rem;font-weight:700;color:var(--brand,#6B1E2E);margin-bottom:0.35rem;">
+                            <div id="wompiFallbackNotice" style="display:none;margin-top:1.25rem;background:rgba(255, 179, 0,0.15);border:1px dashed #FFB300;border-radius:10px;padding:0.9rem;text-align:center;">
+                                <div style="font-size:0.85rem;font-weight:700;color:var(--brand,#5D4037);margin-bottom:0.35rem;">
                                     ¿Wompi está tardando en abrir o tu navegador bloquea popups?
                                 </div>
                                 <p style="font-size:0.8rem;color:var(--muted,#6E5D53);margin:0 0 0.6rem;">
                                     Puedes realizar el pago directamente con nuestra pasarela interna sin intermediarios:
                                 </p>
-                                <button type="button" onclick="conmutarAPasarelaDirecta()" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border-color:#C8973A;color:var(--brand,#6B1E2E);">
+                                <button type="button" onclick="conmutarAPasarelaDirecta()" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border-color:#FFB300;color:var(--brand,#5D4037);">
                                     Pagar con Pasarela Directa (Tarjeta / Nequi / PSE) &rarr;
                                 </button>
                             </div>
@@ -612,8 +612,8 @@
                             @if ((ViewBag.PermitirSimulacion as bool?) == true && (ViewBag.SimularWompi as bool?) != true && Model.OrigenId.HasValue && (Model.TipoOrigen == "Pedido" || Model.TipoOrigen == "Reserva"))
                             {
                                 <!-- Respaldo para demostraciones: solo existe en sandbox con WOMPI_PERMITIR_SIMULACION=true -->
-                                <div style="margin-top:1.25rem;border:1px dashed var(--brand,#6B1E2E);border-radius:10px;padding:0.9rem;text-align:center;">
-                                    <div style="font-size:0.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand,#6B1E2E);margin-bottom:0.35rem;">Modo demostración</div>
+                                <div style="margin-top:1.25rem;border:1px dashed var(--brand,#5D4037);border-radius:10px;padding:0.9rem;text-align:center;">
+                                    <div style="font-size:0.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--brand,#5D4037);margin-bottom:0.35rem;">Modo demostración</div>
                                     <p style="font-size:0.8rem;color:var(--muted,#6E5D53);margin:0 0 0.6rem;">Si falla la conexión con Wompi, puedes aprobar este pago de forma simulada. No se realiza ningún cobro real.</p>
                                     <button type="button" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;"
                                             onclick="var f=document.getElementById('formPasarela'); f.action='@Url.Action("AprobarSimulado", "Pago")'; f.submit();">
@@ -681,7 +681,7 @@
 
                     <!-- 2. PANE NEQUI DIRECTO (TRANSFERENCIA 100% FUNCIONAL) -->
                     <div class="method-pane" id="paneNequi">
-                        <div style="background:#1A0328;border:1.5px solid #FF2772;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFDF9;box-shadow:0 8px 30px rgba(255,39,114,0.18);">
+                        <div style="background:#1A0328;border:1.5px solid #FF2772;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFFFF;box-shadow:0 8px 30px rgba(255,39,114,0.18);">
                             
                             <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
                                 <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -781,7 +781,7 @@
 
                     <!-- 3. PANE BANCOLOMBIA / PSE (TRANSFERENCIA DIRECTA) -->
                     <div class="method-pane" id="panePSE">
-                        <div style="background:#0B2341;border:1.5px solid #FFCC00;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFDF9;box-shadow:0 8px 30px rgba(0,34,68,0.25);">
+                        <div style="background:#0B2341;border:1.5px solid #FFCC00;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFFFF;box-shadow:0 8px 30px rgba(0,34,68,0.25);">
                             
                             <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
                                 <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -880,7 +880,7 @@
 
                     <!-- 4. PANE DAVIPLATA (TRANSFERENCIA DIRECTA) -->
                     <div class="method-pane" id="paneDaviplata">
-                        <div style="background:#ED1C24;border:1.5px solid #FFD100;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFDF9;box-shadow:0 8px 30px rgba(237,28,36,0.25);">
+                        <div style="background:#ED1C24;border:1.5px solid #FFD100;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;color:#FFFFFF;box-shadow:0 8px 30px rgba(237,28,36,0.25);">
                             
                             <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap;">
                                 <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -962,7 +962,7 @@
                             <div style="width:60px;height:60px;margin:0 auto 1.25rem;background:rgba(42,115,72,0.22);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#4CAF50;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
                             </div>
-                            <h3 style="font-size:1.25rem;font-weight:800;color:var(--text,#1C1416);margin:0 0 0.5rem;">Pago Directo en Sala / Con Datáfono en Mesa</h3>
+                            <h3 style="font-size:1.25rem;font-weight:800;color:var(--text,#2B1B15);margin:0 0 0.5rem;">Pago Directo en Sala / Con Datáfono en Mesa</h3>
                             <p style="font-size:0.9rem;color:var(--muted,#6E5D53);max-width:480px;margin:0 auto 1.5rem;line-height:1.5;">
                                 Registraremos tu solicitud de inmediato. Tu mesero asignado se acercará a tu mesa con el datáfono inalámbrico para tarjeta o el recibo oficial para cobro en efectivo.
                             </p>
@@ -988,15 +988,15 @@
                 <div class="summary-card">
                     <h2 class="summary-title">Resumen de la Cuenta</h2>
 
-                    <div style="font-size:0.82rem;color:#C8973A;margin-bottom:1rem;font-weight:700;">
+                    <div style="font-size:0.82rem;color:#9A6700;margin-bottom:1rem;font-weight:700;">
                         @Model.Concepto
                     </div>
 
                     @if (!string.IsNullOrEmpty(Model.Mesa))
                     {
-                        <div style="background:rgba(200,151,58,0.12);border:1px solid rgba(200,151,58,0.3);padding:0.5rem 0.8rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:flex;justify-content:space-between;">
+                        <div style="background:rgba(255, 179, 0,0.12);border:1px solid rgba(255, 179, 0,0.3);padding:0.5rem 0.8rem;border-radius:8px;font-size:0.82rem;margin-bottom:1rem;display:flex;justify-content:space-between;">
                             <span>Ubicación</span>
-                            <strong style="color:#C8973A;">Mesa #@Model.Mesa</strong>
+                            <strong style="color:#9A6700;">Mesa #@Model.Mesa</strong>
                         </div>
                     }
 
@@ -1008,7 +1008,7 @@
                                     <div style="font-weight:700;">@item.Nombre</div>
                                     <small style="color:var(--muted,#6E5D53);">@item.Cantidad x $@item.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</small>
                                 </div>
-                                <div style="font-weight:700;color:#C8973A;">$@item.Subtotal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
+                                <div style="font-weight:700;color:#9A6700;">$@item.Subtotal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</div>
                             </div>
                         }
                     </div>
@@ -1332,7 +1332,7 @@
 <style>
     .sw-backdrop { position: fixed; inset: 0; background: rgba(10, 27, 20, 0.72); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 1rem; }
     .sw-backdrop.open { display: flex; }
-    .sw-card { background: var(--surface, #FFFDF9); color: var(--text, #1C1416); width: 100%; max-width: 440px; max-height: 94vh; overflow-y: auto; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+    .sw-card { background: var(--surface, #FFFFFF); color: var(--text, #2B1B15); width: 100%; max-width: 440px; max-height: 94vh; overflow-y: auto; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.45); }
     .sw-head { background: #0A1B14; color: #fff; padding: 1rem 1.25rem; border-radius: 18px 18px 0 0; display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
     .sw-head b { font-size: 1.05rem; letter-spacing: .02em; }
     .sw-head small { display: block; color: #00E5A3; font-weight: 700; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
@@ -1341,11 +1341,11 @@
     .sw-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .9rem; font-weight: 800; }
     .sw-total span:last-child { font-size: 1.35rem; color: #00805A; }
     .sw-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-bottom: .9rem; }
-    .sw-tab { border: 1.5px solid var(--cream-line, #D4C6B2); background: transparent; color: inherit; border-radius: 10px; padding: .55rem .3rem; font-weight: 700; font-size: .82rem; cursor: pointer; }
+    .sw-tab { border: 1.5px solid var(--cream-line, #D9CBBF); background: transparent; color: inherit; border-radius: 10px; padding: .55rem .3rem; font-weight: 700; font-size: .82rem; cursor: pointer; }
     .sw-tab.active { border-color: #00B37E; background: rgba(0, 229, 163, .14); color: #00805A; }
     .sw-field { margin-bottom: .7rem; }
     .sw-field label { display: block; font-size: .74rem; font-weight: 700; margin-bottom: .25rem; color: var(--muted, #6E5D53); }
-    .sw-field input, .sw-field select { width: 100%; padding: .6rem .7rem; border: 1.5px solid var(--cream-line, #D4C6B2); border-radius: 9px; background: var(--surface, #FFFDF9); color: inherit; font-size: .92rem; }
+    .sw-field input, .sw-field select { width: 100%; padding: .6rem .7rem; border: 1.5px solid var(--cream-line, #D9CBBF); border-radius: 9px; background: var(--surface, #FFFFFF); color: inherit; font-size: .92rem; }
     .sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
     .sw-hint { font-size: .74rem; color: var(--muted, #6E5D53); background: rgba(0, 229, 163, .08); border: 1px dashed #00B37E; border-radius: 9px; padding: .55rem .65rem; margin-bottom: .8rem; }
     .sw-hint button { background: none; border: 0; padding: 0; color: #00805A; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: inherit; }

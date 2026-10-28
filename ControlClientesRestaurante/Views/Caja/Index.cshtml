@@ -9,24 +9,24 @@
 
 <style>
     .caja-metric-box {
-        background: var(--surface-2, #EFE6D8);
+        background: var(--surface-2, #F1E9E2);
         padding: 1.25rem;
         border-radius: 14px;
         border: 1px solid var(--line, #E2D7C8);
     }
     .caja-total-banner {
-        background: rgba(200, 151, 58, 0.14);
+        background: rgba(255, 179, 0, 0.14);
         padding: 1.25rem 1.5rem;
         border-radius: 14px;
-        border: 1.5px solid var(--gold, #C8973A);
+        border: 1.5px solid var(--gold, #FFB300);
         grid-column: 1 / -1;
     }
     .caja-modal-box {
         max-width: 480px;
         width: 100%;
         padding: 2rem;
-        background: var(--surface, #FFFDF9);
-        color: var(--text, #1C1416);
+        background: var(--surface, #FFFFFF);
+        color: var(--text, #2B1B15);
         border: 1px solid var(--line, #E2D7C8);
         border-radius: 20px;
         box-shadow: var(--shadow-lg);
@@ -269,7 +269,7 @@ else
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="turnoId" value="@turnoActivo.Id" />
 
-                <div style="background: rgba(200, 151, 58, 0.14); border: 1px solid rgba(200, 151, 58, 0.35); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
+                <div style="background: rgba(255, 179, 0, 0.14); border: 1px solid rgba(255, 179, 0, 0.35); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem;">
                     <div style="font-size: 0.75rem; color: var(--ink); font-weight: 700; text-transform: uppercase;">Efectivo Esperado según Sistema:</div>
                     <div style="font-size: 1.5rem; font-weight: 900; color: var(--text);">$@turnoActivo.TotalEfectivoEsperado.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</div>
                     <div style="font-size: 0.74rem; color: var(--muted);">Base inicial ($@turnoActivo.MontoInicial.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)) + Ventas efectivo ($@turnoActivo.VentasEfectivo.ToString("N0", ControlClientesRestaurante.Models.Formato.Co))</div>

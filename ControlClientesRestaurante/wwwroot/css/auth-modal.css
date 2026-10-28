@@ -49,8 +49,8 @@
 :root[data-theme="dark"] .modal-ingreso-box,
 [data-theme="dark"] .modal-ingreso-box {
     background: #18090D;
-    color: #FFFDF9;
-    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(200, 151, 58, 0.3);
+    color: #FFFFFF;
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 179, 0, 0.3);
 }
 
 /* Botón de Cierre */
@@ -76,7 +76,7 @@
 
 :root[data-theme="dark"] .modal-ingreso-close,
 [data-theme="dark"] .modal-ingreso-close {
-    background: rgba(255, 253, 249, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     color: #E2D7C8;
 }
 
@@ -103,16 +103,16 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     background: #FEE2E2;
-    color: #E4002B;
-    border: 1px solid rgba(228, 0, 43, 0.25);
+    color: #5D4037;
+    border: 1px solid rgba(93, 64, 55, 0.25);
     margin-bottom: 0.5rem;
 }
 
 :root[data-theme="dark"] .kfc-club-badge,
 [data-theme="dark"] .kfc-club-badge {
-    background: rgba(228, 0, 43, 0.18);
+    background: rgba(93, 64, 55, 0.18);
     color: #FF5A70;
-    border-color: rgba(228, 0, 43, 0.4);
+    border-color: rgba(93, 64, 55, 0.4);
 }
 
 .kfc-auth-title {
@@ -126,7 +126,7 @@
 
 :root[data-theme="dark"] .kfc-auth-title,
 [data-theme="dark"] .kfc-auth-title {
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 .kfc-auth-sub {
@@ -154,7 +154,7 @@
 
 :root[data-theme="dark"] .kfc-tab-selector,
 [data-theme="dark"] .kfc-tab-selector {
-    background: rgba(255, 253, 249, 0.08);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .kfc-tab-btn {
@@ -181,13 +181,13 @@
 
 .kfc-tab-btn.active {
     background: #FFFFFF;
-    color: #E4002B;
+    color: #5D4037;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 :root[data-theme="dark"] .kfc-tab-btn.active,
 [data-theme="dark"] .kfc-tab-btn.active {
-    background: #281016;
+    background: #2A1C16;
     color: #FF5A70;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
@@ -249,9 +249,9 @@
 
 :root[data-theme="dark"] .kfc-prefix-pill,
 [data-theme="dark"] .kfc-prefix-pill {
-    background: #241117;
-    border-color: rgba(255, 253, 249, 0.15);
-    color: #FFFDF9;
+    background: #261A14;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
 }
 
 .kfc-input {
@@ -270,15 +270,15 @@
 :root[data-theme="dark"] .kfc-input,
 [data-theme="dark"] .kfc-input {
     background: #200B10;
-    border-color: rgba(255, 253, 249, 0.15);
-    color: #FFFDF9;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
 }
 
 .kfc-input:focus {
-    border-color: #E4002B;
+    border-color: #5D4037;
     background: #FFFFFF;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(228, 0, 43, 0.15);
+    box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15);
 }
 
 :root[data-theme="dark"] .kfc-input:focus,
@@ -317,14 +317,14 @@
 
 /* Botón Rojo Principal Estilo KFC */
 .btn-kfc-cta.red {
-    background: #E4002B;
+    background: #5D4037;
     color: #FFFFFF;
-    box-shadow: 0 6px 18px rgba(228, 0, 43, 0.32);
+    box-shadow: 0 6px 18px rgba(93, 64, 55, 0.32);
 }
 
 .btn-kfc-cta.red:hover {
-    background: #C80025;
-    box-shadow: 0 10px 24px rgba(228, 0, 43, 0.42);
+    background: #4E342E;
+    box-shadow: 0 10px 24px rgba(93, 64, 55, 0.42);
     transform: translateY(-1.5px);
 }
 
@@ -375,7 +375,7 @@
 :root[data-theme="dark"] .kfc-divider::after,
 [data-theme="dark"] .kfc-divider::before,
 [data-theme="dark"] .kfc-divider::after {
-    border-bottom-color: rgba(255, 253, 249, 0.12);
+    border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
 .kfc-divider span {
@@ -449,7 +449,7 @@
 
 :root[data-theme="dark"] .google-oauth-title,
 [data-theme="dark"] .google-oauth-title {
-    color: #FFFDF9;
+    color: #FFFFFF;
 }
 
 .google-oauth-sub {
@@ -496,7 +496,7 @@
 
 :root[data-theme="dark"] .google-oauth-disclaimer,
 [data-theme="dark"] .google-oauth-disclaimer {
-    background: rgba(255, 253, 249, 0.05);
+    background: rgba(255, 255, 255, 0.05);
     color: #9AA0A6;
 }
 
@@ -543,7 +543,7 @@
 }
 
 .btn-auth-back:hover {
-    color: #FFFDF9 !important;
+    color: #FFFFFF !important;
     text-decoration: underline;
     background: transparent !important;
     background-color: transparent !important;
@@ -562,9 +562,9 @@
 
 /* ── Cambio entre "Ingresar" y "Crear cuenta" ── */
 .kfc-switch-view { text-align: center; font-size: 0.84rem; color: #6B7280; margin-top: 1rem; }
-.kfc-link-btn { background: none; border: none; padding: 0; font: inherit; font-weight: 800; color: #E4002B; text-decoration: underline; cursor: pointer; }
+.kfc-link-btn { background: none; border: none; padding: 0; font: inherit; font-weight: 800; color: #5D4037; text-decoration: underline; cursor: pointer; }
 .kfc-link-btn:hover { filter: brightness(0.85); }
-.kfc-link-btn:focus-visible { outline: 2px solid #E4002B; outline-offset: 2px; border-radius: 4px; }
+.kfc-link-btn:focus-visible { outline: 2px solid #5D4037; outline-offset: 2px; border-radius: 4px; }
 .kfc-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 @media (max-width: 480px) { .kfc-row-2 { grid-template-columns: 1fr; gap: 0; } }
 [data-theme="dark"] .kfc-switch-view { color: #BDB0A8; }
