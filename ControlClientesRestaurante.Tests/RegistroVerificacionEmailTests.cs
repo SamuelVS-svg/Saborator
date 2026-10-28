@@ -48,6 +48,49 @@ namespace ControlClientesRestaurante.Tests
             _connection.Dispose();
         }
 
+        [Fact]
+        public void CrearCuentaRapida_CreaClienteYUsuarioListoParaEntrar()
+        {
+            var (ok, _, usuario, cliente) = _authService.CrearCuentaRapida("Ana", "Pérez", "anaperez", "Ana.Perez@Ejemplo.com", "ClaveSegura1", "ClaveSegura1");
+
+            Assert.True(ok);
+            Assert.Equal("anaperez", usuario!.NombreUsuario);
+            Assert.Equal("ana.perez@ejemplo.com", usuario.Correo);
+            Assert.True(usuario.EmailVerificado);                       // sin código de WhatsApp/SMS
+            Assert.False(usuario.DebeCambiarContraseña);
+            Assert.Equal("Cliente", _context.Roles.First(r => r.Id == usuario.RolId).NombreRol);
+            Assert.Equal("Ana Pérez", cliente!.Nombre);
+            Assert.Matches(@"^CC-\d{8}$", cliente.Documento);           // documento técnico generado
+            Assert.True(_authService.ValidarCredenciales("anaperez", "ClaveSegura1").Exitoso);
+        }
+
+        [Theory]
+        [InlineData("", "Pérez", "anaperez", "ana@ejemplo.com", "ClaveSegura1", "ClaveSegura1")]   // nombre
+        [InlineData("Ana", "", "anaperez", "ana@ejemplo.com", "ClaveSegura1", "ClaveSegura1")]     // apellido
+        [InlineData("Ana", "Pérez", "a b", "ana@ejemplo.com", "ClaveSegura1", "ClaveSegura1")]     // usuario con espacio
+        [InlineData("Ana", "Pérez", "ab", "ana@ejemplo.com", "ClaveSegura1", "ClaveSegura1")]      // usuario corto
+        [InlineData("Ana", "Pérez", "anaperez", "no-es-correo", "ClaveSegura1", "ClaveSegura1")]   // correo
+        [InlineData("Ana", "Pérez", "anaperez", "ana@ejemplo.com", "corta", "corta")]              // contraseña < 8
+        [InlineData("Ana", "Pérez", "anaperez", "ana@ejemplo.com", "ClaveSegura1", "OtraClave123")] // no coinciden
+        public void CrearCuentaRapida_RechazaDatosInvalidos(string nombre, string apellido, string usuario, string correo, string clave, string confirmar)
+        {
+            var (ok, mensaje, nuevo, _) = _authService.CrearCuentaRapida(nombre, apellido, usuario, correo, clave, confirmar);
+
+            Assert.False(ok);
+            Assert.False(string.IsNullOrWhiteSpace(mensaje));
+            Assert.Null(nuevo);
+            Assert.Empty(_context.Usuarios.Where(u => u.NombreUsuario == usuario));
+        }
+
+        [Fact]
+        public void CrearCuentaRapida_NoPermiteUsuarioNiCorreoRepetidos()
+        {
+            Assert.True(_authService.CrearCuentaRapida("Ana", "Pérez", "anaperez", "ana@ejemplo.com", "ClaveSegura1", "ClaveSegura1").ok);
+
+            Assert.False(_authService.CrearCuentaRapida("Otra", "Persona", "anaperez", "otra@ejemplo.com", "ClaveSegura1", "ClaveSegura1").ok);   // usuario
+            Assert.False(_authService.CrearCuentaRapida("Otra", "Persona", "otra", "ANA@ejemplo.com", "ClaveSegura1", "ClaveSegura1").ok);        // correo (sin distinguir mayúsculas)
+            Assert.Equal(1, _context.Usuarios.Count(u => u.Correo == "ana@ejemplo.com"));
+        }
         [Theory]
         [InlineData("TI-1029384756")]
         [InlineData("TI1029384756")]

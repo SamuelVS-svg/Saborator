@@ -379,7 +379,7 @@ body {
 /* ── PESTAÑAS (TABS CON FEEDBACK FLUIDO) ─────────────────────────────────── */
 .auth-tabs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     background: #EFE8DA;
     border: 1px solid #DDD4A8;
     padding: 4px;
@@ -392,16 +392,17 @@ body {
 .auth-tab {
     background: transparent;
     border: none;
-    padding: .68rem .8rem;
+    padding: .68rem .3rem;
+    white-space: nowrap;
     border-radius: 10px;
     font-family: inherit;
-    font-size: .83rem;
+    font-size: .76rem;
     font-weight: 600;
     color: var(--c-muted);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: .45rem;
+    gap: .3rem;
     cursor: pointer;
     transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 160ms var(--ease-out), box-shadow 180ms ease;
     user-select: none;

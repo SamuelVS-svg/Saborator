@@ -52,6 +52,11 @@
                 </button>
             </form>
 
+            <div class="kfc-switch-view">
+                ¿Aún no tienes cuenta?
+                <button type="button" class="kfc-link-btn" onclick="mostrarVistaRegistro(true)">Crea una aquí</button>
+            </div>
+
             @if (googleHabilitado)
             {
             <!-- Separador Oficial -->
@@ -90,11 +95,60 @@
                 <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank" style="color:#E4002B;text-decoration:underline;font-weight:700;">Políticas de privacidad</a>.
             </p>
         </div>
+
+        <!-- ── VISTA: CREAR CUENTA (nombre, apellido, usuario, correo y contraseña) ─── -->
+        <div id="viewClubSaboratorRegistro" hidden>
+            <div class="kfc-auth-header">
+                <h3 class="kfc-auth-title" id="modalRegistroTitle">Crea tu cuenta</h3>
+                <p class="kfc-auth-sub">Completa tus datos y empieza a pedir, guardar tus direcciones y rastrear tu orden en vivo.</p>
+            </div>
+
+            <div id="kfcFeedbackBoxReg" class="kfc-feedback-box"></div>
+
+            <form id="formKfcRegistro" onsubmit="ejecutarRegistroKfc(event)" novalidate>
+                @Html.AntiForgeryToken()
+                <div class="kfc-row-2">
+                    <div class="kfc-field-wrap">
+                        <label for="kfcRegNombre">Nombre *</label>
+                        <input type="text" id="kfcRegNombre" class="kfc-input" placeholder="Ej: Carlos" maxlength="50" autocomplete="given-name" required />
+                    </div>
+                    <div class="kfc-field-wrap">
+                        <label for="kfcRegApellido">Apellido *</label>
+                        <input type="text" id="kfcRegApellido" class="kfc-input" placeholder="Ej: Ramírez" maxlength="50" autocomplete="family-name" required />
+                    </div>
+                </div>
+                <div class="kfc-field-wrap">
+                    <label for="kfcRegUsuario">Usuario *</label>
+                    <input type="text" id="kfcRegUsuario" class="kfc-input" placeholder="Ej: carlosr" maxlength="30" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+                </div>
+                <div class="kfc-field-wrap">
+                    <label for="kfcRegCorreo">Correo electrónico *</label>
+                    <input type="email" id="kfcRegCorreo" class="kfc-input" placeholder="ejemplo@gmail.com" maxlength="100" autocomplete="email" autocapitalize="none" spellcheck="false" required />
+                </div>
+                <div class="kfc-row-2">
+                    <div class="kfc-field-wrap">
+                        <label for="kfcRegPass">Contraseña *</label>
+                        <input type="password" id="kfcRegPass" class="kfc-input" placeholder="Mín. 8 caracteres" autocomplete="new-password" required />
+                    </div>
+                    <div class="kfc-field-wrap">
+                        <label for="kfcRegPassConf">Confirmar *</label>
+                        <input type="password" id="kfcRegPassConf" class="kfc-input" placeholder="Repite la contraseña" autocomplete="new-password" required />
+                    </div>
+                </div>
+                <button type="submit" class="btn-kfc-cta red" id="btnRegistroSubmit">
+                    <span>Crear mi cuenta</span>
+                </button>
+            </form>
+
+            <div class="kfc-switch-view">
+                ¿Ya tienes una cuenta?
+                <button type="button" class="kfc-link-btn" onclick="mostrarVistaRegistro(false)">Inicia sesión</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE GSI OFICIAL ═══════════════════ -->
-<script>
+<!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE GSI OFICIAL ═══════════════════ --><script>
         const googleClientIdConfig = '@googleClientId';
 
     function abrirModalIngreso() {
@@ -114,6 +168,7 @@
             overlay.classList.remove('active');
             document.body.style.overflow = '';
             limpiarKfcFeedbacks();
+            mostrarVistaRegistro(false);
         }
     }
 
@@ -264,8 +319,64 @@
         }
     }
 
+    // ── Alternar entre "Ingresar" y "Crear cuenta" ──
+    function mostrarVistaRegistro(mostrar) {
+        const main = document.getElementById('viewClubSaboratorMain');
+        const reg = document.getElementById('viewClubSaboratorRegistro');
+        if (!main || !reg) return;
+        limpiarKfcFeedbacks();
+        main.hidden = mostrar;
+        reg.hidden = !mostrar;
+        setTimeout(() => document.getElementById(mostrar ? 'kfcRegNombre' : 'kfcUsuarioInput')?.focus(), 80);
+    }
+
+    // ── Crear cuenta con nombre, apellido, usuario, correo y contraseña ──
+    async function ejecutarRegistroKfc(e) {
+        e.preventDefault();
+        const v = id => (document.getElementById(id)?.value || '');
+        const nombre = v('kfcRegNombre').trim(), apellido = v('kfcRegApellido').trim();
+        const usuario = v('kfcRegUsuario').trim(), correo = v('kfcRegCorreo').trim();
+        const pass = v('kfcRegPass'), conf = v('kfcRegPassConf');
+        const btn = document.getElementById('btnRegistroSubmit');
+
+        let error = '';
+        if (nombre.length < 2) error = 'Escribe tu nombre.';
+        else if (apellido.length < 2) error = 'Escribe tu apellido.';
+        else if (!/^[A-Za-z0-9._-]{3,30}$/.test(usuario)) error = 'El usuario debe tener entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.';
+        else if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(correo)) error = 'Escribe un correo electrónico válido.';
+        else if (pass.length < 8) error = 'La contraseña debe tener al menos 8 caracteres.';
+        else if (pass !== conf) error = 'Las contraseñas no coinciden.';
+        if (error) { mostrarKfcFeedback(error, false); return; }
+
+        const reabrir = () => { if (btn) { btn.disabled = false; btn.innerHTML = '<span>Crear mi cuenta</span>'; } };
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span>Creando cuenta...</span>'; }
+
+        try {
+            const token = document.querySelector('#formKfcRegistro input[name="__RequestVerificationToken"]')?.value || '';
+            const resp = await fetch('/Login/RegistroRapidoAjax', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': token },
+                body: JSON.stringify({ nombre, apellido, usuario, correo, contrasena: pass, confirmar: conf, returnUrl: window.location.pathname })
+            });
+            const data = await resp.json();
+            if (!resp.ok || !data.ok) {
+                mostrarKfcFeedback(data.mensaje || 'No se pudo crear la cuenta.', false);
+                reabrir();
+                return;
+            }
+            mostrarKfcFeedback('¡Cuenta creada! Bienvenido al Club Saborator. Redirigiendo...', true);
+            setTimeout(() => { window.location.href = data.redirectUrl || '/'; }, 700);
+        } catch (err) {
+            console.error(err);
+            mostrarKfcFeedback('Error de conexión al crear la cuenta.', false);
+            reabrir();
+        }
+    }
+
     function mostrarKfcFeedback(msg, esExito) {
-        const box = document.getElementById('kfcFeedbackBox');
+        // El mensaje se muestra en la vista que está abierta (ingreso o registro)
+        const reg = document.getElementById('viewClubSaboratorRegistro');
+        const box = document.getElementById(reg && !reg.hidden ? 'kfcFeedbackBoxReg' : 'kfcFeedbackBox');
         if (box) {
             box.textContent = msg;
             box.className = 'kfc-feedback-box ' + (esExito ? 'success' : 'error');

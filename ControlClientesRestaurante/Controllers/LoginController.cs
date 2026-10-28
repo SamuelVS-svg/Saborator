@@ -59,7 +59,8 @@ namespace ControlClientesRestaurante.Controllers
         [HttpGet]
         public IActionResult Index(string? tab)
         {
-            ViewBag.Tab = string.Equals(tab, "registro", StringComparison.OrdinalIgnoreCase) ? "registro" : "login";
+            ViewBag.Tab = string.Equals(tab, "registro", StringComparison.OrdinalIgnoreCase) ? "registro"
+                : string.Equals(tab, "rapido", StringComparison.OrdinalIgnoreCase) ? "rapido" : "login";
             return View();
         }
 
@@ -219,6 +220,76 @@ namespace ControlClientesRestaurante.Controllers
             });
         }
 
+        public class RegistroRapidoAjaxDto
+        {
+            public string? Nombre { get; set; }
+            public string? Apellido { get; set; }
+            public string? Usuario { get; set; }
+            public string? Correo { get; set; }
+            public string? Contrasena { get; set; }
+            public string? Confirmar { get; set; }
+            public string? ReturnUrl { get; set; }
+        }
+
+        /// <summary>Registro desde la ventana "Ingresar": nombre, apellido, usuario, correo y contraseña; entra de inmediato.</summary>
+        [HttpPost]
+        [EnableRateLimiting("autenticacion")]
+        public async Task<IActionResult> RegistroRapidoAjax([FromBody] RegistroRapidoAjaxDto? dto)
+        {
+            if (dto == null) return Json(new { ok = false, mensaje = "Completa todos los datos para crear tu cuenta." });
+
+            var (ok, mensaje, nuevoUsuario, _) = _auth.CrearCuentaRapida(dto.Nombre, dto.Apellido, dto.Usuario, dto.Correo, dto.Contrasena, dto.Confirmar);
+            if (!ok) return Json(new { ok = false, mensaje });
+
+            _auditoriaService.Registrar(
+                nuevoUsuario!.NombreUsuario,
+                "Cliente",
+                "REGISTRO_CLIENTE",
+                "Autenticación",
+                $"Cuenta comensal creada desde la ventana de ingreso para '{nuevoUsuario.NombreUsuario}' ({nuevoUsuario.Correo}).",
+                "Usuario",
+                nuevoUsuario.Id,
+                HttpContext.Connection.RemoteIpAddress?.ToString());
+
+            await IniciarSesionClaimsAsync(nuevoUsuario, "Cliente", nuevoUsuario.NombreUsuario);
+            return Json(new { ok = true, mensaje, redirectUrl = ObtenerRedireccionPorRol("Cliente", dto.ReturnUrl) });
+        }
+        /// <summary>Crear cuenta con nombre, apellido, usuario, correo y contraseña; entra de inmediato.</summary>
+        [HttpPost]
+        [EnableRateLimiting("autenticacion")]
+        public async Task<IActionResult> RegistroRapido(
+            [FromForm] string? nombre,
+            [FromForm] string? apellido,
+            [FromForm] string? usuario,
+            [FromForm] string? correo,
+            [FromForm] string? contraseña,
+            [FromForm] string? confirmarContraseña)
+        {
+            var (ok, mensaje, nuevoUsuario, _) = _auth.CrearCuentaRapida(nombre, apellido, usuario, correo, contraseña, confirmarContraseña);
+            if (!ok)
+            {
+                ViewBag.ErrorRapido = mensaje;
+                ViewBag.Tab         = "rapido";
+                ViewBag.RapNombre   = nombre;
+                ViewBag.RapApellido = apellido;
+                ViewBag.RapUsuario  = usuario;
+                ViewBag.RapCorreo   = correo;
+                return View("Index");
+            }
+
+            _auditoriaService.Registrar(
+                nuevoUsuario!.NombreUsuario,
+                "Cliente",
+                "REGISTRO_CLIENTE",
+                "Autenticación",
+                $"Cuenta comensal creada con el registro rápido para '{nuevoUsuario.NombreUsuario}' ({nuevoUsuario.Correo}).",
+                "Usuario",
+                nuevoUsuario.Id,
+                HttpContext.Connection.RemoteIpAddress?.ToString());
+
+            await IniciarSesionClaimsAsync(nuevoUsuario, "Cliente", nuevoUsuario.NombreUsuario);
+            return Redirect(Roles.PaginaInicio("Cliente"));
+        }
         // ── Vista obligatoria de primer ingreso para cambiar contraseña ──
         [HttpGet]
         public IActionResult PrimerIngreso(string? usuario)

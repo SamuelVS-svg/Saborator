@@ -233,6 +233,99 @@ namespace ControlClientesRestaurante.Services
             });
         }
 
+        /// <summary>
+        /// Cuenta de cliente con solo nombre, apellido, usuario, correo y contraseña. Queda lista para usar:
+        /// no exige documento, fecha de nacimiento ni código de verificación por WhatsApp/SMS.
+        /// El documento del registro de cliente se genera (técnico, único) y el teléfono se puede completar luego en el perfil.
+        /// </summary>
+        public (bool ok, string mensaje, Usuario? usuario, Cliente? cliente) CrearCuentaRapida(
+            string? nombre, string? apellido, string? nombreUsuario, string? correo, string? contraseña, string? confirmarContraseña)
+        {
+            nombre = (nombre ?? "").Trim();
+            apellido = (apellido ?? "").Trim();
+            var usuarioLimpio = (nombreUsuario ?? "").Trim();
+            var correoLimpio = (correo ?? "").Trim().ToLowerInvariant();
+
+            if (nombre.Length < 2) return (false, "El nombre es obligatorio.", null, null);
+            if (apellido.Length < 2) return (false, "El apellido es obligatorio.", null, null);
+            var nombreCompleto = $"{nombre} {apellido}";
+            if (nombreCompleto.Length > 100) return (false, "El nombre y el apellido juntos no pueden superar los 100 caracteres.", null, null);
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(usuarioLimpio, @"^[A-Za-z0-9._-]{3,30}$"))
+                return (false, "El usuario debe tener entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.", null, null);
+
+            bool correoValido = false;
+            try
+            {
+                var m = new System.Net.Mail.MailAddress(correoLimpio);
+                correoValido = m.Address == correoLimpio && m.Host.Contains('.') && correoLimpio.Length <= 100;
+            }
+            catch { }
+            if (!correoValido) return (false, "Escribe un correo electrónico válido.", null, null);
+
+            if (string.IsNullOrEmpty(contraseña) || contraseña.Length < 8)
+                return (false, "La contraseña debe tener al menos 8 caracteres.", null, null);
+            if (contraseña != confirmarContraseña)
+                return (false, "Las contraseñas no coinciden.", null, null);
+
+            if (_usuarioRepository.ExisteNombre(usuarioLimpio))
+                return (false, "Ese nombre de usuario ya está en uso. Elige otro.", null, null);
+            if (_usuarioRepository.ExisteCorreo(correoLimpio))
+                return (false, "Ya existe una cuenta con este correo. Inicia sesión o recupera tu contraseña.", null, null);
+
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return strategy.Execute<(bool, string, Usuario?, Cliente?)>(() =>
+            {
+                using var tx = _context.Database.BeginTransaction();
+                try
+                {
+                    var rolCliente = _context.Roles.FirstOrDefault(r => r.NombreRol == "Cliente");
+                    if (rolCliente == null)
+                    {
+                        rolCliente = new Rol { NombreRol = "Cliente" };
+                        _context.Roles.Add(rolCliente);
+                        _context.SaveChanges();
+                    }
+
+                    string documento;
+                    do { documento = $"CC-{Random.Shared.Next(10000000, 99999999)}"; }
+                    while (_context.Clientes.Any(c => c.Documento == documento));
+
+                    var cliente = new Cliente
+                    {
+                        Nombre = nombreCompleto,
+                        Documento = documento,
+                        Telefono = "",
+                        Correo = correoLimpio,
+                        Activo = true
+                    };
+                    _context.Clientes.Add(cliente);
+                    _context.SaveChanges();
+
+                    var usuario = new Usuario
+                    {
+                        NombreUsuario = usuarioLimpio,
+                        Correo = correoLimpio,
+                        ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(contraseña),
+                        RolId = rolCliente.Id,
+                        Estado = true,
+                        EmailVerificado = true,
+                        DebeCambiarContraseña = false,
+                        Tema = "clasico"
+                    };
+                    _context.Usuarios.Add(usuario);
+                    _context.SaveChanges();
+
+                    tx.Commit();
+                    return (true, "¡Cuenta creada! Bienvenido a Saborator.", usuario, cliente);
+                }
+                catch
+                {
+                    tx.Rollback();
+                    return (false, "No se pudo crear la cuenta. Inténtalo de nuevo.", null, null);
+                }
+            });
+        }
         public (bool ok, string mensaje, Usuario? usuario) VerificarEmailToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))

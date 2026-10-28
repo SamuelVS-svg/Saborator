@@ -3,6 +3,7 @@
     Layout = "_Layout";
     var activeTab = (ViewBag.Tab as string) ?? "login";
     var isRegistro = activeTab == "registro";
+    var isRapido = activeTab == "rapido";
 }
 
 <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
@@ -55,7 +56,7 @@
 
             <!-- Selector de Pestañas: Iniciar Sesión / Registrarse -->
             <div class="auth-tabs" role="tablist" aria-label="Opciones de acceso">
-                <button type="button" class="auth-tab @(!isRegistro ? "active" : "")" id="tabBtnLogin" onclick="switchAuthTab('login')" role="tab" aria-selected="@(!isRegistro ? "true" : "false")" aria-controls="formSectionLogin">
+                <button type="button" class="auth-tab @(!isRegistro && !isRapido ? "active" : "")" id="tabBtnLogin" onclick="switchAuthTab('login')" role="tab" aria-selected="@(!isRegistro && !isRapido ? "true" : "false")" aria-controls="formSectionLogin">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                     <span>Iniciar sesión</span>
                 </button>
@@ -63,10 +64,13 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                     <span>Crear cuenta</span>
                 </button>
+                <button type="button" class="auth-tab @(isRapido ? "active" : "")" id="tabBtnRapido" onclick="switchAuthTab('rapido')" role="tab" aria-selected="@(isRapido ? "true" : "false")" aria-controls="formSectionRapido">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span>Registro rápido</span>
+                </button>
             </div>
 
-            <!-- ════════ FORMULARIO: INICIAR SESIÓN ════════ -->
-            <section id="formSectionLogin" class="auth-section @(!isRegistro ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnLogin">
+            <!-- ════════ FORMULARIO: INICIAR SESIÓN ════════ -->            <section id="formSectionLogin" class="auth-section @(!isRegistro && !isRapido ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnLogin">
                 <h2 class="form-title">Bienvenido</h2>
                 <p class="form-sub">Ingresa tus credenciales para acceder</p>
 
@@ -294,6 +298,92 @@
                 </div>
             </section>
 
+            <!-- ════════ FORMULARIO: REGISTRO RÁPIDO (nombre, apellido, usuario y correo) ════════ -->
+            <section id="formSectionRapido" class="auth-section @(isRapido ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnRapido">
+                <h2 class="form-title">Crea tu cuenta en un minuto</h2>
+                <p class="form-sub">Solo necesitamos tus datos básicos para empezar a pedir</p>
+
+                @if (ViewBag.ErrorRapido != null)
+                {
+                    <div class="form-error" id="serverRapError" role="alert">
+                        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>@ViewBag.ErrorRapido</span>
+                    </div>
+                }
+
+                <form asp-action="RegistroRapido" method="post" autocomplete="on" id="formRapido" onsubmit="return validateAndSubmitAuth(event, this, 'btnSubmitRap', 'Creando cuenta...', 'rapido')" novalidate>
+                    @Html.AntiForgeryToken()
+                    <div class="f-row-2">
+                        <div class="f-group">
+                            <label class="f-label" for="rapNombre">Nombre *</label>
+                            <div class="f-input-wrap">
+                                <input type="text" id="rapNombre" name="nombre" class="f-input" value="@ViewBag.RapNombre" placeholder="Ej: Carlos" required maxlength="50" autocomplete="given-name" />
+                            </div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label" for="rapApellido">Apellido *</label>
+                            <div class="f-input-wrap">
+                                <input type="text" id="rapApellido" name="apellido" class="f-input" value="@ViewBag.RapApellido" placeholder="Ej: Ramírez" required maxlength="50" autocomplete="family-name" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="f-group">
+                        <label class="f-label" for="rapUsuario">Usuario *</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+                            </span>
+                            <input type="text" id="rapUsuario" name="usuario" class="f-input" value="@ViewBag.RapUsuario" placeholder="Ej: carlosr" required minlength="3" maxlength="30" autocomplete="username" />
+                        </div>
+                    </div>
+
+                    <div class="f-group">
+                        <label class="f-label" for="rapCorreo">Correo electrónico *</label>
+                        <div class="f-input-wrap">
+                            <span class="f-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </span>
+                            <input type="email" id="rapCorreo" name="correo" class="f-input" value="@ViewBag.RapCorreo" placeholder="carlos@ejemplo.com" required maxlength="100" autocomplete="email" />
+                        </div>
+                    </div>
+
+                    <div class="f-row-2">
+                        <div class="f-group">
+                            <label class="f-label" for="pwdRap">Contraseña *</label>
+                            <div class="f-input-wrap">
+                                <input type="password" name="contraseña" id="pwdRap" class="f-input" placeholder="Mín. 8 car." required minlength="8" autocomplete="new-password" />
+                                <button type="button" class="f-pwd-toggle" onclick="togglePasswordVisibility('pwdRap', this)" aria-label="Mostrar contraseña" title="Mostrar u ocultar contraseña">
+                                    <svg class="icon-eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg class="icon-eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="f-group">
+                            <label class="f-label" for="pwdRapConf">Confirmar *</label>
+                            <div class="f-input-wrap">
+                                <input type="password" name="confirmarContraseña" id="pwdRapConf" class="f-input" placeholder="Repite cont." required minlength="8" autocomplete="new-password" />
+                                <button type="button" class="f-pwd-toggle" onclick="togglePasswordVisibility('pwdRapConf', this)" aria-label="Mostrar contraseña" title="Mostrar u ocultar contraseña">
+                                    <svg class="icon-eye-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg class="icon-eye-closed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-entrar" id="btnSubmitRap" style="margin-top:.8rem;">
+                        <span>Crear cuenta y entrar</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+
+                <div class="form-footer">
+                    ¿Ya tienes una cuenta?
+                    <button type="button" class="link-btn" onclick="switchAuthTab('login')">
+                        Inicia sesión aquí
+                    </button>
+                </div>
+            </section>
         </div>
     </main>
 </div>
@@ -324,43 +414,30 @@
 <script>
 // ── TRANSICIÓN FLUIDA ENTRE PESTAÑAS (CROSSFADE EMIL KOWALSKI) ───────────────
 function switchAuthTab(tab) {
-    var isReg = tab === 'registro';
-    var loginSec = document.getElementById('formSectionLogin');
-    var regSec = document.getElementById('formSectionRegistro');
-    var btnLogin = document.getElementById('tabBtnLogin');
-    var btnReg = document.getElementById('tabBtnRegistro');
-
-    if (!loginSec || !regSec) return;
-
-    if (isReg) {
-        btnLogin.classList.remove('active');
-        btnReg.classList.add('active');
-        btnLogin.setAttribute('aria-selected', 'false');
-        btnReg.setAttribute('aria-selected', 'true');
-
-        loginSec.classList.remove('active');
-        setTimeout(function() {
-            loginSec.style.display = 'none';
-            regSec.style.display = 'block';
-            requestAnimationFrame(function() {
-                regSec.classList.add('active');
-            });
-        }, 120);
-    } else {
-        btnReg.classList.remove('active');
-        btnLogin.classList.add('active');
-        btnLogin.setAttribute('aria-selected', 'true');
-        btnReg.setAttribute('aria-selected', 'false');
-
-        regSec.classList.remove('active');
-        setTimeout(function() {
-            regSec.style.display = 'none';
-            loginSec.style.display = 'block';
-            requestAnimationFrame(function() {
-                loginSec.classList.add('active');
-            });
-        }, 120);
-    }
+    var mapa = {
+        login:    ['formSectionLogin', 'tabBtnLogin'],
+        registro: ['formSectionRegistro', 'tabBtnRegistro'],
+        rapido:   ['formSectionRapido', 'tabBtnRapido']
+    };
+    if (!mapa[tab]) return;
+    Object.keys(mapa).forEach(function (k) {
+        var sec = document.getElementById(mapa[k][0]);
+        var btn = document.getElementById(mapa[k][1]);
+        if (!sec || !btn) return;
+        if (k === tab) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+            setTimeout(function () {
+                sec.style.display = 'block';
+                requestAnimationFrame(function () { sec.classList.add('active'); });
+            }, 120);
+        } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+            sec.classList.remove('active');
+            setTimeout(function () { sec.style.display = 'none'; }, 120);
+        }
+    });
 }
 
 // ── SELECCIÓN DE CANAL OTP (WHATSAPP / SMS) ─────────────────────────────────
@@ -499,6 +576,30 @@ function validateAndSubmitAuth(event, form, btnId, loadingText, type) {
 
         if (!pwdConf || pwdConf.value !== (pwdReg ? pwdReg.value : '')) {
             invalidInputs.push(pwdConf);
+            if (!errorMessage) errorMessage = 'Las contraseñas no coinciden.';
+        }
+    } else if (type === 'rapido') {
+        var rNombre = form.querySelector('#rapNombre');
+        var rApellido = form.querySelector('#rapApellido');
+        var rUsuario = form.querySelector('#rapUsuario');
+        var rCorreo = form.querySelector('#rapCorreo');
+        var rPwd = form.querySelector('#pwdRap');
+        var rConf = form.querySelector('#pwdRapConf');
+        var rEmail = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+        if (!rNombre || rNombre.value.trim().length < 2) invalidInputs.push(rNombre);
+        if (!rApellido || rApellido.value.trim().length < 2) invalidInputs.push(rApellido);
+        if (!rUsuario || !/^[A-Za-z0-9._-]{3,30}$/.test(rUsuario.value.trim())) {
+            invalidInputs.push(rUsuario);
+            if (!errorMessage) errorMessage = 'El usuario debe tener entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo.';
+        }
+        if (!rCorreo || !rEmail.test(rCorreo.value.trim())) invalidInputs.push(rCorreo);
+        if (!rPwd || rPwd.value.length < 8) {
+            invalidInputs.push(rPwd);
+            if (!errorMessage) errorMessage = 'La contraseña debe tener al menos 8 caracteres.';
+        }
+        if (!rConf || rConf.value !== (rPwd ? rPwd.value : '')) {
+            invalidInputs.push(rConf);
             if (!errorMessage) errorMessage = 'Las contraseñas no coinciden.';
         }
     }
