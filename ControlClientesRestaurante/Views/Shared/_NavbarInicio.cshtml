@@ -16,6 +16,9 @@
     var _ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var _act = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     string Actual(string c, string a) => _ctrl == c && _act == a ? "page" : null;
+    // Páginas públicas del inicio (cada una tiene su propia dirección: /Carta, /Sede, ...)
+    var _pag = (ViewBag.Pagina as string) ?? (_ctrl == "Home" && _act == "Index" ? "inicio" : "");
+    string Pag(string p) => _pag == p ? "page" : null;
 }
 
 <link rel="stylesheet" href="~/css/nav-inicio.css" asp-append-version="true" />
@@ -29,22 +32,20 @@
         </a>
 
         <div class="lnav-menu-links">
-            <a href="@_ancla#menu" class="lnav-item"><span>La Carta</span></a>
-            <a href="@_ancla#ubicacion" class="lnav-item">
+            <a href="/Carta" class="lnav-item" aria-current="@Pag("carta")"><span>Ordenar</span></a>
+            <a href="/Sede" class="lnav-item" aria-current="@Pag("sede")">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>Sede &amp; Mapa</span>
+                <span>Restaurantes</span>
             </a>
-            <a href="@_ancla#resenas" class="lnav-item">
+            <a href="/Resenas" class="lnav-item" aria-current="@Pag("resenas")">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <span>Reseñas</span>
             </a>
+            <a href="/Nosotros" class="lnav-item" aria-current="@Pag("nosotros")"><span>Nosotros</span></a>
+            <a href="/Contacto" class="lnav-item" aria-current="@Pag("contacto")"><span>Contáctenos</span></a>
             <a asp-controller="Pedido" asp-action="Rastrear" class="lnav-item" aria-current="@Actual("Pedido", "Rastrear")">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 <span>Rastrear Pedido</span>
-            </a>
-            <a asp-controller="Pago" asp-action="Checkout" class="lnav-item" aria-current="@Actual("Pago", "Checkout")">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                <span>Pagar Cuenta</span>
             </a>
             <a asp-controller="Reserva" asp-action="Nueva" class="lnav-item lnav-item-reserva-mobile">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>

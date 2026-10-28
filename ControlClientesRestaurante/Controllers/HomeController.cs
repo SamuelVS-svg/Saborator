@@ -17,7 +17,16 @@ namespace ControlClientesRestaurante.Controllers
 
         // Página principal pública — no requiere autenticación
         // Página principal gastronómica — Carta y experiencia del restaurante
-        public IActionResult Index()
+        public IActionResult Index() => PaginaPublica("inicio");
+
+        // Cada enlace de la barra superior abre su propia página (todas comparten la misma vista y su carrito)
+        [HttpGet("/Carta")]     public IActionResult Carta()     => PaginaPublica("carta");
+        [HttpGet("/Sede")]      public IActionResult Sede()      => PaginaPublica("sede");
+        [HttpGet("/Resenas")]   public IActionResult Resenas()   => PaginaPublica("resenas");
+        [HttpGet("/Nosotros")]  public IActionResult Nosotros()  => PaginaPublica("nosotros");
+        [HttpGet("/Contacto")]  public IActionResult Contacto()  => PaginaPublica("contacto");
+
+        private IActionResult PaginaPublica(string pagina)
         {
             // El personal va directo a su panel; los clientes sí ven la carta pública
             var rol = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -25,9 +34,10 @@ namespace ControlClientesRestaurante.Controllers
             {
                 return Redirect(Roles.PaginaInicio(rol));
             }
+            ViewBag.Pagina = pagina;
             ViewBag.Resenas = _resenaService.ObtenerAprobadas();
             ViewBag.ResenaStats = _resenaService.ObtenerEstadisticas();
-            return View();
+            return View("Index");
         }
 
         // Vista preservada de información técnica y módulos del sistema de gestión

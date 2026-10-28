@@ -308,7 +308,7 @@
             if (data && data.ok) {
                 mostrarKfcFeedback(data.mensaje || '¡Acceso concedido con Google!', true);
                 setTimeout(() => {
-                    window.location.href = data.redirectUrl || '/#menu';
+                    window.location.href = data.redirectUrl || '/Carta';
                 }, 600);
             } else {
                 mostrarKfcFeedback(data.mensaje || 'Error al autenticar tu cuenta de Google.', false);

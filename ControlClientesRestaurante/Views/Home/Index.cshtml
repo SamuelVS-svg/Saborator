@@ -1,7 +1,16 @@
 @inject ControlClientesRestaurante.Services.ProductoService _productoSvc
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
-    ViewData["Title"] = "Menú & Experiencia Gourmet";
+    var pagina = (ViewBag.Pagina as string) ?? "inicio";
+    ViewData["Title"] = pagina switch
+    {
+        "carta" => "Ordenar — Carta",
+        "sede" => "Restaurantes — Sede & Mapa",
+        "resenas" => "Reseñas de comensales",
+        "nosotros" => "Nosotros",
+        "contacto" => "Contáctenos",
+        _ => "Menú & Experiencia Gourmet"
+    };
     Layout = "_Layout";
 
     var _session = HttpContextAccessor.HttpContext?.Session;
@@ -23,6 +32,8 @@
 <link rel="stylesheet" href="~/css/intro.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/reserva.css" asp-append-version="true" />
 
+@if (pagina == "inicio")
+{
 <!-- ══ INTRO CINEMATOGRÁFICA DE ALTA COCINA ═══════════════════ -->
 <div class="cinematic-intro" id="cinematicIntro" aria-label="Introducción cinematográfica de Saborator">
     <div class="intro-ambient" aria-hidden="true"></div>
@@ -115,12 +126,16 @@
     </div>
 </div>
 
+}
+
 <link rel="stylesheet" href="~/css/home-simple.css" asp-append-version="true" />
 
 <div class="landing">
 
     <partial name="_NavbarInicio" />
 
+    @if (pagina == "inicio")
+    {
     <!-- ══ INICIO SIMPLE: banner + cómo quieres ordenar (el resto se abre bajo demanda) ═══ -->
     <section class="hero home-hero" id="inicio">
         <div class="home-banner">
@@ -128,7 +143,7 @@
                 <span class="home-eyebrow">Alta cocina · Barranquilla</span>
                 <h1>Alta cocina<br /><em>hecha con pasión</em></h1>
                 <p>Pide a domicilio con seguimiento en vivo o reserva tu mesa.</p>
-                <a href="#menu" class="home-cta">Ver la carta
+                <a href="/Carta" class="home-cta">Ver la carta
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </a>
             </div>
@@ -143,7 +158,7 @@
                     <span class="home-order-name">Domicilio</span>
                     <span class="home-order-sub">Ingresa tu dirección de entrega</span>
                 </button>
-                <button type="button" class="home-order-card" onclick="seleccionarModalidad('ParaLlevar'); document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });">
+                <button type="button" class="home-order-card" onclick="seleccionarModalidad('ParaLlevar'); location.href = '/Carta';">
                     <span class="home-order-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
                     <span class="home-order-name">Recoger en el restaurante</span>
                     <span class="home-order-sub">Retiro en sede: Cra 4 Sur # 50D-107</span>
@@ -155,8 +170,9 @@
             </div>
         </div>
     </section>
+    }
     <!-- ══ CARTA / MENÚ GASTRONÓMICO COMPLETO ════════════════════ -->
-    <section class="section-pad carta-section-wrap" id="menu">
+    <section class="section-pad carta-section-wrap home-page @(pagina == "carta" ? "is-open" : "")" id="menu">
         <div class="section-inner">
             <div class="section-center" style="margin-bottom:2.5rem;">
                 <div class="hero-tag" style="margin-bottom:0.75rem;">
@@ -322,7 +338,70 @@
     </section>
 
     <!-- ══ NUEVA SECCIÓN: SEDE PRINCIPAL, GOOGLE MAPS & ASIGNADOR DE DOMICILIOS ══ -->
-    <section class="section-pad ubicacion-section" id="ubicacion">
+    @if (pagina == "nosotros")
+    {
+    <section class="section-pad" id="nosotros">
+        <div class="section-inner">
+            <div class="section-center">
+                <h2 class="section-title">El Arte de la Hospitalidad</h2>
+                <p class="section-sub">Tres pilares que definen cada visita a Saborator</p>
+            </div>
+            <div class="features-grid">
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <h3>Cocina de Precisión</h3>
+                    <p>Recetas diseñadas con equilibrio de sabores, carnes de primera calidad y aderezos emulsionados en casa.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <h3>Mesas Asignadas</h3>
+                    <p>Un sistema de butacas y mesas digitales que garantiza que tu lugar esté listo sin esperas.</p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    <h3>Servicio Personalizado</h3>
+                    <p>Atención cercana de nuestro equipo de sommeliers y meseros para que tu experiencia sea inolvidable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    }
+
+    @if (pagina == "contacto")
+    {
+    <section class="section-pad" id="contacto">
+        <div class="section-inner">
+            <div class="section-center">
+                <h2 class="section-title">Contáctenos</h2>
+                <p class="section-sub">Estamos para ayudarte con tu pedido, tu reserva o cualquier duda</p>
+            </div>
+            <div class="features-grid">
+                <div class="feat-card">
+                    <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                    <h3>Teléfono y WhatsApp</h3>
+                    <p><a href="tel:+573225254289">+57 322 525 4289</a><br /><a href="https://wa.me/573225254289" target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a></p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                    <h3>Sede central</h3>
+                    <p>Carrera 4 Sur # 50D-107<br />Barranquilla, Atlántico, Colombia<br /><a href="/Sede">Ver mapa y cómo llegar</a></p>
+                </div>
+                <div class="feat-card">
+                    <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                    <h3>Horarios de cocina</h3>
+                    <p>Martes a jueves: 12:00 – 22:00<br />Viernes y sábados: 12:00 – 23:00<br />Domingos y festivos: 12:00 – 21:30<br />Lunes: cerrado</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    }
+    <section class="section-pad ubicacion-section home-page @(pagina == "sede" ? "is-open" : "")" id="ubicacion">
         <div class="section-inner">
             <div class="section-center" style="margin-bottom:2.5rem;">
                 <div class="hero-tag" style="margin-bottom:0.75rem;">
@@ -495,7 +574,7 @@
     </section>
 
     <!-- ══ SECCIÓN DE RESEÑAS & CALIFICACIONES DE COMENSALES ══════ -->
-    <section class="section-pad resenas-section" id="resenas">
+    <section class="section-pad resenas-section home-page @(pagina == "resenas" ? "is-open" : "")" id="resenas">
         <div class="lcontainer">
             <div class="sec-head">
                 <span class="sec-pill" style="display:inline-flex;align-items:center;gap:4px;">
@@ -1479,7 +1558,8 @@
         }
 
         const menuSec = document.getElementById('menu');
-        if (menuSec) menuSec.scrollIntoView({ behavior: 'smooth' });
+        if (menuSec && menuSec.classList.contains('is-open')) menuSec.scrollIntoView({ behavior: 'smooth' });
+        else location.href = '/Carta';
     }
 
     function actualizarModalidadUI() {
