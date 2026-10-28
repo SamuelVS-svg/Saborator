@@ -20,7 +20,7 @@ body {
 /* Remove default bootstrap outline conflicts and harmonize with brand tokens */
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.16);
+  box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.16);
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {

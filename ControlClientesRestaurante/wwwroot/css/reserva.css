@@ -5,11 +5,11 @@
 
 .reserva-page {
     min-height: 100vh;
-    background: var(--bg, #F7F0E2);
-    background-image: radial-gradient(circle at 1px 1px, rgba(93, 64, 55, 0.045) 1px, transparent 0);
+    background: var(--bg, #F6EBD3);
+    background-image: radial-gradient(circle at 1px 1px, rgba(107, 66, 38, 0.045) 1px, transparent 0);
     background-size: 24px 24px;
-    color: var(--text, #2B1B15);
-    font-family: var(--font-ui, 'Geist', sans-serif);
+    color: var(--text, #3E2615);
+    font-family: var(--font-ui, 'Poppins', sans-serif);
     padding-bottom: 5rem;
 }
 
@@ -27,7 +27,7 @@
     background: rgba(20, 5, 8, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 179, 0, 0.35);
+    border-bottom: 1px solid rgba(227, 167, 47, 0.35);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -45,18 +45,18 @@
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(255, 179, 0, 0.35) 0%, rgba(93, 64, 55, 0.5) 100%);
-    border: 1px solid rgba(255, 179, 0, 0.5);
+    background: linear-gradient(135deg, rgba(227, 167, 47, 0.35) 0%, rgba(107, 66, 38, 0.5) 100%);
+    border: 1px solid rgba(227, 167, 47, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--gold, #FFB300);
+    color: var(--gold, #E3A72F);
 }
 
 .cinema-brand-icon svg { width: 24px; height: 22px; fill: currentColor; }
 
 .cinema-brand-name {
-    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-family: var(--font-serif, 'Playfair Display', serif);
     font-size: 1.55rem;
     font-style: italic;
     letter-spacing: -0.01em;
@@ -82,7 +82,7 @@
 
 .cinema-link:hover,
 .cinema-link.active {
-    color: #FFCA28;
+    color: #F4C95D;
 }
 
 .cinema-auth-actions {
@@ -105,9 +105,9 @@
     gap: 0.5rem;
     padding: 0.4rem 1.1rem;
     border-radius: 9999px;
-    background: rgba(255, 179, 0, 0.18);
-    border: 1px solid rgba(255, 179, 0, 0.45);
-    color: var(--gold, #FFB300);
+    background: rgba(227, 167, 47, 0.18);
+    border: 1px solid rgba(227, 167, 47, 0.45);
+    color: var(--gold, #E3A72F);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -118,21 +118,21 @@
 :root[data-theme="dark"] .reserva-tag { color: #F7EBD9; }
 
 .reserva-title {
-    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-family: var(--font-serif, 'Playfair Display', serif);
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 400;
     line-height: 1.05;
     margin-bottom: 0.85rem;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
 }
 
 .reserva-title span {
     font-style: italic;
-    color: var(--gold, #FFB300);
+    color: var(--gold, #E3A72F);
 }
 
 .reserva-subtitle {
-    color: var(--muted, #6B5A52);
+    color: var(--muted, #7B6249);
     font-size: 1.05rem;
     line-height: 1.65;
     margin: 0;
@@ -140,7 +140,7 @@
 }
 
 :root[data-theme="dark"] .reserva-title { color: #FFFFFF; }
-:root[data-theme="dark"] .reserva-subtitle { color: #EFE0C8; }
+:root[data-theme="dark"] .reserva-subtitle { color: #F1E3C4; }
 
 /* ── BARRA DE PASOS GUIADOS ──────────────────────────────── */
 .steps-bar {
@@ -159,24 +159,24 @@
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--muted, #6E5C50);
-    background: var(--surface-2, rgba(93, 64, 55, 0.06));
+    background: var(--surface-2, rgba(107, 66, 38, 0.06));
     padding: 0.35rem 0.95rem;
     border-radius: 999px;
-    border: 1px solid var(--line, rgba(93, 64, 55, 0.12));
+    border: 1px solid var(--line, rgba(107, 66, 38, 0.12));
 }
 
 .step-chip.active {
     color: #FFFFFF;
-    background: var(--brand, #5D4037);
-    border-color: #FFCA28;
-    box-shadow: 0 0 12px rgba(255, 179, 0, 0.35);
+    background: var(--brand, #6B4226);
+    border-color: #F4C95D;
+    box-shadow: 0 0 12px rgba(227, 167, 47, 0.35);
 }
 
 .step-chip .step-num {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #FFCA28;
+    background: #F4C95D;
     color: #1A080C;
     display: flex;
     align-items: center;
@@ -186,8 +186,8 @@
 }
 
 .step-chip:not(.active) .step-num {
-    background: var(--line, rgba(93, 64, 55, 0.15));
-    color: var(--text, #2B1B15);
+    background: var(--line, rgba(107, 66, 38, 0.15));
+    color: var(--text, #3E2615);
 }
 
 :root[data-theme="dark"] .step-chip {
@@ -197,7 +197,7 @@
 }
 
 :root[data-theme="dark"] .step-chip.active {
-    background: rgba(255, 179, 0, 0.22);
+    background: rgba(227, 167, 47, 0.22);
 }
 
 :root[data-theme="dark"] .step-chip:not(.active) .step-num {
@@ -225,17 +225,17 @@
 /* ── PANEL DE SELECCIÓN (IZQUIERDA) ──────────────────────── */
 .reserva-stage-card {
     background: var(--surface, #FFFFFF);
-    border: 1.5px solid var(--line, #E6D8BF);
+    border: 1.5px solid var(--line, #E8D5B0);
     border-radius: 20px;
     padding: 2.25rem;
     box-shadow: 0 16px 48px rgba(38, 24, 18, 0.05);
     position: relative;
-    color: var(--text, #2B1B15);
+    color: var(--text, #3E2615);
 }
 
 :root[data-theme="dark"] .reserva-stage-card {
     background: #1A070D;
-    border-color: rgba(255, 179, 0, 0.35);
+    border-color: rgba(227, 167, 47, 0.35);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
     color: #FFFFFF;
 }
@@ -247,7 +247,7 @@
     gap: 1.5rem;
     margin-bottom: 1.75rem;
     padding-bottom: 1.75rem;
-    border-bottom: 1px solid var(--line, #E6D8BF);
+    border-bottom: 1px solid var(--line, #E8D5B0);
 }
 
 .r-control-group label {
@@ -256,7 +256,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
     margin-bottom: 0.55rem;
 }
 
@@ -264,9 +264,9 @@
 
 .r-input, .r-select {
     width: 100%;
-    background: var(--surface-2, #F0E5D2);
-    border: 1.5px solid var(--line-2, #D5C3A3);
-    color: var(--text, #2B1B15);
+    background: var(--surface-2, #F6EBD3);
+    border: 1.5px solid var(--line-2, #D9C197);
+    color: var(--text, #3E2615);
     padding: 0.75rem 1rem;
     border-radius: 10px;
     font-family: inherit;
@@ -279,13 +279,13 @@
 :root[data-theme="dark"] .r-input,
 :root[data-theme="dark"] .r-select {
     background: #110306;
-    border-color: rgba(255, 179, 0, 0.5);
+    border-color: rgba(227, 167, 47, 0.5);
     color: #FFFFFF;
 }
 
 .r-input:focus, .r-select:focus {
-    border-color: #FFCA28;
-    box-shadow: 0 0 0 3.5px rgba(255, 179, 0, 0.3);
+    border-color: #F4C95D;
+    box-shadow: 0 0 0 3.5px rgba(227, 167, 47, 0.3);
 }
 
 .r-select option {
@@ -297,8 +297,8 @@
 
 /* ── BOTÓN SIGUIENTE PASO (DESBLOQUEO DE MESAS) ─────────── */
 .next-step-banner {
-    background: linear-gradient(135deg, rgba(255, 179, 0, 0.18) 0%, rgba(93, 64, 55, 0.25) 100%);
-    border: 1.5px solid #FFCA28;
+    background: linear-gradient(135deg, rgba(227, 167, 47, 0.18) 0%, rgba(107, 66, 38, 0.25) 100%);
+    border: 1.5px solid #F4C95D;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
     margin-bottom: 2rem;
@@ -319,7 +319,7 @@
     width: 42px;
     height: 42px;
     border-radius: 10px;
-    background: #FFCA28;
+    background: #F4C95D;
     color: #1A080C;
     display: flex;
     align-items: center;
@@ -331,20 +331,20 @@
     margin: 0 0 0.2rem;
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
 }
 
 .next-step-text p {
     margin: 0;
     font-size: 0.86rem;
-    color: var(--muted, #6B5A52);
+    color: var(--muted, #7B6249);
 }
 
 :root[data-theme="dark"] .next-step-text h4 { color: #FFFFFF; }
-:root[data-theme="dark"] .next-step-text p { color: #EFE0C8; }
+:root[data-theme="dark"] .next-step-text p { color: #F1E3C4; }
 
 .btn-next-action {
-    background: #FFCA28;
+    background: #F4C95D;
     color: #1A080C;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -355,7 +355,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 16px rgba(255, 179, 0, 0.35);
+    box-shadow: 0 4px 16px rgba(227, 167, 47, 0.35);
     transition: background-color 150ms ease, transform 140ms ease;
     white-space: nowrap;
 }
@@ -383,7 +383,7 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 16px;
-    border: 1px dashed rgba(255, 179, 0, 0.45);
+    border: 1px dashed rgba(227, 167, 47, 0.45);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -403,14 +403,14 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255, 179, 0, 0.25) 0%, rgba(93, 64, 55, 0.4) 100%);
-    border: 2px solid #FFCA28;
-    color: #FFCA28;
+    background: linear-gradient(135deg, rgba(227, 167, 47, 0.25) 0%, rgba(107, 66, 38, 0.4) 100%);
+    border: 2px solid #F4C95D;
+    color: #F4C95D;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1.25rem;
-    box-shadow: 0 0 20px rgba(255, 179, 0, 0.35);
+    box-shadow: 0 0 20px rgba(227, 167, 47, 0.35);
 }
 
 .lock-title {
@@ -422,7 +422,7 @@
 }
 
 .lock-desc {
-    color: #EFE0C8;
+    color: #F1E3C4;
     font-size: 0.95rem;
     max-width: 440px;
     margin: 0 auto 1.5rem;
@@ -440,9 +440,9 @@
     width: 80%;
     height: 18px;
     margin: 0 auto 0.75rem;
-    border-top: 3.5px solid #FFCA28;
+    border-top: 3.5px solid #F4C95D;
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    box-shadow: 0 -8px 24px rgba(255, 179, 0, 0.45);
+    box-shadow: 0 -8px 24px rgba(227, 167, 47, 0.45);
 }
 
 .cinema-screen-label {
@@ -450,7 +450,7 @@
     font-weight: 800;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -465,7 +465,7 @@
     gap: 2rem;
     margin-bottom: 2rem;
     font-size: 0.85rem;
-    color: var(--text, #2B1B15);
+    color: var(--text, #3E2615);
     font-weight: 600;
     flex-wrap: wrap;
 }
@@ -485,13 +485,13 @@
 }
 
 .legend-dot.disponible {
-    background: rgba(255, 179, 0, 0.35);
-    border: 2px solid #FFCA28;
+    background: rgba(227, 167, 47, 0.35);
+    border: 2px solid #F4C95D;
 }
 
 .legend-dot.reservada {
-    background: rgba(93, 64, 55, 0.12);
-    border: 2px solid rgba(93, 64, 55, 0.3);
+    background: rgba(107, 66, 38, 0.12);
+    border: 2px solid rgba(107, 66, 38, 0.3);
 }
 
 :root[data-theme="dark"] .legend-dot.reservada {
@@ -500,9 +500,9 @@
 }
 
 .legend-dot.seleccionada {
-    background: #FFCA28;
+    background: #F4C95D;
     border: 2px solid #FFFFFF;
-    box-shadow: 0 0 12px rgba(255, 179, 0, 0.9);
+    box-shadow: 0 0 12px rgba(227, 167, 47, 0.9);
 }
 
 /* ── PLANO DE SALA / MESAS ───────────────────────────────── */
@@ -522,13 +522,13 @@
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #FFCA28;
+    color: #F4C95D;
 }
 
 .zone-line {
     flex: 1;
     height: 1.5px;
-    background: rgba(255, 179, 0, 0.28);
+    background: rgba(227, 167, 47, 0.28);
 }
 
 .tables-grid {
@@ -542,7 +542,7 @@
     position: relative;
     aspect-ratio: 1;
     background: #1C080E;
-    border: 1.8px solid rgba(255, 179, 0, 0.5);
+    border: 1.8px solid rgba(227, 167, 47, 0.5);
     border-radius: 14px;
     display: flex;
     flex-direction: column;
@@ -559,7 +559,7 @@
 }
 
 .table-node .t-num {
-    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-family: var(--font-serif, 'Playfair Display', serif);
     font-size: 1.55rem;
     font-weight: 700;
     line-height: 1;
@@ -577,8 +577,8 @@
     .table-node.disponible:hover {
         transform: translateY(-3px);
         border-color: #FFFFFF;
-        background: rgba(255, 179, 0, 0.3);
-        box-shadow: 0 6px 18px rgba(255, 179, 0, 0.4);
+        background: rgba(227, 167, 47, 0.3);
+        box-shadow: 0 6px 18px rgba(227, 167, 47, 0.4);
     }
 }
 
@@ -588,9 +588,9 @@
 
 /* Mesa Seleccionada */
 .table-node.selected {
-    background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
+    background: linear-gradient(135deg, #F4C95D 0%, #E3A72F 100%);
     border-color: #FFFFFF;
-    box-shadow: 0 0 20px rgba(255, 179, 0, 0.85);
+    box-shadow: 0 0 20px rgba(227, 167, 47, 0.85);
     transform: scale(1.06);
 }
 
@@ -606,8 +606,8 @@
 
 /* Mesa Ocupada / Reservada */
 .table-node.ocupada {
-    background: rgba(93, 64, 55, 0.06);
-    border-color: rgba(93, 64, 55, 0.2);
+    background: rgba(107, 66, 38, 0.06);
+    border-color: rgba(107, 66, 38, 0.2);
     opacity: 0.65;
     cursor: not-allowed;
 }
@@ -669,10 +669,10 @@
 .ticket-header::after  { right: -2.45rem; }
 
 .ticket-brand {
-    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-family: var(--font-serif, 'Playfair Display', serif);
     font-size: 2rem;
     font-style: italic;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
     margin-bottom: 0.25rem;
 }
 
@@ -690,7 +690,7 @@
     font-size: 1.05rem;
     font-weight: 800;
     color: #1A080C;
-    background: rgba(93, 64, 55, 0.08);
+    background: rgba(107, 66, 38, 0.08);
     padding: 0.3rem 0.75rem;
     border-radius: 6px;
     display: inline-block;
@@ -722,9 +722,9 @@
 }
 
 .t-row .t-val.highlight {
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
     font-size: 1.3rem;
-    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-family: var(--font-serif, 'Playfair Display', serif);
 }
 
 /* Inputs de cliente dentro del ticket */
@@ -742,7 +742,7 @@
 
 .ticket-input {
     width: 100%;
-    background: #FBF6EC;
+    background: #FFFDF8;
     border: 1.5px solid #D5C4B2;
     color: #1A080C;
     padding: 0.65rem 0.85rem;
@@ -755,29 +755,29 @@
 }
 
 .ticket-input:focus {
-    border-color: var(--brand, #5D4037);
+    border-color: var(--brand, #6B4226);
     background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.12);
+    box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.12);
 }
 
 .btn-confirm-reserva {
     width: 100%;
     padding: 0.95rem 1.25rem;
     border-radius: 11px;
-    background: var(--brand, #5D4037);
+    background: var(--brand, #6B4226);
     border: none;
     color: #FFFFFF;
     font-weight: 800;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(93, 64, 55, 0.35);
+    box-shadow: 0 6px 18px rgba(107, 66, 38, 0.35);
     transition: background-color 160ms var(--ease, ease),
                 transform 140ms var(--ease, ease);
     margin-top: 0.5rem;
 }
 
 .btn-confirm-reserva:hover {
-    background: #4E342E;
+    background: #55341E;
 }
 
 .btn-confirm-reserva:active {
@@ -841,10 +841,10 @@
 }
 
 .auth-modal-logo {
-    font-family: var(--font-serif, 'Instrument Serif', serif);
+    font-family: var(--font-serif, 'Playfair Display', serif);
     font-size: 2.2rem;
     font-style: italic;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
     margin-bottom: 0.25rem;
 }
 
@@ -866,7 +866,7 @@
 .auth-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background: #F0E5D2;
+    background: #F6EBD3;
     border-radius: 11px;
     padding: 4px;
     margin-bottom: 1.5rem;
@@ -879,14 +879,14 @@
     border-radius: 8px;
     font-size: 0.88rem;
     font-weight: 700;
-    color: #6B5A52;
+    color: #7B6249;
     cursor: pointer;
     transition: all 160ms ease;
 }
 
 .auth-tab-btn.active {
     background: #FFFFFF;
-    color: var(--brand, #5D4037);
+    color: var(--brand, #6B4226);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -932,13 +932,13 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
+    background: linear-gradient(135deg, #F4C95D 0%, #E3A72F 100%);
     color: #1A080C;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.35rem;
-    box-shadow: 0 8px 24px rgba(255, 179, 0, 0.45);
+    box-shadow: 0 8px 24px rgba(227, 167, 47, 0.45);
 }
 
 .confirm-seal svg { width: 36px; height: 36px; stroke-width: 2.5; }
@@ -947,11 +947,11 @@
 :root[data-theme="dark"] .reserva-ticket-card {
     background: #1A070D;
     color: #FFFFFF;
-    border: 1.5px solid rgba(255, 179, 0, 0.35);
+    border: 1.5px solid rgba(227, 167, 47, 0.35);
 }
 
 :root[data-theme="dark"] .ticket-header {
-    border-bottom: 2px dashed rgba(255, 179, 0, 0.35);
+    border-bottom: 2px dashed rgba(227, 167, 47, 0.35);
 }
 
 :root[data-theme="dark"] .ticket-header::before,
@@ -960,16 +960,16 @@
 }
 
 :root[data-theme="dark"] .ticket-brand {
-    color: var(--gold, #FFB300);
+    color: var(--gold, #E3A72F);
 }
 
 :root[data-theme="dark"] .ticket-tag {
-    color: #FFE082;
+    color: #F4C95D;
 }
 
 :root[data-theme="dark"] .ticket-code {
-    color: #FFE082;
-    background: rgba(255, 179, 0, 0.15);
+    color: #F4C95D;
+    background: rgba(227, 167, 47, 0.15);
 }
 
 :root[data-theme="dark"] .t-row .t-label {
@@ -981,7 +981,7 @@
 }
 
 :root[data-theme="dark"] .t-row .t-val.highlight {
-    color: var(--gold, #FFB300);
+    color: var(--gold, #E3A72F);
 }
 
 :root[data-theme="dark"] .ticket-form-group label {
@@ -990,19 +990,19 @@
 
 :root[data-theme="dark"] .ticket-input {
     background: #110306;
-    border-color: rgba(255, 179, 0, 0.4);
+    border-color: rgba(227, 167, 47, 0.4);
     color: #FFFFFF;
 }
 
 :root[data-theme="dark"] .ticket-input:focus {
-    border-color: #FFCA28;
+    border-color: #F4C95D;
     background: #1C080E;
 }
 
 :root[data-theme="dark"] .auth-modal-box {
     background: #1A070D;
     color: #FFFFFF;
-    border: 1.5px solid rgba(255, 179, 0, 0.35);
+    border: 1.5px solid rgba(227, 167, 47, 0.35);
 }
 
 :root[data-theme="dark"] .auth-modal-title {
@@ -1022,6 +1022,6 @@
 }
 
 :root[data-theme="dark"] .auth-tab-btn.active {
-    background: #2B1B15;
-    color: #FFE082;
+    background: #3E2615;
+    color: #F4C95D;
 }

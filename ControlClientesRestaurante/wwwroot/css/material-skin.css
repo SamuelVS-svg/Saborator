@@ -8,10 +8,10 @@
 
 :root {
   /* Elevaciones MD3 (nivel 1 a 4) con sombra cálida marrón */
-  --md-elev-1: 0 1px 2px rgba(43, 27, 21, .14), 0 1px 3px 1px rgba(43, 27, 21, .08);
-  --md-elev-2: 0 1px 2px rgba(43, 27, 21, .14), 0 2px 6px 2px rgba(43, 27, 21, .08);
-  --md-elev-3: 0 1px 3px rgba(43, 27, 21, .14), 0 4px 8px 3px rgba(43, 27, 21, .08);
-  --md-elev-4: 0 2px 3px rgba(43, 27, 21, .14), 0 6px 10px 4px rgba(43, 27, 21, .08);
+  --md-elev-1: 0 1px 2px rgba(62, 38, 21, .10);
+  --md-elev-2: 0 1px 3px rgba(62, 38, 21, .12);
+  --md-elev-3: 0 2px 6px rgba(62, 38, 21, .12);
+  --md-elev-4: 0 4px 12px rgba(62, 38, 21, .14);
   --md-emphasized: cubic-bezier(.2, 0, 0, 1);
   --shadow-sm: var(--md-elev-1);
   --shadow:    var(--md-elev-2);
@@ -21,15 +21,15 @@
 
 /* Foco visible: anillo amarillo en cualquier control interactivo */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 3px solid rgba(255, 193, 7, .75);
+  outline: 3px solid rgba(244, 201, 93, .75);
   outline-offset: 2px;
 }
 
 /* Botones: forma de píldora, tipografía de énfasis y capa de estado */
 .btn-gold, .btn-ghost, .btn-entrar, .btn-kfc-cta, .btn-google-official, .btn, .dlg-btn {
-  border-radius: 999px;
+  border-radius: 12px;
   letter-spacing: .01em;
-  transition: background-color .2s var(--md-emphasized), box-shadow .2s var(--md-emphasized), filter .2s var(--md-emphasized), transform .1s ease;
+  transition: background-color .2s ease, box-shadow .2s ease, filter .2s ease, transform .2s ease;
 }
 .btn-gold, .btn-entrar, .btn-kfc-cta, .btn-primary, .dlg-btn-pri { box-shadow: var(--md-elev-1); }
 .btn-gold:hover, .btn-entrar:hover, .btn-kfc-cta:hover, .btn-primary:hover, .dlg-btn-pri:hover { box-shadow: var(--md-elev-2); }
@@ -37,7 +37,7 @@
 .btn-ghost:hover, .btn-google-official:hover { background-color: var(--brand-soft); }
 
 /* Tarjetas y superficies: esquinas MD3 */
-.cal-card, .modal-content { border-radius: 24px; }
+.cal-card, .modal-content { border-radius: 12px; }
 
 /* Ondulación (ripple) que inyecta material.js */
 .md-ripple-host { position: relative; overflow: hidden; }

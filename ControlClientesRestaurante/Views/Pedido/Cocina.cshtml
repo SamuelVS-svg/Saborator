@@ -255,7 +255,7 @@
         justify-content: space-between;
         align-items: center;
         background: #18060A;
-        border: 1px solid rgba(255, 179, 0, 0.35);
+        border: 1px solid rgba(227, 167, 47, 0.35);
         border-radius: 18px;
         padding: 1.25rem 1.75rem;
         margin-bottom: 1.25rem;
@@ -272,7 +272,7 @@
         width: 46px;
         height: 46px;
         border-radius: 12px;
-        background: linear-gradient(135deg, var(--gold, #FFB300) 0%, #FFCA28 100%);
+        background: linear-gradient(135deg, var(--gold, #E3A72F) 0%, #F4C95D 100%);
         color: #18060A;
         display: flex;
         align-items: center;
@@ -280,7 +280,7 @@
         flex-shrink: 0;
     }
     .kds-title {
-        font-family: var(--font-serif, 'Instrument Serif', serif);
+        font-family: var(--font-serif, 'Playfair Display', serif);
         font-size: 2rem;
         color: #FFFFFF;
         margin: 0;
@@ -337,7 +337,7 @@
         border: 1px solid rgba(255, 255, 255, 0.15);
         padding: 0.5rem 1.15rem;
         border-radius: 999px;
-        color: var(--gold, #FFB300);
+        color: var(--gold, #E3A72F);
         font-family: monospace;
         font-size: 1rem;
         font-weight: 700;
@@ -359,7 +359,7 @@
     }
     .kds-tab {
         background: var(--surface, #FFFFFF);
-        border: 1.5px solid var(--line, #E3D5BC);
+        border: 1.5px solid var(--line, #E8D5B0);
         padding: 0.55rem 1.15rem;
         border-radius: 10px;
         font-size: 0.85rem;
@@ -369,13 +369,13 @@
         transition: all 140ms ease;
     }
     .kds-tab:hover {
-        border-color: var(--gold, #FFB300);
+        border-color: var(--gold, #E3A72F);
     }
     .kds-tab.active {
-        background: var(--brand, #5D4037);
-        border-color: var(--brand, #5D4037);
+        background: var(--brand, #6B4226);
+        border-color: var(--brand, #6B4226);
         color: #FFFFFF;
-        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.25);
+        box-shadow: 0 4px 12px rgba(107, 66, 38, 0.25);
     }
 
     .kds-tools { display: flex; gap: 0.65rem; align-items: center; }
@@ -384,8 +384,8 @@
         align-items: center;
         gap: 0.45rem;
         background: var(--surface, #FFFFFF);
-        border: 1.5px solid var(--gold, #FFB300);
-        color: var(--brand, #5D4037);
+        border: 1.5px solid var(--gold, #E3A72F);
+        color: var(--brand, #6B4226);
         padding: 0.55rem 1rem;
         border-radius: 10px;
         font-size: 0.85rem;
@@ -394,13 +394,13 @@
         transition: all 140ms ease;
     }
     .btn-recetario-link:hover {
-        background: var(--gold, #FFB300);
+        background: var(--gold, #E3A72F);
         color: #18060A;
     }
     .btn-audio-toggle {
-        background: rgba(255, 179, 0, 0.15);
-        border: 1.5px solid var(--gold, #FFB300);
-        color: var(--brand, #5D4037);
+        background: rgba(227, 167, 47, 0.15);
+        border: 1.5px solid var(--gold, #E3A72F);
+        color: var(--brand, #6B4226);
         padding: 0.55rem 0.95rem;
         border-radius: 10px;
         font-size: 0.82rem;
@@ -473,7 +473,7 @@
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
-    .dest-mesa { background: rgba(255, 179, 0, 0.25); color: var(--gold, #FFB300); }
+    .dest-mesa { background: rgba(227, 167, 47, 0.25); color: var(--gold, #E3A72F); }
     .dest-domicilio { background: rgba(239, 68, 68, 0.25); color: #FCA5A5; }
     .dest-llevar { background: rgba(59, 130, 246, 0.25); color: #93C5FD; }
 
@@ -516,7 +516,7 @@
     .dish-qty-badge {
         font-size: 1.15rem;
         font-weight: 900;
-        color: var(--gold, #FFB300);
+        color: var(--gold, #E3A72F);
         min-width: 28px;
     }
     .dish-info-block { flex: 1; }
@@ -540,7 +540,7 @@
         margin-top: 0.75rem;
         padding: 0.45rem 0.65rem;
         background: rgba(255, 255, 255, 0.06);
-        border-left: 3px solid var(--gold, #FFB300);
+        border-left: 3px solid var(--gold, #E3A72F);
         font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.8);
         border-radius: 0 6px 6px 0;
@@ -592,7 +592,7 @@
     /* Empty state */
     .kds-empty-state {
         background: #18060A;
-        border: 1px solid rgba(255, 179, 0, 0.3);
+        border: 1px solid rgba(227, 167, 47, 0.3);
         border-radius: 20px;
         padding: 4rem 2rem;
         text-align: center;
@@ -692,7 +692,7 @@
         toast.style.transition = 'opacity 300ms ease';
         toast.style.background = tipo === 'success' 
             ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
-            : 'linear-gradient(135deg, #FFB300 0%, #9B2C3B 100%)';
+            : 'linear-gradient(135deg, #E3A72F 0%, #9B2C3B 100%)';
         toast.textContent = texto;
 
         document.body.appendChild(toast);

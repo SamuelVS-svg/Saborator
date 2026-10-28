@@ -1,6 +1,6 @@
 /* ==========================================================================
    LOGIN & REGISTRO — ALTA COCINA Y POLISH EMIL KOWALSKI (MAX POLISH)
-   Paleta: Borgoña Profundo (#3E2A22, #5D4037), Crema Marfil (#FFFFFF, #FBF6EC), Oro (#FFB300, #FFC107)
+   Paleta: Borgoña Profundo (#3E2A22, #6B4226), Crema Marfil (#FFFFFF, #FFFDF8), Oro (#E3A72F, #E3A72F)
    Layout: Login 100% centrado, animaciones suaves (<300ms, cubic-bezier), estados táctiles y accesibilidad
    ========================================================================== */
 
@@ -12,20 +12,20 @@
     --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
     /* Colores Gastronómicos */
-    --brand-burgundy: #5D4037;
+    --brand-burgundy: #6B4226;
     --brand-burgundy-hover: #4A332A;
     --brand-dark: #32211A;
     --brand-night: #140307;
-    --gold: #FFB300;
-    --gold-bright: #FFC107;
-    --gold-glow: rgba(255, 193, 7, 0.32);
-    --cream: #FBF6EC;
+    --gold: #E3A72F;
+    --gold-bright: #E3A72F;
+    --gold-glow: rgba(244, 201, 93, 0.32);
+    --cream: #FFFDF8;
     --ivory: #FFFFFF;
-    --ink: #2B1B15;
+    --ink: #3E2615;
     --c-muted: #7A6355;
     --line: #E5DCB8;
-    --line-active: #FFB300;
-    --focus-ring: rgba(255, 179, 0, 0.35);
+    --line-active: #E3A72F;
+    --focus-ring: rgba(227, 167, 47, 0.35);
 }
 
 *, *::before, *::after {
@@ -35,7 +35,7 @@
 }
 
 body {
-    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--brand-night);
     color: var(--ink);
     min-height: 100vh;
@@ -89,8 +89,8 @@ body {
 .gastro-radial-ember-glow {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 15% 80%, rgba(255, 179, 0, 0.14) 0%, transparent 48%),
-                radial-gradient(circle at 85% 80%, rgba(93, 64, 55, 0.38) 0%, transparent 52%);
+    background: radial-gradient(circle at 15% 80%, rgba(227, 167, 47, 0.14) 0%, transparent 48%),
+                radial-gradient(circle at 85% 80%, rgba(107, 66, 38, 0.38) 0%, transparent 52%);
 }
 
 .bistro-ambient-glow {
@@ -98,8 +98,8 @@ body {
     inset: 0;
     background:
         radial-gradient(circle at 50% 10%, rgba(109, 76, 65, 0.75) 0%, rgba(45, 28, 22, 0.90) 42%, #120306 100%),
-        radial-gradient(circle at 15% 80%, rgba(255, 179, 0, 0.14) 0%, transparent 48%),
-        radial-gradient(circle at 85% 80%, rgba(93, 64, 55, 0.38) 0%, transparent 52%);
+        radial-gradient(circle at 15% 80%, rgba(227, 167, 47, 0.14) 0%, transparent 48%),
+        radial-gradient(circle at 85% 80%, rgba(107, 66, 38, 0.38) 0%, transparent 52%);
 }
 
 .bistro-pendant-lamp {
@@ -117,14 +117,14 @@ body {
 .lamp-cord {
     width: 2px;
     height: 105px;
-    background: linear-gradient(180deg, #1A050A 0%, #FFB300 100%);
+    background: linear-gradient(180deg, #1A050A 0%, #E3A72F 100%);
 }
 
 .lamp-shade {
     width: 46px;
     height: 24px;
-    background: linear-gradient(180deg, #5D4037 0%, #2B1B15 100%);
-    border: 1.5px solid rgba(255, 179, 0, 0.55);
+    background: linear-gradient(180deg, #6B4226 0%, #3E2615 100%);
+    border: 1.5px solid rgba(227, 167, 47, 0.55);
     border-radius: 20px 20px 4px 4px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
 }
@@ -133,7 +133,7 @@ body {
     width: 170px;
     height: 250px;
     margin-top: -8px;
-    background: radial-gradient(ellipse at 50% 0%, rgba(246, 184, 101, 0.28) 0%, rgba(255, 179, 0, 0.12) 40%, transparent 75%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(246, 184, 101, 0.28) 0%, rgba(227, 167, 47, 0.12) 40%, transparent 75%);
     filter: blur(16px);
     pointer-events: none;
     animation: lamp-flicker 8s ease-in-out infinite alternate;
@@ -155,7 +155,7 @@ body {
     gap: .55rem;
     padding: .52rem 1.15rem;
     background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 193, 7, 0.35);
+    border: 1px solid rgba(244, 201, 93, 0.35);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-radius: 9999px;
@@ -226,12 +226,12 @@ body {
     margin-right: auto !important;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.96);
-    border: 1.5px solid rgba(255, 179, 0, 0.38);
+    border: 1.5px solid rgba(227, 167, 47, 0.38);
     border-radius: 24px;
     padding: 2.25rem 2.25rem 2rem;
     box-shadow:
         0 30px 80px -15px rgba(10, 2, 5, 0.75),
-        0 0 50px rgba(93, 64, 55, 0.32),
+        0 0 50px rgba(107, 66, 38, 0.32),
         inset 0 1px 0 rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
@@ -251,8 +251,8 @@ body {
     pointer-events: none;
     background: radial-gradient(
         circle 340px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(255, 193, 7, 0.16) 0%,
-        rgba(93, 64, 55, 0.08) 45%,
+        rgba(244, 201, 93, 0.16) 0%,
+        rgba(107, 66, 38, 0.08) 45%,
         transparent 80%
     );
     opacity: var(--mouse-active, 0);
@@ -295,10 +295,10 @@ body {
 /* ── CELEBRACIÓN / ÉXITO AL INICIAR SESIÓN O CREAR CUENTA ─────────────────── */
 @keyframes success-glow {
     0% {
-        box-shadow: 0 4px 14px rgba(93, 64, 55, 0.28);
+        box-shadow: 0 4px 14px rgba(107, 66, 38, 0.28);
     }
     50% {
-        box-shadow: 0 0 28px rgba(16, 185, 129, 0.6), 0 0 40px rgba(255, 193, 7, 0.45);
+        box-shadow: 0 0 28px rgba(16, 185, 129, 0.6), 0 0 40px rgba(244, 201, 93, 0.45);
         transform: scale(1.02);
     }
     100% {
@@ -335,20 +335,20 @@ body {
 .form-logo-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, rgba(93, 64, 55, 0.12) 0%, rgba(255, 179, 0, 0.18) 100%);
+    background: linear-gradient(135deg, rgba(107, 66, 38, 0.12) 0%, rgba(227, 167, 47, 0.18) 100%);
     color: var(--brand-burgundy);
-    border: 1.5px solid rgba(255, 179, 0, 0.45);
+    border: 1.5px solid rgba(227, 167, 47, 0.45);
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(93, 64, 55, 0.12);
+    box-shadow: 0 4px 12px rgba(107, 66, 38, 0.12);
     animation: badge-subtle-glow 6s ease-in-out infinite alternate;
 }
 
 @keyframes badge-subtle-glow {
-    0% { box-shadow: 0 4px 12px rgba(93, 64, 55, 0.12); }
-    100% { box-shadow: 0 6px 18px rgba(255, 179, 0, 0.35); }
+    0% { box-shadow: 0 4px 12px rgba(107, 66, 38, 0.12); }
+    100% { box-shadow: 0 6px 18px rgba(227, 167, 47, 0.35); }
 }
 
 .form-logo-icon svg {
@@ -358,7 +358,7 @@ body {
 }
 
 .form-logo-name {
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
     font-size: 1.7rem;
     color: var(--brand-burgundy);
@@ -380,7 +380,7 @@ body {
 .auth-tabs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    background: #F4EBDA;
+    background: #F6EBD3;
     border: 1px solid #F1E4B3;
     padding: 4px;
     border-radius: 13px;
@@ -443,7 +443,7 @@ body {
 
 /* ── TITULARES DE FORMULARIO ─────────────────────────────────────────────── */
 .form-title {
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
     font-size: 2.1rem;
     color: var(--ink);
@@ -550,7 +550,7 @@ body {
 .f-input-wrap input:focus {
     border-color: var(--brand-burgundy);
     background: #FFFFFF;
-    box-shadow: 0 0 0 3.5px rgba(93, 64, 55, 0.12), 0 0 14px rgba(255, 179, 0, 0.16);
+    box-shadow: 0 0 0 3.5px rgba(107, 66, 38, 0.12), 0 0 14px rgba(227, 167, 47, 0.16);
 }
 
 .f-input-wrap input::placeholder {
@@ -584,7 +584,7 @@ input:-webkit-autofill:focus {
 
 .f-pwd-toggle:hover {
     color: var(--brand-burgundy);
-    background: rgba(93, 64, 55, 0.08);
+    background: rgba(107, 66, 38, 0.08);
 }
 
 .f-pwd-toggle.active {
@@ -612,7 +612,7 @@ input:-webkit-autofill:focus {
     justify-content: center;
     gap: .55rem;
     margin-top: .45rem;
-    box-shadow: 0 4px 14px rgba(93, 64, 55, 0.28);
+    box-shadow: 0 4px 14px rgba(107, 66, 38, 0.28);
     transition: transform 160ms var(--ease-out), background 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
     user-select: none;
 }
@@ -620,9 +620,9 @@ input:-webkit-autofill:focus {
 .btn-entrar:hover {
     background: var(--gold);
     border-color: var(--gold);
-    color: #2B1B15;
+    color: #3E2615;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 179, 0, 0.35);
+    box-shadow: 0 6px 20px rgba(227, 167, 47, 0.35);
 }
 
 .btn-entrar:active {
@@ -722,7 +722,7 @@ input:-webkit-autofill:focus {
 
 .rec-box {
     background: var(--ivory);
-    border: 1.5px solid rgba(255, 179, 0, 0.4);
+    border: 1.5px solid rgba(227, 167, 47, 0.4);
     border-radius: 22px;
     padding: 2.25rem;
     width: 100%;
@@ -737,7 +737,7 @@ input:-webkit-autofill:focus {
 }
 
 .rec-box h3 {
-    font-family: 'Instrument Serif', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     font-style: italic;
     font-size: 1.85rem;
     color: var(--brand-burgundy);
@@ -777,11 +777,11 @@ input:-webkit-autofill:focus {
 
 .rec-input:focus {
     border-color: var(--brand-burgundy);
-    box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.12);
+    box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.12);
 }
 
 .rec-note {
-    background: #F4EBDA;
+    background: #F6EBD3;
     border: 1px solid #F1E4B3;
     border-radius: 9px;
     padding: .75rem;
@@ -814,16 +814,16 @@ input:-webkit-autofill:focus {
 /* ── SOPORTE MODO OSCURO CON TONOS BORGOÑA NOCTURNOS ─────────────────────── */
 [data-theme="dark"] .form-card {
     background: rgba(32, 10, 16, 0.94);
-    border-color: rgba(255, 179, 0, 0.4);
-    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.9), 0 0 50px rgba(93, 64, 55, 0.45);
+    border-color: rgba(227, 167, 47, 0.4);
+    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.9), 0 0 50px rgba(107, 66, 38, 0.45);
 }
 
 [data-theme="dark"] .form-title { color: #FFFFFF; }
-[data-theme="dark"] .form-sub { color: rgba(247, 240, 226, 0.72); }
-[data-theme="dark"] .f-label { color: rgba(247, 240, 226, 0.82); }
+[data-theme="dark"] .form-sub { color: rgba(246, 235, 211, 0.72); }
+[data-theme="dark"] .f-label { color: rgba(246, 235, 211, 0.82); }
 [data-theme="dark"] .f-input-wrap input {
     background: rgba(20, 5, 9, 0.75);
-    border-color: rgba(255, 179, 0, 0.28);
+    border-color: rgba(227, 167, 47, 0.28);
     color: #FFFFFF;
 }
 [data-theme="dark"] .f-input-wrap input:focus {
@@ -838,14 +838,14 @@ input:-webkit-autofill:focus {
 }
 [data-theme="dark"] .auth-tabs {
     background: rgba(20, 5, 9, 0.85);
-    border-color: rgba(255, 179, 0, 0.25);
+    border-color: rgba(227, 167, 47, 0.25);
 }
 [data-theme="dark"] .auth-tab.active {
     background: var(--brand-burgundy);
     color: #FFFFFF;
 }
 [data-theme="dark"] .form-footer {
-    color: rgba(247, 240, 226, 0.72);
+    color: rgba(246, 235, 211, 0.72);
 }
 [data-theme="dark"] .rec-box {
     background: rgba(32, 10, 16, 0.96);
@@ -854,7 +854,7 @@ input:-webkit-autofill:focus {
 [data-theme="dark"] .rec-input {
     background: rgba(20, 5, 9, 0.8);
     color: #FFFFFF;
-    border-color: rgba(255, 179, 0, 0.3);
+    border-color: rgba(227, 167, 47, 0.3);
 }
 
 /* ── PREFIERE MOVIMIENTO REDUCIDO (ACCESIBILIDAD) ────────────────────────── */

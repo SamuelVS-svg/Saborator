@@ -21,7 +21,7 @@
     }
     .audit-kpi-card {
         background: var(--surface, #FFFFFF);
-        border: 1px solid var(--line, #E3D5BC);
+        border: 1px solid var(--line, #E8D5B0);
         border-radius: 14px;
         padding: 1.15rem 1.25rem;
         display: flex;
@@ -41,36 +41,36 @@
     .audit-kpi-label {
         font-size: 0.72rem;
         font-weight: 700;
-        color: var(--muted, #6B5A52);
+        color: var(--muted, #7B6249);
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
     .audit-kpi-val {
         font-size: 1.55rem;
         font-weight: 800;
-        color: var(--text, #2B1B15);
+        color: var(--text, #3E2615);
         line-height: 1.2;
     }
     .audit-role-badge {
         font-size: 0.72rem;
-        background: var(--surface-2, #F0E5D2);
-        color: var(--muted, #6B5A52);
-        border: 1px solid var(--line, #E3D5BC);
+        background: var(--surface-2, #F6EBD3);
+        color: var(--muted, #7B6249);
+        border: 1px solid var(--line, #E8D5B0);
         padding: 2px 7px;
         border-radius: 6px;
         font-weight: 700;
     }
     .audit-mod-badge {
-        background: rgba(255, 179, 0, 0.14);
+        background: rgba(227, 167, 47, 0.14);
         color: #92400E;
         font-size: 0.75rem;
         font-weight: 700;
         padding: 3px 8px;
         border-radius: 6px;
-        border: 1px solid rgba(255, 179, 0, 0.35);
+        border: 1px solid rgba(227, 167, 47, 0.35);
     }
     html[data-theme="dark"] .audit-mod-badge {
-        color: var(--gold, #FFD54F);
+        color: var(--gold, #F4C95D);
         background: rgba(255, 213, 79, 0.16);
     }
 </style>
@@ -89,8 +89,8 @@
 
     <div class="d-flex gap-2 flex-wrap">
         <a asp-action="ExportarCsv" asp-route-desde="@desdeSel" asp-route-hasta="@hastaSel" asp-route-modulo="@moduloSel" asp-route-usuario="@usuarioFiltro"
-           class="btn-ghost" style="border-color: var(--gold, #FFB300); font-weight: 700;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold, #FFB300)" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+           class="btn-ghost" style="border-color: var(--gold, #E3A72F); font-weight: 700;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold, #E3A72F)" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Exportar Bitácora (Excel / CSV)</span>
         </a>
     </div>
@@ -101,7 +101,7 @@
 <!-- ══ KPIS EN TIEMPO REAL ═══════════════════════════════════════════ -->
 <div class="audit-kpi-grid">
     <div class="audit-kpi-card">
-        <div class="audit-kpi-icon" style="background: var(--brand-soft, rgba(93, 64, 55,0.12)); color: var(--ink, #5D4037);">
+        <div class="audit-kpi-icon" style="background: var(--brand-soft, rgba(107, 66, 38,0.12)); color: var(--ink, #6B4226);">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div>
@@ -121,7 +121,7 @@
     </div>
 
     <div class="audit-kpi-card">
-        <div class="audit-kpi-icon" style="background: rgba(255, 179, 0,0.16); color: var(--amber, #FFB300);">
+        <div class="audit-kpi-icon" style="background: rgba(227, 167, 47,0.16); color: var(--amber, #E3A72F);">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
         <div>

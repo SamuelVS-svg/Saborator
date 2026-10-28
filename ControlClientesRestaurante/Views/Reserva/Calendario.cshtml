@@ -10,9 +10,9 @@
     #calendario {
         --fc-border-color: var(--line);
         --fc-page-bg-color: var(--surface);
-        --fc-neutral-bg-color: var(--surface-2, rgba(93, 64, 55,0.06));
+        --fc-neutral-bg-color: var(--surface-2, rgba(107, 66, 38,0.06));
         --fc-today-bg-color: rgba(255, 224, 130,0.28);
-        --fc-non-business-color: rgba(93, 64, 55,0.07);
+        --fc-non-business-color: rgba(107, 66, 38,0.07);
         --fc-event-border-color: transparent;
         --fc-button-bg-color: var(--brand);
         --fc-button-border-color: var(--brand);
@@ -20,17 +20,17 @@
         --fc-button-hover-border-color: var(--brand);
         --fc-button-active-bg-color: var(--gold);
         --fc-button-active-border-color: var(--gold);
-        --fc-list-event-hover-bg-color: var(--surface-2, rgba(93, 64, 55,0.06));
+        --fc-list-event-hover-bg-color: var(--surface-2, rgba(107, 66, 38,0.06));
         color: var(--text);
         font-family: inherit;
     }
     #calendario .fc-toolbar-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
     #calendario .fc-toolbar-title::first-letter { text-transform: uppercase; }
     #calendario .fc-button { font-size: 0.8rem; font-weight: 700; text-transform: capitalize; border-radius: 8px; }
-    #calendario .fc-button-active, #calendario .fc-button-active:focus { color: #2B1B15; }
-    #calendario .fc-button:focus { box-shadow: 0 0 0 3px rgba(93, 64, 55,0.25); }
+    #calendario .fc-button-active, #calendario .fc-button-active:focus { color: #3E2615; }
+    #calendario .fc-button:focus { box-shadow: 0 0 0 3px rgba(107, 66, 38,0.25); }
     #calendario .fc-col-header-cell-cushion, #calendario .fc-daygrid-day-number, #calendario .fc-timegrid-slot-label-cushion, #calendario .fc-list-day-text, #calendario .fc-list-day-side-text { color: var(--text); text-decoration: none; text-transform: capitalize; }
-    #calendario .fc-day-mon { background: repeating-linear-gradient(135deg, transparent 0 8px, rgba(93, 64, 55,0.06) 8px 16px); }
+    #calendario .fc-day-mon { background: repeating-linear-gradient(135deg, transparent 0 8px, rgba(107, 66, 38,0.06) 8px 16px); }
     #calendario .fc-event { cursor: pointer; font-size: 0.74rem; border-radius: 6px; padding: 1px 4px; }
     #calendario .fc-event-title, #calendario .fc-event-time { font-weight: 700; }
 
@@ -39,10 +39,10 @@
     .ev-reserva.ev-completada { background: #2E7D52; color: #fff; }
     .ev-reserva.ev-noasistio  { background: #B7791F; color: #fff; }
     .ev-reserva.ev-cancelada  { background: #8A7F82; color: #fff; text-decoration: line-through; opacity: .7; }
-    .ev-pedido { background: var(--gold); color: #2B1B15; border-left: 3px solid var(--brand); }
+    .ev-pedido { background: var(--gold); color: #3E2615; border-left: 3px solid var(--brand); }
     .ev-pedido.ev-ped-cancelado { opacity: .55; text-decoration: line-through; }
     .ev-pedido.ev-ped-entregado, .ev-pedido.ev-ped-facturado { border-left-color: #2E7D52; }
-    .ev-pedido .fc-event-main { color: #2B1B15; }
+    .ev-pedido .fc-event-main { color: #3E2615; }
 
     .cal-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card, 14px); padding: 1rem; box-shadow: var(--shadow-sm); }
     .cal-toolbar { display: flex; flex-wrap: wrap; gap: .9rem 1.4rem; align-items: center; margin-bottom: .85rem; }

@@ -2,34 +2,44 @@
    PRESTACONTROL · Tokens de diseño compartidos (sistema, landing, login)
    ================================================================ */
 :root{
-  --bg:#F8F2E6; --surface:#FFFFFF; --surface-2:#F0E5D2; --text:#2B1B15; --muted:#6B5A52; --faint:#7A6A62;
-  --line:#E6D8BF; --line-2:#D5C3A3; --brand:#5D4037; --brand-hover:#4E342E; --ink:#5D4037; --brand-soft:rgba(93, 64, 55,.10);
-  --on-brand:#FFFFFF; --gold:#FFC107; --amber:#F9A825; --amber-ink:#7A5200; --amber-soft:rgba(255,193,7,.16); --warning:#7A5200;
+  /* ── Paleta Sabor Casero (úsala por nombre) ── */
+  --hueso:          #FFFDF8;   /* fondo principal                   */
+  --crema:          #F6EBD3;   /* secciones alternas                */
+  --beige:          #E8D5B0;   /* bordes y detalles                 */
+  --amarillo-suave: #F4C95D;   /* acentos y hover                   */
+  --amarillo:       #E3A72F;   /* botones principales               */
+  --marron:         #6B4226;   /* header, footer, títulos           */
+  --marron-oscuro:  #3E2615;   /* texto principal                   */
+  --blanco:         #FFFFFF;   /* tarjetas y texto sobre marrón     */
+
+  --bg:#FFFDF8; --surface:#FFFFFF; --surface-2:#F6EBD3; --text:#3E2615; --muted:#7B6249; --faint:#85694C;
+  --line:#E8D5B0; --line-2:#D9C197; --brand:#6B4226; --brand-hover:#55341E; --ink:#6B4226; --brand-soft:rgba(107, 66, 38,.10);
+  --on-brand:#FFFFFF; --gold:#E3A72F; --amber:#E3A72F; --amber-ink:#7A5200; --amber-soft:rgba(244, 201, 93,.16); --warning:#7A5200;
   --success:#2A7348; --success-bg:#E3F1E8;
   --danger:#D6453D; --danger-ink:#B3322B; --danger-soft:#FBE4E2; --danger-bg:#FBE4E2;
   --info:#2563EB; --info-soft:rgba(37,99,235,.10);
-  --dot:rgba(43, 27, 21,.07); --glass:rgba(255, 255, 255,.74); --scrim:rgba(8,8,10,.45);
-  --shadow:0 1px 2px rgba(43, 27, 21,.05),0 8px 24px -10px rgba(43, 27, 21,.14);
+  --dot:rgba(62, 38, 21,.07); --glass:rgba(255, 255, 255,.74); --scrim:rgba(8,8,10,.45);
+  --shadow:0 1px 2px rgba(62, 38, 21,.05),0 8px 24px -10px rgba(62, 38, 21,.14);
   --shadow-lg:0 2px 4px rgba(0,0,0,.05),0 30px 60px -20px rgba(0,0,0,.25);
   --ease:cubic-bezier(.16,1,.3,1); --spring:cubic-bezier(.34,1.56,.64,1);
-  --r-ctl:12px; --r-card:22px; --r-big:30px;
-  --font:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r-ctl:12px; --r-card:12px; --r-big:12px;
+  --font:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'Geist Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;
-  --serif:'Instrument Serif',Georgia,serif;
+  --serif:'Playfair Display',Georgia,serif;
   --dock-space:128px;
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#17110E; --surface:#231A15; --surface-2:#30251F; --text:#F7F0E2; --muted:#C8BCB4; --faint:#9A8E92;
-  --line:#3F312A; --line-2:#4F4037; --brand:#8D6E63; --brand-hover:#A1887F; --ink:#FFD54F; --brand-soft:rgba(255,193,7,.16);
-  --on-brand:#FFFFFF; --gold:#FFC107; --amber:#FFCA28; --amber-ink:#FFE082; --amber-soft:rgba(255,202,40,.16); --warning:#FFCA28;
+  --bg:#17110E; --surface:#231A15; --surface-2:#30251F; --text:#F6EBD3; --muted:#C8BCB4; --faint:#9A8E92;
+  --line:#3F312A; --line-2:#4F4037; --brand:#8D6E63; --brand-hover:#A1887F; --ink:#F4C95D; --brand-soft:rgba(244, 201, 93,.16);
+  --on-brand:#FFFFFF; --gold:#F4C95D; --amber:#F4C95D; --amber-ink:#F4C95D; --amber-soft:rgba(244, 201, 93,.16); --warning:#F4C95D;
   --success:#5CC48A; --success-bg:rgba(92,196,138,.14);
   --danger:#F0625A; --danger-ink:#F57A73; --danger-soft:rgba(240,98,90,.16); --danger-bg:rgba(240,98,90,.16);
   --info:#60A5FA; --info-soft:rgba(96,165,250,.14);
-  --dot:rgba(247, 240, 226,.05); --glass:rgba(30,24,26,.74); --scrim:rgba(0,0,0,.6);
+  --dot:rgba(246, 235, 211,.05); --glass:rgba(30,24,26,.74); --scrim:rgba(0,0,0,.6);
   --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px -10px rgba(0,0,0,.7);
   --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 30px 60px -20px rgba(0,0,0,.9);
   color-scheme:dark;
 }
 /* Colores fijos permitidos fuera de tokens */
-/* isla/píldora oscura #2B1B15 (oscuro: #000), texto sobre ámbar #1c1003, borde interno de moneda dorada #B8934F */
+/* isla/píldora oscura #3E2615 (oscuro: #000), texto sobre ámbar #1c1003, borde interno de moneda dorada #B8934F */
