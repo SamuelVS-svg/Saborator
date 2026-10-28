@@ -11,7 +11,7 @@
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(227, 216, 200, 0.7);
+    border-bottom: 1px solid rgba(227, 213, 188, 0.7);
     gap: clamp(0.5rem, 1vw, 1.25rem);
     box-shadow: 0 4px 20px rgba(43, 27, 21, 0.03);
     transition: background 200ms ease, border-color 200ms ease;
@@ -152,7 +152,7 @@
 .lnav-btn-o {
     padding: 0.38rem 0.85rem;
     border-radius: 9px;
-    border: 1px solid var(--cream-line, #D9CBBF);
+    border: 1px solid var(--cream-line, #D5C3A3);
     color: var(--text, #2B1B15);
     background: var(--surface, #FFFFFF);
     font-size: 0.8rem;
@@ -172,7 +172,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
     .lnav-btn-o:hover {
-        background: var(--surface-2, #F1E9E2);
+        background: var(--surface-2, #F0E5D2);
         border-color: var(--brand, #5D4037);
         color: var(--brand, #5D4037);
         transform: translateY(-1px);
@@ -216,7 +216,7 @@
     font-size: 0.8rem;
     color: var(--text, #2B1B15);
     background: var(--surface, #FFFFFF);
-    border: 1px solid var(--cream-line, #D9CBBF);
+    border: 1px solid var(--cream-line, #D5C3A3);
     padding: 0.35rem 0.65rem;
     border-radius: 9px;
     font-weight: 600;
@@ -259,7 +259,7 @@
     width: 36px;
     height: 36px;
     background: var(--surface, #FFFFFF);
-    border: 1px solid var(--cream-line, #D9CBBF);
+    border: 1px solid var(--cream-line, #D5C3A3);
     border-radius: 10px;
     cursor: pointer;
     padding: 0.35rem;
@@ -278,7 +278,7 @@
     top: 98px; left: 0; right: 0;
     z-index: 199;
     background: var(--surface, #FFFFFF);
-    border-bottom: 1px solid var(--line, #E8DDD4);
+    border-bottom: 1px solid var(--line, #E6D8BF);
     padding: 1rem 1.25rem;
     flex-direction: column;
     gap: 0.4rem;
@@ -297,7 +297,7 @@
     font-weight: 600;
     font-size: 0.92rem;
     padding: 0.6rem 0.5rem;
-    border-bottom: 1px solid var(--line, #E8DDD4);
+    border-bottom: 1px solid var(--line, #E6D8BF);
     border-radius: 8px;
 }
 .lnav-mobile a:last-child { border: none; }
@@ -392,7 +392,7 @@
 .lnav-cart-btn {
     position: relative;
     background: var(--surface, #FFFFFF);
-    border: 1px solid var(--cream-line, #D9CBBF);
+    border: 1px solid var(--cream-line, #D5C3A3);
     color: var(--text, #2B1B15);
     width: 36px;
     height: 36px;

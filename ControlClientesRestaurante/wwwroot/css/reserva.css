@@ -5,7 +5,7 @@
 
 .reserva-page {
     min-height: 100vh;
-    background: var(--bg, #F7F2EE);
+    background: var(--bg, #F7F0E2);
     background-image: radial-gradient(circle at 1px 1px, rgba(93, 64, 55, 0.045) 1px, transparent 0);
     background-size: 24px 24px;
     color: var(--text, #2B1B15);
@@ -140,7 +140,7 @@
 }
 
 :root[data-theme="dark"] .reserva-title { color: #FFFFFF; }
-:root[data-theme="dark"] .reserva-subtitle { color: #F3E6DA; }
+:root[data-theme="dark"] .reserva-subtitle { color: #EFE0C8; }
 
 /* ── BARRA DE PASOS GUIADOS ──────────────────────────────── */
 .steps-bar {
@@ -225,7 +225,7 @@
 /* ── PANEL DE SELECCIÓN (IZQUIERDA) ──────────────────────── */
 .reserva-stage-card {
     background: var(--surface, #FFFFFF);
-    border: 1.5px solid var(--line, #E8DDD4);
+    border: 1.5px solid var(--line, #E6D8BF);
     border-radius: 20px;
     padding: 2.25rem;
     box-shadow: 0 16px 48px rgba(38, 24, 18, 0.05);
@@ -247,7 +247,7 @@
     gap: 1.5rem;
     margin-bottom: 1.75rem;
     padding-bottom: 1.75rem;
-    border-bottom: 1px solid var(--line, #E8DDD4);
+    border-bottom: 1px solid var(--line, #E6D8BF);
 }
 
 .r-control-group label {
@@ -264,8 +264,8 @@
 
 .r-input, .r-select {
     width: 100%;
-    background: var(--surface-2, #F1E9E2);
-    border: 1.5px solid var(--line-2, #D9CBBF);
+    background: var(--surface-2, #F0E5D2);
+    border: 1.5px solid var(--line-2, #D5C3A3);
     color: var(--text, #2B1B15);
     padding: 0.75rem 1rem;
     border-radius: 10px;
@@ -341,7 +341,7 @@
 }
 
 :root[data-theme="dark"] .next-step-text h4 { color: #FFFFFF; }
-:root[data-theme="dark"] .next-step-text p { color: #F3E6DA; }
+:root[data-theme="dark"] .next-step-text p { color: #EFE0C8; }
 
 .btn-next-action {
     background: #FFCA28;
@@ -422,7 +422,7 @@
 }
 
 .lock-desc {
-    color: #F3E6DA;
+    color: #EFE0C8;
     font-size: 0.95rem;
     max-width: 440px;
     margin: 0 auto 1.5rem;
@@ -742,7 +742,7 @@
 
 .ticket-input {
     width: 100%;
-    background: #FAF6F2;
+    background: #FBF6EC;
     border: 1.5px solid #D5C4B2;
     color: #1A080C;
     padding: 0.65rem 0.85rem;
@@ -866,7 +866,7 @@
 .auth-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background: #F1E9E2;
+    background: #F0E5D2;
     border-radius: 11px;
     padding: 4px;
     margin-bottom: 1.5rem;

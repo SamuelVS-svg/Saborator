@@ -93,14 +93,14 @@ summary { cursor: pointer; }
 .w-100 { width: 100% !important; }
 .h-100 { height: 100% !important; }
 .rounded-3 { border-radius: .5rem !important; }
-.border-bottom { border-bottom: 1px solid var(--line, #E8DDD4) !important; }
+.border-bottom { border-bottom: 1px solid var(--line, #E6D8BF) !important; }
 
 /* ── Formularios (campos tipo MD3) ─────────────────────────────────────── */
 .form-label { margin-bottom: .5rem; }
 .form-control, .form-select {
   display: block; width: 100%; padding: .5rem .85rem; font-size: 1rem; font-weight: 400; line-height: 1.5;
   color: var(--text); background-color: var(--surface); background-clip: padding-box;
-  border: 1px solid var(--line-2, #D9CBBF); border-radius: 12px; appearance: none;
+  border: 1px solid var(--line-2, #D5C3A3); border-radius: 12px; appearance: none;
   transition: border-color .15s ease, box-shadow .15s ease;
 }
 .form-control::placeholder { color: var(--faint); opacity: 1; }
@@ -115,7 +115,7 @@ summary { cursor: pointer; }
 .form-check-input { width: 1.1em; height: 1.1em; margin-top: .2em; vertical-align: top; accent-color: var(--brand); }
 .input-group { position: relative; display: flex; flex-wrap: wrap; align-items: stretch; width: 100%; }
 .input-group > .form-control { position: relative; flex: 1 1 auto; width: 1%; min-width: 0; }
-.input-group-text { display: flex; align-items: center; padding: .5rem .85rem; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line-2, #D9CBBF); }
+.input-group-text { display: flex; align-items: center; padding: .5rem .85rem; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line-2, #D5C3A3); }
 .input-group > :not(:first-child) { margin-left: -1px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .input-group > :not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 

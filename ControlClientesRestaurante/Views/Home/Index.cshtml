@@ -511,7 +511,7 @@
                         <div style="color:var(--muted);font-size:0.88rem;margin-left:1.7rem;">
                             Barranquilla, Atlántico · Sector Ciudadela 20 de Julio
                         </div>
-                        <div style="display:flex;align-items:center;gap:1.5rem;margin-top:0.85rem;padding-top:0.75rem;border-top:1px dashed var(--line,#E2D7C8);font-size:0.82rem;color:var(--muted);">
+                        <div style="display:flex;align-items:center;gap:1.5rem;margin-top:0.85rem;padding-top:0.75rem;border-top:1px dashed var(--line,#E3D5BC);font-size:0.82rem;color:var(--muted);">
                             <span style="display:inline-flex;align-items:center;gap:4px;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                 <strong>12:00 PM - 11:30 PM</strong>
@@ -569,7 +569,7 @@
                         <label style="display:block;font-size:0.78rem;font-weight:800;color:var(--text);text-transform:uppercase;margin-bottom:0.4rem;letter-spacing:0.5px;">
                             Selecciona tu Sector o Barrio en Barranquilla *
                         </label>
-                        <select id="homeZoneSelect" onchange="cambiarZonaDomicilioHome()" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#FAF6F2);color:var(--text);font-weight:600;box-sizing:border-box;cursor:pointer;">
+                        <select id="homeZoneSelect" onchange="cambiarZonaDomicilioHome()" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid var(--line,#E3D5BC);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#FBF6EC);color:var(--text);font-weight:600;box-sizing:border-box;cursor:pointer;">
                             <optgroup label="Zona Sur Cercana — $4.000 COP">
                                 <option value="4000|Ciudadela 20 de Julio">Ciudadela 20 de Julio (Sede local)</option>
                                 <option value="4000|La Magdalena">La Magdalena</option>
@@ -611,7 +611,7 @@
                         <label style="display:block;font-size:0.78rem;font-weight:800;color:var(--text);text-transform:uppercase;margin-bottom:0.4rem;letter-spacing:0.5px;">
                             Dirección de Entrega
                         </label>
-                        <input type="text" id="homeAddressInput" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid var(--line,#E2D7C8);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#FAF6F2);color:var(--text);box-sizing:border-box;" />
+                        <input type="text" id="homeAddressInput" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" style="width:100%;padding:0.75rem 0.9rem;border:1.5px solid var(--line,#E3D5BC);border-radius:10px;font-size:0.92rem;background:var(--surface-2,#FBF6EC);color:var(--text);box-sizing:border-box;" />
                     </div>
 
                     <!-- Tarjeta Resumen Cotización -->
@@ -691,7 +691,7 @@
 
                     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">5 estrellas</span>
-                        <div style="flex:1;height:9px;background:var(--surface-2,#F4EDE7);border-radius:999px;overflow:hidden;">
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F5EDDD);border-radius:999px;overflow:hidden;">
                             <div style="width:@(resenaStats.Porcentaje5)%;height:100%;background:linear-gradient(90deg, #F59E0B, #FFB300);border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas5 (@(resenaStats.Porcentaje5)%)</span>
@@ -699,7 +699,7 @@
 
                     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">4 estrellas</span>
-                        <div style="flex:1;height:9px;background:var(--surface-2,#F4EDE7);border-radius:999px;overflow:hidden;">
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F5EDDD);border-radius:999px;overflow:hidden;">
                             <div style="width:@(resenaStats.Porcentaje4)%;height:100%;background:linear-gradient(90deg, #F59E0B, #FFB300);border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas4 (@(resenaStats.Porcentaje4)%)</span>
@@ -707,7 +707,7 @@
 
                     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">3 estrellas</span>
-                        <div style="flex:1;height:9px;background:var(--surface-2,#F4EDE7);border-radius:999px;overflow:hidden;">
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F5EDDD);border-radius:999px;overflow:hidden;">
                             <div style="width:@(resenaStats.Porcentaje3)%;height:100%;background:linear-gradient(90deg, #F59E0B, #FFB300);border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas3 (@(resenaStats.Porcentaje3)%)</span>
@@ -715,7 +715,7 @@
 
                     <div style="display:flex;align-items:center;gap:0.8rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">1-2 estrellas</span>
-                        <div style="flex:1;height:9px;background:var(--surface-2,#F4EDE7);border-radius:999px;overflow:hidden;">
+                        <div style="flex:1;height:9px;background:var(--surface-2,#F5EDDD);border-radius:999px;overflow:hidden;">
                             <div style="width:@(resenaStats.Porcentaje2 + resenaStats.Porcentaje1)%;height:100%;background:#EF4444;border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@(resenaStats.Estrellas2 + resenaStats.Estrellas1)</span>
@@ -1702,8 +1702,8 @@
                 </div>
             </div>
 
-            <div id="quickAddressBox" style="display:none;background:#FAF6F2;padding:1.15rem;border-radius:14px;border:1.5px solid #E2D7C8;margin-top:-0.35rem;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;padding-bottom:0.6rem;border-bottom:1px dashed #E2D7C8;">
+            <div id="quickAddressBox" style="display:none;background:#FBF6EC;padding:1.15rem;border-radius:14px;border:1.5px solid #E3D5BC;margin-top:-0.35rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;padding-bottom:0.6rem;border-bottom:1px dashed #E3D5BC;">
                     <span style="font-size:0.78rem;color:#6E5C50;display:inline-flex;align-items:center;gap:4px;">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                         Despacho: <strong>Cra 4 Sur # 50D-107, Barranquilla</strong>
@@ -1714,7 +1714,7 @@
                 </div>
 
                 <label style="display:block;font-size:0.75rem;font-weight:800;color:#3C2A20;margin-bottom:0.35rem;text-transform:uppercase;">Sector / Barrio en Barranquilla *</label>
-                <select id="quickBarrioSelect" onchange="cambiarBarrioModalKfc()" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid #E2D7C8;border-radius:8px;font-size:0.88rem;background:#FFFFFF;color:#3C2A20;font-weight:600;margin-bottom:0.65rem;">
+                <select id="quickBarrioSelect" onchange="cambiarBarrioModalKfc()" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid #E3D5BC;border-radius:8px;font-size:0.88rem;background:#FFFFFF;color:#3C2A20;font-weight:600;margin-bottom:0.65rem;">
                     <option value="4000|Ciudadela 20 de Julio">Ciudadela 20 de Julio ($4.000 COP)</option>
                     <option value="4000|La Magdalena">La Magdalena ($4.000 COP)</option>
                     <option value="4000|Las Cayenas">Las Cayenas ($4.000 COP)</option>
@@ -1744,7 +1744,7 @@
                 </select>
 
                 <label style="display:block;font-size:0.75rem;font-weight:800;color:#3C2A20;margin-bottom:0.35rem;text-transform:uppercase;">Dirección exacta de entrega *</label>
-                <input type="text" id="quickAddressInput" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid #E2D7C8;border-radius:8px;font-size:0.9rem;box-sizing:border-box;margin-bottom:0.65rem;" />
+                <input type="text" id="quickAddressInput" placeholder="Ej: Calle 47 # 3 Sur-20, Apto 201" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid #E3D5BC;border-radius:8px;font-size:0.9rem;box-sizing:border-box;margin-bottom:0.65rem;" />
 
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;padding:0.5rem 0.75rem;background:rgba(255, 179, 0,0.12);border-radius:8px;font-size:0.82rem;">
                     <span>Tarifa asignada:</span>

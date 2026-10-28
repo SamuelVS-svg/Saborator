@@ -17,20 +17,20 @@
   --gold:         #FFC107;                 /* Amarillo de acento                 */
 
   /* ── Fondos y texto (Paleta Crema / Beige Saborator) ─────────── */
-  --bg:           #FAF7F4;                 /* Blanco cálido: fondo de página     */
+  --bg:           #F8F2E6;                 /* Crema: fondo de página             */
   --surface:      #FFFFFF;                 /* Tarjetas y superficies claras      */
-  --surface-2:    #F1E9E2;                 /* Beige cálido para elementos crema  */
-  --cream:        #F7F2EE;                 /* Crema base                         */
+  --surface-2:    #F0E5D2;                 /* Beige cálido para elementos crema  */
+  --cream:        #F7F0E2;                 /* Crema base                         */
   --cream-light:  #FFFFFF;                 /* Crema marfil / lino                */
-  --cream-deep:   #F1E9E2;                 /* Beige cálido / arena               */
-  --cream-border: #E8DDD4;                 /* Borde beige suave                  */
-  --cream-line:   #D9CBBF;                 /* Borde beige estructurado           */
-  --cream-chip:   #F1E9E2;                 /* Fondo para pastillas y badges crema*/
+  --cream-deep:   #F0E5D2;                 /* Beige cálido / arena               */
+  --cream-border: #E6D8BF;                 /* Borde beige suave                  */
+  --cream-line:   #D5C3A3;                 /* Borde beige estructurado           */
+  --cream-chip:   #F0E5D2;                 /* Fondo para pastillas y badges crema*/
   --text:         #2B1B15;                 /* Texto principal                    */
   --muted:        #6B5A52;                 /* Texto secundario                   */
   --faint:        #7A6A62;                 /* Pistas y texto tenue (>= 4,5:1)    */
-  --line:         #E8DDD4;                 /* Bordes                             */
-  --line-2:       #D9CBBF;                 /* Bordes más marcados                */
+  --line:         #E6D8BF;                 /* Bordes                             */
+  --line-2:       #D5C3A3;                 /* Bordes más marcados                */
 
   /* ── Estados ───────────────────────────────────────────────────────── */
   --success:      #2A7348;                 /* Pagado o aprobado                  */
@@ -132,15 +132,15 @@
   --on-brand:     #FFFFFF;
   --gold:         #FFC107;
 
-  --bg:           #FAF6F2;
+  --bg:           #FBF6EC;
   --surface:      #FFFFFF;
-  --surface-2:    #F4ECE5;
-  --cream:        #FAF6F2;
+  --surface-2:    #F4EBDB;
+  --cream:        #FBF6EC;
   --cream-light:  #FFFFFF;
   --cream-deep:   #EFE3C7;
   --cream-border: #E8DAC0;
   --cream-line:   #DAC8A4;
-  --cream-chip:   #F4ECE5;
+  --cream-chip:   #F4EBDB;
   --text:         #241E15;
   --muted:        #6D6252;
   --faint:        #857967;
@@ -204,15 +204,15 @@
   --on-brand:     #FFFFFF;
   --gold:         #E08E45;
 
-  --bg:           #FAF6F2;
+  --bg:           #FBF6EC;
   --surface:      #FFFDFB;
-  --surface-2:    #F1E7DF;
-  --cream:        #FAF6F2;
+  --surface-2:    #EFE3CF;
+  --cream:        #FBF6EC;
   --cream-light:  #FFFDFB;
   --cream-deep:   #E8D6C7;
   --cream-border: #E2CEC0;
   --cream-line:   #D4BCAC;
-  --cream-chip:   #F1E7DF;
+  --cream-chip:   #EFE3CF;
   --text:         #261611;
   --muted:        #6E5750;
   --faint:        #856C64;
@@ -244,8 +244,8 @@
   --color-danger:         var(--danger);
 
   --color-on-brand:        var(--on-brand);
-  --color-on-brand-muted:  #F7F2EE; /* Crema cálido legible sobre borgoña */
-  --color-line-on-brand:   rgba(247, 242, 238, 0.14);
+  --color-on-brand-muted:  #F7F0E2; /* Crema cálido legible sobre borgoña */
+  --color-line-on-brand:   rgba(247, 240, 226, 0.14);
   --color-hover-row:       var(--surface-2);
   --color-brand-bg:        var(--brand-soft);
   --color-accent-bg:       var(--surface-2);
@@ -965,7 +965,7 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
 /* ── CONTENEDOR CLIENTE & WRAPPER CREMA ─────────────────────────────────── */
 .gourmet-client-main {
   min-height: calc(100vh - 180px);
-  background: var(--bg, #F7F2EE);
+  background: var(--bg, #F7F0E2);
   background-image: radial-gradient(circle at 1px 1px, rgba(93, 64, 55, 0.045) 1px, transparent 0);
   background-size: 24px 24px;
   color: var(--text, #2B1B15);
@@ -978,8 +978,8 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
 
 :root[data-theme="dark"] .gourmet-client-main {
   background: var(--bg, #17110E);
-  background-image: radial-gradient(circle at 1px 1px, rgba(247, 242, 238, 0.035) 1px, transparent 0);
-  color: var(--text, #F7F2EE);
+  background-image: radial-gradient(circle at 1px 1px, rgba(247, 240, 226, 0.035) 1px, transparent 0);
+  color: var(--text, #F7F0E2);
 }
 
 /* ── FOOTER GOURMET BORGOÑA & CREMA ─────────────────────────────────────── */
@@ -1205,7 +1205,7 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
 }
 .avatar-preset-btn {
   background: var(--surface, #FFFFFF);
-  border: 2px solid var(--line, #E2D7C8);
+  border: 2px solid var(--line, #E3D5BC);
   border-radius: 16px;
   padding: 6px;
   cursor: pointer;
@@ -1251,7 +1251,7 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
 }
 .theme-card {
   background: var(--surface, #FFFFFF);
-  border: 2px solid var(--line, #E2D7C8);
+  border: 2px solid var(--line, #E3D5BC);
   border-radius: 16px;
   padding: 1.15rem;
   cursor: pointer;
@@ -1311,11 +1311,11 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
 
 /* Área de Drop / Subida de Foto */
 .avatar-dropzone {
-  border: 2px dashed var(--line, #E2D7C8);
+  border: 2px dashed var(--line, #E3D5BC);
   border-radius: 14px;
   padding: 1.25rem 1rem;
   text-align: center;
-  background: var(--surface-2, #FAF6F2);
+  background: var(--surface-2, #FBF6EC);
   cursor: pointer;
   transition: all 160ms var(--ease);
 }

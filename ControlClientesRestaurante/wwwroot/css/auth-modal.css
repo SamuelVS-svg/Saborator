@@ -77,7 +77,7 @@
 :root[data-theme="dark"] .modal-ingreso-close,
 [data-theme="dark"] .modal-ingreso-close {
     background: rgba(255, 255, 255, 0.1);
-    color: #E2D7C8;
+    color: #E3D5BC;
 }
 
 .modal-ingreso-close:hover {

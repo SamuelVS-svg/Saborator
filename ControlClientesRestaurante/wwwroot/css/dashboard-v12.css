@@ -10,7 +10,7 @@
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(227, 216, 200, 0.65);
+    border: 1px solid rgba(227, 213, 188, 0.65);
     border-radius: 1.25rem; /* rounded-2xl */
     box-shadow: 0 4px 20px -2px rgba(43, 27, 21, 0.05), 0 12px 32px -4px rgba(43, 27, 21, 0.07);
     transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), 
@@ -76,7 +76,7 @@
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border-right: 1px solid rgba(227, 216, 200, 0.7);
+    border-right: 1px solid rgba(227, 213, 188, 0.7);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -275,7 +275,7 @@
     justify-content: center;
     color: var(--text);
     cursor: pointer;
-    border: 1px solid rgba(227, 216, 200, 0.6);
+    border: 1px solid rgba(227, 213, 188, 0.6);
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(16px);
     transition: transform 180ms ease, background 180ms ease;
@@ -843,7 +843,7 @@
     padding: 0.65rem;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(227, 216, 200, 0.4);
+    border: 1px solid rgba(227, 213, 188, 0.4);
     transition: background 180ms ease, transform 180ms ease;
 }
 

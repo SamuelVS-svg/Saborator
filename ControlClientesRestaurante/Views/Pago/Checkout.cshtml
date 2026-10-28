@@ -6,7 +6,7 @@
 
 <style>
     .checkout-hero {
-        background: var(--bg, #F7F2EE);
+        background: var(--bg, #F7F0E2);
         background-image: radial-gradient(circle at 1px 1px, rgba(93, 64, 55, 0.045) 1px, transparent 0);
         background-size: 24px 24px;
         padding: 2.5rem 1rem 3.5rem;
@@ -40,7 +40,7 @@
         letter-spacing: 0.1em;
         margin-bottom: 0.75rem;
     }
-    :root[data-theme="dark"] .checkout-tag { color: #F3E6DA; }
+    :root[data-theme="dark"] .checkout-tag { color: #EFE0C8; }
     .checkout-title {
         font-family: 'Instrument Serif', Georgia, serif;
         font-size: clamp(2.2rem, 4vw, 3rem);
@@ -72,7 +72,7 @@
     /* Tarjeta de Métodos de Pago */
     .payment-card {
         background: var(--surface, #FFFFFF);
-        border: 1.5px solid var(--line, #E8DDD4);
+        border: 1.5px solid var(--line, #E6D8BF);
         border-radius: 18px;
         padding: 2rem;
         color: var(--text, #2B1B15);
@@ -110,8 +110,8 @@
         }
     }
     .method-tab {
-        background: var(--surface-2, #F1E9E2);
-        border: 1.5px solid var(--line-2, #D9CBBF);
+        background: var(--surface-2, #F0E5D2);
+        border: 1.5px solid var(--line-2, #D5C3A3);
         color: var(--text, #2B1B15);
         padding: 0.75rem 0.35rem;
         border-radius: 14px;
@@ -242,11 +242,11 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
-    :root[data-theme="dark"] .form-group-pago label { color: #F3E6DA; }
+    :root[data-theme="dark"] .form-group-pago label { color: #EFE0C8; }
     .input-pago {
         width: 100%;
-        background: var(--surface-2, #F1E9E2);
-        border: 1.5px solid var(--line-2, #D9CBBF);
+        background: var(--surface-2, #F0E5D2);
+        border: 1.5px solid var(--line-2, #D5C3A3);
         color: var(--text, #2B1B15);
         border-radius: 10px;
         padding: 0.75rem 1rem;
@@ -281,7 +281,7 @@
     /* Resumen de orden */
     .summary-card {
         background: var(--surface, #FFFFFF);
-        border: 1.5px solid var(--line, #E8DDD4);
+        border: 1.5px solid var(--line, #E6D8BF);
         border-radius: 18px;
         padding: 1.75rem;
         box-shadow: 0 14px 32px -8px rgba(38, 24, 18, 0.06);
@@ -301,7 +301,7 @@
         font-weight: 400;
         margin: 0 0 1rem;
         padding-bottom: 0.75rem;
-        border-bottom: 1px solid var(--line, #E8DDD4);
+        border-bottom: 1px solid var(--line, #E6D8BF);
         color: var(--brand, #5D4037);
     }
     :root[data-theme="dark"] .summary-title {
@@ -314,7 +314,7 @@
         align-items: flex-start;
         padding: 0.6rem 0;
         font-size: 0.88rem;
-        border-bottom: 1px dashed var(--line, #E8DDD4);
+        border-bottom: 1px dashed var(--line, #E6D8BF);
     }
     :root[data-theme="dark"] .summary-item {
         border-bottom-color: rgba(255, 255, 255, 0.1);
@@ -386,7 +386,7 @@
         margin-bottom: 1rem;
         transition: all 0.16s ease;
     }
-    :root[data-theme="dark"] .btn-fill-demo { color: #F3E6DA; }
+    :root[data-theme="dark"] .btn-fill-demo { color: #EFE0C8; }
     .btn-fill-demo:hover {
         background: rgba(255, 179, 0, 0.25);
     }
@@ -1341,11 +1341,11 @@
     .sw-total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .9rem; font-weight: 800; }
     .sw-total span:last-child { font-size: 1.35rem; color: #00805A; }
     .sw-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-bottom: .9rem; }
-    .sw-tab { border: 1.5px solid var(--cream-line, #D9CBBF); background: transparent; color: inherit; border-radius: 10px; padding: .55rem .3rem; font-weight: 700; font-size: .82rem; cursor: pointer; }
+    .sw-tab { border: 1.5px solid var(--cream-line, #D5C3A3); background: transparent; color: inherit; border-radius: 10px; padding: .55rem .3rem; font-weight: 700; font-size: .82rem; cursor: pointer; }
     .sw-tab.active { border-color: #00B37E; background: rgba(0, 229, 163, .14); color: #00805A; }
     .sw-field { margin-bottom: .7rem; }
     .sw-field label { display: block; font-size: .74rem; font-weight: 700; margin-bottom: .25rem; color: var(--muted, #6E5D53); }
-    .sw-field input, .sw-field select { width: 100%; padding: .6rem .7rem; border: 1.5px solid var(--cream-line, #D9CBBF); border-radius: 9px; background: var(--surface, #FFFFFF); color: inherit; font-size: .92rem; }
+    .sw-field input, .sw-field select { width: 100%; padding: .6rem .7rem; border: 1.5px solid var(--cream-line, #D5C3A3); border-radius: 9px; background: var(--surface, #FFFFFF); color: inherit; font-size: .92rem; }
     .sw-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
     .sw-hint { font-size: .74rem; color: var(--muted, #6E5D53); background: rgba(0, 229, 163, .08); border: 1px dashed #00B37E; border-radius: 9px; padding: .55rem .65rem; margin-bottom: .8rem; }
     .sw-hint button { background: none; border: 0; padding: 0; color: #00805A; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: inherit; }
