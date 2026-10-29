@@ -246,6 +246,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient("TwilioClient");
 builder.Services.AddScoped<ITwilioService, TwilioService>();
 builder.Services.AddHttpClient("WompiClient");
+builder.Services.AddHttpClient("FacebookClient");
 builder.Services.Configure<WompiSettings>(builder.Configuration.GetSection("Wompi"));
 builder.Services.AddScoped<IWompiService, WompiService>();
 
@@ -287,13 +288,13 @@ app.Use(async (context, next) =>
     // se puede cargar contenido, quién puede incrustar el sitio y a dónde pueden enviarse formularios.
     context.Response.Headers.Append("Content-Security-Policy",
         "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' https://accounts.google.com https://checkout.wompi.co https://www.googletagmanager.com https://unpkg.com; " +
+        "script-src 'self' 'unsafe-inline' https://accounts.google.com https://checkout.wompi.co https://www.googletagmanager.com https://unpkg.com https://connect.facebook.net; " +
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; " +
         "font-src 'self' data: https://fonts.gstatic.com; " +
         "img-src 'self' data: blob: https:; " +
         "media-src 'self' data: blob:; " +
-        "frame-src 'self' https://www.google.com https://maps.google.com https://accounts.google.com https://checkout.wompi.co; " +
-        "connect-src 'self' " + (app.Environment.IsDevelopment() ? "ws://localhost:* wss://localhost:* " : "") + "https://nominatim.openstreetmap.org https://router.project-osrm.org https://*.wompi.co https://accounts.google.com https://*.googletagmanager.com https://*.google-analytics.com; " +
+        "frame-src 'self' https://www.google.com https://maps.google.com https://accounts.google.com https://checkout.wompi.co https://www.facebook.com https://web.facebook.com https://staticxx.facebook.com; " +
+        "connect-src 'self' " + (app.Environment.IsDevelopment() ? "ws://localhost:* wss://localhost:* " : "") + "https://nominatim.openstreetmap.org https://router.project-osrm.org https://*.wompi.co https://accounts.google.com https://*.googletagmanager.com https://*.google-analytics.com https://graph.facebook.com https://www.facebook.com https://connect.facebook.net; " +
         "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.wompi.co");
     await next();
 });

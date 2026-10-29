@@ -21,6 +21,7 @@ $env:SABORATOR_PROXY_HTTPS  = "true"         # detrás de Tailscale Funnel todo 
 #   WOMPI_PUBLIC_KEY, WOMPI_PRIVATE_KEY, WOMPI_INTEGRITY_SECRET, WOMPI_EVENTS_SECRET,
 #   (pruebas/exposición: llaves pub_test_/prv_test_ y WOMPI_PERMITIR_SIMULACION=true para el botón de aprobación simulada),
 #   TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER
+#   GOOGLE_CLIENT_ID (acceso con Google) y FACEBOOK_APP_ID, FACEBOOK_APP_SECRET (acceso con Facebook; sin ellos el botón avisa que no está activado)
 
 Set-Location $publicado
 & $ejecutable

@@ -258,3 +258,32 @@ html .home-order-name { font-size: 1.6rem; }
   .lnav-search-inline-input:focus { width: clamp(170px, 16vw, 300px); }
 }
 @media (min-width: 1400px) { .lnav-search-inline-input { width: clamp(150px, 14vw, 230px); } }
+
+/* ══ MODAL DE INGRESO ESTILO KFC: Google, Facebook y correo en botones grandes ═══════════════════════ */
+html .kfc-auth-title-grande {
+  font-family: 'Bebas Neue', 'Inter', system-ui, sans-serif; font-weight: 400; font-size: 2.2rem; line-height: 1; letter-spacing: .03em;
+  text-transform: uppercase; text-align: center; margin: .2rem 0 .1rem;
+}
+.kfc-social-stack { display: grid; gap: .7rem; margin-top: 1.1rem; }
+.btn-social {
+  display: flex; align-items: center; justify-content: flex-start; gap: .9rem; width: 100%; min-height: 54px; padding: .6rem 1.4rem;
+  border: 0; border-radius: 999px; background: #F5F1EA; color: #1F1612; font: 600 .95rem 'Inter', system-ui, sans-serif; text-align: left; cursor: pointer;
+  transition: filter .2s ease, transform .15s ease, box-shadow .2s ease;
+}
+.btn-social:hover { filter: brightness(.97); transform: translateY(-1px); box-shadow: 0 6px 14px -8px rgba(44, 27, 20, .5); }
+.btn-social:active { transform: scale(.985); }
+.btn-social svg { flex: none; width: 22px; height: 22px; }
+.btn-social-facebook { background: #1565C0; color: #fff; }
+.btn-social-facebook:hover { filter: brightness(1.08); }
+[data-theme="dark"] .btn-social:not(.btn-social-facebook) { background: #2E1B12; color: #FFFBF5; }
+.kfc-legal { margin: 1.1rem 0 0; font-size: .73rem; line-height: 1.45; text-align: center; color: var(--muted); }
+.kfc-legal a { color: var(--marron); font-weight: 700; text-decoration: underline; }
+[data-theme="dark"] .kfc-legal a { color: var(--amarillo-suave); }
+.kfc-back-btn {
+  position: absolute; top: .7rem; left: .7rem; display: grid; place-items: center; width: 32px; height: 32px; padding: 0;
+  border: 0; border-radius: 50%; background: #F3F4F6; color: #6B7280; cursor: pointer; z-index: 2;
+}
+.kfc-back-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+[data-theme="dark"] .kfc-back-btn { background: rgba(255, 255, 255, .1); color: #E8DFD0; }
+.google-official-btn-wrap { display: flex; justify-content: center; }
+.google-official-btn-wrap:empty { display: none; }

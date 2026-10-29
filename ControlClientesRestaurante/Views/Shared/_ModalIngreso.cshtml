@@ -8,6 +8,13 @@
         Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
     }.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
     var googleHabilitado = !string.IsNullOrEmpty(googleClientId);
+    // Facebook: el botón siempre se ve; si falta el AppId, al pulsarlo se avisa que aún no está activado
+    var facebookAppId = new[]
+    {
+        Configuration["Authentication:Facebook:AppId"],
+        Configuration["Facebook:AppId"],
+        Environment.GetEnvironmentVariable("FACEBOOK_APP_ID")
+    }.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
 }
 
 @if (googleHabilitado)
@@ -21,16 +28,58 @@
     <div class="modal-ingreso-box" id="modalIngresoBox">
         <button type="button" class="modal-ingreso-close" onclick="cerrarModalIngreso()" aria-label="Cerrar modal">&times;</button>
 
-        <!-- ── VISTA PRINCIPAL: FAST-FOOD CLUB SABORATOR ─────────────────────── -->
+        <!-- ── VISTA PRINCIPAL: elegir cómo ingresar (Google, Facebook o correo) ───────────────── -->
         <div id="viewClubSaboratorMain">
             <div class="kfc-auth-header">
-                <div class="kfc-club-badge" id="modalClubTitle"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M4 11a8 8 0 0 1 16 0Z"/><path d="M3 14.5h18"/><path d="M4 18h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg>Club Saborator</div>
+                <h3 class="kfc-auth-title kfc-auth-title-grande" id="modalClubTitle">Ingresa a tu cuenta</h3>
             </div>
 
             <!-- Feedback general -->
             <div id="kfcFeedbackBox" class="kfc-feedback-box"></div>
 
-            <!-- INGRESO CON CORREO O NOMBRE DE USUARIO + CONTRASEÑA -->
+            <div class="kfc-social-stack">
+                @if (googleHabilitado)
+                {
+                <div id="g_id_onload"
+                     data-client_id="@googleClientId"
+                     data-context="signin"
+                     data-callback="handleGoogleCredentialResponse"
+                     data-auto_prompt="true"
+                     data-auto_select="false"
+                     data-itp_support="true">
+                </div>
+                <!-- Botón oficial de Google (lo dibuja el SDK) y, si no carga, el botón de respaldo -->
+                <div id="googleOfficialBtnContainer" class="google-official-btn-wrap"></div>
+                <button type="button" class="btn-social btn-social-google" id="btnGoogleOfficial" onclick="iniciarGoogleAuthOficial()">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg><span>Continuar con Google</span>
+                </button>
+                }
+                <button type="button" class="btn-social btn-social-facebook" id="btnFacebookAuth" onclick="iniciarFacebookAuth()">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.88v2.27h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg><span>Continuar con Facebook</span>
+                </button>
+                <button type="button" class="btn-social btn-social-correo" id="btnCorreoAuth" onclick="mostrarVista('correo')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span>Continuar con correo electrónico</span>
+                </button>
+            </div>
+
+            <p class="kfc-legal">
+                Al continuar confirmas que aceptas nuestros
+                <a asp-controller="Home" asp-action="Terminos" target="_blank">Términos y condiciones</a> y las
+                <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank">Políticas de privacidad</a>.
+            </p>
+        </div>
+
+        <!-- ── VISTA: INGRESAR CON CORREO (usuario o correo + contraseña); desde aquí se puede crear la cuenta ─── -->
+        <div id="viewClubSaboratorCorreo" hidden>
+            <button type="button" class="kfc-back-btn" onclick="mostrarVista('main')" aria-label="Volver a las opciones de ingreso">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="kfc-auth-header">
+                <h3 class="kfc-auth-title kfc-auth-title-grande" id="modalCorreoTitle">Ingresa con tu correo</h3>
+            </div>
+
+            <div id="kfcFeedbackBoxCorreo" class="kfc-feedback-box"></div>
+
             <form id="formKfcLoginClave" onsubmit="ejecutarLoginClaveKfc(event)">
                 <div class="kfc-field-wrap">
                     <label for="kfcUsuarioInput">Usuario o correo</label>
@@ -47,46 +96,8 @@
 
             <div class="kfc-switch-view">
                 ¿Aún no tienes cuenta?
-                <button type="button" class="kfc-link-btn" onclick="mostrarVistaRegistro(true)">Crea una aquí</button>
+                <button type="button" class="kfc-link-btn" onclick="mostrarVista('registro')">Crea una aquí</button>
             </div>
-
-            @if (googleHabilitado)
-            {
-            <!-- Separador Oficial -->
-            <div class="kfc-divider">
-                <span>O continúa con</span>
-            </div>
-
-            <!-- ── INTEGRACIÓN OFICIAL GOOGLE IDENTITY SERVICES (GSI & ONE TAP) ──── -->
-            <div id="g_id_onload"
-                 data-client_id="@googleClientId"
-                 data-context="signin"
-                 data-callback="handleGoogleCredentialResponse"
-                 data-auto_prompt="true"
-                 data-auto_select="false"
-                 data-itp_support="true">
-            </div>
-
-            <!-- Contenedor donde Google SDK renderiza el botón oficial nativo -->
-            <div id="googleOfficialBtnContainer" class="google-official-btn-wrap"></div>
-
-            <!-- Botón Oficial "Continuar con Google" de respaldo con disparo interactivo -->
-            <button type="button" class="btn-google-official" id="btnGoogleOfficial" onclick="iniciarGoogleAuthOficial()" title="Acceder con tu cuenta de Google">
-                <svg viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <span>Continuar con Google</span>
-            </button>
-            }
-
-            <p style="font-size:0.73rem;color:#6B7280;text-align:center;margin-top:1.15rem;line-height:1.45;">
-                Al continuar confirmas que aceptas nuestros
-                <a asp-controller="Home" asp-action="Terminos" target="_blank" style="color:#6B4226;text-decoration:underline;font-weight:700;">Términos y condiciones</a> y las
-                <a asp-controller="Home" asp-action="Terminos" asp-fragment="datos" target="_blank" style="color:#6B4226;text-decoration:underline;font-weight:700;">Políticas de privacidad</a>.
-            </p>
         </div>
 
         <!-- ── VISTA: CREAR CUENTA (nombre, apellido, usuario, correo y contraseña) ─── -->
@@ -135,7 +146,7 @@
 
             <div class="kfc-switch-view">
                 ¿Ya tienes una cuenta?
-                <button type="button" class="kfc-link-btn" onclick="mostrarVistaRegistro(false)">Inicia sesión</button>
+                <button type="button" class="kfc-link-btn" onclick="mostrarVista('correo')">Inicia sesión</button>
             </div>
         </div>
     </div>
@@ -143,13 +154,14 @@
 
 <!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE GSI OFICIAL ═══════════════════ --><script>
         const googleClientIdConfig = '@googleClientId';
+        const facebookAppIdConfig = '@facebookAppId';
 
     function abrirModalIngreso() {
         const overlay = document.getElementById('modalIngresoOverlay');
         if (overlay) {
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            setTimeout(() => document.getElementById('kfcUsuarioInput')?.focus(), 120);
+            mostrarVista('main');
             // Activar / refrescar selector oficial de cuentas de Google en el dispositivo
             inicializarGoogleIdentityServices();
         }
@@ -161,7 +173,7 @@
             overlay.classList.remove('active');
             document.body.style.overflow = '';
             limpiarKfcFeedbacks();
-            mostrarVistaRegistro(false);
+            mostrarVista('main');
         }
     }
 
@@ -236,12 +248,12 @@
                 if (container && !container.hasChildNodes()) {
                     google.accounts.id.renderButton(container, {
                         type: 'standard',
-                        shape: 'rectangular',
+                        shape: 'pill',
                         theme: 'outline',
                         text: 'continue_with',
                         size: 'large',
                         logo_alignment: 'left',
-                        width: Math.min(340, window.innerWidth - 60)
+                        width: Math.min(400, window.innerWidth - 60)
                     });
                     // Ocultar botón estático si el botón oficial nativo de Google ya se renderizó
                     const btnStatic = document.getElementById('btnGoogleOfficial');
@@ -312,16 +324,76 @@
         }
     }
 
-    // ── Alternar entre "Ingresar" y "Crear cuenta" ──
-    function mostrarVistaRegistro(mostrar) {
-        const main = document.getElementById('viewClubSaboratorMain');
-        const reg = document.getElementById('viewClubSaboratorRegistro');
-        if (!main || !reg) return;
-        limpiarKfcFeedbacks();
-        main.hidden = mostrar;
-        reg.hidden = !mostrar;
-        setTimeout(() => document.getElementById(mostrar ? 'kfcRegNombre' : 'kfcUsuarioInput')?.focus(), 80);
+    // ── Facebook Login (SDK oficial de Facebook; el servidor valida el token en /Login/FacebookAuth) ──
+    let facebookSdkListo = null;
+    function cargarFacebookSdk() {
+        if (facebookSdkListo) return facebookSdkListo;
+        facebookSdkListo = new Promise((resolver, rechazar) => {
+            window.fbAsyncInit = function () {
+                FB.init({ appId: facebookAppIdConfig, cookie: false, xfbml: false, version: 'v19.0' });
+                resolver();
+            };
+            const s = document.createElement('script');
+            s.src = 'https://connect.facebook.net/es_LA/sdk.js';
+            s.async = true;
+            s.onerror = () => { facebookSdkListo = null; rechazar(new Error('sdk')); };
+            document.head.appendChild(s);
+        });
+        return facebookSdkListo;
     }
+
+    async function iniciarFacebookAuth() {
+        limpiarKfcFeedbacks();
+        if (!facebookAppIdConfig) {
+            mostrarKfcFeedback('El acceso con Facebook aún no está activado. Por ahora ingresa con Google o con tu correo.', false);
+            return;
+        }
+        try {
+            await cargarFacebookSdk();
+        } catch (e) {
+            mostrarKfcFeedback('No se pudo cargar Facebook. Revisa tu conexión e intenta de nuevo.', false);
+            return;
+        }
+        FB.login(function (r) {
+            if (!r || !r.authResponse) {
+                mostrarKfcFeedback('No se completó el inicio de sesión con Facebook.', false);
+                return;
+            }
+            enviarTokenFacebook(r.authResponse.accessToken);
+        }, { scope: 'public_profile,email' });
+    }
+
+    async function enviarTokenFacebook(accessToken) {
+        mostrarKfcFeedback('Autenticando con Facebook...', true);
+        try {
+            const resp = await fetch('/Login/FacebookAuth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ accessToken, returnUrl: window.location.pathname })
+            });
+            const data = await resp.json();
+            if (data && data.ok) {
+                mostrarKfcFeedback(data.mensaje || '¡Acceso concedido con Facebook!', true);
+                setTimeout(() => { window.location.href = data.redirectUrl || '/Carta'; }, 600);
+            } else {
+                mostrarKfcFeedback((data && data.mensaje) || 'No se pudo ingresar con Facebook.', false);
+            }
+        } catch (err) {
+            console.error('Error FacebookAuth:', err);
+            mostrarKfcFeedback('Error de comunicación al autenticar con Facebook.', false);
+        }
+    }
+
+    // ── Vistas del modal: 'main' (Google / Facebook / correo), 'correo' (usuario + contraseña) y 'registro' (crear cuenta) ──
+    function mostrarVista(nombre) {
+        const vistas = { main: 'viewClubSaboratorMain', correo: 'viewClubSaboratorCorreo', registro: 'viewClubSaboratorRegistro' };
+        limpiarKfcFeedbacks();
+        Object.entries(vistas).forEach(([clave, id]) => { const el = document.getElementById(id); if (el) el.hidden = clave !== nombre; });
+        const foco = { correo: 'kfcUsuarioInput', registro: 'kfcRegNombre' }[nombre];
+        if (foco) setTimeout(() => document.getElementById(foco)?.focus(), 80);
+    }
+    // (se conserva por compatibilidad con enlaces anteriores)
+    function mostrarVistaRegistro(mostrar) { mostrarVista(mostrar ? 'registro' : 'correo'); }
 
     // ── Crear cuenta con nombre, apellido, usuario, correo y contraseña ──
     async function ejecutarRegistroKfc(e) {
@@ -367,9 +439,10 @@
     }
 
     function mostrarKfcFeedback(msg, esExito) {
-        // El mensaje se muestra en la vista que está abierta (ingreso o registro)
-        const reg = document.getElementById('viewClubSaboratorRegistro');
-        const box = document.getElementById(reg && !reg.hidden ? 'kfcFeedbackBoxReg' : 'kfcFeedbackBox');
+        // El mensaje se muestra en la vista que está abierta (opciones, correo o registro)
+        const abierta = (id) => { const el = document.getElementById(id); return el && !el.hidden; };
+        const box = document.getElementById(abierta('viewClubSaboratorRegistro') ? 'kfcFeedbackBoxReg'
+            : abierta('viewClubSaboratorCorreo') ? 'kfcFeedbackBoxCorreo' : 'kfcFeedbackBox');
         if (box) {
             box.textContent = msg;
             box.className = 'kfc-feedback-box ' + (esExito ? 'success' : 'error');

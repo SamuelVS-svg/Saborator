@@ -993,6 +993,75 @@ namespace ControlClientesRestaurante.Controllers
             HttpContext.Session.SetString("Tema", usuario.Tema ?? "clasico");
         }
 
+        public class FacebookAuthDto
+        {
+            public string? AccessToken { get; set; }
+            public string? ReturnUrl { get; set; }
+        }
+
+        /// <summary>Valor configurado (vacío cuenta como no configurado): appsettings, usuario secreto o variable de entorno.</summary>
+        private string ObtenerConfiguracion(string clave1, string clave2, string variableEntorno) =>
+            new[] { _configuration[clave1], _configuration[clave2], Environment.GetEnvironmentVariable(variableEntorno) }
+                .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
+
+        /// <summary>
+        /// Acceso con Facebook. El navegador entrega el token de acceso del SDK; aquí se comprueba con Facebook que sea
+        /// válido y emitido para ESTA aplicación (si no, cualquiera podría fabricar uno) y solo entonces se lee su perfil.
+        /// </summary>
+        [HttpPost("/Login/FacebookAuth")]
+        [IgnoreAntiforgeryToken]
+        [EnableRateLimiting("autenticacion")]
+        public async Task<IActionResult> FacebookAuth([FromBody] FacebookAuthDto? dto)
+        {
+            var appId = ObtenerConfiguracion("Authentication:Facebook:AppId", "Facebook:AppId", "FACEBOOK_APP_ID");
+            var appSecret = ObtenerConfiguracion("Authentication:Facebook:AppSecret", "Facebook:AppSecret", "FACEBOOK_APP_SECRET");
+            if (string.IsNullOrEmpty(appId) || string.IsNullOrEmpty(appSecret))
+                return BadRequest(new { ok = false, mensaje = "El acceso con Facebook aún no está activado en este servidor." });
+
+            var token = dto?.AccessToken?.Trim();
+            if (string.IsNullOrWhiteSpace(token) || token.Length > 2000)
+                return BadRequest(new { ok = false, mensaje = "No se recibió la autorización de Facebook." });
+
+            string? email, name, picture;
+            try
+            {
+                var http = HttpContext.RequestServices.GetRequiredService<IHttpClientFactory>().CreateClient("FacebookClient");
+                http.Timeout = TimeSpan.FromSeconds(10);
+
+                // 1) ¿Es un token vigente y emitido para nuestra aplicación?
+                var urlVerif = $"https://graph.facebook.com/debug_token?input_token={Uri.EscapeDataString(token)}&access_token={Uri.EscapeDataString(appId + "|" + appSecret)}";
+                using var respVerif = await http.GetAsync(urlVerif);
+                using var docVerif = System.Text.Json.JsonDocument.Parse(await respVerif.Content.ReadAsStringAsync());
+                if (!respVerif.IsSuccessStatusCode
+                    || !docVerif.RootElement.TryGetProperty("data", out var datos)
+                    || !datos.TryGetProperty("is_valid", out var valido) || valido.ValueKind != System.Text.Json.JsonValueKind.True
+                    || !datos.TryGetProperty("app_id", out var appDelToken) || appDelToken.GetString() != appId)
+                    return BadRequest(new { ok = false, mensaje = "No se pudo validar tu sesión de Facebook. Intenta de nuevo." });
+
+                // 2) Perfil (la prueba appsecret_proof liga la petición a nuestro servidor)
+                using var hmac = new System.Security.Cryptography.HMACSHA256(System.Text.Encoding.UTF8.GetBytes(appSecret));
+                var prueba = Convert.ToHexString(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(token))).ToLowerInvariant();
+                var urlPerfil = $"https://graph.facebook.com/v19.0/me?fields=id,name,email,picture.type(large)&access_token={Uri.EscapeDataString(token)}&appsecret_proof={prueba}";
+                using var respPerfil = await http.GetAsync(urlPerfil);
+                using var docPerfil = System.Text.Json.JsonDocument.Parse(await respPerfil.Content.ReadAsStringAsync());
+                if (!respPerfil.IsSuccessStatusCode)
+                    return BadRequest(new { ok = false, mensaje = "No se pudo leer tu perfil de Facebook." });
+
+                var raizPerfil = docPerfil.RootElement;
+                email = raizPerfil.TryGetProperty("email", out var e) ? e.GetString() : null;
+                name = raizPerfil.TryGetProperty("name", out var n) ? n.GetString() : null;
+                picture = raizPerfil.TryGetProperty("picture", out var p) && p.TryGetProperty("data", out var pd) && pd.TryGetProperty("url", out var pu)
+                    ? pu.GetString() : null;
+            }
+            catch (Exception)
+            {
+                // No se devuelve el detalle: puede incluir datos de la petición
+                return BadRequest(new { ok = false, mensaje = "No se pudo comunicar con Facebook. Intenta de nuevo en un momento." });
+            }
+
+            return await CompletarLoginSocialAsync("Facebook", email, name, picture, dto?.ReturnUrl, soloClientes: true);
+        }
+
         public class GoogleDirectAuthDto
         {
             public string? Email { get; set; }
@@ -1101,12 +1170,21 @@ namespace ControlClientesRestaurante.Controllers
                 return Redirect("/#menu");
             }
 
+            return await CompletarLoginSocialAsync("Google", email, name, picture, returnUrl);
+        }
+
+        /// <summary>
+        /// Resto del acceso con una cuenta social ya verificada (Google o Facebook): busca o crea al cliente y al usuario
+        /// y abre la sesión. <paramref name="soloClientes"/> impide entrar a cuentas del personal por esta vía.
+        /// </summary>
+        private async Task<IActionResult> CompletarLoginSocialAsync(string proveedor, string? email, string? name, string? picture, string? returnUrl, bool soloClientes = false)
+        {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
             {
                 if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                    return BadRequest(new { ok = false, mensaje = "La cuenta de Google seleccionada no proporcionó un correo válido." });
+                    return BadRequest(new { ok = false, mensaje = $"La cuenta de {proveedor} seleccionada no proporcionó un correo válido." });
 
-                TempData["ErrorLogin"] = "La cuenta de Google no contiene un correo válido.";
+                TempData["ErrorLogin"] = $"La cuenta de {proveedor} no contiene un correo válido.";
                 return Redirect("/#menu");
             }
 
@@ -1158,7 +1236,7 @@ namespace ControlClientesRestaurante.Controllers
                 usuario = new Usuario
                 {
                     NombreUsuario = userFinal,
-                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"Google#{Guid.NewGuid():N}!"),
+                    ContraseñaHash = BCrypt.Net.BCrypt.HashPassword($"{proveedor}#{Guid.NewGuid():N}!"),
                     RolId = rolCliente.Id,
                     Estado = true,
                     Correo = correoLimpio,
@@ -1174,6 +1252,21 @@ namespace ControlClientesRestaurante.Controllers
             {
                 usuario.FotoPerfil = picture;
                 _context.SaveChanges();
+            }
+
+            if (soloClientes)
+            {
+                var rolExistente = usuario.Rol?.NombreRol
+                    ?? _context.Roles.Where(r => r.Id == usuario.RolId).Select(r => r.NombreRol).FirstOrDefault()
+                    ?? "Cliente";
+                if (!string.Equals(rolExistente, "Cliente", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (Request.HasJsonContentType() || Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                        return BadRequest(new { ok = false, mensaje = "Esta cuenta es del personal: ingresa con tu usuario y contraseña." });
+
+                    TempData["ErrorLogin"] = "Esta cuenta es del personal: ingresa con tu usuario y contraseña.";
+                    return Redirect("/#menu");
+                }
             }
 
             if (!usuario.Estado)
@@ -1195,7 +1288,7 @@ namespace ControlClientesRestaurante.Controllers
                 rol,
                 "LOGIN_EXITOSO",
                 "Seguridad",
-                $"Inicio de sesión exitoso con Google Identity Services ({correoLimpio}) en Club Saborator.",
+                $"Inicio de sesión exitoso con {(proveedor == "Google" ? "Google Identity Services" : proveedor)} ({correoLimpio}) en Club Saborator.",
                 "Usuario",
                 usuario.Id,
                 HttpContext.Connection.RemoteIpAddress?.ToString());
