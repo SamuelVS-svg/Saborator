@@ -58,17 +58,12 @@ html:not([data-theme]) .lnav-buscar { background: #fff; }
 html:not([data-theme]) .lnav-buscar-input { background: var(--bg); border: 2px solid var(--line); }
 html:not([data-theme]) .lnav-buscar-cerrar { background: #fff; color: var(--marron-oscuro); border-color: #DDD0BC; }
 
-/* ── Héroe crema con "sol" amarillo ──────────────────────────────────────────────────────────────── */
+/* ── Héroe crema ──────────────────────────────────────────────────────────────── */
 html:not([data-theme]) .home-carousel { background: #FBE7B0; }
 html:not([data-theme]) .home-carousel .home-banner,
 html:not([data-theme]) .home-slide-combo {
   position: relative; overflow: hidden; color: var(--marron-oscuro);
   background: linear-gradient(135deg, #FFF8E6 0%, #FBE7B0 100%);
-}
-html:not([data-theme]) .home-carousel .home-banner::before,
-html:not([data-theme]) .home-slide-combo::before {
-  content: ""; position: absolute; right: 7%; top: 50%; width: 440px; height: 440px; transform: translateY(-50%); border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle, #FFD66B 0%, #F4A817 70%, rgba(244, 168, 23, 0) 72%); opacity: .72;
 }
 .home-banner-copy, .home-slide-copy, .home-banner-plate, .home-slide-photos { position: relative; z-index: 1; }
 html:not([data-theme]) .home-banner h1,
@@ -150,3 +145,14 @@ html:not([data-theme]) .home-order-card,
 html:not([data-theme]) .dish-card-minimal,
 html:not([data-theme]) .combo-card { border-bottom: 3px solid var(--amarillo); }
 html:not([data-theme]) .home-order-card:hover { background: #FFF8E6; }
+/* Botones de iconos de la cabecera: sin recuadro amarillo de foco; el foco con teclado se indica con un tinte suave */
+.lnav .theme-toggle-btn:focus,
+.lnav .lnav-cart-btn:focus,
+.lnav .lnav-search-btn:focus,
+.lnav .lnav-toggle:focus,
+.lnav-buscar-cerrar:focus { outline: none; }
+.lnav .theme-toggle-btn:focus-visible,
+.lnav .lnav-cart-btn:focus-visible,
+.lnav .lnav-search-btn:focus-visible,
+.lnav .lnav-toggle:focus-visible,
+.lnav-buscar-cerrar:focus-visible { outline: none; background: rgba(244, 168, 23, .22); }
