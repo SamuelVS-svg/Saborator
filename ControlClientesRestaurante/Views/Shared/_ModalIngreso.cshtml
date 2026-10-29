@@ -44,7 +44,7 @@
                      data-client_id="@googleClientId"
                      data-context="signin"
                      data-callback="handleGoogleCredentialResponse"
-                     data-auto_prompt="true"
+                     data-auto_prompt="false"
                      data-auto_select="false"
                      data-itp_support="true">
                 </div>
@@ -164,6 +164,7 @@
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
             mostrarVista('main');
+            setTimeout(actualizarEstadoGoogle, 1500);
             // Activar / refrescar selector oficial de cuentas de Google en el dispositivo
             inicializarGoogleIdentityServices();
         }
@@ -229,14 +230,25 @@
     }
 
     // ── 3. Flujo Oficial Google Identity Services (GSI SDK) ──
+    // Se inicializa UNA sola vez. Google dibuja su botón oficial (invisible, encima de nuestra pastilla) solo si
+    // acepta el origen de esta página; si no lo dibuja, se avisa con claridad en lugar de quedar mudo.
+    let gsiIniciado = false, gsiIntentos = 0, gsiBotonVisible = false;
+    const esEntornoLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+
+    function actualizarEstadoGoogle() {
+        const contenedor = document.getElementById('googleOfficialBtnContainer');
+        const marco = contenedor ? contenedor.querySelector('iframe') : null;
+        gsiBotonVisible = !!marco && marco.getBoundingClientRect().width > 0;
+        if (contenedor) contenedor.classList.toggle('listo', gsiBotonVisible);
+        return gsiBotonVisible;
+    }
+
     function inicializarGoogleIdentityServices() {
         const cId = googleClientIdConfig || '';
-        if (!cId) {
-            console.info('Club Saborator: Google ClientId no está configurado aún en Authentication:Google:ClientId.');
-            return;
-        }
+        if (!cId || gsiIniciado) return;
 
         if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+            gsiIniciado = true;
             try {
                 google.accounts.id.initialize({
                     client_id: cId,
@@ -244,53 +256,37 @@
                     auto_select: false,
                     cancel_on_tap_outside: true
                 });
-
-                // Renderizar botón oficial de Google dentro del contenedor
-                const container = document.getElementById('googleOfficialBtnContainer');
                 const interior = document.getElementById('googleOfficialBtnInner');
-                if (container && interior && !interior.hasChildNodes()) {
-                    const ancho = Math.min(400, Math.round(document.getElementById('googleWrap')?.clientWidth || 340));
+                if (interior && !interior.hasChildNodes()) {
+                    const ancho = Math.min(400, Math.round((document.getElementById('googleWrap') || {}).clientWidth || 340));
                     google.accounts.id.renderButton(interior, {
-                        type: 'standard',
-                        shape: 'pill',
-                        theme: 'outline',
-                        text: 'continue_with',
-                        size: 'large',
-                        logo_alignment: 'left',
-                        width: ancho
+                        type: 'standard', shape: 'pill', theme: 'outline', text: 'continue_with', size: 'large', logo_alignment: 'left', width: ancho
                     });
-                    // El botón oficial ya está dibujado: pasa a recibir el clic (si el SDK no carga, la pastilla usa el aviso de respaldo)
-                    container.classList.add('listo');
                 }
-
-                // Activar Google One Tap (abre selector nativo con cuentas reales de Google del dispositivo)
-                google.accounts.id.prompt((notification) => {
-                    if (notification.isNotDisplayed()) {
-                        console.info('Google One Tap no visible:', notification.getNotDisplayedReason());
-                    }
-                });
+                // Si pasados unos segundos Google no dibujó su botón, el origen no está autorizado para este ID de cliente
+                setTimeout(function () {
+                    if (!actualizarEstadoGoogle()) console.warn('Club Saborator: Google no dibujó su botón. Agrega ' + location.origin + ' en "Orígenes autorizados de JavaScript" del ID de cliente (Google Cloud > Credenciales).');
+                }, 2500);
             } catch (err) {
                 console.warn('Google GSI init notice:', err);
             }
-        } else {
-            // Reintentar si el script oficial de Google aún se está descargando
+        } else if (gsiIntentos++ < 50) {
+            // El SDK de Google aún se está descargando: se reintenta durante unos 10 segundos
             setTimeout(inicializarGoogleIdentityServices, 200);
         }
     }
 
-    // Clic en "Continuar con Google" abre el selector OFICIAL de cuentas de Google (accounts.google.com)
+    // Respaldo: el clic normal lo recibe el botón oficial de Google, que cubre esta pastilla. Si no está disponible, se explica el motivo.
     function iniciarGoogleAuthOficial() {
         limpiarKfcFeedbacks();
-
-        if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-            // Forzar prompt nativo de cuentas reales de Google del dispositivo
-            google.accounts.id.prompt((notification) => {
-                if (notification.isNotDisplayed()) {
-                    mostrarKfcFeedback('Por favor selecciona tu cuenta en la ventana emergente de Google.', true);
-                }
-            });
-        } else {
-            mostrarKfcFeedback('Cargando el selector oficial de Google... Intenta de nuevo en unos segundos.', false);
+        if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+            mostrarKfcFeedback('No se pudo cargar Google. Revisa tu conexión o desactiva el bloqueador de anuncios e intenta de nuevo.', false);
+            return;
+        }
+        if (!actualizarEstadoGoogle()) {
+            mostrarKfcFeedback(esEntornoLocal
+                ? 'Google no acepta esta dirección (' + location.origin + '). Agrégala en "Orígenes autorizados de JavaScript" del ID de cliente en Google Cloud.'
+                : 'El ingreso con Google no está disponible en este momento. Usa tu correo electrónico.', false);
         }
     }
 
