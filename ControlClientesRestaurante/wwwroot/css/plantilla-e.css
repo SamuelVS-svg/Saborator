@@ -167,3 +167,27 @@ html .rastrear-title {
   font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-style: normal; text-transform: uppercase; letter-spacing: .01em;
 }
 html .reserva-title span { font-style: normal; }
+
+/* ══ MODAL DE INGRESO COMPACTO: todo el formulario en una sola vista, sin barra de desplazamiento ══════ */
+html .modal-ingreso-box {
+  padding: 1.2rem 1.5rem 1.1rem; max-height: calc(100dvh - 1rem);
+  scrollbar-width: none;            /* por si la pantalla es muy baja: se puede desplazar, pero sin barra */
+}
+html .modal-ingreso-box::-webkit-scrollbar { display: none; }
+html .modal-ingreso-close { top: .7rem; right: .7rem; }
+html .kfc-auth-header { margin-bottom: .75rem; }
+html .kfc-club-badge { margin-bottom: 0; }
+html .kfc-field-wrap { margin-bottom: .65rem; }
+html .kfc-field-wrap label { margin-bottom: .25rem; }
+html .kfc-input { padding: .58rem .8rem; }
+html .btn-kfc-cta { padding: .68rem 1rem; margin-top: .35rem; }
+html .kfc-switch-view { margin: .65rem 0 0; }
+html .kfc-divider { margin: .65rem 0; }
+html .modal-ingreso-box > div > p:last-child { margin-top: .7rem !important; }
+@media (max-height: 640px) {
+  html .modal-ingreso-box { padding: .9rem 1.2rem .8rem; }
+  html .kfc-field-wrap { margin-bottom: .45rem; }
+  html .kfc-input { padding: .48rem .75rem; }
+  html .btn-kfc-cta { padding: .56rem 1rem; }
+  html .kfc-divider { margin: .45rem 0; }
+}
