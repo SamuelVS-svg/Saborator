@@ -26,7 +26,7 @@ html, body {
     height: 100%;
     font-family: var(--font-ui);
     background: var(--bg);
-    background-image: radial-gradient(circle at 1px 1px, rgba(62, 38, 21,0.035) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, rgba(44, 27, 20,0.035) 1px, transparent 0);
     background-size: 24px 24px;
     color: var(--text);
     text-rendering: optimizeLegibility;
@@ -47,7 +47,7 @@ html, body {
     transition: width var(--tr);
     z-index: 200;
     border-right: 1px solid rgba(246, 235, 211, 0.12);
-    box-shadow: 2px 0 16px rgba(62, 38, 21, 0.08);
+    box-shadow: 2px 0 16px rgba(44, 27, 20, 0.08);
 }
 .sidebar.open { width: var(--sb-open); }
 
@@ -260,7 +260,7 @@ html, body {
     padding: 0;
     border: 1px solid var(--line, #D9C197);
     background: var(--surface-2, #F6EBD3);
-    color: var(--text, #3E2615);
+    color: var(--text, #2C1B14);
     cursor: pointer;
     border-radius: var(--r-control, 10px);
     flex-shrink: 0;
@@ -924,13 +924,13 @@ html, body {
 }
 
 /* ── DIÁLOGOS (reemplazan alert/confirm del navegador) ──────────────────── */
-.dlg-fondo { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(62, 38, 21, 0.55); backdrop-filter: blur(3px); animation: dlgFondo 160ms ease-out; }
+.dlg-fondo { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(44, 27, 20, 0.55); backdrop-filter: blur(3px); animation: dlgFondo 160ms ease-out; }
 .dlg-fondo[hidden] { display: none; }
-.dlg { width: min(420px, 100%); background: var(--surface, #FFFFFF); color: var(--text, #3E2615); border: 1px solid var(--line, #E8D5B0); border-radius: 12px; padding: 1.6rem 1.5rem 1.25rem; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); text-align: center; animation: dlgEntra 200ms cubic-bezier(.2,.9,.3,1.2); }
+.dlg { width: min(420px, 100%); background: var(--surface, #FFFFFF); color: var(--text, #2C1B14); border: 1px solid var(--line, #E8DFD0); border-radius: 12px; padding: 1.6rem 1.5rem 1.25rem; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); text-align: center; animation: dlgEntra 200ms cubic-bezier(.2,.9,.3,1.2); }
 .dlg-icono { width: 52px; height: 52px; margin: 0 auto 0.85rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--brand-soft, rgba(107, 66, 38, 0.1)); color: var(--brand, #6B4226); }
 .dlg[data-tono="peligro"] .dlg-icono { background: rgba(214, 69, 61, 0.13); color: var(--danger, #D6453D); }
 .dlg-icono svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.dlg-titulo { font-size: 1.12rem; font-weight: 800; margin: 0 0 0.45rem; color: var(--text, #3E2615); }
+.dlg-titulo { font-size: 1.12rem; font-weight: 800; margin: 0 0 0.45rem; color: var(--text, #2C1B14); }
 .dlg-mensaje { font-size: 0.92rem; line-height: 1.5; color: var(--muted, #7B6249); margin: 0 0 1.25rem; white-space: pre-line; overflow-wrap: anywhere; }
 .dlg-acciones { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
 .dlg-btn { min-width: 120px; padding: 0.62rem 1.1rem; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border: 1px solid transparent; transition: filter 120ms ease, transform 100ms ease; }
@@ -938,7 +938,7 @@ html, body {
 .dlg-btn:active { transform: scale(0.97); }
 .dlg-btn:focus-visible { outline: 3px solid rgba(255, 224, 130, 0.9); outline-offset: 2px; }
 .dlg-btn[hidden] { display: none; }
-.dlg-btn-sec { background: var(--surface-2, #F6EBD3); color: var(--text, #3E2615); border-color: var(--line, #E8D5B0); }
+.dlg-btn-sec { background: var(--surface-2, #F6EBD3); color: var(--text, #2C1B14); border-color: var(--line, #E8DFD0); }
 .dlg-btn-pri { background: var(--brand, #6B4226); color: #fff; }
 .dlg-btn-peligro { background: var(--danger, #D6453D); color: #fff; }
 html.dlg-abierto { overflow: hidden; }

@@ -20,7 +20,7 @@
         height: 72px;
         margin: 0 auto 1.25rem;
         border-radius: 50%;
-        background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(227, 167, 47, 0.25));
+        background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(244, 168, 23, 0.25));
         border: 2px solid #25D366;
         display: flex;
         align-items: center;
@@ -69,8 +69,8 @@
     }
     .otp-digit:focus {
         border-color: var(--color-accent);
-        background: rgba(227, 167, 47, 0.12);
-        box-shadow: 0 0 0 4px rgba(227, 167, 47, 0.22);
+        background: rgba(244, 168, 23, 0.12);
+        box-shadow: 0 0 0 4px rgba(244, 168, 23, 0.22);
         transform: translateY(-2px);
     }
     .otp-digit.filled {
@@ -113,7 +113,7 @@
         transition: all 0.2s;
     }
     .btn-resend:hover {
-        background: rgba(227, 167, 47, 0.12);
+        background: rgba(244, 168, 23, 0.12);
         border-color: var(--color-accent);
         color: var(--color-accent);
     }
@@ -217,7 +217,7 @@
             </div>
 
             <!-- Indicador de Validación Automática -->
-            <div id="otpAutoStatus" style="display:none; align-items:center; justify-content:center; gap:8px; margin: 0.8rem 0 1.25rem; color: var(--gold-bright, #E3A72F); font-size:0.92rem; font-weight:600;">
+            <div id="otpAutoStatus" style="display:none; align-items:center; justify-content:center; gap:8px; margin: 0.8rem 0 1.25rem; color: var(--gold-bright, #F4A817); font-size:0.92rem; font-weight:600;">
                 <svg class="gastro-spinner-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 0.9s linear infinite;">
                     <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
                     <path d="M12 2a10 10 0 0 1 10 10"/>
@@ -439,8 +439,8 @@
         } else {
             alertEl.className = 'form-card';
             alertEl.style.padding = '0.75rem 1rem';
-            alertEl.style.background = 'rgba(227, 167, 47, 0.12)';
-            alertEl.style.border = '1px solid rgba(227, 167, 47, 0.35)';
+            alertEl.style.background = 'rgba(244, 168, 23, 0.12)';
+            alertEl.style.border = '1px solid rgba(244, 168, 23, 0.35)';
             alertEl.style.color = 'var(--color-accent)';
             alertEl.innerHTML = '<span>' + mensaje + '</span>';
         }
@@ -479,7 +479,7 @@
 
         var particles = [];
         var count = 90;
-        var colors = ['#25D366', '#E3A72F', '#E3A72F', '#FFFDF8', '#6B4226'];
+        var colors = ['#25D366', '#F4A817', '#F4A817', '#FBF7EE', '#6B4226'];
 
         for (var i = 0; i < count; i++) {
             var angle = (Math.PI * 2 * (i / count)) + (Math.random() - 0.5) * 0.4;

@@ -39,11 +39,11 @@
     inset: 0;
     pointer-events: none;
     background-image: 
-        radial-gradient(1px 1px at 20% 30%, rgba(227, 167, 47, 0.35) 1px, transparent 0),
+        radial-gradient(1px 1px at 20% 30%, rgba(244, 168, 23, 0.35) 1px, transparent 0),
         radial-gradient(1px 1px at 40% 70%, rgba(255, 255, 255, 0.25) 1px, transparent 0),
-        radial-gradient(1.5px 1.5px at 75% 25%, rgba(227, 167, 47, 0.4) 1px, transparent 0),
+        radial-gradient(1.5px 1.5px at 75% 25%, rgba(244, 168, 23, 0.4) 1px, transparent 0),
         radial-gradient(1px 1px at 85% 65%, rgba(255, 255, 255, 0.2) 1px, transparent 0),
-        radial-gradient(1.5px 1.5px at 30% 85%, rgba(227, 167, 47, 0.3) 1px, transparent 0);
+        radial-gradient(1.5px 1.5px at 30% 85%, rgba(244, 168, 23, 0.3) 1px, transparent 0);
     background-size: 300px 300px;
     opacity: 0.6;
     animation: ambientFloat 20s linear infinite;
@@ -59,7 +59,7 @@
     position: absolute;
     width: min(650px, 90vw);
     height: min(650px, 90vw);
-    background: radial-gradient(circle, rgba(227, 167, 47, 0.16) 0%, rgba(107, 66, 38, 0.22) 45%, transparent 72%);
+    background: radial-gradient(circle, rgba(244, 168, 23, 0.16) 0%, rgba(107, 66, 38, 0.22) 45%, transparent 72%);
     border-radius: 50%;
     filter: blur(40px);
     pointer-events: none;
@@ -212,7 +212,7 @@
     width: 140px;
     height: 140px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(227, 167, 47, 0.5) 0%, rgba(227, 167, 47, 0.15) 45%, transparent 70%);
+    background: radial-gradient(circle, rgba(244, 168, 23, 0.5) 0%, rgba(244, 168, 23, 0.15) 45%, transparent 70%);
     animation: haloPulse 4.2s ease forwards;
     pointer-events: none;
 }
@@ -231,7 +231,7 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    border: 1.5px solid rgba(227, 167, 47, 0.7);
+    border: 1.5px solid rgba(244, 168, 23, 0.7);
     opacity: 0;
     pointer-events: none;
     animation: shockwaveExpand 4.2s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
@@ -249,7 +249,7 @@
     75% {
         opacity: 0;
         transform: scale(3.2);
-        border-color: rgba(227, 167, 47, 0);
+        border-color: rgba(244, 168, 23, 0);
     }
     100% {
         opacity: 0;
@@ -275,7 +275,7 @@
     color: #FFFFFF;
     margin: 0;
     line-height: 1;
-    text-shadow: 0 4px 24px rgba(227, 167, 47, 0.35);
+    text-shadow: 0 4px 24px rgba(244, 168, 23, 0.35);
     animation: brandTitleReveal 4.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: transform, opacity, letter-spacing;
 }
@@ -283,7 +283,7 @@
 .intro-brand-title span {
     font-style: italic;
     color: #F4C95D;
-    background: linear-gradient(135deg, #FFFFFF 20%, #F4C95D 60%, #E3A72F 100%);
+    background: linear-gradient(135deg, #FFFFFF 20%, #F4C95D 60%, #F4A817 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -332,7 +332,7 @@
     display: inline-block;
     width: 24px;
     height: 1px;
-    background: rgba(227, 167, 47, 0.45);
+    background: rgba(244, 168, 23, 0.45);
 }
 
 @keyframes brandSubReveal {
@@ -390,7 +390,7 @@
 @media (hover: hover) and (pointer: fine) {
     .intro-skip-btn:hover {
         background: rgba(255, 255, 255, 0.16);
-        border-color: rgba(227, 167, 47, 0.5);
+        border-color: rgba(244, 168, 23, 0.5);
         color: #FFFFFF;
         transform: translateY(-1px);
     }
@@ -439,7 +439,7 @@
 
 .skip-timer-circle {
     fill: none;
-    stroke: var(--gold, #E3A72F);
+    stroke: var(--gold, #F4A817);
     stroke-width: 2.2;
     stroke-dasharray: 38;
     stroke-dashoffset: 38;

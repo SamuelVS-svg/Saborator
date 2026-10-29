@@ -3,18 +3,18 @@
    ================================================================ */
 :root{
   /* ── Paleta Sabor Casero (úsala por nombre) ── */
-  --hueso:          #FFFDF8;   /* fondo principal                   */
-  --crema:          #F6EBD3;   /* secciones alternas                */
-  --beige:          #E8D5B0;   /* bordes y detalles                 */
-  --amarillo-suave: #F4C95D;   /* acentos y hover                   */
-  --amarillo:       #E3A72F;   /* botones principales               */
+  --hueso:          #FBF7EE;   /* fondo principal                   */
+  --crema:          #F5EFEB;   /* secciones alternas                */
+  --beige:          #E8DFD0;   /* bordes y detalles                 */
+  --amarillo-suave: #FFC857;   /* acentos y hover                   */
+  --amarillo:       #F4A817;   /* botones principales               */
   --marron:         #6B4226;   /* header, footer, títulos           */
-  --marron-oscuro:  #3E2615;   /* texto principal                   */
+  --marron-oscuro:  #2C1B14;   /* texto principal                   */
   --blanco:         #FFFFFF;   /* tarjetas y texto sobre marrón     */
 
-  --bg:#FFFDF8; --surface:#FFFFFF; --surface-2:#F6EBD3; --text:#3E2615; --muted:#7B6249; --faint:#85694C;
-  --line:#E8D5B0; --line-2:#D9C197; --brand:#6B4226; --brand-hover:#55341E; --ink:#6B4226; --brand-soft:rgba(107, 66, 38,.10);
-  --on-brand:#FFFFFF; --gold:#E3A72F; --amber:#E3A72F; --amber-ink:#7A5200; --amber-soft:rgba(244, 201, 93,.16); --warning:#7A5200;
+  --bg:#FBF7EE; --surface:#FFFFFF; --surface-2:#F5EFEB; --text:#2C1B14; --muted:#6E5D53; --faint:#7B6A5F;
+  --line:#E8DFD0; --line-2:#DDD0BC; --brand:#6B4226; --brand-hover:#55341E; --ink:#6B4226; --brand-soft:rgba(107, 66, 38,.10);
+  --on-brand:#FFFFFF; --gold:#F4A817; --amber:#F4A817; --amber-ink:#7A5200; --amber-soft:rgba(244, 201, 93,.16); --warning:#7A5200;
   --success:#2A7348; --success-bg:#E3F1E8;
   --danger:#D6453D; --danger-ink:#B3322B; --danger-soft:#FBE4E2; --danger-bg:#FBE4E2;
   --info:#2563EB; --info-soft:rgba(37,99,235,.10);
@@ -30,9 +30,9 @@
   color-scheme:light;
 }
 :root[data-theme="dark"]{
-  --bg:#17110E; --surface:#231A15; --surface-2:#30251F; --text:#F6EBD3; --muted:#C8BCB4; --faint:#9A8E92;
-  --line:#3F312A; --line-2:#4F4037; --brand:#8B5A36; --brand-hover:#A56E43; --ink:#F4C95D; --brand-soft:rgba(244, 201, 93,.16);
-  --on-brand:#FFFFFF; --gold:#F4C95D; --amber:#F4C95D; --amber-ink:#F4C95D; --amber-soft:rgba(244, 201, 93,.16); --warning:#F4C95D;
+  --bg:#24150E; --surface:#2E1B12; --surface-2:#35241A; --text:#FFFBF5; --muted:#C4B5A5; --faint:#A09080;
+  --line:#352821; --line-2:#44342B; --brand:#8B5A36; --brand-hover:#A56E43; --ink:#FFBF3F; --brand-soft:rgba(244, 201, 93,.16);
+  --on-brand:#FFFFFF; --gold:#FFBF3F; --amber:#FFBF3F; --amber-ink:#FFBF3F; --amber-soft:rgba(244, 201, 93,.16); --warning:#F4C95D;
   --success:#5CC48A; --success-bg:rgba(92,196,138,.14);
   --danger:#F0625A; --danger-ink:#F57A73; --danger-soft:rgba(240,98,90,.16); --danger-bg:rgba(240,98,90,.16);
   --info:#60A5FA; --info-soft:rgba(96,165,250,.14);

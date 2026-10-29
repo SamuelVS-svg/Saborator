@@ -9,13 +9,13 @@
 
 :root {
   /* ── Paleta Sabor Casero (úsala por nombre) ── */
-  --hueso:          #FFFDF8;   /* fondo principal                   */
-  --crema:          #F6EBD3;   /* secciones alternas                */
-  --beige:          #E8D5B0;   /* bordes y detalles                 */
-  --amarillo-suave: #F4C95D;   /* acentos y hover                   */
-  --amarillo:       #E3A72F;   /* botones principales               */
+  --hueso:          #FBF7EE;   /* fondo principal                   */
+  --crema:          #F5EFEB;   /* secciones alternas                */
+  --beige:          #E8DFD0;   /* bordes y detalles                 */
+  --amarillo-suave: #FFC857;   /* acentos y hover                   */
+  --amarillo:       #F4A817;   /* botones principales               */
   --marron:         #6B4226;   /* header, footer, títulos           */
-  --marron-oscuro:  #3E2615;   /* texto principal                   */
+  --marron-oscuro:  #2C1B14;   /* texto principal                   */
   --blanco:         #FFFFFF;   /* tarjetas y texto sobre marrón     */
 
   /* ── Marca ─────────────────────────────────────────────────────────── */
@@ -24,29 +24,37 @@
   --ink:          #6B4226;                 /* Marrón para texto, enlaces, bordes */
   --brand-soft:   rgba(107, 66, 38,.10);     /* Fondos suaves y resaltados         */
   --on-brand:     #FFFFFF;                 /* Texto sobre marrón                 */
-  --gold:         #E3A72F;                 /* Amarillo de acento                 */
+  --gold:         #F4A817;                 /* Amarillo de acento                 */
 
   /* ── Fondos y texto (Paleta Crema / Beige Saborator) ─────────── */
-  --bg:           #FFFDF8;                 /* Crema: fondo de página             */
+  --bg:           #FBF7EE;                 /* Crema: fondo de página             */
   --surface:      #FFFFFF;                 /* Tarjetas y superficies claras      */
-  --surface-2:    #F6EBD3;                 /* Beige cálido para elementos crema  */
-  --cream:        #F6EBD3;                 /* Crema base                         */
+  --surface-2:    #F5EFEB;                 /* Beige cálido para elementos crema  */
+  --cream:        #F5EFEB;                 /* Crema base                         */
   --cream-light:  #FFFFFF;                 /* Crema marfil / lino                */
-  --cream-deep:   #F6EBD3;                 /* Beige cálido / arena               */
-  --cream-border: #E8D5B0;                 /* Borde beige suave                  */
-  --cream-line:   #D9C197;                 /* Borde beige estructurado           */
-  --cream-chip:   #F6EBD3;                 /* Fondo para pastillas y badges crema*/
-  --text:         #3E2615;                 /* Texto principal                    */
-  --muted:        #7B6249;                 /* Texto secundario                   */
-  --faint:        #85694C;                 /* Pistas y texto tenue (>= 4,5:1)    */
-  --line:         #E8D5B0;                 /* Bordes                             */
-  --line-2:       #D9C197;                 /* Bordes más marcados                */
+  --cream-deep:   #F1E9DC;                 /* Beige cálido / arena               */
+  --cream-border: #E8DFD0;                 /* Borde beige suave                  */
+  --cream-line:   #DDD0BC;                 /* Borde beige estructurado           */
+  --cream-chip:   #F5EFEB;                 /* Fondo para pastillas y badges crema*/
+  --text:         #2C1B14;                 /* Texto principal                    */
+  --muted:        #6E5D53;                 /* Texto secundario                   */
+  --faint:        #7B6A5F;                 /* Pistas y texto tenue (>= 4,5:1)    */
+  --line:         #E8DFD0;                 /* Bordes                             */
+  --line-2:       #DDD0BC;                 /* Bordes más marcados                */
+
+  /* ── Botón principal (CTA), héroe y barra flotante ── */
+  --cta:            #F4A817;                 /* Amarillo mostaza cálido            */
+  --cta-ink:        #2C1B14;                 /* Texto sobre el CTA                 */
+  --cta-glow:       0 6px 18px rgba(244, 168, 23, .35);
+  --hero-glow-start: #3B2217;                /* Foco de luz del héroe              */
+  --hero-glow-end:   #1B0F0A;                /* Bordes del héroe (espresso)        */
+  --bar-bg:         rgba(44, 27, 20, .88);   /* Barra flotante de pedido (cristal) */
 
   /* ── Estados ───────────────────────────────────────────────────────── */
   --success:      #2A7348;                 /* Pagado o aprobado                  */
   --success-bg:   #E3F1E8;
-  --amber:        #E3A72F;                 /* Amarillo ámbar (avisos y acentos)  */
-  --warning:      #E3A72F;
+  --amber:        #F4A817;                 /* Amarillo ámbar (avisos y acentos)  */
+  --warning:      #F4A817;
   --amber-ink:    #7A5200;                 /* Texto de aviso legible             */
   --amber-bg:     rgba(244, 201, 93,.18);
   --danger:       #D6453D;                 /* Errores (relleno)                  */
@@ -95,31 +103,31 @@
 :root[data-theme="noche"] {
   --brand:        #8B5A36;
   --brand-hover:  #A56E43;
-  --ink:          #F4C95D;
+  --ink:          #FFBF3F;
   --brand-soft:   rgba(244, 201, 93,.16);
   --on-brand:     #FFFFFF;
-  --gold:         #F4C95D;
+  --gold:         #FFBF3F;
 
-  --bg:           #15100D;
-  --surface:      #1E1612;
-  --surface-2:    #2A1F19;
-  --cream:        #1E1612;
-  --cream-light:  #2A1F19;
-  --cream-deep:   #352822;
-  --cream-border: #40302A;
-  --cream-line:   #503E36;
-  --cream-chip:   #2F231D;
-  --text:         #FFFFFF;
-  --muted:        #BDB0A8;
-  --faint:        #8C7F78;
-  --line:         #3A2B24;
-  --line-2:       #48372F;
+  --bg:           #24150E;
+  --surface:      #2E1B12;
+  --surface-2:    #35241A;
+  --cream:        #2E1B12;
+  --cream-light:  #35241A;
+  --cream-deep:   #3B2A20;
+  --cream-border: #352821;
+  --cream-line:   #44342B;
+  --cream-chip:   #35241A;
+  --text:         #FFFBF5;
+  --muted:        #C4B5A5;
+  --faint:        #A09080;
+  --line:         #352821;
+  --line-2:       #44342B;
 
   --success:      #5CC48A;
   --success-bg:   rgba(92,196,138,.16);
-  --amber:        #F4C95D;
-  --warning:      #F4C95D;
-  --amber-ink:    #F4C95D;
+  --amber:        #FFBF3F;
+  --warning:      #FFBF3F;
+  --amber-ink:    #FFBF3F;
   --amber-bg:     rgba(244, 201, 93,.18);
   --danger:       #F0625A;
   --danger-ink:   #F57A73;
@@ -131,6 +139,11 @@
   --shadow-lg:    0 4px 10px rgba(0,0,0,.5), 0 28px 60px -15px rgba(0,0,0,.9);
   --shadow-soft:  0 1px 3px rgba(0,0,0,.4);
   --overlay:      rgba(0,0,0,.75);
+
+  --cta:            #FFBF3F;                 /* Amarillo dorado brillante          */
+  --cta-ink:        #2C1B14;
+  --cta-glow:       0 4px 20px rgba(255, 191, 63, .25);   /* resplandor suave        */
+  --bar-bg:         rgba(30, 18, 12, .85);   /* cristal oscuro translúcido         */
 }
 
 /* ── TEMA 3: ORO IMPERIAL & CAVA CHAMPAGNE ────────────────────────── */

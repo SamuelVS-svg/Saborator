@@ -11,21 +11,32 @@
 .home-banner {
   position: relative; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 1rem; overflow: hidden;
   min-height: 300px; padding: 2rem 2.25rem; border-radius: 12px; color: #fff;
-  background: radial-gradient(120% 140% at 85% 20%, #8D6E63 0%, #6B4226 45%, #3E2615 100%);
+  background: radial-gradient(120% 140% at 85% 20%, #8D6E63 0%, #6B4226 45%, #2C1B14 100%);
   box-shadow: var(--shadow-md);
 }
 .home-banner-copy { position: relative; z-index: 1; }
-.home-eyebrow { display: inline-block; margin-bottom: .6rem; padding: .25rem .8rem; border-radius: 999px; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #3E2615; background: var(--gold); }
+.home-eyebrow { display: inline-block; margin-bottom: .75rem; padding: .3rem .9rem; border-radius: 999px; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cta-ink); background: var(--cta); box-shadow: 0 2px 10px rgba(0, 0, 0, .25); }
 .home-banner h1 { margin: 0 0 .6rem; font-family: var(--font-serif, Georgia, serif); font-weight: 400; font-size: clamp(2rem, 4.4vw, 3.2rem); line-height: 1.05; color: #fff; }
 .home-banner h1 em { color: var(--gold); font-style: italic; }
 .home-banner p { max-width: 34ch; margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.5; color: rgba(255, 255, 255, .86); }
 .home-cta {
-  display: inline-flex; align-items: center; gap: .5rem; padding: .8rem 1.6rem; border-radius: 12px; border: 0; cursor: pointer;
-  font: inherit; font-weight: 800; color: #3E2615; background: var(--gold); text-decoration: none; box-shadow: var(--shadow-sm);
+  display: inline-flex; align-items: center; gap: .5rem; padding: .95rem 2rem; border-radius: 12px; border: 0; cursor: pointer;
+  font: inherit; font-size: 1.05rem; font-weight: 800; color: var(--cta-ink); background: var(--cta); text-decoration: none; box-shadow: var(--cta-glow);
   transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
 }
 .home-cta:hover { filter: brightness(1.06); box-shadow: var(--shadow); transform: translateY(-1px); }
-.home-banner-dish { position: relative; z-index: 0; justify-self: end; width: min(100%, 380px); aspect-ratio: 1; border-radius: 50%; object-fit: contain; background: #000; border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+/* Marco circular biselado con luz cálida desde arriba: la foto "respira" sobre el fondo con sombra difusa y un halo ámbar */
+.home-banner-plate {
+  position: relative; z-index: 0; justify-self: end; width: min(100%, 400px); aspect-ratio: 1; padding: 11px; border-radius: 50%;
+  background: linear-gradient(150deg, #FFE6A8 0%, #F4A817 28%, #8B5A36 62%, #3B2217 100%);
+  box-shadow: 0 34px 60px -14px rgba(0, 0, 0, .6), 0 0 90px rgba(244, 168, 23, .3), inset 0 2px 3px rgba(255, 255, 255, .55);
+}
+.home-banner-plate::after {
+  content: ""; position: absolute; inset: 11px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 50% 4%, rgba(255, 214, 140, .38) 0%, rgba(255, 214, 140, 0) 52%);
+  box-shadow: inset 0 0 0 2px rgba(255, 230, 170, .28), inset 0 -34px 54px rgba(0, 0, 0, .5);
+}
+.home-banner-dish { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: contain; background: #000; }
 
 /* ── ¿Cómo te gustaría ordenar hoy? ────────────────────────────────────── */
 .home-order { padding: 2.25rem 0 1rem; text-align: center; }
@@ -36,8 +47,8 @@
   border: 0; border-radius: 12px; cursor: pointer; font: inherit; color: #fff; background: var(--marron, #6B4226); box-shadow: var(--shadow);
   transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease;
 }
-.home-order-card:hover { background: var(--marron-oscuro, #3E2615); box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.home-order-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: .2rem; border-radius: 50%; color: #3E2615; background: var(--gold); }
+.home-order-card:hover { background: var(--marron-oscuro, #2C1B14); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.home-order-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: .2rem; border-radius: 50%; color: #2C1B14; background: var(--gold); }
 .home-order-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .home-order-name { font-size: 1.05rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; }
 .home-order-sub { max-width: 34ch; text-wrap: balance; font-size: .8rem; line-height: 1.3; color: rgba(255, 255, 255, .78); }
@@ -55,13 +66,13 @@
 
 @media (max-width: 760px) {
   .home-banner { grid-template-columns: 1fr; padding: 1.5rem 1.25rem; text-align: left; min-height: 0; }
-  .home-banner-dish { justify-self: center; width: min(70%, 240px); order: -1; }
+  .home-banner-plate { justify-self: center; width: min(70%, 260px); order: -1; }
   .home-order-grid { grid-template-columns: 1fr; }
   .home-order-card { min-height: 112px; }
 }
 
 /* ══ Pasarela de imágenes (carrusel de ofertas y combos) ══════════════════════════════════════════ */
-.home-carousel { position: relative; overflow: hidden; border-radius: 0; background: #3E2615; }   /* a todo el ancho de la pantalla, como los banners de las cadenas */
+.home-carousel { position: relative; overflow: hidden; border-radius: 0; background: #2C1B14; }   /* a todo el ancho de la pantalla, como los banners de las cadenas */
 .home-carousel-track { display: flex; transition: transform .6s cubic-bezier(.2, 0, 0, 1); will-change: transform; }
 .home-slide { flex: 0 0 100%; min-width: 0; display: flex; }
 .home-slide > .home-banner, .home-slide > .home-slide-combo { flex: 1 1 auto; min-width: 0; }   /* cada diapositiva llena todo el alto del carrusel */
@@ -70,7 +81,7 @@
 /* Diapositiva de combo */
 .home-slide-combo {
   display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 1rem; min-height: 420px; padding: 2.75rem max(4.75rem, calc((100vw - 1180px) / 2)) 3.75rem; color: #fff;
-  background: radial-gradient(120% 140% at 85% 15%, #8D6E63 0%, #6B4226 45%, #3E2615 100%);
+  background: radial-gradient(120% 140% at 85% 15%, #8D6E63 0%, #6B4226 45%, #2C1B14 100%);
 }
 .home-slide-copy { position: relative; z-index: 1; }
 .home-slide-combo h2 { margin: 0 0 .4rem; font-family: var(--font-serif, Georgia, serif); font-weight: 400; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.05; color: #fff; text-transform: uppercase; letter-spacing: .01em; }
@@ -82,7 +93,7 @@
 
 .home-slide-photos { position: relative; justify-self: end; width: min(100%, 420px); aspect-ratio: 1.15; margin-right: .5rem; }
 .home-slide-photos img {
-  position: absolute; object-fit: contain; border-radius: 50%; border: 5px solid rgba(255, 255, 255, .94); background: #000;
+  position: absolute; object-fit: contain; border-radius: 50%; border: 4px solid transparent; background: linear-gradient(#000, #000) padding-box, linear-gradient(150deg, #FFE6A8 0%, #F4A817 32%, #8B5A36 70%, #3B2217 100%) border-box;
   box-shadow: 0 14px 30px rgba(0, 0, 0, .4);
 }
 .home-slide-photos img:nth-child(1) { width: 62%; aspect-ratio: 1; left: 0; top: 14%; z-index: 2; }
@@ -93,7 +104,7 @@
 /* Controles */
 .home-carousel-nav {
   position: absolute; top: 50%; z-index: 5; display: grid; place-items: center; width: 42px; height: 42px; margin-top: -21px; border: 0; border-radius: 50%;
-  background: rgba(255, 255, 255, .92); color: #3E2615; box-shadow: var(--md-elev-2, 0 2px 8px rgba(0, 0, 0, .3)); cursor: pointer;
+  background: rgba(255, 255, 255, .92); color: #2C1B14; box-shadow: var(--md-elev-2, 0 2px 8px rgba(0, 0, 0, .3)); cursor: pointer;
   transition: transform .15s ease, background-color .2s ease;
 }
 .home-carousel-nav:hover { background: #fff; transform: scale(1.06); }
@@ -115,7 +126,7 @@
 .combo-card-photos:has(img:nth-child(5)) { grid-auto-rows: 1fr; }
 .combo-card-photos img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
 .combo-card-body { display: flex; flex: 1; flex-direction: column; gap: .35rem; padding: 1rem 1.1rem 1.1rem; }
-.combo-tag { align-self: flex-start; padding: .15rem .6rem; border-radius: 999px; background: var(--gold); color: #3E2615; font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.combo-tag { align-self: flex-start; padding: .15rem .6rem; border-radius: 999px; background: var(--gold); color: #2C1B14; font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .combo-card h4 { margin: .15rem 0 0; font-size: 1.1rem; font-weight: 800; color: var(--text); }
 .combo-card p { margin: 0; font-size: .85rem; line-height: 1.4; color: var(--muted); }
 .combo-card-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: .1rem .6rem; margin-top: auto; padding-top: .5rem; }
@@ -144,7 +155,7 @@
   background: var(--surface); color: var(--text); font: inherit; font-weight: 500; transition: border-color .2s ease, box-shadow .2s ease;
 }
 .carta-buscar-input::placeholder { color: var(--faint); }
-.carta-buscar-input:focus { outline: 0; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(227, 167, 47, .22); }
+.carta-buscar-input:focus { outline: 0; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(244, 168, 23, .22); }
 .carta-buscar-input::-webkit-search-cancel-button { display: none; }
 .carta-buscar-limpiar {
   position: absolute; right: .55rem; display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%;
@@ -153,3 +164,12 @@
 .carta-buscar-limpiar[hidden] { display: none; }
 .carta-sin-resultados { margin: 1rem 0 2rem; padding: 2rem 1rem; text-align: center; color: var(--muted); border: 2px dashed var(--line-2); border-radius: 12px; }
 .carta-sin-resultados[hidden] { display: none; }
+
+/* ══ HÉROE EN TEMA OSCURO ═══════════════════════════════════════════════════════════════════════════
+   Foco de luz marrón café (#3B2217) que se funde hacia espresso casi negro (#1B0F0A) en los bordes. */
+html[data-theme="dark"] .home-carousel .home-banner,
+html[data-theme="dark"] .home-slide-combo {
+  background: radial-gradient(ellipse 85% 120% at 72% 28%, var(--hero-glow-start, #3B2217) 0%, #2A170F 48%, var(--hero-glow-end, #1B0F0A) 100%);
+}
+html[data-theme="dark"] .home-carousel { background: var(--hero-glow-end, #1B0F0A); }
+html[data-theme="dark"] .home-banner-plate { box-shadow: 0 34px 60px -14px rgba(0, 0, 0, .8), 0 0 100px rgba(255, 191, 63, .22), inset 0 2px 3px rgba(255, 255, 255, .45); }

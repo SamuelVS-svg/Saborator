@@ -8,7 +8,7 @@
     background: var(--bg, #F6EBD3);
     background-image: radial-gradient(circle at 1px 1px, rgba(107, 66, 38, 0.045) 1px, transparent 0);
     background-size: 24px 24px;
-    color: var(--text, #3E2615);
+    color: var(--text, #2C1B14);
     font-family: var(--font-ui, 'Poppins', sans-serif);
     padding-bottom: 5rem;
 }
@@ -27,7 +27,7 @@
     background: rgba(20, 5, 8, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(227, 167, 47, 0.35);
+    border-bottom: 1px solid rgba(244, 168, 23, 0.35);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -45,12 +45,12 @@
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(227, 167, 47, 0.35) 0%, rgba(107, 66, 38, 0.5) 100%);
-    border: 1px solid rgba(227, 167, 47, 0.5);
+    background: linear-gradient(135deg, rgba(244, 168, 23, 0.35) 0%, rgba(107, 66, 38, 0.5) 100%);
+    border: 1px solid rgba(244, 168, 23, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--gold, #E3A72F);
+    color: var(--gold, #F4A817);
 }
 
 .cinema-brand-icon svg { width: 24px; height: 22px; fill: currentColor; }
@@ -105,9 +105,9 @@
     gap: 0.5rem;
     padding: 0.4rem 1.1rem;
     border-radius: 9999px;
-    background: rgba(227, 167, 47, 0.18);
-    border: 1px solid rgba(227, 167, 47, 0.45);
-    color: var(--gold, #E3A72F);
+    background: rgba(244, 168, 23, 0.18);
+    border: 1px solid rgba(244, 168, 23, 0.45);
+    color: var(--gold, #F4A817);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -128,7 +128,7 @@
 
 .reserva-title span {
     font-style: italic;
-    color: var(--gold, #E3A72F);
+    color: var(--gold, #F4A817);
 }
 
 .reserva-subtitle {
@@ -169,7 +169,7 @@
     color: #FFFFFF;
     background: var(--brand, #6B4226);
     border-color: #F4C95D;
-    box-shadow: 0 0 12px rgba(227, 167, 47, 0.35);
+    box-shadow: 0 0 12px rgba(244, 168, 23, 0.35);
 }
 
 .step-chip .step-num {
@@ -187,7 +187,7 @@
 
 .step-chip:not(.active) .step-num {
     background: var(--line, rgba(107, 66, 38, 0.15));
-    color: var(--text, #3E2615);
+    color: var(--text, #2C1B14);
 }
 
 :root[data-theme="dark"] .step-chip {
@@ -197,7 +197,7 @@
 }
 
 :root[data-theme="dark"] .step-chip.active {
-    background: rgba(227, 167, 47, 0.22);
+    background: rgba(244, 168, 23, 0.22);
 }
 
 :root[data-theme="dark"] .step-chip:not(.active) .step-num {
@@ -225,17 +225,17 @@
 /* ── PANEL DE SELECCIÓN (IZQUIERDA) ──────────────────────── */
 .reserva-stage-card {
     background: var(--surface, #FFFFFF);
-    border: 1.5px solid var(--line, #E8D5B0);
+    border: 1.5px solid var(--line, #E8DFD0);
     border-radius: 20px;
     padding: 2.25rem;
     box-shadow: 0 16px 48px rgba(38, 24, 18, 0.05);
     position: relative;
-    color: var(--text, #3E2615);
+    color: var(--text, #2C1B14);
 }
 
 :root[data-theme="dark"] .reserva-stage-card {
     background: #1A070D;
-    border-color: rgba(227, 167, 47, 0.35);
+    border-color: rgba(244, 168, 23, 0.35);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
     color: #FFFFFF;
 }
@@ -247,7 +247,7 @@
     gap: 1.5rem;
     margin-bottom: 1.75rem;
     padding-bottom: 1.75rem;
-    border-bottom: 1px solid var(--line, #E8D5B0);
+    border-bottom: 1px solid var(--line, #E8DFD0);
 }
 
 .r-control-group label {
@@ -266,7 +266,7 @@
     width: 100%;
     background: var(--surface-2, #F6EBD3);
     border: 1.5px solid var(--line-2, #D9C197);
-    color: var(--text, #3E2615);
+    color: var(--text, #2C1B14);
     padding: 0.75rem 1rem;
     border-radius: 10px;
     font-family: inherit;
@@ -279,13 +279,13 @@
 :root[data-theme="dark"] .r-input,
 :root[data-theme="dark"] .r-select {
     background: #110306;
-    border-color: rgba(227, 167, 47, 0.5);
+    border-color: rgba(244, 168, 23, 0.5);
     color: #FFFFFF;
 }
 
 .r-input:focus, .r-select:focus {
     border-color: #F4C95D;
-    box-shadow: 0 0 0 3.5px rgba(227, 167, 47, 0.3);
+    box-shadow: 0 0 0 3.5px rgba(244, 168, 23, 0.3);
 }
 
 .r-select option {
@@ -297,7 +297,7 @@
 
 /* ── BOTÓN SIGUIENTE PASO (DESBLOQUEO DE MESAS) ─────────── */
 .next-step-banner {
-    background: linear-gradient(135deg, rgba(227, 167, 47, 0.18) 0%, rgba(107, 66, 38, 0.25) 100%);
+    background: linear-gradient(135deg, rgba(244, 168, 23, 0.18) 0%, rgba(107, 66, 38, 0.25) 100%);
     border: 1.5px solid #F4C95D;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
@@ -355,7 +355,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 16px rgba(227, 167, 47, 0.35);
+    box-shadow: 0 4px 16px rgba(244, 168, 23, 0.35);
     transition: background-color 150ms ease, transform 140ms ease;
     white-space: nowrap;
 }
@@ -383,7 +383,7 @@
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 16px;
-    border: 1px dashed rgba(227, 167, 47, 0.45);
+    border: 1px dashed rgba(244, 168, 23, 0.45);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -403,14 +403,14 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(227, 167, 47, 0.25) 0%, rgba(107, 66, 38, 0.4) 100%);
+    background: linear-gradient(135deg, rgba(244, 168, 23, 0.25) 0%, rgba(107, 66, 38, 0.4) 100%);
     border: 2px solid #F4C95D;
     color: #F4C95D;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1.25rem;
-    box-shadow: 0 0 20px rgba(227, 167, 47, 0.35);
+    box-shadow: 0 0 20px rgba(244, 168, 23, 0.35);
 }
 
 .lock-title {
@@ -442,7 +442,7 @@
     margin: 0 auto 0.75rem;
     border-top: 3.5px solid #F4C95D;
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    box-shadow: 0 -8px 24px rgba(227, 167, 47, 0.45);
+    box-shadow: 0 -8px 24px rgba(244, 168, 23, 0.45);
 }
 
 .cinema-screen-label {
@@ -465,7 +465,7 @@
     gap: 2rem;
     margin-bottom: 2rem;
     font-size: 0.85rem;
-    color: var(--text, #3E2615);
+    color: var(--text, #2C1B14);
     font-weight: 600;
     flex-wrap: wrap;
 }
@@ -485,7 +485,7 @@
 }
 
 .legend-dot.disponible {
-    background: rgba(227, 167, 47, 0.35);
+    background: rgba(244, 168, 23, 0.35);
     border: 2px solid #F4C95D;
 }
 
@@ -502,7 +502,7 @@
 .legend-dot.seleccionada {
     background: #F4C95D;
     border: 2px solid #FFFFFF;
-    box-shadow: 0 0 12px rgba(227, 167, 47, 0.9);
+    box-shadow: 0 0 12px rgba(244, 168, 23, 0.9);
 }
 
 /* ── PLANO DE SALA / MESAS ───────────────────────────────── */
@@ -528,7 +528,7 @@
 .zone-line {
     flex: 1;
     height: 1.5px;
-    background: rgba(227, 167, 47, 0.28);
+    background: rgba(244, 168, 23, 0.28);
 }
 
 .tables-grid {
@@ -542,7 +542,7 @@
     position: relative;
     aspect-ratio: 1;
     background: #1C080E;
-    border: 1.8px solid rgba(227, 167, 47, 0.5);
+    border: 1.8px solid rgba(244, 168, 23, 0.5);
     border-radius: 14px;
     display: flex;
     flex-direction: column;
@@ -577,8 +577,8 @@
     .table-node.disponible:hover {
         transform: translateY(-3px);
         border-color: #FFFFFF;
-        background: rgba(227, 167, 47, 0.3);
-        box-shadow: 0 6px 18px rgba(227, 167, 47, 0.4);
+        background: rgba(244, 168, 23, 0.3);
+        box-shadow: 0 6px 18px rgba(244, 168, 23, 0.4);
     }
 }
 
@@ -588,9 +588,9 @@
 
 /* Mesa Seleccionada */
 .table-node.selected {
-    background: linear-gradient(135deg, #F4C95D 0%, #E3A72F 100%);
+    background: linear-gradient(135deg, #F4C95D 0%, #F4A817 100%);
     border-color: #FFFFFF;
-    box-shadow: 0 0 20px rgba(227, 167, 47, 0.85);
+    box-shadow: 0 0 20px rgba(244, 168, 23, 0.85);
     transform: scale(1.06);
 }
 
@@ -742,7 +742,7 @@
 
 .ticket-input {
     width: 100%;
-    background: #FFFDF8;
+    background: #FBF7EE;
     border: 1.5px solid #D5C4B2;
     color: #1A080C;
     padding: 0.65rem 0.85rem;
@@ -932,13 +932,13 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #F4C95D 0%, #E3A72F 100%);
+    background: linear-gradient(135deg, #F4C95D 0%, #F4A817 100%);
     color: #1A080C;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.35rem;
-    box-shadow: 0 8px 24px rgba(227, 167, 47, 0.45);
+    box-shadow: 0 8px 24px rgba(244, 168, 23, 0.45);
 }
 
 .confirm-seal svg { width: 36px; height: 36px; stroke-width: 2.5; }
@@ -947,11 +947,11 @@
 :root[data-theme="dark"] .reserva-ticket-card {
     background: #1A070D;
     color: #FFFFFF;
-    border: 1.5px solid rgba(227, 167, 47, 0.35);
+    border: 1.5px solid rgba(244, 168, 23, 0.35);
 }
 
 :root[data-theme="dark"] .ticket-header {
-    border-bottom: 2px dashed rgba(227, 167, 47, 0.35);
+    border-bottom: 2px dashed rgba(244, 168, 23, 0.35);
 }
 
 :root[data-theme="dark"] .ticket-header::before,
@@ -960,7 +960,7 @@
 }
 
 :root[data-theme="dark"] .ticket-brand {
-    color: var(--gold, #E3A72F);
+    color: var(--gold, #F4A817);
 }
 
 :root[data-theme="dark"] .ticket-tag {
@@ -969,7 +969,7 @@
 
 :root[data-theme="dark"] .ticket-code {
     color: #F4C95D;
-    background: rgba(227, 167, 47, 0.15);
+    background: rgba(244, 168, 23, 0.15);
 }
 
 :root[data-theme="dark"] .t-row .t-label {
@@ -981,7 +981,7 @@
 }
 
 :root[data-theme="dark"] .t-row .t-val.highlight {
-    color: var(--gold, #E3A72F);
+    color: var(--gold, #F4A817);
 }
 
 :root[data-theme="dark"] .ticket-form-group label {
@@ -990,7 +990,7 @@
 
 :root[data-theme="dark"] .ticket-input {
     background: #110306;
-    border-color: rgba(227, 167, 47, 0.4);
+    border-color: rgba(244, 168, 23, 0.4);
     color: #FFFFFF;
 }
 
@@ -1002,7 +1002,7 @@
 :root[data-theme="dark"] .auth-modal-box {
     background: #1A070D;
     color: #FFFFFF;
-    border: 1.5px solid rgba(227, 167, 47, 0.35);
+    border: 1.5px solid rgba(244, 168, 23, 0.35);
 }
 
 :root[data-theme="dark"] .auth-modal-title {
@@ -1022,6 +1022,6 @@
 }
 
 :root[data-theme="dark"] .auth-tab-btn.active {
-    background: #3E2615;
+    background: #2C1B14;
     color: #F4C95D;
 }

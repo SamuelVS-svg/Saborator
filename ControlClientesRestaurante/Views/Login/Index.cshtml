@@ -83,7 +83,7 @@
 
                     @if (ViewBag.RequiereVerificacion == true)
                     {
-                        <div style="margin:-0.5rem 0 1rem; padding:0.8rem 1rem; background:rgba(227, 167, 47,0.12); border:1px solid rgba(227, 167, 47,0.3); border-radius:10px; font-size:0.83rem; text-align:left;">
+                        <div style="margin:-0.5rem 0 1rem; padding:0.8rem 1rem; background:rgba(244, 168, 23,0.12); border:1px solid rgba(244, 168, 23,0.3); border-radius:10px; font-size:0.83rem; text-align:left;">
                             <span style="color:var(--color-accent); font-weight:700;">¿No recibiste el correo de validación?</span>
                             <form asp-action="ReenviarVerificacion" method="post" style="margin-top:0.35rem;">
                                 @Html.AntiForgeryToken()
@@ -460,7 +460,7 @@ function selectOtpChannel(channel) {
         }
     } else {
         if (btnSms) {
-            btnSms.style.background = 'rgba(227, 167, 47,0.18)';
+            btnSms.style.background = 'rgba(244, 168, 23,0.18)';
             btnSms.style.borderColor = 'var(--color-accent)';
             btnSms.style.color = 'var(--color-accent)';
         }
@@ -674,7 +674,7 @@ function triggerAuthCelebration(btn, text, callback) {
 
     var particles = [];
     var particleCount = 65;
-    var colors = ['#E3A72F', '#E3A72F', '#6B4226', '#10B981', '#FFFDF8', '#E5DCB8'];
+    var colors = ['#F4A817', '#F4A817', '#6B4226', '#10B981', '#FBF7EE', '#E5DCB8'];
 
     for (var i = 0; i < particleCount; i++) {
         var angle = (Math.PI * 2 * (i / particleCount)) + (Math.random() - 0.5) * 0.4;
