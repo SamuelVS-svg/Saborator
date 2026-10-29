@@ -4,7 +4,7 @@
    - Sombras multicapa (ambient + direct)
    - Transiciones declaradas y acotadas (nunca transition: all)
    - Retroalimentación táctil (:active scale(0.97))
-   - Tipografía Poppins, números tabulares (tnum)
+   - Tipografía Inter, números tabulares (tnum)
    ========================================================================== */
 
 :root {

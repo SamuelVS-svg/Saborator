@@ -268,7 +268,7 @@
 }
 
 .intro-brand-title {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: clamp(2.4rem, 6.5vw, 3.8rem);
     font-weight: 400;
     letter-spacing: 0.08em;
@@ -312,7 +312,7 @@
 }
 
 .intro-brand-sub {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: clamp(0.68rem, 1.8vw, 0.8rem);
     font-weight: 600;
     letter-spacing: 0.28em;
@@ -368,7 +368,7 @@
     color: rgba(255, 255, 255, 0.85);
     padding: 0.45rem 0.95rem;
     border-radius: 9999px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.04em;
@@ -400,7 +400,7 @@
 }
 
 .intro-skip-kbd {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 0.65rem;
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.2);

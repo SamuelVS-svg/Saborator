@@ -7,13 +7,13 @@
    Se carga al final para quedar por encima del resto de hojas de estilo.
    ========================================================================== */
 
-/* ── Tipografía de títulos (todos los temas): Poppins pesado en mayúsculas ───────────────────────── */
+/* ── Tipografía de títulos (ver la opción C al final) ───────────────────────── */
 html .home-banner h1,
 html .home-slide-combo h2,
 html .home-page .section-title,
 html .lnav-name,
 html .gourmet-footer-logo {
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-weight: 800;
   font-style: normal;
   text-transform: uppercase;
@@ -22,7 +22,7 @@ html .gourmet-footer-logo {
 .home-banner h1 { line-height: 1.02; font-size: clamp(2.2rem, 4.8vw, 3.6rem); }
 html .home-banner h1 em, html .home-banner h1 i { font-style: normal !important; }
 .home-page .section-title { font-size: clamp(1.7rem, 3.4vw, 2.4rem); }
-html .gourmet-footer-title { font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; }
+html .gourmet-footer-title { font-family: 'Inter', system-ui, sans-serif; font-weight: 800; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; }
 
 /* ── Cabecera blanca ─────────────────────────────────────────────────────────────────────────────── */
 html:not([data-theme]) .lnav {
@@ -157,14 +157,14 @@ html:not([data-theme]) .home-order-card:hover { background: #FFF8E6; }
 .lnav .lnav-toggle:focus-visible,
 .lnav-buscar-cerrar:focus-visible { outline: none; background: rgba(244, 168, 23, .22); }
 
-/* ══ TIPOGRAFÍA ÚNICA: Poppins ══════════════════════════════════════════════════════════════════════
-   Títulos de página en Poppins 800 y mayúsculas (igual que el inicio); el resto del texto, en Poppins normal.
+/* ══ TIPOGRAFÍA (ver opción C al final) ══════════════════════════════════════════════════════════════════════
+   Los títulos van en Bebas Neue y el resto del texto en Inter (definido en la opción C, al final de este archivo).
    Ya no hay otras familias (se retiraron Playfair Display y Geist Mono). */
 html .reserva-title,
 html .checkout-title,
 html .tracker-title,
 html .rastrear-title {
-  font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-style: normal; text-transform: uppercase; letter-spacing: .01em;
+  font-family: 'Inter', system-ui, sans-serif; font-weight: 800; font-style: normal; text-transform: uppercase; letter-spacing: .01em;
 }
 html .reserva-title span { font-style: normal; }
 
@@ -191,3 +191,46 @@ html .modal-ingreso-box > div > p:last-child { margin-top: .7rem !important; }
   html .btn-kfc-cta { padding: .56rem 1rem; }
   html .kfc-divider { margin: .45rem 0; }
 }
+
+/* ══ OPCIÓN C · BEBAS NEUE (títulos) + INTER (texto) ═══════════════════════════════════════════════
+   Bebas Neue solo existe en un peso y en mayúsculas: se pide en peso 400 y sin negrita sintética.
+   Todo lo demás se escribe en Inter. */
+html { font-synthesis-weight: none; }
+html .home-banner h1,
+html .home-slide-combo h2,
+html .home-page .section-title,
+html .lnav-name,
+html .gourmet-footer-logo,
+html .gourmet-footer-title,
+html .reserva-title,
+html .checkout-title,
+html .tracker-title,
+html .rastrear-title,
+html .titulo-pagina,
+html .combos-title,
+html .home-order-title,
+html .drawer-title {
+  font-family: 'Bebas Neue', 'Inter', system-ui, sans-serif; font-weight: 400; font-style: normal; text-transform: uppercase; letter-spacing: .03em;
+}
+html .home-banner h1 { font-size: clamp(2.8rem, 6vw, 4.8rem); line-height: .95; }
+html .home-slide-combo h2 { font-size: clamp(2.4rem, 5vw, 3.8rem); line-height: .98; }
+html .home-page .section-title { font-size: clamp(2.2rem, 4.2vw, 3.1rem); }
+html .lnav-name { font-size: 1.7rem; letter-spacing: .04em; }
+html .reserva-title, html .checkout-title, html .tracker-title, html .rastrear-title { font-size: clamp(2.4rem, 5vw, 3.6rem); line-height: 1; }
+html .titulo-pagina { font-size: 2.8rem; }
+html .combos-title, html .home-order-title { font-size: 1.7rem; }
+html .gourmet-footer-logo { font-size: 2rem; }
+html .gourmet-footer-title { font-size: 1.3rem; }
+html .drawer-title { font-size: 1.6rem; }
+@media (max-width: 1120px) { html .lnav-name { font-size: 1.4rem; letter-spacing: .03em; } }
+@media (max-width: 420px) { html .lnav-name { font-size: 1.25rem; } }
+
+/* Nombres de platos, combos y tipos de pedido también en Bebas Neue (como en la muestra) */
+html .combo-card h4,
+html .dish-minimal-name,
+html .home-order-name {
+  font-family: 'Bebas Neue', 'Inter', system-ui, sans-serif; font-weight: 400; text-transform: uppercase; letter-spacing: .03em;
+}
+html .combo-card h4 { font-size: 1.5rem; line-height: 1.05; }
+html .dish-minimal-name { font-size: 1.45rem; line-height: 1.05; }
+html .home-order-name { font-size: 1.6rem; }

@@ -35,7 +35,7 @@
 }
 
 body {
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--brand-night);
     color: var(--ink);
     min-height: 100vh;
@@ -358,7 +358,7 @@ body {
 }
 
 .form-logo-name {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 1.7rem;
     color: var(--brand-burgundy);
     line-height: 1;
@@ -442,7 +442,7 @@ body {
 
 /* ── TITULARES DE FORMULARIO ─────────────────────────────────────────────── */
 .form-title {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 2.1rem;
     color: var(--ink);
     line-height: 1.1;
@@ -735,7 +735,7 @@ input:-webkit-autofill:focus {
 }
 
 .rec-box h3 {
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 1.85rem;
     color: var(--brand-burgundy);
     margin-bottom: .25rem;

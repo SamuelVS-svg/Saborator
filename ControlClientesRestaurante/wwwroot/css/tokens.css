@@ -23,9 +23,9 @@
   --shadow-lg:0 2px 4px rgba(0,0,0,.05),0 30px 60px -20px rgba(0,0,0,.25);
   --ease:cubic-bezier(.16,1,.3,1); --spring:cubic-bezier(.34,1.56,.64,1);
   --r-ctl:12px; --r-card:12px; --r-big:12px;
-  --font:'Poppins',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'Poppins', system-ui, sans-serif;
-  --serif:'Poppins', system-ui, sans-serif;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'Inter', system-ui, sans-serif;
+  --serif:'Bebas Neue','Inter',system-ui,sans-serif;
   --dock-space:128px;
   color-scheme:light;
 }
