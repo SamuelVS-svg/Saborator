@@ -29,3 +29,6 @@ paquete-portatil/
 
 # Fotos de perfil subidas por los usuarios (no van al repositorio)
 ControlClientesRestaurante/wwwroot/uploads/avatars/
+
+# Claves temporales generadas para cuentas (nunca subir)
+credenciales-*.txt
