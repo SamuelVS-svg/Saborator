@@ -102,16 +102,16 @@ html:not([data-theme]) .dish-card-minimal,
 html:not([data-theme]) .combo-card { border-bottom: 3px solid var(--amarillo); }
 
 /* ── Pie de página crema ─────────────────────────────────────────────────────────────────────────── */
-html:not([data-theme]) .gourmet-footer { background: #F6EBD3; color: var(--marron-oscuro); border-top: 3px solid var(--amarillo); }
+html:not([data-theme]) .gourmet-footer { background: #EADCC2; color: var(--marron-oscuro); border-top: 3px solid var(--amarillo); }
 html:not([data-theme]) .gourmet-footer-logo { color: var(--marron-oscuro); }
 html:not([data-theme]) .gourmet-footer-logo svg { fill: var(--amarillo); }
 html:not([data-theme]) .gourmet-footer-tagline { color: var(--muted); }
 html:not([data-theme]) .gourmet-chip { background: #fff; border-color: var(--line); color: var(--marron); }
 html:not([data-theme]) .gourmet-footer-title { color: var(--marron-oscuro); }
 html:not([data-theme]) .gourmet-link-list a { color: var(--muted); }
-html:not([data-theme]) .gourmet-hours-list li { color: var(--muted); border-bottom-color: #E3D6C0; }
+html:not([data-theme]) .gourmet-hours-list li { color: var(--muted); border-bottom-color: #D5C6AC; }
 html:not([data-theme]) .gourmet-hours-list strong { color: var(--marron-oscuro); }
-html:not([data-theme]) .gourmet-footer-bottom { border-top: 1px solid #E3D6C0; background: rgba(255, 255, 255, .55); }
+html:not([data-theme]) .gourmet-footer-bottom { border-top: 1px solid #E3D6C0; background: rgba(255, 255, 255, .45); }
 html:not([data-theme]) .gourmet-footer-bottom-inner { color: var(--muted); }
 html:not([data-theme]) .gourmet-legal-links a,
 html:not([data-theme]) .gourmet-cookie-link { color: var(--muted); }
@@ -128,3 +128,25 @@ html:not([data-theme]) .btn-dish-add:hover,
 html:not([data-theme]) .combo-card .btn-gold:hover { background: var(--amarillo-suave); color: var(--marron-oscuro); }
 @media (max-width: 1120px) { html .lnav-name { font-size: 1rem; letter-spacing: 0; } }
 @media (max-width: 420px) { html .lnav-name { font-size: .88rem; } html .lnav-brand { gap: .4rem; } html .lnav-icon { display: none; } }
+
+/* ══ CONTRASTE ENTRE FONDO Y TARJETAS (modo claro) ═══════════════════════════════════════════════════
+   El fondo de página es crema y las tarjetas son blancas con borde y sombra visibles, para que se
+   distingan en toda la web (carta, combos, reservas, formularios…). */
+html:not([data-theme]) {
+  --bg: #F5EDDF;
+  --line: #E0D2BA;
+  --line-2: #D2C1A4;
+  --shadow: 0 1px 3px rgba(44, 27, 20, .08), 0 10px 22px -8px rgba(44, 27, 20, .20);
+  --shadow-md: 0 2px 5px rgba(44, 27, 20, .08), 0 16px 30px -10px rgba(44, 27, 20, .26);
+}
+html:not([data-theme]) .home-order { background: transparent; }
+html:not([data-theme]) .home-order-card,
+html:not([data-theme]) .home-order-wide,
+html:not([data-theme]) .dish-card-minimal,
+html:not([data-theme]) .combo-card {
+  background: #fff; border: 1px solid var(--line-2); box-shadow: var(--shadow-md);
+}
+html:not([data-theme]) .home-order-card,
+html:not([data-theme]) .dish-card-minimal,
+html:not([data-theme]) .combo-card { border-bottom: 3px solid var(--amarillo); }
+html:not([data-theme]) .home-order-card:hover { background: #FFF8E6; }
