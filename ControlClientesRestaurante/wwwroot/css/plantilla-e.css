@@ -156,3 +156,14 @@ html:not([data-theme]) .home-order-card:hover { background: #FFF8E6; }
 .lnav .lnav-search-btn:focus-visible,
 .lnav .lnav-toggle:focus-visible,
 .lnav-buscar-cerrar:focus-visible { outline: none; background: rgba(244, 168, 23, .22); }
+
+/* ══ TIPOGRAFÍA ÚNICA: Poppins ══════════════════════════════════════════════════════════════════════
+   Títulos de página en Poppins 800 y mayúsculas (igual que el inicio); el resto del texto, en Poppins normal.
+   Ya no hay otras familias (se retiraron Playfair Display y Geist Mono). */
+html .reserva-title,
+html .checkout-title,
+html .tracker-title,
+html .rastrear-title {
+  font-family: 'Poppins', system-ui, sans-serif; font-weight: 800; font-style: normal; text-transform: uppercase; letter-spacing: .01em;
+}
+html .reserva-title span { font-style: normal; }

@@ -1,6 +1,6 @@
 /* ==========================================================================
    LANDING PAGE — PALETA SABORATOR & EMIL KOWALSKI POLISH
-   Geist & Instrument Serif, Microinteracciones y Elevación Sutil
+   Poppins, Microinteracciones y Elevación Sutil
    ========================================================================== */
 
 *, *::before, *::after {
@@ -61,7 +61,7 @@
 .hero-tag svg { stroke: var(--brand, #6B4226); }
 
 .hero-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: clamp(3rem, 8.5vw, 6rem);
     line-height: 1.02;
     font-weight: 400;
@@ -70,7 +70,6 @@
     letter-spacing: -0.025em;
 }
 .hero-title span {
-    font-style: italic;
     color: var(--brand, #6B4226);
     display: block;
 }
@@ -148,8 +147,7 @@
 .section-inner { max-width: 1140px; margin: 0 auto; }
 .section-center { text-align: center; }
 .section-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
-    font-style: italic;
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: clamp(2.2rem, 5vw, 3.4rem);
     margin-bottom: 0.45rem;
     color: var(--text, #2C1B14);
@@ -254,8 +252,7 @@
 
 /* ══ CTA SECTION ══════════════════════════════════════════════ */
 .cta-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
-    font-style: italic;
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: clamp(2.4rem, 6vw, 4rem);
     color: var(--text, #2C1B14);
     margin-bottom: 0.75rem;
@@ -778,7 +775,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .drawer-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 1.85rem;
     font-weight: 400;
     margin: 0;
@@ -1012,7 +1009,7 @@
     cursor: pointer;
 }
 .modality-modal-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 2.2rem;
     color: var(--brand, #6B4226);
     margin: 0 0 0.5rem;
@@ -1156,7 +1153,7 @@
     margin-bottom: 0.5rem;
 }
 .modal-resena-title {
-    font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 2.15rem;
     color: var(--brand, #6B4226);
     margin: 0 0 0.3rem;
@@ -1528,7 +1525,7 @@
     margin-bottom: 0.75rem;
 }
 .resenas-section .sec-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: clamp(2.2rem, 4.5vw, 3rem);
     font-weight: 400;
     color: var(--text, #2C1B14);

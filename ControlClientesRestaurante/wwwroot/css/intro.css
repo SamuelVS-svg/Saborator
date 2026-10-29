@@ -268,7 +268,7 @@
 }
 
 .intro-brand-title {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'Poppins', system-ui, sans-serif;
     font-size: clamp(2.4rem, 6.5vw, 3.8rem);
     font-weight: 400;
     letter-spacing: 0.08em;
@@ -281,7 +281,6 @@
 }
 
 .intro-brand-title span {
-    font-style: italic;
     color: #F4C95D;
     background: linear-gradient(135deg, #FFFFFF 20%, #F4C95D 60%, #F4A817 100%);
     -webkit-background-clip: text;
@@ -401,7 +400,7 @@
 }
 
 .intro-skip-kbd {
-    font-family: 'Geist Mono', monospace;
+    font-family: 'Poppins', system-ui, sans-serif;
     font-size: 0.65rem;
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.2);

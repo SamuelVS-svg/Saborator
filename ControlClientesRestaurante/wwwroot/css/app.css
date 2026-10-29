@@ -4,7 +4,7 @@
    - Sombras multicapa (ambient + direct)
    - Transiciones declaradas y acotadas (nunca transition: all)
    - Retroalimentación táctil (:active scale(0.97))
-   - Tipografía con Geist e Instrument Serif, números tabulares (tnum)
+   - Tipografía Poppins, números tabulares (tnum)
    ========================================================================== */
 
 :root {
@@ -117,7 +117,6 @@ html, body {
 .sidebar.open .sb-logo-text { opacity: 1; }
 .sb-logo-text .name {
     font-family: var(--font-serif);
-    font-style: italic;
     font-size: 1.25rem;
     color: var(--on-brand);
     display: block;
@@ -290,7 +289,6 @@ html, body {
 
 .top-page-title {
     font-family: var(--font-serif);
-    font-style: italic;
     font-size: 1.35rem;
     font-weight: 400;
     color: var(--ink);
@@ -576,7 +574,6 @@ html, body {
 .pg-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; }
 .pg-title {
     font-family: var(--font-serif);
-    font-style: italic;
     font-size: 1.85rem;
     font-weight: 400;
     color: var(--ink);

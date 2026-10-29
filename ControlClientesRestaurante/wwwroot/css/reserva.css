@@ -56,9 +56,8 @@
 .cinema-brand-icon svg { width: 24px; height: 22px; fill: currentColor; }
 
 .cinema-brand-name {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 1.55rem;
-    font-style: italic;
     letter-spacing: -0.01em;
     color: #FFFFFF;
 }
@@ -118,7 +117,7 @@
 :root[data-theme="dark"] .reserva-tag { color: #F7EBD9; }
 
 .reserva-title {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 400;
     line-height: 1.05;
@@ -127,7 +126,6 @@
 }
 
 .reserva-title span {
-    font-style: italic;
     color: var(--gold, #F4A817);
 }
 
@@ -559,7 +557,7 @@
 }
 
 .table-node .t-num {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 1.55rem;
     font-weight: 700;
     line-height: 1;
@@ -669,9 +667,8 @@
 .ticket-header::after  { right: -2.45rem; }
 
 .ticket-brand {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 2rem;
-    font-style: italic;
     color: var(--brand, #6B4226);
     margin-bottom: 0.25rem;
 }
@@ -686,7 +683,7 @@
 
 .ticket-code {
     margin-top: 0.5rem;
-    font-family: 'Geist Mono', monospace;
+    font-family: 'Poppins', system-ui, sans-serif;
     font-size: 1.05rem;
     font-weight: 800;
     color: #1A080C;
@@ -724,7 +721,7 @@
 .t-row .t-val.highlight {
     color: var(--brand, #6B4226);
     font-size: 1.3rem;
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
 }
 
 /* Inputs de cliente dentro del ticket */
@@ -841,9 +838,8 @@
 }
 
 .auth-modal-logo {
-    font-family: var(--font-serif, 'Playfair Display', serif);
+    font-family: var(--font-serif, 'Poppins', system-ui, sans-serif);
     font-size: 2.2rem;
-    font-style: italic;
     color: var(--brand, #6B4226);
     margin-bottom: 0.25rem;
 }
