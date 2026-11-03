@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { LINEUP_BURGER_PRODUCTS, BRAND_CONFIG } from '../data/smashData';
-import { Plus, Flame, Sparkles, Terminal } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function MenuLineupDark() {
   return (

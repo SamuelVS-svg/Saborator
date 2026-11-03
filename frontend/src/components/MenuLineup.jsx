@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import SectionHeader from './SectionHeader';
 import { MENU_LINEUP, RESTAURANT_INFO } from '../data/restaurantData';
-import { ArrowUpRight, Flame } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 export default function MenuLineup() {
   const containerVariants = {

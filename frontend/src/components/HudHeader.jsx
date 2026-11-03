@@ -1,6 +1,6 @@
 import React from 'react';
 import { BRAND_CONFIG } from '../data/smashData';
-import { Flame, Activity, Terminal, Phone } from 'lucide-react';
+import { Flame, Terminal, Phone } from 'lucide-react';
 
 export default function HudHeader({ onOpenAuth, currentUser, onLogout }) {
   return (

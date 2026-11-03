@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SEAR_TELEMETRY_STATS } from '../data/smashData';
-import { Activity, Flame, ShieldAlert, Cpu } from 'lucide-react';
+import { Cpu } from 'lucide-react';
 
 export default function SearTelemetry() {
   return (

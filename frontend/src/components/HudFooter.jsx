@@ -1,6 +1,6 @@
 import React from 'react';
 import { BRAND_CONFIG } from '../data/smashData';
-import { Terminal, MapPin, Phone, MessageSquare, Flame } from 'lucide-react';
+import { MapPin, Phone, MessageSquare, Flame } from 'lucide-react';
 
 export default function HudFooter() {
   return (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import SectionHeader from './SectionHeader';
 import { STATS_DATA } from '../data/restaurantData';
 
 export default function StatsSection() {

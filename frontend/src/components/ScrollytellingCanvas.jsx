@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SCROLLYTELLING_STAGES } from '../data/smashData';
-import { Flame, Thermometer, Gauge, ChevronDown, Sliders } from 'lucide-react';
+import { Thermometer, ChevronDown } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 

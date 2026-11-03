@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 import { ChevronDown, Sparkles, Clock, Flame } from 'lucide-react';
 

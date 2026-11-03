@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BUILDER_CUSTOM_SPECS, BRAND_CONFIG } from '../data/smashData';
-import { Check, Flame, Send, Layers, RefreshCw } from 'lucide-react';
+import { Check, Flame, Send } from 'lucide-react';
 
 export default function SmashBuilder() {
   const [patty, setPatty] = useState(BUILDER_CUSTOM_SPECS.patties[1]); // Default Double

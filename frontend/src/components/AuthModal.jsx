@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Phone, 
   MessageSquare, 
   Send, 
   CheckCircle2, 
@@ -158,7 +157,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
           spread: 70,
           origin: { y: 0.6 }
         });
-      } catch (cErr) {
+      } catch {
         // Ignorar si canvas-confetti no carga
       }
 
