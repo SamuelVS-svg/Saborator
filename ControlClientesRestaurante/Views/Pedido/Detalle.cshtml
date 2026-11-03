@@ -32,7 +32,7 @@
     <!-- Cabecera -->
     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem;">
         <div>
-            <div style="font-family:monospace;font-size:1.1rem;font-weight:700;">@Model.Numero</div>
+            <div style="font-family: var(--font-ui);font-size:1.1rem;font-weight:700;">@Model.Numero</div>
             <div style="font-size:.78rem;color:var(--muted);">@Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")</div>
         </div>
         <span class="estado-pill estado-@Model.Estado.ToLower()" style="padding:.3em .8em;font-size:.75rem;">

@@ -196,7 +196,7 @@ body {
     position: relative;
     z-index: 10;
     width: 100%;
-    max-width: 475px;
+    max-width: 400px;
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box;
@@ -221,14 +221,14 @@ body {
 
 .form-card {
     width: 100%;
-    max-width: 475px;
+    max-width: 400px;
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box;
     background: rgba(255, 255, 255, 0.96);
     border: 1.5px solid rgba(244, 168, 23, 0.38);
     border-radius: 24px;
-    padding: 2.25rem 2.25rem 2rem;
+    padding: 1.6rem 1.75rem 1.5rem;
     box-shadow:
         0 30px 80px -15px rgba(10, 2, 5, 0.75),
         0 0 50px rgba(107, 66, 38, 0.32),
@@ -443,10 +443,10 @@ body {
 /* ── TITULARES DE FORMULARIO ─────────────────────────────────────────────── */
 .form-title {
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 2.1rem;
+    font-size: 1.7rem;
     color: var(--ink);
     line-height: 1.1;
-    margin-bottom: .25rem;
+    margin-bottom: 1rem;
 }
 
 .form-sub {

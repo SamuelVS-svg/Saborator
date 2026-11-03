@@ -8,6 +8,7 @@
    ========================================================================== */
 
 :root {
+  --panel-dark:   #6B4226;                 /* Paneles que en oscuro son casi negros: en claro usan el café de marca */
   /* ── Paleta Sabor Casero (úsala por nombre) ── */
   --hueso:          #FBF7EE;   /* fondo principal                   */
   --crema:          #F5EFEB;   /* secciones alternas                */
@@ -101,6 +102,7 @@
 
 :root[data-theme="dark"],
 :root[data-theme="noche"] {
+  --panel-dark:   #1E120C;
   --brand:        #8B5A36;
   --brand-hover:  #A56E43;
   --ink:          #FFBF3F;

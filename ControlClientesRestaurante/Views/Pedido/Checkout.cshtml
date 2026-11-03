@@ -724,7 +724,7 @@
 
     /* Sidebar Resumen */
     .summary-card {
-        background: #1E120C;
+        background: var(--panel-dark, #1E120C);
         border: 1px solid rgba(244, 168, 23, 0.35);
         border-radius: 20px;
         padding: 2rem 1.75rem;
@@ -1173,7 +1173,7 @@
             } else {
                 if (filaDescuento) {
                     filaDescuento.style.display = 'flex';
-                    if (lblDescuento) lblDescuento.innerHTML = `Descuento (<span style="font-family:monospace;letter-spacing:1px;">${cuponGuardado.codigo}</span>)`;
+                    if (lblDescuento) lblDescuento.innerHTML = `Descuento (<span style="font-family: var(--font-ui);letter-spacing:1px;">${cuponGuardado.codigo}</span>)`;
                     if (descuentoVal) descuentoVal.textContent = `-$${descuento.toLocaleString('es-CO')} COP`;
                 }
 

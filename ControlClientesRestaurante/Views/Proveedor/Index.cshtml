@@ -60,7 +60,7 @@ else
                             }
                             else { <span style="color:var(--c-muted);">—</span> }
                         </td>
-                        <td style="color:var(--c-muted);font-family:monospace;font-size:.82rem;">@(p.Nit ?? "—")</td>
+                        <td style="color:var(--c-muted);font-family: var(--font-ui);font-size:.82rem;">@(p.Nit ?? "—")</td>
                         <td>
                             <div class="d-flex gap-2">
                                 <a asp-action="Edit" asp-route-id="@p.Id" class="btn-ghost"

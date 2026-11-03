@@ -50,7 +50,6 @@
                 </div>
                 <div>
                     <span class="form-logo-name">Saborator</span>
-                    <span class="form-logo-tag">Portal Gastronómico Saborator</span>
                 </div>
             </div>
 
@@ -72,7 +71,6 @@
 
             <!-- ════════ FORMULARIO: INICIAR SESIÓN ════════ -->            <section id="formSectionLogin" class="auth-section @(!isRegistro && !isRapido ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnLogin">
                 <h2 class="form-title">Bienvenido</h2>
-                <p class="form-sub">Ingresa tus credenciales para acceder</p>
 
                 @if (ViewBag.Error != null)
                 {
@@ -152,7 +150,6 @@
             <!-- ════════ FORMULARIO: REGISTRO DE CLIENTES ════════ -->
             <section id="formSectionRegistro" class="auth-section @(isRegistro ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnRegistro">
                 <h2 class="form-title">Crea tu cuenta</h2>
-                <p class="form-sub">Regístrate como cliente para ordenar en mesa</p>
 
                 @if (ViewBag.ErrorRegistro != null)
                 {
@@ -301,7 +298,6 @@
             <!-- ════════ FORMULARIO: REGISTRO RÁPIDO (nombre, apellido, usuario y correo) ════════ -->
             <section id="formSectionRapido" class="auth-section @(isRapido ? "active" : "")" role="tabpanel" aria-labelledby="tabBtnRapido">
                 <h2 class="form-title">Crea tu cuenta en un minuto</h2>
-                <p class="form-sub">Solo necesitamos tus datos básicos para empezar a pedir</p>
 
                 @if (ViewBag.ErrorRapido != null)
                 {
