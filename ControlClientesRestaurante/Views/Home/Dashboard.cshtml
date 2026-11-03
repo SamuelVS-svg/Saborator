@@ -87,7 +87,8 @@
     string Trazo(List<(string etiqueta, decimal valor)> serie, bool area)
     {
         var max = Math.Max(1m, serie.Max(x => x.valor));
-        var pts = serie.Select((x, i) => $"{(serie.Count == 1 ? 0 : i * 600.0 / (serie.Count - 1)):0.#} {(170 - (double)(x.valor / max) * 140):0.#}").ToList();
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        var pts = serie.Select((x, i) => $"{(serie.Count == 1 ? 0 : i * 600.0 / (serie.Count - 1)).ToString("0.#", inv)} {(170 - (double)(x.valor / max) * 140).ToString("0.#", inv)}").ToList();
         var linea = "M " + string.Join(" L ", pts);
         return area ? linea + " L 600 180 L 0 180 Z" : linea;
     }

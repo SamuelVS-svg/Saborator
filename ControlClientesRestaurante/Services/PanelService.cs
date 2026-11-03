@@ -38,7 +38,9 @@ namespace ControlClientesRestaurante.Services
         private static string Hace(DateTime fecha)
         {
             var min = (int)Math.Max(0, (DateTime.Now - fecha).TotalMinutes);
-            return min < 60 ? $"hace {min} min" : $"hace {min / 60} h {min % 60} min";
+            if (min < 60) return $"hace {min} min";
+            if (min < 1440) return $"hace {min / 60} h {min % 60} min";
+            return $"hace {min / 1440} d";
         }
 
         public PanelViewModel? Construir(string rol, string usuario) => rol switch
