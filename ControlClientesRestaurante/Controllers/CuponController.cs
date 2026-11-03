@@ -63,12 +63,14 @@ namespace ControlClientesRestaurante.Controllers
 
         [Authorize(Roles = "Administrador")]
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(string? codigo, string? descripcion, decimal? valor)
         {
             return View(new Cupon
             {
+                Codigo = codigo?.Trim().ToUpperInvariant() ?? string.Empty,
+                Descripcion = descripcion?.Trim() ?? string.Empty,
                 TipoDescuento = "Porcentaje",
-                Valor = 10,
+                Valor = valor is > 0 and <= 100 ? valor.Value : 10,
                 MontoMinimo = 20000,
                 UsosMaximos = 100,
                 Activo = true,
