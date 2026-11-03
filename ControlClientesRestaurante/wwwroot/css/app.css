@@ -302,6 +302,9 @@ html, body {
     text-overflow: ellipsis;
     letter-spacing: -0.015em;
 }
+
+/* Si la página ya trae su propio encabezado (icono + título), no se repite el título en la barra superior */
+body:has(.pg-header) .top-page-title { display: none; }
 .top-spacer { flex: 1; }
 
 .top-search { position: relative; width: 230px; flex-shrink: 0; }
