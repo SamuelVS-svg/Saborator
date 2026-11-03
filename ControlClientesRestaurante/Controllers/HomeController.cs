@@ -84,6 +84,12 @@ namespace ControlClientesRestaurante.Controllers
             return View();
         }
 
+        // Política de Privacidad y Tratamiento de Datos (Ley 1581)
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
         // Términos y Condiciones, Políticas de Domicilios, Reservas, Tratamiento de Datos (Ley 1581) y Cookies
         public IActionResult Terminos()
         {
