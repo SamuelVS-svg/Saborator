@@ -43,7 +43,7 @@ html, body {
     color: var(--on-brand);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible; /* la flecha sobresale del borde; cada bloque interno recorta su propio contenido */
     transition: width var(--tr);
     z-index: 200;
     border-right: 1px solid rgba(246, 235, 211, 0.12);
@@ -53,34 +53,38 @@ html, body {
 
 .sb-arrow {
     position: absolute;
-    right: -13px;
-    top: 16px;   /* arriba del todo, por encima del bloque del logo y el rol */
+    right: -15px;
+    top: 34px;   /* a la altura del logo, sobre el borde del menú */
     transform: translateY(-50%);
-    width: 26px;
-    height: 26px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
     border-radius: 50%;
-    background: var(--surface);
-    border: 1.5px solid var(--line-2);
+    background: var(--gold, #C8973A);
+    border: 2px solid var(--brand);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 201;
-    transition: background-color 150ms var(--ease), border-color 150ms var(--ease), transform var(--tr);
-    box-shadow: var(--shadow-sm);
+    transition: background-color 150ms var(--ease), transform var(--tr), box-shadow 150ms var(--ease);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 @media (hover: hover) and (pointer: fine) {
     .sb-arrow:hover {
-        background: var(--surface-2);
-        border-color: var(--brand);
+        background: #E0AE55;
+        box-shadow: 0 3px 12px rgba(200, 151, 58, 0.55);
+        transform: translateY(-50%) scale(1.08);
     }
 }
 .sb-arrow:active { transform: translateY(-50%) scale(0.92); }
 .sb-arrow svg {
-    width: 12px;
-    height: 12px;
-    stroke: var(--ink);
-    stroke-width: 2.5;
+    width: 14px;
+    height: 14px;
+    stroke: #2C1B14;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     fill: none;
     transition: transform var(--tr);
 }
