@@ -464,7 +464,7 @@
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 1.5rem;
-    align-items: start;
+    align-items: stretch; /* ambas columnas a la misma altura: sin hueco bajo el panel derecho */
 }
 
 /* ── 6. TARJETAS TIPO BENTO (GRID ASIMÉTRICO) ────────────────────────────── */
@@ -804,6 +804,17 @@
 
 .v12-panel-card {
     padding: 1.35rem;
+}
+
+/* La última tarjeta del panel derecho absorbe la altura sobrante y deja su botón abajo */
+.v12-right-panel > .v12-panel-card:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.v12-right-panel > .v12-panel-card:last-child .btn-brand {
+    margin-top: auto;
 }
 
 .v12-panel-head {
