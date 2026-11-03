@@ -1,0 +1,100 @@
+@model ControlClientesRestaurante.Services.PanelViewModel
+@{
+    ViewData["Title"] = Model.Titulo;
+    ViewData["OcultarTituloTopbar"] = true;
+    var hora = DateTime.Now.Hour;
+    var saludo = hora < 12 ? "Buenos días" : (hora < 18 ? "Buenas tardes" : "Buenas noches");
+}
+
+<meta http-equiv="refresh" content="60" />
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+    <div class="pg-header">
+        <div class="pg-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        </div>
+        <div>
+            <div class="pg-title">@saludo, @Model.Usuario</div>
+            <div class="pg-sub">@Model.Titulo · @Model.Subtitulo</div>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        @foreach (var a in Model.Acciones)
+        {
+            <a href="@a.Url" class="@(a.Principal ? "btn-gold" : "btn-ghost")" style="padding:0.48rem 1rem;font-size:0.82rem;">@a.Texto</a>
+        }
+    </div>
+</div>
+<hr class="div-gold" />
+
+<div class="row g-3 mb-4">
+    @foreach (var m in Model.Metricas)
+    {
+        <div class="col-6 col-lg-3">
+            @if (m.Url != null)
+            {
+                <a href="@m.Url" class="card-pro d-block text-decoration-none h-100" style="border-left:4px solid @m.Color;">
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7;">@m.Titulo</div>
+                    <div style="font-size:1.8rem;font-weight:800;color:@m.Color;line-height:1.2;">@m.Valor</div>
+                    <div style="font-size:0.75rem;opacity:.7;">@m.Detalle</div>
+                </a>
+            }
+            else
+            {
+                <div class="card-pro h-100" style="border-left:4px solid @m.Color;">
+                    <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;opacity:.7;">@m.Titulo</div>
+                    <div style="font-size:1.8rem;font-weight:800;color:@m.Color;line-height:1.2;">@m.Valor</div>
+                    <div style="font-size:0.75rem;opacity:.7;">@m.Detalle</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div class="row g-3">
+    <div class="@(Model.TituloLista2 != null ? "col-12 col-lg-7" : "col-12")">
+        <div class="card-pro">
+            <div style="font-weight:800;margin-bottom:0.6rem;">@Model.TituloLista</div>
+            @if (!Model.Lista.Any())
+            {
+                <div style="opacity:.7;padding:0.8rem 0;">@Model.VacioLista</div>
+            }
+            @foreach (var i in Model.Lista)
+            {
+                <a href="@(i.Url ?? "#")" class="d-flex justify-content-between align-items-center gap-2 text-decoration-none" style="padding:0.55rem 0;border-top:1px solid var(--border);color:inherit;">
+                    <div>
+                        <div style="font-weight:700;">@i.Titulo</div>
+                        <div style="font-size:0.78rem;opacity:.7;">@i.Detalle</div>
+                    </div>
+                    <span style="color:@i.Color;font-weight:800;font-size:0.8rem;white-space:nowrap;">● @i.Etiqueta</span>
+                </a>
+            }
+        </div>
+    </div>
+    @if (Model.TituloLista2 != null)
+    {
+        <div class="col-12 col-lg-5">
+            <div class="card-pro">
+                <div style="font-weight:800;margin-bottom:0.6rem;">@Model.TituloLista2</div>
+                @if (!Model.Lista2.Any())
+                {
+                    <div style="opacity:.7;padding:0.8rem 0;">Sin datos por ahora.</div>
+                }
+                @foreach (var i in Model.Lista2)
+                {
+                    <div class="d-flex justify-content-between align-items-center gap-2" style="padding:0.55rem 0;border-top:1px solid var(--border);">
+                        <div>
+                            <div style="font-weight:700;">@i.Titulo</div>
+                            @if (!string.IsNullOrEmpty(i.Detalle))
+                            {
+                                <div style="font-size:0.78rem;opacity:.7;">@i.Detalle</div>
+                            }
+                        </div>
+                        <span style="color:@i.Color;font-weight:800;font-size:0.8rem;white-space:nowrap;">@i.Etiqueta</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+<p class="mt-3" style="font-size:0.75rem;opacity:.6;">Este panel se actualiza solo cada minuto.</p>

@@ -242,6 +242,7 @@ builder.Services.AddScoped<ResenaService>();
 builder.Services.AddScoped<CajaService>();
 builder.Services.AddScoped<CuponService>();
 builder.Services.AddScoped<FidelizacionService>();
+builder.Services.AddScoped<PanelService>();
 builder.Services.AddScoped<AuditoriaService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient("TwilioClient");

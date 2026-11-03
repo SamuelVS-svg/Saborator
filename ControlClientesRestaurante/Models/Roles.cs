@@ -19,10 +19,10 @@ namespace ControlClientesRestaurante.Models
         public static string PaginaInicio(string? rol) => rol switch
         {
             Administrador => "/Home/Dashboard",
-            Cajero        => "/Caja/Index",
-            Mesero        => "/Pedido/Menu",
-            Cocinero      => "/Pedido/Cocina",
-            Domiciliario  => "/Pedido/Repartos",
+            Cajero        => "/Panel",
+            Mesero        => "/Panel",
+            Cocinero      => "/Panel",
+            Domiciliario  => "/Panel",
             _             => "/#menu"
         };
     }
