@@ -961,3 +961,10 @@ html.dlg-abierto { overflow: hidden; }
     .topbar .pg-sub { display: none; }
     .topbar .pg-title { font-size: 1.1rem; }
 }
+
+/* ── PULIDO VISUAL: más amable y menos rígido ────────────────────────────── */
+.card-pro:hover { box-shadow: var(--shadow-md), var(--shadow-inner); }
+.card-pro[href]:hover, a.card-pro:hover { transform: translateY(-2px); }
+.tbl-wrap { border-radius: var(--r-card); overflow: hidden; }
+.tbl-wrap tbody tr { transition: background-color 150ms var(--ease); }
+.btn-gold, .btn-ghost { border-radius: 999px; } /* botones en píldora: más cercanos */

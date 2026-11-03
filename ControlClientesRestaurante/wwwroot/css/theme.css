@@ -80,9 +80,9 @@
   --overlay:      rgba(24, 16, 18, 0.55);
 
   /* ── Jerarquía de radios armónicos (R_inner = R_outer - padding) ── */
-  --r-control:    12px;
-  --r-card:       12px;
-  --r-block:      12px;
+  --r-control:    10px;
+  --r-card:       16px;
+  --r-block:      16px;
   --r-inner:      8px;
 
   /* ── Tipografía refinada ───────────────────────────────────── */
