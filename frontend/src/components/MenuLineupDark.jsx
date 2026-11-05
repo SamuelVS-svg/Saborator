@@ -25,12 +25,16 @@ export default function MenuLineupDark() {
 
         {/* 4 Terminal Product Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {LINEUP_BURGER_PRODUCTS.map((burger) => (
+          {LINEUP_BURGER_PRODUCTS.map((burger, i) => (
             <motion.div
               key={burger.id}
-              whileHover={{ y: -6 }}
-              transition={{ duration: 0.2 }}
-              className="bg-[#111111] border border-[#222222] hover:border-[#ff5500] p-5 flex flex-col justify-between group transition-all duration-300 relative glow-amber hover:shadow-[0_0_30px_rgba(255,85,0,0.25)]"
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.7, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ y: -6, transition: { duration: 0.2, delay: 0 } }}
+              whileTap={{ scale: 0.99 }}
+              className="bg-[#111111] border border-[#222222] hover:border-[#ff5500] p-5 flex flex-col justify-between group transition-[border-color,box-shadow] duration-300 relative glow-amber hover:shadow-[0_0_30px_rgba(255,85,0,0.25)]"
             >
               {/* Corner crosshairs */}
               <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-[#ff5500] opacity-0 group-hover:opacity-100 transition-opacity" />

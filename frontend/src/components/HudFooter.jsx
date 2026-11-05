@@ -2,6 +2,8 @@ import React from 'react';
 import { BRAND_CONFIG } from '../data/smashData';
 import { MapPin, Phone, MessageSquare, Flame } from 'lucide-react';
 
+const ANIO = new Date().getFullYear();
+
 export default function HudFooter() {
   return (
     <>
@@ -76,7 +78,7 @@ export default function HudFooter() {
 
         {/* Bottom strip */}
         <div className="max-w-7xl mx-auto pt-8 border-t border-[#1a1a1a] flex flex-col sm:flex-row items-center justify-between text-[10px] font-mono-telemetry text-[#555555]">
-          <span>© {new Date().getFullYear()} {BRAND_CONFIG.name}. ALL TELEMETRY RIGHTS RESERVED.</span>
+          <span>© {ANIO} {BRAND_CONFIG.name}. ALL TELEMETRY RIGHTS RESERVED.</span>
           <span className="text-[#ff5500] mt-2 sm:mt-0">WEBGL 3D SCROLLYTELLING ARCHITECTURE</span>
         </div>
       </footer>

@@ -2,6 +2,8 @@ import React from 'react';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 import { MapPin, Clock, Phone, Flame, MessageCircle } from 'lucide-react';
 
+const ANIO = new Date().getFullYear();
+
 export default function Footer() {
   return (
     <>
@@ -91,7 +93,7 @@ export default function Footer() {
 
         {/* Bottom copyright line */}
         <div className="max-w-7xl mx-auto pt-8 border-t border-[#F5EBDC]/10 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#E3CFB0]/60 font-mono">
-          <span>© {new Date().getFullYear()} {RESTAURANT_INFO.name}. TODOS LOS DERECHOS RESERVADOS.</span>
+          <span>© {ANIO} {RESTAURANT_INFO.name}. TODOS LOS DERECHOS RESERVADOS.</span>
           <span className="mt-2 sm:mt-0">DISEÑO CINEMATOGRÁFICO DE ALTA PRECISIÓN</span>
         </div>
       </footer>

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SCROLLYTELLING_STAGES } from '../data/smashData';
@@ -10,7 +9,9 @@ gsap.registerPlugin(ScrollTrigger);
 export default function ScrollytellingCanvas() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
-  const [currentProgress, setCurrentProgress] = useState(0);
+  const [showHint, setShowHint] = useState(true);
+  const fillRef = useRef(null);
+  const needleRef = useRef(null);
   const [currentStageIdx, setCurrentStageIdx] = useState(0);
   const [currentTemp, setCurrentTemp] = useState(93);
 
@@ -22,6 +23,10 @@ export default function ScrollytellingCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const reducirMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Three.js (~700 KB) se descarga aparte: el resto de la página no espera por él.
+    const montar = (THREE) => {
 
     // 1. Setup Three.js Scene, Camera, Renderer
     const width = canvas.parentElement.clientWidth;
@@ -41,7 +46,7 @@ export default function ScrollytellingCanvas() {
       alpha: true,
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
 
@@ -172,7 +177,9 @@ export default function ScrollytellingCanvas() {
     particlesRef.current = particles;
 
     // 5. Render Loop
-    let animationFrameId;
+    // Solo se dibuja mientras la sección está en pantalla (y la pestaña visible)
+    let animationFrameId = 0;
+    let enPantalla = true;
     const clock = new THREE.Clock();
 
     const animate = () => {
@@ -183,32 +190,51 @@ export default function ScrollytellingCanvas() {
       if (patty) patty.rotation.y = elapsedTime * 0.15;
       if (patty2) patty2.rotation.y = elapsedTime * 0.15;
 
-      // Particle floating animation
-      const pos = particles.geometry.attributes.position.array;
-      for (let i = 1; i < pos.length; i += 3) {
-        pos[i] += 0.015;
-        if (pos[i] > 2.5) pos[i] = -1.0;
+      // Particle floating animation (quieta si el usuario pidió menos movimiento)
+      if (!reducirMovimiento) {
+        const pos = particles.geometry.attributes.position.array;
+        for (let i = 1; i < pos.length; i += 3) {
+          pos[i] += 0.015;
+          if (pos[i] > 2.5) pos[i] = -1.0;
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
       }
-      particles.geometry.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
     };
+    const sincronizar = () => {
+      const debe = enPantalla && !document.hidden;
+      if (debe && !animationFrameId) animate();
+      else if (!debe && animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = 0; }
+    };
+    const observer = new IntersectionObserver(([e]) => { enPantalla = e.isIntersecting; sincronizar(); }, { threshold: 0 });
+    observer.observe(containerRef.current);
+    document.addEventListener('visibilitychange', sincronizar);
     animate();
 
     // 6. GSAP ScrollTrigger timeline to drive cooking stages frame by frame
-    const trigger = ScrollTrigger.create({
+    let lastStage = -1;
+    let lastTemp = -1;
+    const ctx = gsap.context(() => { ScrollTrigger.create({
       trigger: containerRef.current,
       start: 'top top',
       end: '+=400%',
       pin: true,
-      scrub: 0.8,
+      scrub: reducirMovimiento ? true : 1,
       onUpdate: (self) => {
         const progress = self.progress; // 0 to 1
-        setCurrentProgress(progress);
+        // Barra y aguja se mueven por transform (sin re-render de React)
+        if (fillRef.current) fillRef.current.style.transform = `scaleX(${progress})`;
+        if (needleRef.current) needleRef.current.style.transform = `translateX(${progress * needleRef.current.parentElement.clientWidth}px) translateX(-50%)`;
+        setShowHint(progress < 0.05);
+        // Cámara: deriva suave alrededor de la hamburguesa mientras avanza la cocción
+        camera.position.x = Math.sin(progress * Math.PI) * 0.7;
+        camera.position.y = 1.2 - progress * 0.25;
+        camera.lookAt(0, 0, 0);
 
         // Update stage index (0 to 4)
         const stageIdx = Math.min(4, Math.floor(progress * 5));
-        setCurrentStageIdx(stageIdx);
+        if (stageIdx !== lastStage) { lastStage = stageIdx; setCurrentStageIdx(stageIdx); }
 
         // Interpolate temperature: 93°C -> 230°C -> 160°C
         let temp;
@@ -217,7 +243,7 @@ export default function ScrollytellingCanvas() {
         } else {
           temp = Math.round(230 - ((progress - 0.6) / 0.4) * (230 - 160));
         }
-        setCurrentTemp(temp);
+        if (temp !== lastTemp) { lastTemp = temp; setCurrentTemp(temp); }
 
         // STAGE 1: Suspension of cold raw ball (progress 0 - 0.2)
         if (progress <= 0.2) {
@@ -292,7 +318,7 @@ export default function ScrollytellingCanvas() {
           topBun.position.y = 2.5 - t * 2.85; // settles at -0.35
         }
       },
-    });
+    }); });
 
     // Resize handler
     const handleResize = () => {
@@ -307,9 +333,27 @@ export default function ScrollytellingCanvas() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', sincronizar);
+      observer.disconnect();
       cancelAnimationFrame(animationFrameId);
-      trigger.kill();
+      animationFrameId = 0;
+      ctx.revert();
+      scene.traverse((obj) => {
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) obj.material.dispose();
+      });
       renderer.dispose();
+    };
+    };
+
+    let disposed = false;
+    let cleanup = () => {};
+    import('three').then((THREE) => {
+      if (!disposed) cleanup = montar(THREE);
+    });
+    return () => {
+      disposed = true;
+      cleanup();
     };
   }, []);
 
@@ -354,7 +398,7 @@ export default function ScrollytellingCanvas() {
       </div>
 
       {/* Floating Active Stage Telemetry Card */}
-      <div className="absolute bottom-28 left-6 sm:left-12 z-20 max-w-lg bg-[#0d0d0d]/90 backdrop-blur-md border border-[#ff5500]/40 p-6 glow-amber">
+      <div key={currentStageIdx} className="stage-card-in absolute bottom-28 left-6 sm:left-12 z-20 max-w-lg bg-[#0d0d0d]/90 backdrop-blur-md border border-[#ff5500]/40 p-6 glow-amber">
         <div className="flex items-center justify-between gap-4 mb-2">
           <span className="text-[11px] font-mono-telemetry text-[#ffaa00] uppercase tracking-wider font-bold">
             {activeStage.time} // {activeStage.title}
@@ -392,14 +436,16 @@ export default function ScrollytellingCanvas() {
         <div className="relative w-full h-5 bg-[#141414] border border-[#2a2a2a] timeline-scrubber flex items-center px-1">
           {/* Progress fill bar */}
           <div
-            className="absolute top-0 left-0 bottom-0 bg-[#ff5500]/25 border-r-2 border-[#ffaa00] transition-all duration-75"
-            style={{ width: `${Math.min(100, Math.max(0, currentProgress * 100))}%` }}
+            className="absolute top-0 left-0 bottom-0 bg-[#ff5500]/25 border-r-2 border-[#ffaa00] "
+            style={{ width: '100%', transform: 'scaleX(0)', transformOrigin: 'left center', willChange: 'transform' }}
+            ref={fillRef}
           />
 
           {/* Needle / Scrubber Thumb */}
           <div
-            className="absolute top-0 bottom-0 w-2 bg-[#ff5500] shadow-[0_0_12px_#ff5500] -translate-x-1/2 pointer-events-none transition-all duration-75 flex items-center justify-center"
-            style={{ left: `${Math.min(100, Math.max(0, currentProgress * 100))}%` }}
+            ref={needleRef}
+            className="absolute top-0 bottom-0 left-0 w-2 bg-[#ff5500] shadow-[0_0_12px_#ff5500] pointer-events-none flex items-center justify-center"
+            style={{ transform: 'translateX(-50%)', willChange: 'transform' }}
           >
             <div className="w-0.5 h-full bg-white" />
           </div>
@@ -407,7 +453,7 @@ export default function ScrollytellingCanvas() {
       </div>
 
       {/* Floating Scroll Prompt */}
-      {currentProgress < 0.05 && (
+      {showHint && (
         <div className="absolute top-1/2 right-8 -translate-y-1/2 z-20 hidden md:flex flex-col items-center gap-2 text-[#777777] font-mono-telemetry text-[10px]">
           <span className="rotate-90 uppercase tracking-widest text-[#ffaa00]">
             SCROLL TO SMASH

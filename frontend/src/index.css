@@ -163,3 +163,13 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Tarjeta de etapa del scrollytelling: entra suave al cambiar de etapa */
+@keyframes stage-card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.stage-card-in { animation: stage-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Microinteracción: pulsación en botones HUD */
+.btn-sear:active, .btn-sear-outline:active { transform: scale(0.97); }

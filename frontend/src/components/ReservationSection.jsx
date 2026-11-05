@@ -4,12 +4,14 @@ import SectionHeader from './SectionHeader';
 import { RESTAURANT_INFO } from '../data/restaurantData';
 import { Calendar, Clock, User, Phone, CheckCircle2, Send } from 'lucide-react';
 
+const HOY = new Date().toISOString().split('T')[0];
+
 export default function ReservationSection() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     guests: '2',
-    date: new Date().toISOString().split('T')[0],
+    date: HOY,
     time: '19:30',
     notes: '',
   });
