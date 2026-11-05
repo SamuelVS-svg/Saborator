@@ -173,3 +173,19 @@ html[data-theme="dark"] .home-slide-combo {
 }
 html[data-theme="dark"] .home-carousel { background: var(--hero-glow-end, #1B0F0A); }
 html[data-theme="dark"] .home-banner-plate { box-shadow: 0 34px 60px -14px rgba(0, 0, 0, .8), 0 0 100px rgba(255, 191, 63, .22), inset 0 2px 3px rgba(255, 255, 255, .45); }
+
+/* ── Movimiento (motion.js) ────────────────────────────────────────────── */
+.mo-line { display: block; overflow: hidden; padding-bottom: .08em; }
+.mo-in { display: block; }
+.mo-progreso {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 1000; pointer-events: none;
+  background: var(--gold); transform-origin: left center; transform: scaleX(0);
+}
+.lnav.mo-compacta { box-shadow: 0 6px 24px rgba(44, 27, 20, .12); }
+.home-order-icon { transition: transform .35s cubic-bezier(.22, 1, .36, 1); }
+.home-order-card:hover .home-order-icon { transform: translateY(-2px) rotate(-6deg) scale(1.06); }
+.home-order-card:active, .home-order-wide:active { transform: scale(.98); }
+@media (prefers-reduced-motion: reduce) {
+  .home-order-card:hover .home-order-icon { transform: none; }
+  .mo-progreso { display: none; }
+}
