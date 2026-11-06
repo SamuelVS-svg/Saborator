@@ -6,7 +6,7 @@
     'use strict';
 
     var INTRO_KEY = 'saborator_intro_seen_v1';
-    var INTRO_DURATION_MS = 3900;
+    var INTRO_DURATION_MS = 4300;
     var FADE_OUT_DURATION_MS = 650;
     var timerId = null;
 

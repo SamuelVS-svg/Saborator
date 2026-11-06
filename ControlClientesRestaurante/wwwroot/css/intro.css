@@ -170,9 +170,9 @@
 /* ── REVEALED GASTRONOMIC EMBLEM ───────────────────────── */
 .emblem-reveal {
     position: absolute;
-    top: 52px;
-    width: 88px;
-    height: 88px;
+    top: 66px;   /* debajo de la tapa cuando sube, para que no se encimen */
+    width: 74px;
+    height: 74px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -182,17 +182,17 @@
 }
 
 @keyframes emblemRise {
-    0%, 28% {
+    0%, 44% {
         opacity: 0;
         transform: translateY(22px) scale(0.65);
         filter: blur(10px) brightness(1.8);
     }
-    46% {
+    58% {
         opacity: 1;
         transform: translateY(-2px) scale(1.05);
         filter: blur(0px) brightness(1.2);
     }
-    60% {
+    68% {
         transform: translateY(0px) scale(1);
         filter: brightness(1);
     }
@@ -268,8 +268,8 @@
 }
 
 .intro-brand-title {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: clamp(2.4rem, 6.5vw, 3.8rem);
+    font-family: 'Bebas Neue', 'Inter', system-ui, sans-serif;
+    font-size: clamp(3.2rem, 11vw, 5.6rem);   /* se adapta al ancho: ~50 px en móvil, ~90 px en escritorio */
     font-weight: 400;
     letter-spacing: 0.08em;
     color: #FFFFFF;
@@ -313,9 +313,13 @@
 
 .intro-brand-sub {
     font-family: 'Inter', sans-serif;
-    font-size: clamp(0.68rem, 1.8vw, 0.8rem);
+    font-size: clamp(0.9rem, 2.6vw, 1.05rem);
     font-weight: 600;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.2em;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 92vw;
+    padding-inline: 0.5rem;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.65);
     margin: 0;
