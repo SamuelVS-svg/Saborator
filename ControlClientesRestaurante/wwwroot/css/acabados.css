@@ -1,0 +1,124 @@
+/* ==========================================================================
+   ACABADOS · Portada y barra de navegación
+   Criterio: menos marcos y más jerarquía. Sin cápsulas con borde, sin anillos dorados,
+   sin brillos. El dorado queda solo para las acciones (botón principal, precio, enlace activo).
+   Se carga al final para ordenar lo que definen nav-inicio.css y home-simple.css.
+   ========================================================================== */
+
+/* ── Barra de navegación: enlaces de texto, no cápsulas ─────────────────── */
+html .lnav .lnav-menu-links a.lnav-item,
+html .lnav .lnav-item {
+  background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  position: relative;
+}
+html .lnav .lnav-item::after {
+  content: ""; position: absolute; left: .3rem; right: .3rem; bottom: -3px; height: 2px; background: var(--gold, #F4A817);
+  transform: scaleX(0); transform-origin: left center; transition: transform .25s cubic-bezier(.22, 1, .36, 1);
+}
+html .lnav .lnav-item:hover::after,
+html .lnav .lnav-menu-links a.lnav-item[aria-current="page"]::after { transform: scaleX(1); }
+html .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: var(--text, #2C1B14) !important; background: transparent !important; }
+html[data-theme="dark"] .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: #fff !important; }
+html .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--brand, #6B4226) !important; background: transparent !important; border: 0 !important; }
+html .lnav .lnav-menu-links a.lnav-item-reserva-mobile svg { stroke: currentColor !important; }
+
+/* Botones de icono sin caja; solo se tiñen al pasar el cursor */
+html .lnav .theme-toggle-btn,
+html .lnav .lnav-cart-btn,
+html .lnav .lnav-toggle {
+  background: transparent !important; border: 0 !important; box-shadow: none !important;
+}
+html .lnav .theme-toggle-btn:hover,
+html .lnav .lnav-cart-btn:hover,
+html .lnav .lnav-toggle:hover { background: var(--brand-soft, rgba(107, 66, 38, .1)) !important; }
+html[data-theme="dark"] .lnav .theme-toggle-btn:hover,
+html[data-theme="dark"] .lnav .lnav-cart-btn:hover,
+html[data-theme="dark"] .lnav .lnav-toggle:hover { background: rgba(255, 255, 255, .1) !important; color: #fff !important; }
+html[data-theme="dark"] .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--gold, #F4A817) !important; }
+html .lnav .lnav-icon { border: 0 !important; }
+
+/* Ingresar: texto con subrayado al pasar el cursor; la única caja de la barra es Reservar Mesa */
+html .lnav .lnav-btn-o { background: transparent !important; border: 0 !important; box-shadow: none; color: var(--text, #2C1B14) !important; font-weight: 700; padding-inline: .6rem; }
+html[data-theme="dark"] .lnav .lnav-btn-o { color: #fff !important; }
+html .lnav .lnav-btn-o:hover { text-decoration: underline; text-decoration-color: var(--gold, #F4A817); text-underline-offset: 6px; text-decoration-thickness: 2px; }
+html .lnav .lnav-btn-p { border-radius: 8px; border: 0; box-shadow: none; background: var(--gold, #F4A817); color: #2A170F !important; }
+html .lnav .lnav-btn-p:hover { background: #FFBF3F; box-shadow: none; transform: none; }
+@media (max-width: 1120px) {
+  html .lnav .lnav-menu-links { border-top: 1px solid var(--line, rgba(107, 66, 38, .12)) !important; gap: 1.1rem !important; }
+  html[data-theme="dark"] .lnav .lnav-menu-links { border-top-color: rgba(255, 255, 255, .08) !important; }
+  html .lnav .lnav-menu-links a.lnav-item { padding: .45rem .1rem !important; }
+}
+
+/* ── Titular y texto de la portada ───────────────────────────────────────── */
+html .home-banner .home-eyebrow, html .home-slide-combo .home-eyebrow {
+  padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; margin-bottom: .9rem;
+  font-size: 1rem; font-weight: 500; letter-spacing: 0; text-transform: none; color: inherit; opacity: .78;
+}
+.home-carousel .home-banner h1 {
+  font-size: clamp(3.4rem, 7.2vw, 6.6rem); line-height: .92; letter-spacing: .005em; margin-bottom: 1.1rem;
+}
+.home-banner h1 em { color: inherit; font-style: normal; }
+.home-carousel .home-banner p { max-width: 36ch; font-size: 1.12rem; line-height: 1.55; margin-bottom: 1.75rem; }
+
+/* Botón principal: relleno plano, sin brillo */
+.home-cta { border-radius: 8px; box-shadow: none; padding: 1rem 1.9rem; }
+.home-cta:hover { box-shadow: none; transform: none; filter: brightness(1.07); }
+
+/* Foto del plato: recorte limpio, sin anillo dorado ni resplandor */
+.home-carousel .home-banner-plate,
+html[data-theme="dark"] .home-carousel .home-banner-plate {
+  padding: 0; background: none; border-radius: 22px; overflow: hidden; width: min(100%, 440px); aspect-ratio: 1;
+  box-shadow: 0 36px 60px -34px rgba(0, 0, 0, .75);
+}
+.home-banner-plate::after { display: none; }
+.home-banner-dish { border-radius: 0; object-fit: cover; }
+
+/* Combos: fotos en recuadros, sin marco degradado */
+.home-slide-photos img {
+  border: 0; border-radius: 16px; background: #000; object-fit: cover;
+  box-shadow: 0 18px 30px -16px rgba(0, 0, 0, .6);
+}
+html .home-slide-price span { padding: 0; border: 0; border-radius: 0; background: none; color: var(--brand); font-size: .95rem; font-weight: 700; }
+html[data-theme="dark"] .home-slide-price span { color: var(--gold); }
+
+/* Controles del carrusel más discretos */
+.home-carousel-nav { width: 44px; height: 44px; margin-top: -22px; background: rgba(0, 0, 0, .3); color: #fff; box-shadow: none; }
+.home-carousel-nav:hover { background: rgba(0, 0, 0, .55); transform: none; }
+.home-carousel-dots { gap: .4rem; bottom: 18px; }
+.home-carousel-dots button { width: 22px; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, .4); }
+.home-carousel-dots button[aria-current="true"] { width: 40px; background: var(--gold); }
+
+/* ── "¿Cómo te gustaría ordenar?": dos bloques grandes, alineados a la izquierda ── */
+.home-order { max-width: 1180px; margin: 0 auto; padding: 3.5rem clamp(1.25rem, 4vw, 2rem) 1.5rem; text-align: left; }
+.home-order-title { margin: 0 0 1.75rem; font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: 1; font-weight: 400; letter-spacing: .01em; text-transform: none; font-family: var(--font-serif, "Bebas Neue", sans-serif); }
+.home-order-grid { max-width: none; gap: 1rem; margin: 0; }
+.home-order-card {
+  display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-content: center; column-gap: 1.25rem; row-gap: .15rem;
+  text-align: left; min-height: 140px; padding: 1.6rem 1.9rem; border-radius: 16px; box-shadow: none;
+  background: var(--brand-soft); color: var(--text);
+  transition: background-color .25s ease, color .25s ease;
+}
+.home-order-card:hover { background: var(--brand); color: var(--on-brand, #fff); box-shadow: none; transform: none; }
+.home-order-icon { grid-row: 1 / span 2; align-self: center; width: auto; height: auto; margin: 0; border-radius: 0; background: none; color: var(--brand); }
+.home-order-icon svg { width: 38px; height: 38px; stroke-width: 1.6; }
+html[data-theme="dark"] .home-order-icon { color: var(--gold); }
+.home-order-card:hover .home-order-icon { color: var(--on-brand, #fff); transform: none; }
+.home-order-name { align-self: end; font-family: var(--font-serif, "Bebas Neue", sans-serif); font-size: 1.9rem; font-weight: 400; line-height: 1; letter-spacing: .02em; text-transform: none; }
+.home-order-sub { align-self: start; max-width: 40ch; font-size: .95rem; line-height: 1.4; color: var(--muted); text-wrap: pretty; }
+.home-order-card:hover .home-order-sub { color: inherit; opacity: .88; }
+.home-order-wide {
+  justify-content: flex-start; min-height: 0; padding: .5rem 0; border: 0; background: none; border-radius: 0;
+  font-size: 1.05rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--brand);
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; text-decoration-color: var(--gold, #F4A817);
+}
+html[data-theme="dark"] .home-order-wide { color: var(--gold); }
+.home-order-wide:hover { background: none; border: 0; text-decoration-color: currentColor; }
+@media (max-width: 760px) {
+  .home-carousel .home-banner h1 { font-size: clamp(3rem, 14vw, 4.2rem); }
+  .home-order-card { min-height: 0; padding: 1.25rem 1.4rem; }
+  .home-order-name { font-size: 1.6rem; }
+}
+@media (prefers-reduced-motion: reduce) { html .lnav .lnav-item::after { transition: none; } }
+
+/* La máscara del titular no debe cortar tildes (la altura de línea es menor que 1) */
+.mo-line { padding-top: .16em; margin-top: -.16em; }
