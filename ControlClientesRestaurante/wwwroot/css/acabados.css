@@ -57,7 +57,7 @@ html .home-banner .home-eyebrow, html .home-slide-combo .home-eyebrow {
 .home-carousel .home-banner h1 {
   font-size: clamp(3.4rem, 7.2vw, 6.6rem); line-height: .92; letter-spacing: .005em; margin-bottom: 1.1rem;
 }
-.home-banner h1 em { color: inherit; font-style: normal; }
+html .home-carousel .home-banner h1 em { color: inherit !important; font-style: normal; }
 .home-carousel .home-banner p { max-width: 36ch; font-size: 1.12rem; line-height: 1.55; margin-bottom: 1.75rem; }
 
 /* Botón principal: relleno plano, sin brillo */
