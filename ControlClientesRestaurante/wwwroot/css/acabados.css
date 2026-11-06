@@ -17,7 +17,7 @@ html .lnav .lnav-item::after {
 }
 html .lnav .lnav-item:hover::after,
 html .lnav .lnav-menu-links a.lnav-item[aria-current="page"]::after { transform: scaleX(1); }
-html .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: var(--text, #2C1B14) !important; background: transparent !important; }
+html .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: var(--text, #2C1B14) !important; background: transparent !important; border: 0 !important; outline: 0; box-shadow: none !important; }
 html[data-theme="dark"] .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: #fff !important; }
 html .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--brand, #6B4226) !important; background: transparent !important; border: 0 !important; }
 html .lnav .lnav-menu-links a.lnav-item-reserva-mobile svg { stroke: currentColor !important; }
@@ -85,8 +85,8 @@ html[data-theme="dark"] .home-slide-price span { color: var(--gold); }
 .home-carousel-nav { width: 44px; height: 44px; margin-top: -22px; background: rgba(0, 0, 0, .3); color: #fff; box-shadow: none; }
 .home-carousel-nav:hover { background: rgba(0, 0, 0, .55); transform: none; }
 .home-carousel-dots { gap: .4rem; bottom: 18px; }
-.home-carousel-dots button { width: 22px; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, .4); }
-.home-carousel-dots button[aria-current="true"] { width: 40px; background: var(--gold); }
+.home-carousel-dots button { width: 32px; height: 23px; padding: 10px 5px; box-sizing: border-box; border-radius: 0; background: rgba(255, 255, 255, .4); background-clip: content-box; }   /* barra de 3 px con área táctil de 23 px */
+.home-carousel-dots button[aria-current="true"] { width: 50px; background: var(--gold); background-clip: content-box; }
 
 /* ── "¿Cómo te gustaría ordenar?": dos bloques grandes, alineados a la izquierda ── */
 .home-order { max-width: 1180px; margin: 0 auto; padding: 3.5rem clamp(1.25rem, 4vw, 2rem) 1.5rem; text-align: left; }
@@ -137,4 +137,27 @@ html[data-theme="dark"] .home-order-wide { color: var(--gold); }
 @media (max-width: 760px) {
   .home-slide-items { justify-self: center; width: min(86%, 340px); order: -1; gap: 10px; }
   .home-slide-items span { font-size: .78rem; padding: 1rem .6rem .45rem; }
+}
+
+/* Área táctil mínima de 40 px en "Ingresar" */
+html .lnav .lnav-btn-o { min-height: 40px; }
+
+/* ── Modo claro: sin "filo" amarillo ni borde en las tarjetas (se reemplaza por una sombra suave) ── */
+html:not([data-theme]) body .dish-card-minimal,
+html:not([data-theme]) body .combo-card {
+  border: 0; border-bottom: 0; box-shadow: 0 1px 2px rgba(44, 27, 20, .06), 0 10px 26px -14px rgba(44, 27, 20, .22);
+}
+html:not([data-theme]) body .home-order-card { background: var(--brand-soft); border: 0; border-bottom: 0; box-shadow: none; color: var(--text); }
+html:not([data-theme]) body .home-order-card:hover { background: var(--brand); color: var(--on-brand, #fff); }
+html:not([data-theme]) body .home-order-wide { background: none; border: 0; box-shadow: none; }
+html:not([data-theme]) .home-order { background: transparent; }
+
+/* ── Barra en pantallas muy angostas (320 px): la marca no se corta ── */
+@media (max-width: 360px) {
+  html .lnav .lnav-name { font-size: 1.05rem; letter-spacing: .01em; overflow: visible; text-overflow: clip; }
+  html .lnav .lnav-brand { gap: .35rem; }
+  html .lnav .lnav-icon { width: 28px; height: 28px; }
+  html .lnav .lnav-actions { gap: .05rem; }
+  html .lnav .theme-toggle-btn, html .lnav .lnav-cart-btn, html .lnav .lnav-toggle { width: 36px; height: 36px; }
+  html .lnav .lnav-btn-o { padding-inline: .35rem; }
 }

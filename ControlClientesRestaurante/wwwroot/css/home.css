@@ -787,6 +787,8 @@
     color: rgba(255, 255, 255, 0.7);
     font-size: 1.5rem;
     cursor: pointer;
+    min-width: 40px;
+    min-height: 40px;   /* área táctil mínima */
     padding: 0.25rem;
     display: flex;
     align-items: center;
@@ -1002,6 +1004,8 @@
     position: absolute;
     top: 1.5rem;
     right: 1.5rem;
+    min-width: 40px;
+    min-height: 40px;   /* área táctil mínima */
     background: none;
     border: none;
     font-size: 1.5rem;
