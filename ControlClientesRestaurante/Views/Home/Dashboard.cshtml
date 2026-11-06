@@ -103,21 +103,19 @@
         <!-- ══ ÁREA CENTRAL ══════════════════════════════════════════════════ -->
         <main class="v12-main">
 
-            <!-- ══ 2. HEADER CON ICONO EJECUTIVO, SALUDO, BUSCADOR Y AVATAR ══ -->
-            <header class="v12-header v12-animate-enter v12-stagger-1">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="pg-icon" style="width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-                    </div>
-                    <div>
-                        <h1 class="v12-greeting-title">
-                            <span>@saludo, @usuario</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1.5" style="flex-shrink:0;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        </h1>
-                        <p class="v12-greeting-sub">Aquí tienes el balance operativo y métricas en tiempo real de Saborator</p>
-                    </div>
+            <!-- ══ 2. ENCABEZADO: igual que en los demás módulos, el _Layout lo sube a la barra superior (icono + saludo + descripción) ══ -->
+            <div class="pg-header">
+                <div class="pg-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
                 </div>
-            </header>
+                <div>
+                    <div class="pg-title" style="display:flex;align-items:center;gap:.4rem;">
+                        <span>@saludo, @usuario</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--gold)" stroke="var(--gold)" stroke-width="1.5" style="flex-shrink:0;" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="pg-sub">Aquí tienes el balance operativo y métricas en tiempo real de Saborator</div>
+                </div>
+            </div>
 
             <!-- ══ 3. TARJETAS DE MÉTRICAS (STATCARD) ═════════════════════════ -->
             <section class="v12-stats-grid">
