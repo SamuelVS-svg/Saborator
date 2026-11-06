@@ -314,6 +314,9 @@
     border-radius: 8px;
 }
 .lnav-mobile a:last-child { border: none; }
+/* Enlaces destacados del menú móvil (Reservar Mesa, Mi panel): el dorado no contrasta sobre fondo claro, se usa el marrón de marca */
+.lnav-mobile a.lnav-m-destacado { color: var(--brand, #6B4226); font-weight: 700; }
+[data-theme="dark"] .lnav-mobile a.lnav-m-destacado { color: var(--gold, #F4A817); }
 
 
 @media (max-width: 1120px) {

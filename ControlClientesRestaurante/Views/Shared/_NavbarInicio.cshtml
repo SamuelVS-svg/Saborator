@@ -102,7 +102,7 @@
             }
 
             <!-- Botón Menú Hamburguesa Móvil -->
-            <button type="button" class="lnav-toggle" id="lnavMobileToggle" onclick="document.getElementById('lnavMobileMenu').classList.toggle('open')" aria-label="Abrir menú de opciones">
+            <button type="button" class="lnav-toggle" id="lnavMobileToggle" onclick="document.getElementById('lnavMobileMenu').classList.toggle('open')" aria-label="Abrir menú de opciones" aria-controls="lnavMobileMenu" aria-expanded="false">
                 <span></span><span></span><span></span>
             </button>
         </div>
@@ -116,6 +116,19 @@
         </div>
     </nav>
 
+    <script>
+        // Accesibilidad del menú móvil: aria-expanded sincronizado con el estado real y cierre con Escape
+        document.addEventListener('DOMContentLoaded', function () {
+            var menu = document.getElementById('lnavMobileMenu'), btn = document.getElementById('lnavMobileToggle');
+            if (!menu || !btn) return;
+            new MutationObserver(function () { btn.setAttribute('aria-expanded', menu.classList.contains('open') ? 'true' : 'false'); })
+                .observe(menu, { attributes: true, attributeFilter: ['class'] });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && menu.classList.contains('open')) { menu.classList.remove('open'); btn.focus(); }
+            });
+        });
+    </script>
+
     <!-- Menú Desplegable Móvil Completo -->
     <div class="lnav-mobile" id="lnavMobileMenu">
         <a href="@_ancla#menu" onclick="document.getElementById('lnavMobileMenu').classList.remove('open')"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><path d="M4 11a8 8 0 0 1 16 0Z"/><path d="M3 14.5h18"/><path d="M4 18h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg>La Carta</a>
@@ -124,10 +137,10 @@
         <a href="@(_esInicio ? "javascript:void(0)" : "/#menu")" onclick="document.getElementById('lnavMobileMenu').classList.remove('open'); @(_esInicio ? "abrirModalModalidad();" : "")"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>Modalidad / Domicilio</a>
         <a asp-controller="Pedido" asp-action="Rastrear"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Rastrear Pedido</a>
         <a asp-controller="Pago" asp-action="Checkout"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Pagar Cuenta</a>
-        <a asp-controller="Reserva" asp-action="Nueva" style="color:var(--gold, #F4A817);font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reservar Mesa</a>
+        <a asp-controller="Reserva" asp-action="Nueva" class="lnav-m-destacado"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Reservar Mesa</a>
         @if (_esPersonal)
         {
-            <a href="@Roles.PaginaInicio(_rol)" style="color:var(--gold, #F4A817);font-weight:700;"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Mi Panel</a>
+            <a href="@Roles.PaginaInicio(_rol)" class="lnav-m-destacado"><svg class="ico" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-.15em;margin-right:.35em;flex:none"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Mi Panel</a>
         }
         @if (_autenticado)
         {
