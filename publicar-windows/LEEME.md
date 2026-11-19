@@ -127,3 +127,41 @@ Para dejar de publicar: `tailscale funnel reset`
 2. `tailscale status` (¿conectado?) y `tailscale funnel status` (¿Funnel on?).
 3. Si Funnel está apagado: `tailscale funnel --bg 5107`
 4. Si no hay internet: cambia al hotspot del celular; Tailscale se reconecta solo en ~1 minuto.
+
+---
+
+## Actualizaciones automáticas (para desarrollo con `dotnet run`)
+
+Si trabajas con la carpeta del repositorio y `dotnet run` (no con la versión publicada), puedes dejar que tu PC
+traiga sola los cambios nuevos de GitHub:
+
+- **Doble clic en `actualizar-y-correr.bat`** (carpeta del proyecto), o en PowerShell:
+  ```powershell
+  cd publicar-windows
+  .\5-auto-actualizar.ps1
+  ```
+- Cada minuto revisa GitHub. Si hay cambios nuevos, **respalda la base de datos, detiene la app, trae los cambios,
+  compila y la vuelve a arrancar**. Después solo refrescas el navegador (**Ctrl + F5**).
+- **Protecciones:** no actualiza si tienes cambios sin guardar, si tienes commits locales sin subir, si tu copia y
+  GitHub divergieron o si el respaldo falla. Si la versión nueva **no compila**, vuelve a la anterior y la deja corriendo.
+- Prueba sin cambiar nada: `.\5-auto-actualizar.ps1 -SoloVerificar`. Omitir el respaldo: `-SinRespaldo`.
+  Otra rama o intervalo: `-Rama main -Intervalo 120`.
+- Lo que hace queda en `publicar-windows\auto-actualizar.log`. Para detenerlo: **Ctrl + C** (la app sigue corriendo).
+- Solo trae cambios de **tu rama en tu repositorio de GitHub**. Si algún día no quieres que se apliquen solos, no lo ejecutes.
+
+---
+
+## Subir tus cambios a GitHub sin escribir comandos
+
+Si cambias archivos en tu PC y quieres que queden en GitHub (para que otra persona o Claude los vea):
+
+- **Doble clic en `subir-mis-cambios.bat`** (carpeta del proyecto), o en PowerShell:
+  ```powershell
+  cd publicar-windows
+  .\6-subir-mis-cambios.ps1
+  ```
+- Hace el commit (con fecha y hora) y lo sube a **tu propia rama**, `cambios-locales`, sin tocar `main` ni la rama de Claude.
+- **Automático:** `.\6-subir-mis-cambios.ps1 -Cada 300` revisa cada 5 minutos y sube lo que haya, hasta que pulses Ctrl + C.
+- **Protecciones:** solo prepara las carpetas del proyecto. Si encuentra una clave, una base de datos, un `.env`, un respaldo o archivos `bin`/`obj`, **no sube nada** y te dice cuáles son.
+- Probar sin cambiar nada: `-SoloVerificar`. Otra rama o mensaje: `-Rama mi-home -Mensaje "Ajuste de la portada"`.
+- No lo uses a la vez que `5-auto-actualizar.ps1` sobre la misma rama: ese script no actualiza si tienes commits locales sin subir.
