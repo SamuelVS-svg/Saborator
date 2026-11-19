@@ -109,7 +109,7 @@ namespace ControlClientesRestaurante.Services
             <p>Alta Cocina &amp; Salón Exclusivo</p>
         </div>
         <div class='body'>
-            <div class='welcome'>¡Bienvenido/a, {nombreCliente}! 🍽️</div>
+            <div class='welcome'>¡Bienvenido/a, {nombreCliente}!</div>
             <p>Gracias por registrarte en el portal oficial de <strong>Saborator</strong>. Hemos creado tu cuenta de comensal mayor de edad para que puedas reservar mesas exclusivas, ordenar platos gourmet y seguir tus consumos en tiempo real.</p>
             <p>Para garantizar la seguridad de tu perfil y activar tu acceso inmediato, por favor confirma tu dirección de correo electrónico pulsando el botón a continuación:</p>
             
@@ -120,7 +120,7 @@ namespace ControlClientesRestaurante.Services
             </div>
 
             <div class='info-box'>
-                <strong>ℹ️ Importante:</strong> Este enlace de verificación es único y tiene una vigencia de <strong>24 horas</strong>. Si no reconoces esta solicitud de registro, puedes descartar este mensaje con total tranquilidad.
+                <strong>Importante:</strong> Este enlace de verificación es único y tiene una vigencia de <strong>24 horas</strong>. Si no reconoces esta solicitud de registro, puedes descartar este mensaje con total tranquilidad.
             </div>
 
             <p style='font-size:13px; color:#6E6468; margin-top:24px;'>
@@ -171,7 +171,7 @@ namespace ControlClientesRestaurante.Services
             <p>Comidas Rápidas &amp; Alta Cocina · Soledad</p>
         </div>
         <div class='body'>
-            <div class='welcome'>¡Hola, {nombreCliente}! 🍔</div>
+            <div class='welcome'>¡Hola, {nombreCliente}!</div>
             <p>Para activar tu cuenta y comenzar a ordenar tus pedidos gourmet o domicilios, ingresa el siguiente código de verificación de 6 dígitos en tu pantalla:</p>
             
             <div class='otp-container'>
@@ -179,7 +179,7 @@ namespace ControlClientesRestaurante.Services
             </div>
 
             <div class='info-box'>
-                <strong>⏱️ Validez:</strong> Este código expira en <strong>5 minutos</strong>. El sistema validará tu cuenta automáticamente una vez ingreses este código en el formulario. Nunca compartas este código con nadie.
+                <strong>Validez:</strong> Este código expira en <strong>5 minutos</strong>. El sistema validará tu cuenta automáticamente una vez ingreses este código en el formulario. Nunca compartas este código con nadie.
             </div>
 
             <p style='font-size:13px; color:#6E6468; margin-top:20px;'>
@@ -194,7 +194,7 @@ namespace ControlClientesRestaurante.Services
 </body>
 </html>";
 
-            return await EnviarCorreoAsync(correo, $"🍔 Tu código de verificación Saborator es: {codigoOtp}", html);
+            return await EnviarCorreoAsync(correo, $"Tu código de verificación Saborator es: {codigoOtp}", html);
         }
 
         public async Task<bool> EnviarConfirmacionReservaAsync(
@@ -237,10 +237,10 @@ namespace ControlClientesRestaurante.Services
                 <div style='text-align:center;font-size:12px;text-transform:uppercase;color:#8A5A10;font-weight:700;'>Código de Reserva</div>
                 <div class='code'>{codigoReserva}</div>
                 <hr style='border:none;border-top:1px dashed #D4C6B2;margin:14px 0;'/>
-                <div class='row'><span>📅 Fecha:</span><strong>{fecha:dddd, dd 'de' MMMM 'de' yyyy}</strong></div>
-                <div class='row'><span>⏰ Hora del turno:</span><strong>{hora}</strong></div>
-                <div class='row'><span>🪑 Mesa asignada:</span><strong>Mesa #{mesa}</strong></div>
-                <div class='row'><span>👥 Comensales:</span><strong>{personas} personas</strong></div>
+                <div class='row'><span>Fecha:</span><strong>{fecha:dddd, dd 'de' MMMM 'de' yyyy}</strong></div>
+                <div class='row'><span>Hora del turno:</span><strong>{hora}</strong></div>
+                <div class='row'><span>Mesa asignada:</span><strong>Mesa #{mesa}</strong></div>
+                <div class='row'><span>Comensales:</span><strong>{personas} personas</strong></div>
                 {depositoHtml}
             </div>
             <p style='font-size:13px;color:#5E5357;'>Sede Central: Carrera 4 Sur # 50D-107, Barranquilla, Atlántico.<br/>Llegada recomendada: 10 minutos antes de tu turno.</p>

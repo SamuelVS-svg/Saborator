@@ -1,0 +1,47 @@
+# Saborator en una VM gratuita de Oracle Cloud (Always Free): app + HTTPS automático con Caddy.
+# Uso: copia .env.ejemplo a .env, complétalo y ejecuta:  docker compose up -d --build
+services:
+  saborator:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      PORT: "8080"
+      # SQLite en un volumen persistente (SQL Server no cabe en la capa gratuita)
+      SABORATOR_FORZAR_SQLITE: "true"
+      SABORATOR_DATA_DIR: /data
+    volumes:
+      - datos:/data                          # base de datos y claves de cifrado de sesiones
+      - fotos:/app/wwwroot/uploads           # fotos de perfil
+    expose:
+      - "8080"                               # solo accesible desde Caddy, nunca publicado en internet
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080 && printf \"GET /salud HTTP/1.0\\r\\n\\r\\n\" >&3 && grep -q 200 <&3'"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - saborator
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMINIO: ${DOMINIO}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_datos:/data
+      - caddy_config:/config
+
+volumes:
+  datos:
+  fotos:
+  caddy_datos:
+  caddy_config:

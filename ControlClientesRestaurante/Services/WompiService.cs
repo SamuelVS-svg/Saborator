@@ -34,7 +34,8 @@ namespace ControlClientesRestaurante.Services
             var envPublicKey = Environment.GetEnvironmentVariable("WOMPI_PUBLIC_KEY");
             var envPrivateKey = Environment.GetEnvironmentVariable("WOMPI_PRIVATE_KEY");
             var envIntegritySecret = Environment.GetEnvironmentVariable("WOMPI_INTEGRITY_SECRET");
-            var envEventSecret = Environment.GetEnvironmentVariable("WOMPI_EVENT_SECRET");
+            var envEventSecret = Environment.GetEnvironmentVariable("WOMPI_EVENTS_SECRET")
+                              ?? Environment.GetEnvironmentVariable("WOMPI_EVENT_SECRET");
             var envAmbiente = Environment.GetEnvironmentVariable("WOMPI_ENVIRONMENT");
 
             var pubKey = !string.IsNullOrWhiteSpace(envPublicKey) ? envPublicKey : _options.PublicKey;
@@ -47,7 +48,9 @@ namespace ControlClientesRestaurante.Services
             // Para que el widget cargue y funcione sin quedarse congelado en desarrollo,
             // usamos llaves sandbox en localhost salvo que se fuerce producción por variable de entorno.
             bool forzarProd = string.Equals(Environment.GetEnvironmentVariable("WOMPI_FORCE_PROD"), "true", StringComparison.OrdinalIgnoreCase);
-            if (esLocal && !forzarProd)
+            // Si ya configuraste tus propias llaves de pruebas (pub_test_...), se respetan también en localhost
+            bool llavesDePruebasPropias = pubKey.StartsWith("pub_test_", StringComparison.Ordinal);
+            if (esLocal && !forzarProd && !llavesDePruebasPropias)
             {
                 pubKey = !string.IsNullOrWhiteSpace(_options.SandboxPublicKey) ? _options.SandboxPublicKey : "pub_test_Q5yDA9xoKdePium1amu0Bush320D4HfR";
                 // Las llaves privadas (aunque sean de pruebas) no van en el código: variable de entorno o appsettings
@@ -55,8 +58,26 @@ namespace ControlClientesRestaurante.Services
                 ambiente = "sandbox";
             }
 
+            // Una llave de pruebas (pub_test_...) siempre opera contra la API sandbox, sin importar el entorno declarado
+            if (pubKey.StartsWith("pub_test_", StringComparison.Ordinal))
+            {
+                ambiente = "sandbox";
+            }
+
+            // La aprobación simulada (para demostraciones) solo existe en sandbox y solo si se activa de forma explícita
+            bool simulacionActiva = string.Equals(Environment.GetEnvironmentVariable("WOMPI_PERMITIR_SIMULACION"), "true", StringComparison.OrdinalIgnoreCase)
+                                    || _options.PermitirSimulacion
+                                    || string.Equals(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"), "Development", StringComparison.OrdinalIgnoreCase);
+            // WOMPI_MODO_DEMO=true: demostración pública sin llaves de pruebas. Fuerza el checkout simulado en cualquier entorno
+            // (nunca se abre el widget real, así que no hay cobros). Cualquiera podría "aprobar" pedidos: solo para demos.
+            bool modoDemo = string.Equals(Environment.GetEnvironmentVariable("WOMPI_MODO_DEMO"), "true", StringComparison.OrdinalIgnoreCase);
+            bool permitirSimulacion = modoDemo || (simulacionActiva && string.Equals(ambiente, "sandbox", StringComparison.OrdinalIgnoreCase));
+
             return new WompiSettings
             {
+                PermitirSimulacion = permitirSimulacion,
+                // Sin llaves de pruebas propias no hay widget real que abrir: se usa el checkout simulado
+                SimularPasarela = modoDemo || (permitirSimulacion && !llavesDePruebasPropias),
                 PublicKey = pubKey,
                 PrivateKey = prvKey,
                 Environment = ambiente,
@@ -74,6 +95,9 @@ namespace ControlClientesRestaurante.Services
 
             var config = ObtenerConfiguracion();
             var secreto = config.IntegritySecret ?? string.Empty;
+            // Sin secreto de integridad no se envía firma (el widget sandbox funciona sin ella si el comercio no la exige)
+            if (string.IsNullOrWhiteSpace(secreto))
+                return string.Empty;
 
             // Especificación oficial de Wompi:
             // SHA256(Referencia + MontoEnCentavos + Moneda + SecretoIntegridad)

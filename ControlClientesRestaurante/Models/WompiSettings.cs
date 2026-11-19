@@ -31,6 +31,16 @@ namespace ControlClientesRestaurante.Models
         public string Environment { get; set; } = "production";
 
         /// <summary>
+        /// Habilita el botón de aprobación simulada (solo tiene efecto en sandbox). Variable de entorno: WOMPI_PERMITIR_SIMULACION
+        /// </summary>
+        public bool PermitirSimulacion { get; set; } = false;
+
+        /// <summary>
+        /// Calculado: el botón "Pagar con Wompi" abre un checkout simulado local (sin llaves reales de pruebas)
+        /// </summary>
+        public bool SimularPasarela { get; set; } = false;
+
+        /// <summary>
         /// Moneda oficial para cobros (Por defecto COP)
         /// </summary>
         public string Currency { get; set; } = "COP";

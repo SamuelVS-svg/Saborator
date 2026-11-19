@@ -2,6 +2,7 @@ using BCrypt.Net;
 using ControlClientesRestaurante.Data;
 using ControlClientesRestaurante.Models;
 using ControlClientesRestaurante.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ControlClientesRestaurante.Services
 {
@@ -170,6 +171,9 @@ namespace ControlClientesRestaurante.Services
             if (_clienteRepository.ExisteDocumento(docLimpio))
                 return (false, "Ya existe un cliente registrado con ese número de documento.", null, null);
 
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return strategy.Execute<(bool, string, Usuario?, Cliente?)>(() =>
+            {
             using var tx = _context.Database.BeginTransaction();
             try
             {
@@ -226,6 +230,7 @@ namespace ControlClientesRestaurante.Services
                 tx.Rollback();
                 return (false, $"Error al registrar la cuenta: {ex.Message}", null, null);
             }
+            });
         }
 
         public (bool ok, string mensaje, Usuario? usuario) VerificarEmailToken(string token)
@@ -495,6 +500,9 @@ namespace ControlClientesRestaurante.Services
             // Contraseña segura
             var passFinal = !string.IsNullOrWhiteSpace(contrasena) && contrasena.Length >= 8 ? contrasena : GeneradorSeguro.ClaveAleatoria();
 
+            var strategy = _context.Database.CreateExecutionStrategy();
+            return strategy.Execute<(bool, string, Usuario?, Cliente?)>(() =>
+            {
             using var tx = _context.Database.BeginTransaction();
             try
             {
@@ -544,6 +552,7 @@ namespace ControlClientesRestaurante.Services
                 tx.Rollback();
                 return (false, $"Error al completar el registro: {ex.Message}", null, null);
             }
+            });
         }
     }
 }

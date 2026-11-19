@@ -82,7 +82,7 @@
     // Formatear teléfono para enlace directo de WhatsApp Colombia
     string telDigitos = new string(Model.Telefono.Where(char.IsDigit).ToArray());
     if (telDigitos.Length == 10 && telDigitos.StartsWith("3")) telDigitos = "57" + telDigitos;
-    string msgWhatsApp = Uri.EscapeDataString($"¡Hola {Model.NombreCliente}! 👋 Tu reserva en *Saborator Restaurante* está confirmada:\n\n🎟️ *Código:* {Model.Codigo}\n🍽️ *Mesa asignada:* #{Model.NumeroMesa}\n📅 *Fecha:* {Model.Fecha:dd/MM/yyyy} a las {Model.Hora}\n👥 *Comensales:* {Model.NumeroPersonas} personas\n📍 *Ubicación:* Cra 4 Sur # 43-12, Barranquilla.\n\n¡Te esperamos para una experiencia gastronómica inolvidable!");
+    string msgWhatsApp = Uri.EscapeDataString($"¡Hola {Model.NombreCliente}! Tu reserva en *Saborator Restaurante* está confirmada:\n\n*Código:* {Model.Codigo}\n*Mesa asignada:* #{Model.NumeroMesa}\n*Fecha:* {Model.Fecha:dd/MM/yyyy} a las {Model.Hora}\n*Comensales:* {Model.NumeroPersonas} personas\n*Ubicación:* Cra 4 Sur # 43-12, Barranquilla.\n\n¡Te esperamos para una experiencia gastronómica inolvidable!");
 }
 
             <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1.5rem;">

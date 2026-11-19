@@ -8,10 +8,6 @@
     <button type="button" onclick="history.back()" class="btn-ghost" style="padding:.35rem .8rem;font-size:.8rem;">← Volver</button>
     @if (Model.Estado != "Facturado" && Model.Estado != "Cancelado")
     {
-        var wompiKey = (string)(ViewBag.WompiPublicKey ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw");
-        var wompiMontoCentavos = (long)(Model.Total * 100);
-        var wompiRef = Model.Numero;
-
         <button type="button" onclick="pagarConWompiWidget()" class="btn-gold" style="padding:.4rem 1.1rem;font-size:.84rem;gap:.5rem;display:inline-flex;align-items:center;border:none;cursor:pointer;background:linear-gradient(135deg, #00E5A3, #00B37E);color:#0A1B14;font-weight:800;box-shadow:0 4px 14px rgba(0,229,163,0.3);">
             <svg viewBox="0 0 100 32" style="width:50px;height:16px;" fill="none">
                 <path d="M6 8 L14 24 L22 8 L30 24 L38 8" stroke="#0A1B14" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -124,38 +120,10 @@
 
 @if (Model.Estado != "Facturado" && Model.Estado != "Cancelado")
 {
-    var wompiKey = (string)(ViewBag.WompiPublicKey ?? "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw");
-    var wompiMontoCentavos = (long)(Model.Total * 100);
-    var wompiRef = Model.Numero;
-
-    <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
     <script>
+        // El pago pasa por la pasarela segura: el servidor calcula el monto y firma la sesión de Wompi
         function pagarConWompiWidget() {
-            try {
-                if (typeof WidgetCheckout === 'undefined') {
-                    alert('El servicio de Wompi está cargando. Por favor intenta nuevamente en unos segundos.');
-                    return;
-                }
-                var checkout = new WidgetCheckout({
-                    currency: 'COP',
-                    amountInCents: @wompiMontoCentavos,
-                    reference: '@wompiRef',
-                    publicKey: '@wompiKey',
-                    redirectUrl: window.location.origin + '/Pago/RetornoWompi'
-                });
-                checkout.open(function (result) {
-                    var transaction = result.transaction;
-                    if (transaction && transaction.status === 'APPROVED') {
-                        window.location.reload();
-                    } else if (transaction && transaction.status) {
-                        alert('Estado de la transacción Wompi: ' + transaction.status);
-                    }
-                });
-            } catch (err) {
-                console.error('Error abriendo Wompi Widget:', err);
-                // Redirigir a checkout como fallback
-                window.location.href = '@Url.Action("Checkout", "Pago", new { tipo = "Pedido", id = Model.Id })';
-            }
+            window.location.href = '@Url.Action("Checkout", "Pago", new { tipo = "Pedido", id = Model.Id })';
         }
     </script>
 }

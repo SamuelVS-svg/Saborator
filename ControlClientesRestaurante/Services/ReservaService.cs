@@ -240,7 +240,7 @@ namespace ControlClientesRestaurante.Services
 
             lock (_lockAvisos)
             {
-                _ultimosAvisos.Insert(0, $"ℹ️ Reserva {res.Codigo} (Mesa #{res.NumeroMesa}) actualizada a estado: {nuevoEstado}.");
+                _ultimosAvisos.Insert(0, $"Reserva {res.Codigo} (Mesa #{res.NumeroMesa}) actualizada a estado: {nuevoEstado}.");
             }
 
             return (true, $"Reserva {res.Codigo} actualizada a '{nuevoEstado}'.");

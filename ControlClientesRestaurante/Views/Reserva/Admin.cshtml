@@ -183,7 +183,7 @@ else
                 {
                     string telDigitos = new string(r.Telefono.Where(char.IsDigit).ToArray());
                     if (telDigitos.Length == 10 && telDigitos.StartsWith("3")) telDigitos = "57" + telDigitos;
-                    string msgWp = Uri.EscapeDataString($"¡Hola {r.NombreCliente}! Te saludamos de *Saborator Restaurante*. Te recordamos tu reserva de mesa:\n\n🍽️ *Mesa:* #{r.NumeroMesa}\n⏰ *Hora:* {r.Hora}\n👥 *Personas:* {r.NumeroPersonas}\n📍 Cra 4 Sur # 43-12, Barranquilla.\n\n¿Nos confirmas tu asistencia? ¡Te esperamos!");
+                    string msgWp = Uri.EscapeDataString($"¡Hola {r.NombreCliente}! Te saludamos de *Saborator Restaurante*. Te recordamos tu reserva de mesa:\n\n*Mesa:* #{r.NumeroMesa}\n*Hora:* {r.Hora}\n*Personas:* {r.NumeroPersonas}\nCra 4 Sur # 43-12, Barranquilla.\n\n¿Nos confirmas tu asistencia? ¡Te esperamos!");
 
                     <tr>
                         <td>

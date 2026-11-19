@@ -1,5 +1,5 @@
 // Saborator Service Worker — PWA & Soporte Offline para Tablets de Salón y Cocina
-const CACHE_NAME = 'saborator-pwa-v1';
+const CACHE_NAME = 'saborator-pwa-v2';
 const STATIC_ASSETS = [
     '/',
     '/css/site.css',
@@ -47,8 +47,8 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         fetch(event.request)
             .then(networkResponse => {
-                // Si la red responde bien y es un asset estático, actualizar caché
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                // Solo se guardan recursos estáticos: las páginas (pedidos, pagos, comprobantes) pueden traer datos privados
+                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic' && event.request.mode !== 'navigate') {
                     const responseClone = networkResponse.clone();
                     caches.open(CACHE_NAME).then(cache => {
                         cache.put(event.request, responseClone);
@@ -63,9 +63,13 @@ self.addEventListener('fetch', event => {
                         return cachedResponse;
                     }
                     if (event.request.mode === 'navigate') {
-                        return caches.match('/');
+                        // Sin conexión: avisar en vez de mostrar el inicio bajo la dirección de otra página
+                        return new Response(
+                            '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sin conexión</title>' +
+                            '<body style="font-family:sans-serif;text-align:center;padding:3rem 1rem"><h1>Sin conexión</h1><p>No pudimos cargar esta página. Revisa tu internet e inténtalo de nuevo.</p>',
+                            { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
                     }
-                    return null;
+                    return Response.error();
                 });
             })
     );

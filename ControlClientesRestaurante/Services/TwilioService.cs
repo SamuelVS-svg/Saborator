@@ -173,13 +173,13 @@ namespace ControlClientesRestaurante.Services
 
                     if (response.IsSuccessStatusCode)
                     {
-                        _logger.LogInformation("✅ [TextBee SMS Gratis - Éxito]: Enviado a {Destino}", destino);
+                        _logger.LogInformation("[TextBee SMS Gratis - Éxito]: Enviado a {Destino}", destino);
                         return (true, "TEXTBEE_SMS_OK", null);
                     }
                     lastError = $"TextBee ({(int)response.StatusCode}): {body}";
                 }
 
-                _logger.LogWarning("⚠️ [TextBee SMS - Fallo]: {Error}", lastError);
+                _logger.LogWarning("[TextBee SMS - Fallo]: {Error}", lastError);
                 return (false, null, lastError);
             }
             catch (Exception ex)
@@ -193,7 +193,7 @@ namespace ControlClientesRestaurante.Services
         {
             var config = ObtenerConfiguracion();
             var destino = NormalizarTelefonoColombiano(telefono);
-            var cuerpoMensaje = $"🍔 [{config.businessName}] Tu código de verificación es: {codigo}. Válido por 5 min.";
+            var cuerpoMensaje = $"[{config.businessName}] Tu código de verificación es: {codigo}. Válido por 5 min.";
 
             // 1. Si TextBee (Gateway Android Gratis sin restricción de números) está configurado, enviar inmediatamente
             if (!string.IsNullOrWhiteSpace(config.textbeeApiKey))
@@ -218,7 +218,7 @@ namespace ControlClientesRestaurante.Services
             {
                 // Sin proveedor configurado no se envía nada: informarlo en vez de simular éxito
                 // (y no escribir el código en los registros del servidor).
-                _logger.LogWarning("📱 SMS no enviado a {Destino}: Twilio no está configurado.", destino);
+                _logger.LogWarning("SMS no enviado a {Destino}: Twilio no está configurado.", destino);
                 return (false, null, "NO_CONFIGURADO");
             }
 
@@ -238,8 +238,8 @@ namespace ControlClientesRestaurante.Services
 
             var destinoWhatsApp = destinoTel.StartsWith("whatsapp:") ? destinoTel : $"whatsapp:{destinoTel}";
             var remitenteWhatsApp = config.whatsappNumber.StartsWith("whatsapp:") ? config.whatsappNumber : $"whatsapp:{config.whatsappNumber}";
-            var cuerpoMensaje = $"🍔 Tu código de verificación es *{codigo}* - Expira en 5 min. Gracias por pedir en {config.businessName}";
-            var cuerpoSms = $"🍔 [{config.businessName}] Tu código de verificación es: {codigo}. Válido por 5 min.";
+            var cuerpoMensaje = $"Tu código de verificación es *{codigo}* - Expira en 5 min. Gracias por pedir en {config.businessName}";
+            var cuerpoSms = $"[{config.businessName}] Tu código de verificación es: {codigo}. Válido por 5 min.";
 
             // 1. Si TextBee está activo, enviarlo también por SMS directo gratis para asegurar que llegue a cualquier número
             if (!string.IsNullOrWhiteSpace(config.textbeeApiKey))
@@ -253,7 +253,7 @@ namespace ControlClientesRestaurante.Services
 
             if (string.IsNullOrWhiteSpace(config.accountSid) || string.IsNullOrWhiteSpace(config.authToken))
             {
-                _logger.LogWarning("💬 WhatsApp no enviado a {Destino}: Twilio no está configurado.", destinoWhatsApp);
+                _logger.LogWarning("WhatsApp no enviado a {Destino}: Twilio no está configurado.", destinoWhatsApp);
                 return (false, null, "NO_CONFIGURADO");
             }
 
@@ -311,12 +311,12 @@ namespace ControlClientesRestaurante.Services
                     using var doc = JsonDocument.Parse(json);
                     if (doc.RootElement.TryGetProperty("status", out var statusProp) && statusProp.GetString() == "approved")
                     {
-                        _logger.LogInformation("✅ [Twilio Verify]: Código aprobado exitosamente para {Destino}", destino);
+                        _logger.LogInformation("[Twilio Verify]: Código aprobado exitosamente para {Destino}", destino);
                         return true;
                     }
                 }
 
-                _logger.LogWarning("⚠️ [Twilio Verify]: Código no aprobado para {Destino}. Respuesta: {Json}", destino, json);
+                _logger.LogWarning("[Twilio Verify]: Código no aprobado para {Destino}. Respuesta: {Json}", destino, json);
                 return false;
             }
             catch (Exception ex)
@@ -357,18 +357,18 @@ namespace ControlClientesRestaurante.Services
                 {
                     using var doc = JsonDocument.Parse(responseContent);
                     var sid = doc.RootElement.TryGetProperty("sid", out var sidProp) ? sidProp.GetString() : "VERIFY_SID";
-                    _logger.LogInformation("✅ [Twilio Verify - Éxito]: SID={Sid} enviado a {To} por {Channel}", sid, to, channel);
+                    _logger.LogInformation("[Twilio Verify - Éxito]: SID={Sid} enviado a {To} por {Channel}", sid, to, channel);
                     return (true, sid, null);
                 }
                 else
                 {
-                    _logger.LogError("❌ [Twilio Verify - Error {StatusCode}]: {Response}", response.StatusCode, responseContent);
+                    _logger.LogError("[Twilio Verify - Error {StatusCode}]: {Response}", response.StatusCode, responseContent);
                     return (false, null, $"Twilio Verify Error: {responseContent}");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ [Twilio Verify - Excepción]: {Mensaje}", ex.Message);
+                _logger.LogError(ex, "[Twilio Verify - Excepción]: {Mensaje}", ex.Message);
                 return (false, null, ex.Message);
             }
         }
@@ -409,18 +409,18 @@ namespace ControlClientesRestaurante.Services
                 {
                     using var doc = JsonDocument.Parse(responseContent);
                     var sid = doc.RootElement.TryGetProperty("sid", out var sidProp) ? sidProp.GetString() : "UNKNOWN_SID";
-                    _logger.LogInformation("✅ [Twilio {Canal} - Éxito]: SID={Sid} entregado a {To}", canal, sid, to);
+                    _logger.LogInformation("[Twilio {Canal} - Éxito]: SID={Sid} entregado a {To}", canal, sid, to);
                     return (true, sid, null);
                 }
                 else
                 {
-                    _logger.LogError("❌ [Twilio {Canal} - Error {StatusCode}]: {Response}", canal, response.StatusCode, responseContent);
+                    _logger.LogError("[Twilio {Canal} - Error {StatusCode}]: {Response}", canal, response.StatusCode, responseContent);
                     return (false, null, $"Twilio Error ({(int)response.StatusCode}): {responseContent}");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ [Twilio {Canal} - Excepción al conectar]: {Mensaje}", canal, ex.Message);
+                _logger.LogError(ex, "[Twilio {Canal} - Excepción al conectar]: {Mensaje}", canal, ex.Message);
                 return (false, null, ex.Message);
             }
         }
