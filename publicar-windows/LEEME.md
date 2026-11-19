@@ -148,3 +148,20 @@ traiga sola los cambios nuevos de GitHub:
   Otra rama o intervalo: `-Rama main -Intervalo 120`.
 - Lo que hace queda en `publicar-windows\auto-actualizar.log`. Para detenerlo: **Ctrl + C** (la app sigue corriendo).
 - Solo trae cambios de **tu rama en tu repositorio de GitHub**. Si algún día no quieres que se apliquen solos, no lo ejecutes.
+
+---
+
+## Subir tus cambios a GitHub sin escribir comandos
+
+Si cambias archivos en tu PC y quieres que queden en GitHub (para que otra persona o Claude los vea):
+
+- **Doble clic en `subir-mis-cambios.bat`** (carpeta del proyecto), o en PowerShell:
+  ```powershell
+  cd publicar-windows
+  .\6-subir-mis-cambios.ps1
+  ```
+- Hace el commit (con fecha y hora) y lo sube a **tu propia rama**, `cambios-locales`, sin tocar `main` ni la rama de Claude.
+- **Automático:** `.\6-subir-mis-cambios.ps1 -Cada 300` revisa cada 5 minutos y sube lo que haya, hasta que pulses Ctrl + C.
+- **Protecciones:** solo prepara las carpetas del proyecto. Si encuentra una clave, una base de datos, un `.env`, un respaldo o archivos `bin`/`obj`, **no sube nada** y te dice cuáles son.
+- Probar sin cambiar nada: `-SoloVerificar`. Otra rama o mensaje: `-Rama mi-home -Mensaje "Ajuste de la portada"`.
+- No lo uses a la vez que `5-auto-actualizar.ps1` sobre la misma rama: ese script no actualiza si tienes commits locales sin subir.
