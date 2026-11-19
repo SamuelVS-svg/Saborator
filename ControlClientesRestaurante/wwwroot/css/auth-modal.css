@@ -568,3 +568,9 @@
 .kfc-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 @media (max-width: 480px) { .kfc-row-2 { grid-template-columns: 1fr; gap: 0; } }
 [data-theme="dark"] .kfc-switch-view { color: #BDB0A8; }
+/* El selector de cuentas de Google (One Tap) se dibuja en su propio contenedor, arriba a la derecha.
+   Debe quedar por encima de la ventana de ingreso (z-index 10000) para poder elegir la cuenta. */
+#credential_picker_container,
+#credential_picker_iframe {
+  z-index: 2147483000 !important;
+}
