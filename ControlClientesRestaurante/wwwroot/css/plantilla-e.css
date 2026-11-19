@@ -75,8 +75,8 @@ html:not([data-theme]) .home-slide-price strong { color: var(--marron-oscuro); }
 html:not([data-theme]) .home-slide-price del { color: var(--muted); }
 html:not([data-theme]) .home-slide-price span { background: rgba(244, 168, 23, .28); color: #6B3F00; }
 html:not([data-theme]) .home-eyebrow { background: #fff; color: var(--marron); border: 1px solid #F4A817; box-shadow: none; }
-html:not([data-theme]) .home-carousel-dots button { background: rgba(44, 27, 20, .25); }
-html:not([data-theme]) .home-carousel-dots button[aria-current="true"] { background: var(--amarillo); }
+html:not([data-theme]) .home-carousel-dots button::before { background: rgba(44, 27, 20, .28); }
+html:not([data-theme]) .home-carousel-dots button[aria-current="true"]::before { background: #B9770E; }
 html:not([data-theme]) .home-banner-plate {
   background: linear-gradient(150deg, #fff 0%, #FFE6A8 32%, #F4A817 68%, #B9770E 100%);
   box-shadow: 0 26px 44px -14px rgba(120, 70, 0, .5), inset 0 2px 3px rgba(255, 255, 255, .7);
