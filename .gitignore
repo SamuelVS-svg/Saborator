@@ -22,6 +22,8 @@ publicar-windows/vigilante.log
 appsettings.Local.json
 credenciales-iniciales.txt
 publish/
+publicar-windows/auto-actualizar.log
+publicar-windows/subir-cambios.log
 
 # Despliegue: secretos y respaldos
 deploy/oracle/.env

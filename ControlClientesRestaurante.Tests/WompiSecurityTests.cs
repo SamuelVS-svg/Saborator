@@ -15,7 +15,7 @@ namespace ControlClientesRestaurante.Tests
             var options = Options.Create(new WompiSettings
             {
                 PublicKey = "pub_prod_3LfjIbKhTNWppn3OIYoG3aVNYUzmWUnw",
-                PrivateKey = "prv_prod_mgVvckn3K4JcmX0l98R9gg2YwBjEFrkW",
+                PrivateKey = "prv_test_clave_ficticia_para_pruebas",
                 Environment = "production",
                 Currency = "COP",
                 IntegritySecret = integritySecret,

@@ -15,7 +15,7 @@
     var _ancla = _esInicio ? "" : "/";
     var _ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var _act = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
-    string Actual(string c, string a) => _ctrl == c && _act == a ? "page" : null;
+    string? Actual(string c, string a) => _ctrl == c && _act == a ? "page" : null;
 }
 
 <link rel="stylesheet" href="~/css/nav-inicio.css" asp-append-version="true" />

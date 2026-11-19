@@ -102,7 +102,7 @@ namespace ControlClientesRestaurante.Controllers
             // Contraseña temporal (asignada por el administrador): debe cambiarla antes de entrar
             if (usuarioEntity.DebeCambiarContraseña)
             {
-                HttpContext.Session.SetString("UsuarioPendienteCambio", usuarioEntity.NombreUsuario);
+                HttpContext.Session.SetString("UsuarioPendienteCambio", nombreMostrar);
                 return RedirectToAction("PrimerIngreso");
             }
 
