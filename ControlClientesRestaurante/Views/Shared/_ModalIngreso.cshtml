@@ -8,13 +8,6 @@
         Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
     }.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
     var googleHabilitado = !string.IsNullOrEmpty(googleClientId);
-    // Facebook: el botón siempre se ve; si falta el AppId, al pulsarlo se avisa que aún no está activado
-    var facebookAppId = new[]
-    {
-        Configuration["Authentication:Facebook:AppId"],
-        Configuration["Facebook:AppId"],
-        Environment.GetEnvironmentVariable("FACEBOOK_APP_ID")
-    }.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v))?.Trim() ?? "";
 }
 
 @if (googleHabilitado)
@@ -28,7 +21,7 @@
     <div class="modal-ingreso-box" id="modalIngresoBox">
         <button type="button" class="modal-ingreso-close" onclick="cerrarModalIngreso()" aria-label="Cerrar modal">&times;</button>
 
-        <!-- ── VISTA PRINCIPAL: usuario o correo + contraseña, o Google / Facebook; desde aquí se crea la cuenta ───────────────── -->
+        <!-- ── VISTA PRINCIPAL: usuario o correo + contraseña, o Google; desde aquí se crea la cuenta ───────────────── -->
         <div id="viewClubSaboratorMain">
             <div class="kfc-auth-header">
                 <h3 class="kfc-auth-title kfc-auth-title-grande" id="modalClubTitle">Ingresa a tu cuenta</h3>
@@ -72,9 +65,6 @@
                     <div id="googleOfficialBtnContainer" class="google-official-btn-wrap"><div id="googleOfficialBtnInner"></div></div>
                 </div>
                 }
-                <button type="button" class="btn-social btn-social-facebook" id="btnFacebookAuth" onclick="iniciarFacebookAuth()">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.88v2.27h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg><span>Continuar con Facebook</span>
-                </button>
             </div>
 
             <div class="kfc-switch-view">
@@ -142,7 +132,6 @@
 
 <!-- ══ SCRIPT DE CONTROLADOR FAST-FOOD & GOOGLE GSI OFICIAL ═══════════════════ --><script>
         const googleClientIdConfig = '@googleClientId';
-        const facebookAppIdConfig = '@facebookAppId';
 
     function abrirModalIngreso() {
         const overlay = document.getElementById('modalIngresoOverlay');
@@ -355,67 +344,7 @@
         }
     }
 
-    // ── Facebook Login (SDK oficial de Facebook; el servidor valida el token en /Login/FacebookAuth) ──
-    let facebookSdkListo = null;
-    function cargarFacebookSdk() {
-        if (facebookSdkListo) return facebookSdkListo;
-        facebookSdkListo = new Promise((resolver, rechazar) => {
-            window.fbAsyncInit = function () {
-                FB.init({ appId: facebookAppIdConfig, cookie: false, xfbml: false, version: 'v19.0' });
-                resolver();
-            };
-            const s = document.createElement('script');
-            s.src = 'https://connect.facebook.net/es_LA/sdk.js';
-            s.async = true;
-            s.onerror = () => { facebookSdkListo = null; rechazar(new Error('sdk')); };
-            document.head.appendChild(s);
-        });
-        return facebookSdkListo;
-    }
-
-    async function iniciarFacebookAuth() {
-        limpiarKfcFeedbacks();
-        if (!facebookAppIdConfig) {
-            mostrarKfcFeedback('El acceso con Facebook aún no está activado. Por ahora ingresa con Google o con tu correo.', false);
-            return;
-        }
-        try {
-            await cargarFacebookSdk();
-        } catch (e) {
-            mostrarKfcFeedback('No se pudo cargar Facebook. Revisa tu conexión e intenta de nuevo.', false);
-            return;
-        }
-        FB.login(function (r) {
-            if (!r || !r.authResponse) {
-                mostrarKfcFeedback('No se completó el inicio de sesión con Facebook.', false);
-                return;
-            }
-            enviarTokenFacebook(r.authResponse.accessToken);
-        }, { scope: 'public_profile,email' });
-    }
-
-    async function enviarTokenFacebook(accessToken) {
-        mostrarKfcFeedback('Autenticando con Facebook...', true);
-        try {
-            const resp = await fetch('/Login/FacebookAuth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                body: JSON.stringify({ accessToken, returnUrl: window.location.pathname })
-            });
-            const data = await resp.json();
-            if (data && data.ok) {
-                mostrarKfcFeedback(data.mensaje || '¡Acceso concedido con Facebook!', true);
-                setTimeout(() => { window.location.href = data.redirectUrl || '/Carta'; }, 600);
-            } else {
-                mostrarKfcFeedback((data && data.mensaje) || 'No se pudo ingresar con Facebook.', false);
-            }
-        } catch (err) {
-            console.error('Error FacebookAuth:', err);
-            mostrarKfcFeedback('Error de comunicación al autenticar con Facebook.', false);
-        }
-    }
-
-    // ── Vistas del modal: 'main' (usuario o correo + contraseña, Google y Facebook) y 'registro' (crear cuenta) ──
+    // ── Vistas del modal: 'main' (usuario o correo + contraseña, Google) y 'registro' (crear cuenta) ──
     function mostrarVista(nombre) {
         const volvioDeRegistro = nombre === 'correo';          // 'correo' se conserva como alias de 'main' (enlace "Inicia sesión")
         if (volvioDeRegistro) nombre = 'main';
