@@ -83,7 +83,10 @@ html[data-theme="dark"] .home-slide-price span { color: var(--gold); }
 
 /* Controles del carrusel: flechas y barras con la misma medida y el mismo color en toda la portada.
    Las flechas se centran en el margen lateral del banner, a la misma distancia a izquierda y derecha. */
-.home-carousel { --gutter: max(4.75rem, calc((100vw - 1180px) / 2)); }
+.home-carousel { --gutter: max(6.25rem, calc((100vw - 1180px) / 2)); }
+/* Mismo margen lateral en todas las diapositivas: deja ~28 px de aire entre la flecha y el contenido */
+.home-carousel .home-banner,
+.home-carousel .home-slide-combo { padding-inline: var(--gutter); }
 .home-carousel-nav {
   width: 44px; height: 44px; margin-top: -22px; background: rgba(255, 255, 255, .92); color: var(--marron-oscuro, #2C1B14);
   box-shadow: 0 2px 10px rgba(44, 27, 20, .18);
