@@ -1,0 +1,437 @@
+/* ==========================================================================
+   CARRITO · Barra flotante, panel lateral "Tu Pedido" y ventana de modalidad de entrega.
+   Se carga en todas las páginas públicas (desde _Carrito.cshtml). Antes vivía en home.css,
+   que solo se carga en el inicio, y por eso el carrito no funcionaba en el resto del sitio.
+   ========================================================================== */
+
+/* Barra Flotante de Carrito en la parte inferior (KFC Mobile & Desktop) */
+.cart-floating-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    z-index: 180;
+    width: calc(100% - 32px);
+    max-width: 540px;
+    background: var(--bar-bg, rgba(30, 18, 12, .85));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 0.75rem 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(244, 168, 23, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #FFFFFF;
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 260ms ease;
+    opacity: 0;
+    pointer-events: none;
+}
+.cart-floating-bar.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+.float-info {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+.float-cart-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold, #F4A817) 0%, #F4C95D 100%);
+    color: #1E120C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+.float-count-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #EF4444;
+    color: #FFF;
+    font-size: 0.65rem;
+    font-weight: 800;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.float-texts { display: flex; flex-direction: column; }
+.float-subtotal {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+.float-mode {
+    font-size: 0.76rem;
+    color: var(--gold, #F4A817);
+    font-weight: 600;
+}
+.float-action-btn {
+    padding: 0.8rem 1.5rem;
+    background: var(--cta, #F4A817);
+    color: var(--cta-ink, #2C1B14);
+    border: none;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    box-shadow: var(--cta-glow, 0 4px 15px rgba(244, 168, 23, 0.35));
+    transition: transform 140ms ease, filter 140ms ease;
+}
+.float-action-btn:hover { transform: scale(1.03); }
+.float-action-btn:active { transform: scale(0.97); }
+
+/* Cart Drawer estilo KFC */
+.cart-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 2, 4, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 220;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cart-drawer-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 440px;
+    background: #1E120C;
+    border-left: 1px solid rgba(244, 168, 23, 0.3);
+    z-index: 230;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: -15px 0 45px rgba(0, 0, 0, 0.6);
+    color: #FFFFFF;
+}
+.cart-drawer-overlay.open .cart-drawer {
+    transform: translateX(0);
+}
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.drawer-title {
+    font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
+    font-size: 1.85rem;
+    font-weight: 400;
+    margin: 0;
+    color: #FFFFFF;
+}
+.drawer-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.5rem;
+    cursor: pointer;
+    min-width: 40px;
+    min-height: 40px;   /* área táctil mínima */
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: color 140ms ease, background 140ms ease;
+}
+.drawer-close:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.1);
+}
+.drawer-modality-bar {
+    background: rgba(244, 168, 23, 0.1);
+    border-bottom: 1px solid rgba(244, 168, 23, 0.2);
+    padding: 0.75rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.84rem;
+}
+.drawer-mod-text {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--gold, #F4A817);
+    font-weight: 700;
+}
+.drawer-mod-change {
+    color: #FFFFFF;
+    text-decoration: underline;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.drawer-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem 1.75rem;
+}
+.drawer-item {
+    display: flex;
+    gap: 0.95rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.drawer-item-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    background-color: #000;
+    border: 1px solid rgba(244, 168, 23, 0.3);
+    flex-shrink: 0;
+}
+.drawer-item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.drawer-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.drawer-item-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: #FFFFFF;
+    margin-right: 0.5rem;
+}
+.drawer-item-remove {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    padding: 0;
+    transition: color 140ms ease;
+}
+.drawer-item-remove:hover { color: #EF4444; }
+
+.drawer-item-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+.cart-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 0.2rem 0.45rem;
+}
+.cart-stepper-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 120ms ease;
+}
+.cart-stepper-btn:hover { background: var(--gold, #F4A817); color: #1E120C; }
+.cart-stepper-count {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    min-width: 18px;
+    text-align: center;
+}
+.drawer-item-price {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--gold, #F4A817);
+}
+
+.drawer-footer {
+    padding: 1.5rem 1.75rem;
+    background: #150508;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.drawer-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+}
+.drawer-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+.drawer-total-row.final {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    border-top: 1px dashed rgba(244, 168, 23, 0.35);
+    padding-top: 0.65rem;
+    margin-top: 0.25rem;
+}
+.drawer-total-row.final span:last-child {
+    color: var(--gold, #F4A817);
+}
+.drawer-checkout-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--gold, #F4A817) 0%, #F4C95D 100%);
+    color: #1E120C;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 6px 20px rgba(244, 168, 23, 0.4);
+    transition: transform 140ms ease;
+    text-decoration: none;
+}
+.drawer-checkout-btn:hover { transform: translateY(-2px); }
+.drawer-checkout-btn:active { transform: scale(0.98); }
+
+/* Modal Selector de Modalidad (KFC) */
+.modality-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 2, 4, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 250;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms ease;
+}
+.modality-modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modality-modal {
+    background: #FFFFFF;
+    border: 1px solid var(--line, #E8DFD0);
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modality-modal-overlay.open .modality-modal {
+    transform: translateY(0);
+}
+.modality-modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    min-width: 40px;
+    min-height: 40px;   /* área táctil mínima */
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--muted, #6E5C50);
+    cursor: pointer;
+}
+.modality-modal-title {
+    font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
+    font-size: 2.2rem;
+    color: var(--brand, #6B4226);
+    margin: 0 0 0.5rem;
+}
+.modality-modal-sub {
+    font-size: 0.9rem;
+    color: var(--muted, #6E5C50);
+    margin: 0 0 1.5rem;
+}
+.modality-modal-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+.mod-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 2px solid var(--line, #E8DFD0);
+    background: #FBF7EE;
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 160ms ease;
+    width: 100%;
+}
+.mod-option-btn:hover {
+    border-color: var(--gold, #F4A817);
+    background: #FFFFFF;
+    transform: translateY(-1px);
+}
+.mod-option-btn.active {
+    border-color: var(--brand, #6B4226);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.1);
+}
+.mod-opt-icon { font-size: 1.6rem; }
+.mod-opt-title { font-weight: 700; font-size: 0.95rem; color: #1E120C; }
+.mod-opt-desc { font-size: 0.78rem; color: var(--muted, #6E5C50); }
+
+/* Fila de ahorro por combo en el carrito */
+.drawer-total-row.combo-ahorro { color: #2E7D52; font-weight: 700; }
+
+/* Botón de pago del panel: respuesta al pulsar */
+.drawer-checkout-btn:active { transform: scale(0.97) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    .cart-drawer,
+    .cart-floating-bar {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Con el panel abierto, el botón flotante de WhatsApp (capa 9990) taparía el botón de pago */
+body.carrito-abierto .luxury-whatsapp-wrap { display: none !important; }

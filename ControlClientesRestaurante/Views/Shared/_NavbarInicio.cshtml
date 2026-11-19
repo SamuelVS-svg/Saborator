@@ -73,7 +73,7 @@
             </button>
 
             <!-- Botón de Carrito Flotante/Nav estilo KFC -->
-            <button type="button" onclick="@(_esInicio ? "abrirDrawerCarrito()" : "location.href='/#menu'")" class="lnav-cart-btn" id="navCartBtn" aria-label="Ver Carrito">
+            <button type="button" onclick="abrirDrawerCarrito()" class="lnav-cart-btn" id="navCartBtn" aria-label="Ver Carrito">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                 <span class="nav-cart-badge" id="navCartCount" style="display:none;">0</span>
             </button>
@@ -161,3 +161,6 @@
     <div class="lnav-spacer" aria-hidden="true"></div>
     <script src="~/js/buscador-nav.js" asp-append-version="true"></script>
 }
+
+@* Carrito de compras (panel lateral, modalidad de entrega y motor): disponible en todas las páginas con esta barra *@
+<partial name="_Carrito" />
