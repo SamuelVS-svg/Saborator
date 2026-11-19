@@ -53,17 +53,17 @@ namespace ControlClientesRestaurante.Services
             }),
         };
 
-        /// <summary>Foto del producto según su nombre (las mismas que usa la carta).</summary>
+        /// <summary>Foto del producto según su nombre, sin fondo, para la portada y los combos.</summary>
         public static string ImagenPorNombre(string nombre)
         {
             var n = (nombre ?? "").ToLowerInvariant();
-            if (n.Contains("perro")) return "/img/perrocaliente.jpg";
-            if (n.Contains("salchipapa")) return "/img/salchipapa.jpg";
-            if (n.Contains("papa")) return "/img/papasfrancesa.jpg";
-            if (n.Contains("coca")) return "/img/cocacola.png?v=3";
-            if (n.Contains("pepsi")) return "/img/pepsi.webp?v=2";
-            if (n.Contains("agua")) return "/img/agua.webp?v=2";
-            return "/img/hamburguesa.jpg";
+            if (n.Contains("perro")) return "/img/recorte/perrocaliente.webp";
+            if (n.Contains("salchipapa")) return "/img/recorte/salchipapa.webp";
+            if (n.Contains("papa")) return "/img/recorte/papasfrancesa.webp";
+            if (n.Contains("coca")) return "/img/recorte/cocacola.webp";
+            if (n.Contains("pepsi")) return "/img/recorte/pepsi.webp";
+            if (n.Contains("agua")) return "/img/recorte/agua.webp";
+            return "/img/recorte/hamburguesa.webp";
         }
 
         /// <summary>Los combos disponibles en JSON (camelCase) para que las vistas los entreguen al navegador.</summary>

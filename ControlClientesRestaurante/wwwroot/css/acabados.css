@@ -64,14 +64,19 @@ html .home-carousel .home-banner h1 em { color: inherit !important; font-style: 
 .home-cta { border-radius: 8px; box-shadow: none; padding: 1rem 1.9rem; }
 .home-cta:hover { box-shadow: none; transform: none; filter: brightness(1.07); }
 
-/* Foto del plato: recorte limpio, sin anillo dorado ni resplandor */
-.home-carousel .home-banner-plate,
-html[data-theme="dark"] .home-carousel .home-banner-plate {
-  padding: 0; background: none; border-radius: 16px; overflow: hidden; width: min(100%, 380px); aspect-ratio: 1; align-self: center;
-  box-shadow: 0 24px 40px -26px rgba(44, 27, 20, .55);
+/* Foto del plato: sin recuadro negro. La foto es un recorte sin fondo que flota sobre el degradado, con una sombra suave.
+   Se usa "html" delante para ganarle a los fondos que definen plantilla-e.css y home-simple.css. */
+html .home-carousel .home-banner-plate {
+  padding: 0; background: none; box-shadow: none; border-radius: 0; overflow: visible;
+  width: min(100%, 400px); height: 400px; aspect-ratio: auto; align-self: center; display: grid; place-items: center;
 }
 .home-banner-plate::after { display: none; }
-.home-banner-dish { border-radius: 0; object-fit: cover; }
+html .home-carousel .home-banner-dish {
+  width: auto; height: 100%; max-width: 100%; border-radius: 0; background: none; object-fit: contain;
+  filter: drop-shadow(0 26px 22px rgba(44, 27, 20, .38));
+}
+html[data-theme="dark"] .home-carousel .home-banner-dish { filter: drop-shadow(0 26px 26px rgba(0, 0, 0, .6)); }
+@media (max-width: 760px) { html .home-carousel .home-banner-plate { width: min(70%, 260px); height: 260px; } }
 
 /* Combos: fotos en recuadros, sin marco degradado */
 .home-slide-photos img {
@@ -151,18 +156,23 @@ html[data-theme="dark"] .home-order-wide { color: var(--gold); }
 
 /* ── Combos: cuadrícula ordenada de productos con su nombre y cantidad (sin collage encimado) ── */
 .home-slide-items { list-style: none; margin: 0; padding: 0; justify-self: end; width: min(100%, 440px); display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-.home-slide-items li { position: relative; margin: 0; overflow: hidden; aspect-ratio: 1; border-radius: 16px; background: #0d0a08; }
+.home-slide-items li {
+  position: relative; margin: 0; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 16px;
+  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  background: rgba(255, 255, 255, .62); border: 1px solid rgba(185, 119, 14, .22); box-shadow: 0 14px 26px -20px rgba(120, 70, 0, .5);
+}
 .home-slide-items[data-n="1"] { grid-template-columns: 1fr; width: min(100%, 360px); }
 .home-slide-items[data-n="3"] { grid-template-columns: repeat(3, 1fr); width: min(100%, 480px); }
 .home-slide-items[data-n="3"] li { aspect-ratio: 3 / 4; }
-.home-slide-items img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+.home-slide-items img { display: block; width: 100%; height: 100%; min-height: 0; padding: 14px 12px 4px; object-fit: contain; }
 .home-slide-items span {
-  position: absolute; inset: auto 0 0 0; padding: 1.4rem .85rem .6rem; font-size: .88rem; font-weight: 600; line-height: 1.2; color: #fff;
-  background: linear-gradient(to top, rgba(0, 0, 0, .72), rgba(0, 0, 0, 0));
+  position: static; padding: 0 .7rem .8rem; font-size: .88rem; font-weight: 700; line-height: 1.2; text-align: center; color: var(--marron-oscuro, #2C1B14); background: none;
 }
+html[data-theme="dark"] .home-slide-items li { background: rgba(255, 255, 255, .07); border-color: rgba(255, 255, 255, .14); box-shadow: none; }
+html[data-theme="dark"] .home-slide-items span { color: #fff; }
 @media (max-width: 760px) {
   .home-slide-items { justify-self: center; width: min(86%, 340px); order: -1; gap: 10px; }
-  .home-slide-items span { font-size: .78rem; padding: 1rem .6rem .45rem; }
+  .home-slide-items span { font-size: .78rem; padding: 0 .5rem .6rem; }
 }
 
 /* Área táctil mínima de 40 px en "Ingresar" */
