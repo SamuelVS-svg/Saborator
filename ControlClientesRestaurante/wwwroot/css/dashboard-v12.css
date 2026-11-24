@@ -350,7 +350,7 @@
 /* ── 3. TARJETAS DE MÉTRICAS (STATCARD) ──────────────────────────────────── */
 .v12-stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
     margin-bottom: 1.5rem;
 }
@@ -1020,3 +1020,11 @@
         max-width: 100%;
     }
 }
+
+
+/* Sin ventas todavía no hay gráfica: la tarjeta de capacidad ocupa todo el ancho y el panel derecho no se estira */
+.v12-sin-grafica .v12-bento-subcard { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 2rem; }
+.v12-sin-grafica .v12-bento-subcard > div { flex: 1; }
+.v12-sin-grafica .v12-bento-subcard > div + div { border-top: 0 !important; border-left: 1px solid var(--line); padding: 0 0 0 2rem !important; margin: 0 !important; }
+.v12-content-split { align-items: start; }
+@media (max-width: 900px) { .v12-sin-grafica .v12-bento-subcard { flex-direction: column; align-items: stretch; } .v12-sin-grafica .v12-bento-subcard > div + div { border-left: 0; border-top: 1px solid var(--line) !important; padding: .75rem 0 0 !important; } }

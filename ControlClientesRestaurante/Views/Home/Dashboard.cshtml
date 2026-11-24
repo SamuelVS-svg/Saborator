@@ -157,23 +157,6 @@
                     </div>
                 </div>
 
-                <!-- StatCard 3: Ocupación de Mesas -->
-                <div class="glass-card glass-card-hover v12-stat-card v12-animate-enter v12-stagger-4">
-                    <div class="v12-stat-head">
-                        <span class="v12-stat-title">Ocupación Salón</span>
-                        <div class="v12-stat-icon-wrap">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
-                        </div>
-                    </div>
-                    <div class="v12-stat-value">@ocupacionPorcentaje%</div>
-                    <div class="v12-stat-footer">
-                        <span class="v12-trend-pill up">
-                            @mesasOcupadas / @totalMesas
-                        </span>
-                        <span class="v12-trend-label">mesas con comensales</span>
-                    </div>
-                </div>
-
                 <!-- StatCard 4: Reservas Programadas -->
                 <div class="glass-card glass-card-hover v12-stat-card v12-animate-enter v12-stagger-5">
                     <div class="v12-stat-head">
@@ -196,7 +179,7 @@
             <div class="v12-content-split">
 
                 <!-- ══ 6. TARJETAS TIPO BENTO ═════════════════════════════════ -->
-                <div class="v12-bento-grid">
+                <div class="v12-bento-grid @(series.Values.Any(s => s.Sum(x => x.valor) > 0) ? "" : "v12-sin-grafica")">
 
                     <!-- Bento Hero: Destacada con Color Principal Sólido -->
                     <div class="v12-bento-hero v12-animate-enter v12-stagger-4">
@@ -210,7 +193,7 @@
                             </div>
                             <h2 class="v12-bento-hero-title">Operación de hoy</h2>
                             <p class="v12-bento-hero-desc">
-                                @pedidosHoy pedidos registrados hoy, @pedidosActivos en curso y @domiciliosEnRuta domicilios en ruta.
+                                @pedidosHoy @(pedidosHoy == 1 ? "pedido registrado hoy." : "pedidos registrados hoy.")
                                 @(stockBajo.Any() ? $"{stockBajo.Count} productos con stock crítico." : "Sin alertas de inventario.")
                             </p>
                         </div>
@@ -242,7 +225,6 @@
                     <div class="glass-card glass-card-hover v12-calendar-card v12-animate-enter v12-stagger-5">
                         <div class="v12-cal-header">
                             <span class="v12-cal-month">@fechaHoy.ToString("MMMM yyyy", culturaEs).ToUpper(culturaEs)</span>
-                            <a asp-controller="Reserva" asp-action="Admin" class="v12-panel-action">Reservas</a>
                         </div>
                         <div class="v12-cal-grid">
                             <div class="v12-cal-day-head">L</div>
@@ -265,6 +247,8 @@
                         </div>
                     </div>
 
+                    @if (series.Values.Any(s => s.Sum(x => x.valor) > 0))
+                    {
                     <!-- ══ 4. GRÁFICA DE ACTIVIDAD EN ÁREA/LÍNEA (DEGRADADO BRAND) ══ -->
                     <div class="glass-card glass-card-hover v12-chart-card v12-animate-enter v12-stagger-6">
                         <div class="v12-chart-head">
@@ -306,6 +290,7 @@
                             }
                         </div>
                     </div>
+                    }
 
                     <!-- Bento Subcard: Ocupación de Mesas & Stock -->
                     <div class="glass-card glass-card-hover v12-bento-subcard v12-animate-enter v12-stagger-7">
@@ -366,23 +351,6 @@
                                 <p style="font-size:0.85rem;color:var(--muted);margin:0.5rem 0;">No hay reservas próximas.</p>
                             }
                         </div>
-                    </div>
-
-                    <!-- Acceso Directo de Caja & Facturación Rápida -->
-                    <div class="glass-card v12-panel-card">
-                        <div class="v12-panel-head">
-                            <h3 class="v12-panel-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                Caja Operativa
-                            </h3>
-                            <a asp-controller="Factura" asp-action="Create" class="v12-panel-action">+ Facturar</a>
-                        </div>
-                        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:1rem;">
-                            Emisión rápida de comprobantes con liquidación de propina y descuento en una sola transacción atómica.
-                        </p>
-                        <a asp-controller="Factura" asp-action="Create" class="btn-brand" style="display:flex; justify-content:center; width:100%; text-decoration:none;">
-                            Nueva Factura
-                        </a>
                     </div>
                 </aside>
 
