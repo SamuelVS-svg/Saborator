@@ -32,7 +32,7 @@
     width: 36px;
     height: 36px;
     background: var(--brand-soft, rgba(31, 18, 12, 0.1));
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     border: 1px solid rgba(31, 18, 12, 0.2);
     border-radius: 10px;
     display: flex;
@@ -89,7 +89,7 @@
 }
 .lnav-menu-links a:hover,
 .lnav-item:hover {
-    color: var(--brand, #1F120C) !important;
+    color: var(--brand-text) !important;
     background: rgba(31, 18, 12, 0.06) !important;
 }
 [data-theme="dark"] .lnav-menu-links a:hover,
@@ -187,7 +187,7 @@
     .lnav-btn-o:hover {
         background: var(--surface-2, #F6EBD3);
         border-color: var(--brand, #1F120C);
-        color: var(--brand, #1F120C);
+        color: var(--brand-text);
         transform: translateY(-1px);
     }
     [data-theme="dark"] .lnav-btn-o:hover {
@@ -315,7 +315,7 @@
 }
 .lnav-mobile a:last-child { border: none; }
 /* Enlaces destacados del menú móvil (Reservar Mesa, Mi panel): el dorado no contrasta sobre fondo claro, se usa el marrón de marca */
-.lnav-mobile a.lnav-m-destacado { color: var(--brand, #1F120C); font-weight: 700; }
+.lnav-mobile a.lnav-m-destacado { color: var(--brand-text); font-weight: 700; }
 [data-theme="dark"] .lnav-mobile a.lnav-m-destacado { color: var(--gold, #F4A817); }
 
 
@@ -464,7 +464,7 @@
 
 /* Página actual resaltada */
 .lnav-menu-links a.lnav-item[aria-current="page"] {
-    color: var(--brand, #1F120C) !important;
+    color: var(--brand-text) !important;
     background: rgba(31, 18, 12, 0.1) !important;
     border: 1px solid rgba(31, 18, 12, 0.28) !important;
 }
@@ -574,5 +574,5 @@
 .lnav-buscar-txt strong { font-weight: 700; }
 .lnav-buscar-txt small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted, #7B6249); font-size: .78rem; }
 .lnav-buscar-precio { flex: 0 0 auto; font-weight: 800; color: var(--ink, #1F120C); }
-.lnav-buscar-todos { justify-content: center; border-bottom: 0; font-weight: 700; color: var(--brand, #1F120C); }
+.lnav-buscar-todos { justify-content: center; border-bottom: 0; font-weight: 700; color: var(--brand-text); }
 .lnav-buscar-vacio { padding: 1.25rem 1rem; text-align: center; color: var(--muted, #7B6249); }

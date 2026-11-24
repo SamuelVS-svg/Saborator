@@ -379,7 +379,7 @@
 .modality-modal-title {
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
     font-size: 2.2rem;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     margin: 0 0 0.5rem;
 }
 .modality-modal-sub {

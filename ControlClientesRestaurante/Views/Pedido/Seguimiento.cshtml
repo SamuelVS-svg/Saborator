@@ -144,7 +144,7 @@
                 <!-- Mapa simulado de la ruta desde la Sede (visible en todo pedido a domicilio) -->
                 <div class="tracker-dispatch-box" id="rutaCaja" style="background:var(--surface-2, #FBF7EE);border:1.5px solid var(--line, #E8DFD0);border-radius:12px;padding:1rem;margin:1rem 0;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;flex-wrap:wrap;gap:0.5rem;">
-                        <span style="font-size:0.78rem;font-weight:800;color:var(--brand);text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;">
+                        <span style="font-size:0.78rem;font-weight:800;color:var(--brand-text);text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/></svg>
                             Ruta de Despacho Saborator
                         </span>
@@ -254,7 +254,7 @@
             @if (Model.Estado != "Facturado" && Model.Estado != "Cancelado")
             {
                 <div style="margin-top:1.25rem;background:rgba(244, 168, 23,0.08);border:1.5px solid var(--gold);border-radius:12px;padding:1rem;text-align:center;">
-                    <div style="font-size:0.85rem;color:var(--brand);font-weight:700;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <div style="font-size:0.85rem;color:var(--brand-text);font-weight:700;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:center;gap:6px;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                         <span>Pagar Pedido con Wompi</span>
                     </div>
@@ -275,7 +275,7 @@
             @if (stepActual >= 3)
             {
                 <div style="margin-top:1.25rem;background:linear-gradient(135deg, rgba(244, 168, 23,0.12), rgba(31, 18, 12,0.08));border:1px solid rgba(244, 168, 23,0.35);border-radius:14px;padding:1.15rem;text-align:center;">
-                    <div style="font-weight:700;color:var(--brand);font-size:0.95rem;margin-bottom:0.25rem;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <div style="font-weight:700;color:var(--brand-text);font-size:0.95rem;margin-bottom:0.25rem;display:flex;align-items:center;justify-content:center;gap:6px;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                         <span>¿Qué tal estuvo tu experiencia?</span>
                     </div>
@@ -349,7 +349,7 @@
         font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
         font-size: 2.75rem;
         font-weight: 400;
-        color: var(--brand, #1F120C);
+        color: var(--brand-text);
         margin: 0 0 0.5rem;
         line-height: 1.15;
     }
@@ -359,7 +359,7 @@
         margin: 0;
     }
     .tracker-code strong {
-        color: var(--brand, #1F120C);
+        color: var(--brand-text);
         letter-spacing: 0.05em;
     }
 
@@ -474,7 +474,7 @@
     .card-section-title {
         font-size: 1.15rem;
         font-weight: 700;
-        color: var(--brand, #1F120C);
+        color: var(--brand-text);
         margin: 0 0 1.25rem;
         border-bottom: 1px solid var(--line, #E8DFD0);
         padding-bottom: 0.65rem;
@@ -528,7 +528,7 @@
     .cost-row.total {
         font-size: 1.15rem;
         font-weight: 800;
-        color: var(--brand, #1F120C);
+        color: var(--brand-text);
         border-top: 1px dashed var(--line, #E8DFD0);
         padding-top: 0.65rem;
         margin-top: 0.5rem;

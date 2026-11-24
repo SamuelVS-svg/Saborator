@@ -19,7 +19,7 @@ html .lnav .lnav-item:hover::after,
 html .lnav .lnav-menu-links a.lnav-item[aria-current="page"]::after { transform: scaleX(1); }
 html .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: var(--text, #2C1B14) !important; background: transparent !important; border: 0 !important; outline: 0; box-shadow: none !important; }
 html[data-theme="dark"] .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: #fff !important; }
-html .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--brand, #1F120C) !important; background: transparent !important; border: 0 !important; }
+html .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--brand-text) !important; background: transparent !important; border: 0 !important; }
 html .lnav .lnav-menu-links a.lnav-item-reserva-mobile svg { stroke: currentColor !important; }
 
 /* Botones de icono sin caja; solo se tiñen al pasar el cursor */
@@ -83,7 +83,7 @@ html[data-theme="dark"] .home-carousel .home-banner-dish { filter: drop-shadow(0
   border: 0; border-radius: 16px; background: #000; object-fit: cover;
   box-shadow: 0 18px 30px -16px rgba(0, 0, 0, .6);
 }
-html .home-slide-price span { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; color: var(--brand); font-size: .95rem; font-weight: 700; }
+html .home-slide-price span { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; color: var(--brand-text); font-size: .95rem; font-weight: 700; }
 html[data-theme="dark"] .home-slide-price span { color: var(--gold); }
 
 /* Controles del carrusel: flechas y barras con la misma medida y el mismo color en toda la portada.
@@ -130,7 +130,7 @@ html[data-theme="dark"] .home-carousel-nav:hover { background: rgba(0, 0, 0, .65
   transition: background-color .25s ease, color .25s ease;
 }
 .home-order-card:hover { background: var(--brand); color: var(--on-brand, #fff); box-shadow: none; transform: none; }
-.home-order-icon { grid-row: 1 / span 2; align-self: center; width: auto; height: auto; margin: 0; border-radius: 0; background: none; color: var(--brand); }
+.home-order-icon { grid-row: 1 / span 2; align-self: center; width: auto; height: auto; margin: 0; border-radius: 0; background: none; color: var(--brand-text); }
 .home-order-icon svg { width: 38px; height: 38px; stroke-width: 1.6; }
 html[data-theme="dark"] .home-order-icon { color: var(--gold); }
 .home-order-card:hover .home-order-icon { color: var(--on-brand, #fff); transform: none; }
@@ -139,7 +139,7 @@ html[data-theme="dark"] .home-order-icon { color: var(--gold); }
 .home-order-card:hover .home-order-sub { color: inherit; opacity: .88; }
 .home-order-wide {
   justify-content: flex-start; min-height: 0; padding: .5rem 0; border: 0; background: none; border-radius: 0;
-  font-size: 1.05rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--brand);
+  font-size: 1.05rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--brand-text);
   text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; text-decoration-color: var(--gold, #F4A817);
 }
 html[data-theme="dark"] .home-order-wide { color: var(--gold); }

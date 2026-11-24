@@ -122,7 +122,7 @@
     font-weight: 400;
     line-height: 1.05;
     margin-bottom: 0.85rem;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
 }
 
 .reserva-title span {
@@ -255,7 +255,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     margin-bottom: 0.55rem;
 }
 
@@ -330,7 +330,7 @@
     margin: 0 0 0.2rem;
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
 }
 
 .next-step-text p {
@@ -449,7 +449,7 @@
     font-weight: 800;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -670,7 +670,7 @@
 .ticket-brand {
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
     font-size: 2rem;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     margin-bottom: 0.25rem;
 }
 
@@ -720,7 +720,7 @@
 }
 
 .t-row .t-val.highlight {
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     font-size: 1.3rem;
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
 }
@@ -841,7 +841,7 @@
 .auth-modal-logo {
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
     font-size: 2.2rem;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     margin-bottom: 0.25rem;
 }
 
@@ -883,7 +883,7 @@
 
 .auth-tab-btn.active {
     background: #FFFFFF;
-    color: var(--brand, #1F120C);
+    color: var(--brand-text);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 

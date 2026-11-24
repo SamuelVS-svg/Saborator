@@ -26,6 +26,7 @@
   --brand-soft:   rgba(31, 18, 12,.10);     /* Fondos suaves y resaltados         */
   --on-brand:     #FFFFFF;                 /* Texto sobre marrón                 */
   --gold:         #F4A817;                 /* Amarillo de acento (fondos, bordes, iconos; NO texto sobre claro) */
+  --brand-text:   var(--brand);            /* Marca usada como TEXTO (en oscuro se aclara para leerse) */
   --gold-text:    #9A6700;                 /* Dorado legible como TEXTO sobre fondos claros (5:1)  */
 
   /* ── Alias con nombre por rol (usar estos en estilos nuevos) ───────── */
@@ -125,6 +126,7 @@
   --brand-soft:   rgba(244, 201, 93,.16);
   --on-brand:     #FFFFFF;
   --gold:         #FFBF3F;
+  --brand-text:   #E2B58A;
   --gold-text:    #FFBF3F;
 
   --bg:           #24150E;

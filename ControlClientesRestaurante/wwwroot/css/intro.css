@@ -479,7 +479,7 @@
 
 @media (hover: hover) and (pointer: fine) {
     .replay-intro-btn:hover {
-        color: var(--brand, #1F120C);
+        color: var(--brand-text);
         background: rgba(31, 18, 12, 0.05);
     }
 }

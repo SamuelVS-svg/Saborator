@@ -387,7 +387,7 @@
     justify-content: center;
     background: rgba(31, 18, 12, 0.1);
     border: 1px solid rgba(244, 168, 23, 0.25);
-    color: var(--brand);
+    color: var(--brand-text);
     transition: transform 200ms ease;
     flex-shrink: 0;
 }
@@ -569,7 +569,7 @@
     align-items: center;
     gap: 0.45rem;
     background: var(--surface);
-    color: var(--brand);
+    color: var(--brand-text);
     font-weight: 700;
     font-size: 0.84rem;
     padding: 0.6rem 1.2rem;
@@ -582,7 +582,7 @@
 .v12-bento-hero-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
-    color: var(--brand);
+    color: var(--brand-text);
 }
 
 /* Modo oscuro: la tarjeta destacada se funde con el fondo oscuro (marrón profundo con borde dorado tenue), sin el marrón claro del modo claro */
@@ -855,7 +855,7 @@
 .v12-panel-action {
     font-size: 0.76rem;
     font-weight: 600;
-    color: var(--brand);
+    color: var(--brand-text);
     text-decoration: none;
 }
 
@@ -891,7 +891,7 @@
     height: 36px;
     border-radius: 10px;
     background: var(--surface-2);
-    color: var(--brand);
+    color: var(--brand-text);
     display: flex;
     align-items: center;
     justify-content: center;
