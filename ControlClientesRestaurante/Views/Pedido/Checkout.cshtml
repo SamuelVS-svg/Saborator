@@ -100,7 +100,7 @@
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
                                     <span id="btnTxtMapaCheckout">Ver Mapa</span>
                                 </button>
-                                <a href="https://www.google.com/maps/search/?api=1&query=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem;color:#9A6700;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:0.3rem 0.65rem;background:var(--surface, #FFFFFF);border:1px solid #F4A817;border-radius:6px;">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem;color:#9A6700;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:0.3rem 0.65rem;background:var(--surface, #FFFFFF);border:1px solid var(--gold);border-radius:6px;">
                                     <span>Google Maps</span>
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                                 </a>
@@ -108,7 +108,7 @@
                         </div>
 
                         <!-- Iframe de Google Maps colapsable en Checkout -->
-                        <div id="contenedorMapaCheckout" style="display:none;margin-bottom:1.25rem;border-radius:12px;overflow:hidden;border:1px solid #F4A817;height:220px;box-shadow:0 4px 14px rgba(60,42,32,0.08);">
+                        <div id="contenedorMapaCheckout" style="display:none;margin-bottom:1.25rem;border-radius:12px;overflow:hidden;border:1px solid var(--gold);height:220px;box-shadow:0 4px 14px rgba(60,42,32,0.08);">
                             <iframe 
                                 src="https://maps.google.com/maps?q=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
@@ -797,7 +797,7 @@
     .btn-confirm-order {
         width: 100%;
         padding: 1rem;
-        background: linear-gradient(135deg, #F4A817 0%, #F4C95D 100%);
+        background: linear-gradient(135deg, var(--gold) 0%, #F4C95D 100%);
         border: none;
         border-radius: 12px;
         color: #1F120C;
@@ -831,7 +831,7 @@
 
     .btn-chip-tarifa {
         background: #FFFFFF;
-        border: 1px solid #F4A817;
+        border: 1px solid var(--gold);
         color: #1F120C;
         font-size: 0.72rem;
         font-weight: 700;
@@ -841,7 +841,7 @@
         transition: all 120ms ease;
     }
     .btn-chip-tarifa:hover {
-        background: #F4A817;
+        background: var(--gold);
         color: #FFF;
     }
 

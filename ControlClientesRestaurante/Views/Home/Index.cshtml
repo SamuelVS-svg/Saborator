@@ -546,7 +546,7 @@
                     </div>
 
                     <!-- Google Maps Iframe Embebido -->
-                    <div style="position:relative;width:100%;height:320px;border-radius:14px;overflow:hidden;border:1.5px solid #F4A817;box-shadow:0 8px 24px rgba(32,11,16,0.12);">
+                    <div style="position:relative;width:100%;height:320px;border-radius:14px;overflow:hidden;border:1.5px solid var(--gold);box-shadow:0 8px 24px rgba(32,11,16,0.12);">
                         <iframe 
                             src="https://maps.google.com/maps?q=Cra+4+Sur+%2350D-107,+Barranquilla,+Atlantico&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                             width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación Saborator Barranquilla Cra 4 Sur #50D-107">
@@ -698,7 +698,7 @@
                     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">5 estrellas</span>
                         <div style="flex:1;height:9px;background:var(--surface-2,#F6EBD3);border-radius:999px;overflow:hidden;">
-                            <div style="width:@(resenaStats.Porcentaje5)%;height:100%;background:linear-gradient(90deg, #F59E0B, #F4A817);border-radius:999px;"></div>
+                            <div style="width:@(resenaStats.Porcentaje5)%;height:100%;background:linear-gradient(90deg, #F59E0B, var(--gold));border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas5 (@(resenaStats.Porcentaje5)%)</span>
                     </div>
@@ -706,7 +706,7 @@
                     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">4 estrellas</span>
                         <div style="flex:1;height:9px;background:var(--surface-2,#F6EBD3);border-radius:999px;overflow:hidden;">
-                            <div style="width:@(resenaStats.Porcentaje4)%;height:100%;background:linear-gradient(90deg, #F59E0B, #F4A817);border-radius:999px;"></div>
+                            <div style="width:@(resenaStats.Porcentaje4)%;height:100%;background:linear-gradient(90deg, #F59E0B, var(--gold));border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas4 (@(resenaStats.Porcentaje4)%)</span>
                     </div>
@@ -714,7 +714,7 @@
                     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;font-size:0.8rem;">
                         <span style="width:70px;font-weight:700;color:var(--text);">3 estrellas</span>
                         <div style="flex:1;height:9px;background:var(--surface-2,#F6EBD3);border-radius:999px;overflow:hidden;">
-                            <div style="width:@(resenaStats.Porcentaje3)%;height:100%;background:linear-gradient(90deg, #F59E0B, #F4A817);border-radius:999px;"></div>
+                            <div style="width:@(resenaStats.Porcentaje3)%;height:100%;background:linear-gradient(90deg, #F59E0B, var(--gold));border-radius:999px;"></div>
                         </div>
                         <span style="width:70px;text-align:right;color:var(--muted);font-weight:600;">@resenaStats.Estrellas3 (@(resenaStats.Porcentaje3)%)</span>
                     </div>
@@ -737,7 +737,7 @@
                         <div>
                             <div style="display:flex;align-items:flex-start;margin-bottom:0.75rem;">
                                 <div style="display:flex;align-items:center;gap:0.85rem;width:100%;min-width:0;">
-                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #1F120C, #F4A817);color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(31, 18, 12,0.25);">
+                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #1F120C, var(--gold));color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(31, 18, 12,0.25);">
                                         @(string.IsNullOrEmpty(r.NombreCliente) ? "C" : r.NombreCliente.Substring(0, 1).ToUpper())
                                     </div>
                                     <div style="display:flex;flex-direction:column;gap:0.2rem;min-width:0;flex:1;">
@@ -1234,7 +1234,7 @@
                         <div>
                             <div style="display:flex;align-items:flex-start;margin-bottom:0.75rem;">
                                 <div style="display:flex;align-items:center;gap:0.85rem;width:100%;min-width:0;">
-                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #1F120C, #F4A817);color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(31, 18, 12,0.25);">
+                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #1F120C, var(--gold));color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(31, 18, 12,0.25);">
                                         ${escapeHtml(initial)}
                                     </div>
                                     <div style="display:flex;flex-direction:column;gap:0.2rem;min-width:0;flex:1;">

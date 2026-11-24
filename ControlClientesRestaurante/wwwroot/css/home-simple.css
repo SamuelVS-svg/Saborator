@@ -28,7 +28,7 @@
 /* Marco circular biselado con luz cálida desde arriba: la foto "respira" sobre el fondo con sombra difusa y un halo ámbar */
 .home-banner-plate {
   position: relative; z-index: 0; justify-self: end; width: min(100%, 400px); aspect-ratio: 1; padding: 11px; border-radius: 50%;
-  background: linear-gradient(150deg, #FFE6A8 0%, #F4A817 28%, #8B5A36 62%, #3B2217 100%);
+  background: linear-gradient(150deg, #FFE6A8 0%, var(--gold) 28%, #8B5A36 62%, #3B2217 100%);
   box-shadow: 0 34px 60px -14px rgba(0, 0, 0, .6), 0 0 90px rgba(244, 168, 23, .3), inset 0 2px 3px rgba(255, 255, 255, .55);
 }
 .home-banner-plate::after {
@@ -93,7 +93,7 @@
 
 .home-slide-photos { position: relative; justify-self: end; width: min(100%, 420px); aspect-ratio: 1.15; margin-right: .5rem; }
 .home-slide-photos img {
-  position: absolute; object-fit: contain; border-radius: 50%; border: 4px solid transparent; background: linear-gradient(#000, #000) padding-box, linear-gradient(150deg, #FFE6A8 0%, #F4A817 32%, #8B5A36 70%, #3B2217 100%) border-box;
+  position: absolute; object-fit: contain; border-radius: 50%; border: 4px solid transparent; background: linear-gradient(#000, #000) padding-box, linear-gradient(150deg, #FFE6A8 0%, var(--gold) 32%, #8B5A36 70%, #3B2217 100%) border-box;
   box-shadow: 0 14px 30px rgba(0, 0, 0, .4);
 }
 .home-slide-photos img:nth-child(1) { width: 62%; aspect-ratio: 1; left: 0; top: 14%; z-index: 2; }

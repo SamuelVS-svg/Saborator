@@ -713,7 +713,7 @@
 }
 .btn-close-modal:hover {
     background: rgba(244, 168, 23, 0.22);
-    border-color: #F4A817;
+    border-color: var(--gold);
     color: var(--brand, #1F120C);
     transform: scale(1.08);
 }
@@ -803,7 +803,7 @@
     width: 34px;
     height: 34px;
     fill: rgba(244, 168, 23, 0.16);
-    stroke: #F4A817;
+    stroke: var(--gold);
     stroke-width: 1.5;
     transition: fill 140ms ease, stroke 140ms ease, filter 140ms ease;
 }
@@ -922,7 +922,7 @@
 }
 
 .btn-submit-resena {
-    background: linear-gradient(135deg, #1F120C 0%, #6D4C41 50%, #F4A817 100%);
+    background: linear-gradient(135deg, #1F120C 0%, #6D4C41 50%, var(--gold) 100%);
     border: none;
     border-radius: 12px;
     padding: 0.72rem 1.5rem;
@@ -998,7 +998,7 @@
 }
 [data-theme="dark"] .input-resena-field:focus {
     background: #1F120C;
-    border-color: #F4A817;
+    border-color: var(--gold);
     box-shadow: 0 0 0 3px rgba(244, 168, 23, 0.25);
 }
 [data-theme="dark"] .btn-cancelar-modal {

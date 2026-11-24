@@ -1,6 +1,6 @@
 /* ==========================================================================
    LOGIN & REGISTRO — ALTA COCINA Y POLISH EMIL KOWALSKI (MAX POLISH)
-   Paleta: Borgoña Profundo (#3E2A22, #1F120C), Crema Marfil (#FFFFFF, #FBF7EE), Oro (#F4A817, #F4A817)
+   Paleta: Borgoña Profundo (#3E2A22, #1F120C), Crema Marfil (#FFFFFF, #FBF7EE), Oro (var(--gold), var(--gold))
    Layout: Login 100% centrado, animaciones suaves (<300ms, cubic-bezier), estados táctiles y accesibilidad
    ========================================================================== */
 
@@ -16,15 +16,15 @@
     --brand-burgundy-hover: #4A332A;
     --brand-dark: #32211A;
     --brand-night: #140307;
-    --gold: #F4A817;
-    --gold-bright: #F4A817;
+    --gold: var(--gold);
+    --gold-bright: var(--gold);
     --gold-glow: rgba(244, 201, 93, 0.32);
     --cream: #FBF7EE;
     --ivory: #FFFFFF;
     --ink: #2C1B14;
     --c-muted: #7A6355;
     --line: #E5DCB8;
-    --line-active: #F4A817;
+    --line-active: var(--gold);
     --focus-ring: rgba(244, 168, 23, 0.35);
 }
 
@@ -117,7 +117,7 @@ body {
 .lamp-cord {
     width: 2px;
     height: 105px;
-    background: linear-gradient(180deg, #1A050A 0%, #F4A817 100%);
+    background: linear-gradient(180deg, #1A050A 0%, var(--gold) 100%);
 }
 
 .lamp-shade {

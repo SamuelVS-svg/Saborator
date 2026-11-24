@@ -692,7 +692,7 @@
         toast.style.transition = 'opacity 300ms ease';
         toast.style.background = tipo === 'success' 
             ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)' 
-            : 'linear-gradient(135deg, #F4A817 0%, #9B2C3B 100%)';
+            : 'linear-gradient(135deg, var(--gold) 0%, #9B2C3B 100%)';
         toast.textContent = texto;
 
         document.body.appendChild(toast);

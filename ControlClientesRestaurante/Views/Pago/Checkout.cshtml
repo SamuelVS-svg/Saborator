@@ -133,15 +133,15 @@
     }
     .method-tab:hover {
         background: rgba(244, 168, 23, 0.15);
-        border-color: #F4A817;
+        border-color: var(--gold);
         transform: translateY(-2px);
     }
     .method-tab.active {
         background: linear-gradient(135deg, rgba(244, 168, 23, 0.18), rgba(31, 18, 12, 0.25));
-        border-color: #F4A817;
+        border-color: var(--gold);
         color: var(--brand, #1F120C);
         box-shadow: 0 4px 18px rgba(244, 168, 23, 0.28);
-        outline: 2px solid #F4A817;
+        outline: 2px solid var(--gold);
     }
     :root[data-theme="dark"] .method-tab.active {
         color: #FFFFFF;
@@ -264,7 +264,7 @@
         box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.18);
     }
     :root[data-theme="dark"] .input-pago:focus {
-        border-color: #F4A817;
+        border-color: var(--gold);
         background: rgba(255, 255, 255, 0.12);
         box-shadow: 0 0 0 3px rgba(244, 168, 23, 0.25);
     }
@@ -324,7 +324,7 @@
     .summary-total {
         margin-top: 1.25rem;
         padding-top: 1rem;
-        border-top: 2px solid #F4A817;
+        border-top: 2px solid var(--gold);
         display: flex;
         justify-content: space-between;
         align-items: baseline;
@@ -338,7 +338,7 @@
 
     .btn-pagar-now {
         width: 100%;
-        background: linear-gradient(135deg, #F4A817, #A67520);
+        background: linear-gradient(135deg, var(--gold), #A67520);
         color: #1F120C;
         font-size: 1rem;
         font-weight: 700;
@@ -372,7 +372,7 @@
 
     .btn-fill-demo {
         background: rgba(244, 168, 23, 0.12);
-        border: 1px dashed #F4A817;
+        border: 1px dashed var(--gold);
         color: var(--brand, #1F120C);
         padding: 0.35rem 0.75rem;
         border-radius: 8px;
@@ -553,7 +553,7 @@
 
                     <!-- 0. PANE WOMPI OFICIAL (BANCOLOMBIA) -->
                     <div class="method-pane active" id="paneWompi">
-                        <div style="background:rgba(244, 168, 23,0.1);border:1.5px solid #F4A817;border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;text-align:center;box-sizing:border-box;max-width:100%;">
+                        <div style="background:rgba(244, 168, 23,0.1);border:1.5px solid var(--gold);border-radius:16px;padding:1.25rem;margin-bottom:1.25rem;text-align:center;box-sizing:border-box;max-width:100%;">
                             
                             <!-- Logo oficial de Wompi Bancolombia -->
                             <div style="display:inline-flex;align-items:center;justify-content:center;padding:0.75rem 1.5rem;background:#000;border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;margin-bottom:1.25rem;box-shadow:0 8px 24px rgba(0,0,0,0.5);">
@@ -596,14 +596,14 @@
                             </button>
 
                             <!-- Banner de fallback inteligente en caso de demora o adblocker -->
-                            <div id="wompiFallbackNotice" style="display:none;margin-top:1.25rem;background:rgba(244, 168, 23,0.15);border:1px dashed #F4A817;border-radius:10px;padding:0.9rem;text-align:center;">
+                            <div id="wompiFallbackNotice" style="display:none;margin-top:1.25rem;background:rgba(244, 168, 23,0.15);border:1px dashed var(--gold);border-radius:10px;padding:0.9rem;text-align:center;">
                                 <div style="font-size:0.85rem;font-weight:700;color:var(--brand,#1F120C);margin-bottom:0.35rem;">
                                     ¿Wompi está tardando en abrir o tu navegador bloquea popups?
                                 </div>
                                 <p style="font-size:0.8rem;color:var(--muted,#6E5D53);margin:0 0 0.6rem;">
                                     Puedes realizar el pago directamente con nuestra pasarela interna sin intermediarios:
                                 </p>
-                                <button type="button" onclick="conmutarAPasarelaDirecta()" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border-color:#F4A817;color:var(--brand,#1F120C);">
+                                <button type="button" onclick="conmutarAPasarelaDirecta()" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border-color:var(--gold);color:var(--brand,#1F120C);">
                                     Pagar con Pasarela Directa (Tarjeta / Nequi / PSE) &rarr;
                                 </button>
                             </div>

@@ -282,7 +282,7 @@
 
 .intro-brand-title span {
     color: #F4C95D;
-    background: linear-gradient(135deg, #FFFFFF 20%, #F4C95D 60%, #F4A817 100%);
+    background: linear-gradient(135deg, #FFFFFF 20%, #F4C95D 60%, var(--gold) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
