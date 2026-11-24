@@ -248,7 +248,6 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddHttpClient("TwilioClient");
 builder.Services.AddScoped<ITwilioService, TwilioService>();
 builder.Services.AddHttpClient("WompiClient");
-builder.Services.AddHttpClient("FacebookClient");
 builder.Services.Configure<WompiSettings>(builder.Configuration.GetSection("Wompi"));
 builder.Services.AddScoped<IWompiService, WompiService>();
 
