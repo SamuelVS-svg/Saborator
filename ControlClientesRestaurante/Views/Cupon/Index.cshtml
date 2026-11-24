@@ -121,7 +121,7 @@
                         <td>
                             @if (c.TipoDescuento == "Porcentaje")
                             {
-                                <span style="font-weight:800;color:#10B981;font-size:1rem;">@c.Valor% OFF</span>
+                                <span style="font-weight:800;color:var(--success);font-size:1rem;">@c.Valor% OFF</span>
                                 @if (c.TopeMaximoDescuento.HasValue && c.TopeMaximoDescuento.Value > 0)
                                 {
                                     <div style="font-size:0.74rem;color:var(--muted);">Tope máx: $@c.TopeMaximoDescuento.Value.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</div>
@@ -129,7 +129,7 @@
                             }
                             else
                             {
-                                <span style="font-weight:800;color:#10B981;font-size:1rem;">-$@c.Valor.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
+                                <span style="font-weight:800;color:var(--success);font-size:1rem;">-$@c.Valor.ToString("N0", ControlClientesRestaurante.Models.Formato.Co) COP</span>
                                 <div style="font-size:0.74rem;color:var(--muted);">Monto Fijo</div>
                             }
                         </td>

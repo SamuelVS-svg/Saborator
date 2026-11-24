@@ -16,7 +16,7 @@
     --brand-burgundy-hover: #4A332A;
     --brand-dark: #32211A;
     --brand-night: #140307;
-    --gold: var(--gold);
+    --gold: #F4A817;
     --gold-bright: var(--gold);
     --gold-glow: rgba(244, 201, 93, 0.32);
     --cream: #FBF7EE;
@@ -898,3 +898,10 @@ input:-webkit-autofill:focus {
         display: none;
     }
 }
+
+/* Modo oscuro: los textos de marca (burdeos/café oscuro) se aclaran para leerse sobre la tarjeta oscura */
+[data-theme="dark"] .form-logo-name,
+[data-theme="dark"] .form-footer button.link-btn,
+[data-theme="dark"] .link-btn { color: var(--brand-text, #E2B58A); }
+[data-theme="dark"] .form-footer button.link-btn:hover,
+[data-theme="dark"] .link-btn:hover { color: var(--gold); }

@@ -277,7 +277,7 @@
 
 :root {
   /* ── Alias usados por app.css y las vistas (apuntan a los tokens) ──── */
-  --color-brand:          var(--brand);
+  --color-brand:          var(--brand-text);
   --color-brand-hover:    var(--brand-hover);
   --color-bg:             var(--bg);
   --color-card:           var(--surface);

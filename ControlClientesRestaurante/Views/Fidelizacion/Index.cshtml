@@ -15,7 +15,7 @@
         .ToList();
 
     string Cop(decimal v) => "$" + v.ToString("N0", Formato.Co);
-    string ColorSegmento(string s) => s switch { "Activo" => "#10B981", "En riesgo" => "#F59E0B", "Perdido" => "#EF4444", _ => "#94A3B8" };
+    string ColorSegmento(string s) => s switch { "Activo" => "#10B981", "En riesgo" => "#F59E0B", "Perdido" => "#EF4444", _ => "#64748B" };
     string ColorNivel(string n) => n switch { "Platino" => "#8B5CF6", "Oro" => "#C8973A", "Plata" => "#94A3B8", _ => "#B45309" };
     string Primero(string nombre) => nombre.Split(' ')[0];
 
@@ -28,7 +28,7 @@
         (Nombre: "Activo", Valor: Model.Activos, Color: "#10B981", Sub: $"Vinieron en los últimos {Model.DiasRiesgo} días"),
         (Nombre: "En riesgo", Valor: Model.EnRiesgo, Color: "#F59E0B", Sub: $"Entre {Model.DiasRiesgo} y {Model.DiasPerdido} días sin venir"),
         (Nombre: "Perdido", Valor: Model.Perdidos, Color: "#EF4444", Sub: $"Más de {Model.DiasPerdido} días sin venir"),
-        (Nombre: "Sin compras", Valor: Model.SinCompras, Color: "#94A3B8", Sub: "Registrados que aún no han consumido")
+        (Nombre: "Sin compras", Valor: Model.SinCompras, Color: "#64748B", Sub: "Registrados que aún no han consumido")
     };
 }
 
