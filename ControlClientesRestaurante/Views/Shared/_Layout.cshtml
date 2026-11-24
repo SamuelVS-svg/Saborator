@@ -31,7 +31,7 @@
     var _esLogin = ViewContext.RouteData.Values["controller"]?.ToString() == "Login";
 }
 <!DOCTYPE html>
-<html lang="es" data-theme="@(_tema != "clasico" ? _tema : null)">
+<html lang="es" data-tema-perfil="@_tema" data-theme="@(_tema != "clasico" ? _tema : null)">
 <head>
     @* Styles section for page-specific CSS *@
     @RenderSection("Styles", required: false)
@@ -88,23 +88,7 @@
 
     <!-- Tema: se decide antes de pintar para evitar parpadeos.
          Prioridad: elección guardada del visitante > tema de su perfil > preferencia del sistema operativo -->
-    <script>
-        (function() {
-            try {
-                var oscuros = { dark: 1, noche: 1, dorado: 1, esmeralda: 1, sunset: 1 };
-                var perfil = '@_tema';
-                var guardado = localStorage.getItem('saborator_theme');
-                var t = guardado
-                    || ((perfil && perfil !== 'clasico') ? perfil : '')
-                    || ((window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
-                var h = document.documentElement;
-                if (oscuros[t]) h.setAttribute('data-theme', t); else h.removeAttribute('data-theme');
-                var noche = (t === 'dark' || t === 'noche');
-                h.classList.toggle('dark', noche);
-                h.style.colorScheme = oscuros[t] ? 'dark' : 'light';
-            } catch (e) {}
-        })();
-    </script>
+    <script src="~/js/tema-inicial.js" asp-append-version="true"></script>
 
     <!-- Structured Data: Schema.org JSON-LD -->
     @Html.Raw("<script type=\"application/ld+json\">")
@@ -460,21 +444,7 @@ else if (_logado && !_esCliente)
         </div>
     </div>
 </header>
-<script>
-    // Sube el encabezado de la página (icono + título + descripción) a la barra superior
-    document.addEventListener('DOMContentLoaded', function () {
-        var top = document.getElementById('topbar');
-        var h = document.querySelector('.main-content .pg-header, .page-body .pg-header') || document.querySelector('.pg-header');
-        if (!top || !h || top.contains(h)) return;
-        var spacer = top.querySelector('.top-spacer');
-        var padre = h.parentElement;
-        var hr = (h.nextElementSibling && h.nextElementSibling.matches('hr.div-gold')) ? h.nextElementSibling
-               : (padre && padre.nextElementSibling && padre.nextElementSibling.matches('hr.div-gold')) ? padre.nextElementSibling : null;
-        top.insertBefore(h, spacer);
-        if (hr) hr.style.display = 'none';
-        if (padre && padre.children.length === 0) padre.style.display = 'none';
-    });
-</script>
+<script src="~/js/layout-topbar.js" asp-append-version="true"></script>
 
 <main class="main-content" id="mainContent">
     <div class="page-body">
@@ -483,20 +453,6 @@ else if (_logado && !_esCliente)
 </main>
 
 @* Alertas de stock bajo — aparecen automáticamente para el admin si hay productos con ≤ 5 unidades *@
-@if (_esAdmin && _stockBajo.Any())
-{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            @foreach (var p in _stockBajo)
-            {
-                var msg = p.Stock == 0
-                    ? $"Sin stock: {p.Nombre} (0 unidades)"
-                    : $"Stock bajo: {p.Nombre} — {p.Stock} unidad{(p.Stock == 1 ? "" : "es")} restante{(p.Stock == 1 ? "" : "s")}";
-                <text>showToastStock('warn', @Json.Serialize(msg)); </text>
-            }
-        });
-    </script>
-}
 
 <!-- Modal Logout -->
 <div class="modal-overlay" id="modalLogout">
@@ -581,30 +537,21 @@ else
     var _vistaConAvisosPropios = _esLogin
         || (!(_logado && !_esCliente) && ((_ctrlActual == "Pedido" && _actActual == "Checkout") || _ctrlActual == "Perfil" || _ctrlActual == "Resena"));
 }
-@if (!_vistaConAvisosPropios && TempData["Mensaje"] != null)
+@* Avisos del servidor: stock bajo para el admin y mensajes de TempData (se omiten en páginas que ya los pintan por su cuenta) *@
+<script type="application/json" id="avisos-config">
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
 {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('ok', @Json.Serialize(TempData["Mensaje"]?.ToString()));
-        });
-    </script>
-}
-@if (!_vistaConAvisosPropios && TempData["Error"] != null)
-{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('err', @Json.Serialize(TempData["Error"]?.ToString()));
-        });
-    </script>
-}
-@if (!_vistaConAvisosPropios && TempData["ErrorContrasena"] != null)
-{
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            showToast('err', @Json.Serialize(TempData["ErrorContrasena"]?.ToString()));
-        });
-    </script>
-}
+    stock = (_esAdmin && _stockBajo.Any())
+        ? _stockBajo.Select(p => p.Stock == 0
+            ? $"Sin stock: {p.Nombre} (0 unidades)"
+            : $"Stock bajo: {p.Nombre} — {p.Stock} unidad{(p.Stock == 1 ? "" : "es")} restante{(p.Stock == 1 ? "" : "s")}").ToArray()
+        : new string[0],
+    mensaje = !_vistaConAvisosPropios ? TempData["Mensaje"]?.ToString() : null,
+    error = !_vistaConAvisosPropios ? TempData["Error"]?.ToString() : null,
+    errorContrasena = !_vistaConAvisosPropios ? TempData["ErrorContrasena"]?.ToString() : null
+}))
+</script>
+<script src="~/js/layout-avisos.js" asp-append-version="true"></script>
 
 @{
     var _esPanelAdmin = _logado && !_esCliente;
@@ -618,147 +565,19 @@ else
 
 @* Cerrar sesión se hace por POST con token; los enlaces a /Login/Logout se envían por este formulario *@
 <form id="formLogout" asp-controller="Login" asp-action="Logout" method="post" hidden></form>
-<script>
-    document.addEventListener('click', function (e) {
-        var a = e.target.closest && e.target.closest('a[href]');
-        if (!a) return;
-        var url = new URL(a.href, location.href);
-        if (url.origin === location.origin && url.pathname.toLowerCase() === '/login/logout') {
-            e.preventDefault();
-            document.getElementById('formLogout').submit();
-        }
-    });
-</script>
+<script src="~/js/layout-logout.js" asp-append-version="true"></script>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/material.js" asp-append-version="true"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script>
-
-    // ── Toggle de Modo Oscuro / Claro ──────────────────────────
-    // Aplica data-theme + clase .dark en <html> (todo el sitio cambia por variables CSS), guarda la elección
-    // y, mientras el visitante no haya elegido, sigue los cambios de tema del sistema operativo.
-    function aplicarModoOscuro(oscuro) {
-        var h = document.documentElement;
-        if (oscuro) h.setAttribute('data-theme', 'dark'); else h.removeAttribute('data-theme');
-        h.classList.toggle('dark', oscuro);
-        h.style.colorScheme = oscuro ? 'dark' : 'light';
-        document.querySelectorAll('.theme-toggle-btn').forEach(function (b) { b.setAttribute('aria-pressed', oscuro ? 'true' : 'false'); });
-        document.dispatchEvent(new CustomEvent('saborator:tema', { detail: { oscuro: oscuro } }));
-    }
-    function toggleModoOscuro() {
-        var t = document.documentElement.getAttribute('data-theme');
-        var oscuro = !(t === 'dark' || t === 'noche');
-        aplicarModoOscuro(oscuro);
-        try { localStorage.setItem('saborator_theme', oscuro ? 'dark' : 'light'); } catch (e) {}
-    }
-    (function seguirSistema() {
-        if (!window.matchMedia) return;
-        var mq = matchMedia('(prefers-color-scheme: dark)');
-        var alCambiar = function (e) {
-            var guardado = null;
-            try { guardado = localStorage.getItem('saborator_theme'); } catch (x) {}
-            if (!guardado) aplicarModoOscuro(e.matches);
-        };
-        if (mq.addEventListener) mq.addEventListener('change', alCambiar); else if (mq.addListener) mq.addListener(alCambiar);
-        var t = document.documentElement.getAttribute('data-theme');
-        document.querySelectorAll('.theme-toggle-btn').forEach(function (b) { b.setAttribute('aria-pressed', (t === 'dark' || t === 'noche') ? 'true' : 'false'); });
-    })();
-
-    // ── Toast ─────────────────────────────────────────────────
-    function showToast(tipo, msg) {
-        var wrap = document.getElementById('toastWrap');
-        if (!wrap || !msg) return;
-        var iconOk   = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
-        var iconErr  = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-        var t = document.createElement('div');
-        t.className = 'toast ' + tipo;
-        t.innerHTML = (tipo === 'ok' ? iconOk : iconErr) + '<span></span>';
-        t.querySelector('span').textContent = msg; // el mensaje puede contener datos escritos por usuarios
-        wrap.appendChild(t);
-        setTimeout(function() { t.remove(); }, 3400);
-    }
-
-    // Toast de stock bajo — dura más tiempo y tiene ícono de advertencia
-    function showToastStock(tipo, msg) {
-        var wrap = document.getElementById('toastWrap');
-        if (!wrap || !msg) return;
-        var icon = '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
-        var t = document.createElement('div');
-        t.className = 'toast warn';
-        t.innerHTML = icon + '<span></span>';
-        t.querySelector('span').textContent = msg;
-        wrap.appendChild(t);
-        setTimeout(function() { t.remove(); }, 6000);   // 6 segundos para leer bien
-    }
-
-    function toggleSidebar() { document.getElementById('sidebar')?.classList.toggle('open'); }
-    function toggleGourmetMobileNav() { document.getElementById('gourmetMobileMenu')?.classList.toggle('open'); }
-    document.addEventListener('click', function(e) {
-        var sb = document.getElementById('sidebar'), tog = document.getElementById('sbToggle');
-        if (sb && tog && !sb.contains(e.target) && !tog.contains(e.target)) sb.classList.remove('open');
-        var gNav = document.getElementById('gourmetNavbar'), gMenu = document.getElementById('gourmetMobileMenu'), gBtn = document.getElementById('gourmetMobileToggle');
-        if (gMenu && gBtn && !gMenu.contains(e.target) && !gBtn.contains(e.target)) gMenu.classList.remove('open');
-        var lMenu = document.getElementById('lnavMobileMenu'), lBtn = document.getElementById('lnavMobileToggle');
-        if (lMenu && lBtn && !lMenu.contains(e.target) && !lBtn.contains(e.target)) lMenu.classList.remove('open');
-    });
-
-    function toggleDropdown() { document.getElementById('profileDropdown').classList.toggle('show'); }
-    document.addEventListener('click', function(e) {
-        var w = document.getElementById('profileWrap');
-        if (w && !w.contains(e.target)) { var d = document.getElementById('profileDropdown'); if(d) d.classList.remove('show'); }
-    });
-
-    function abrirModalContrasena() {
-        document.getElementById('profileDropdown').classList.remove('show');
-        document.getElementById('modalContrasena').classList.add('show');
-    }
-    function cerrarModalContrasena() {
-        document.getElementById('modalContrasena').classList.remove('show');
-        document.getElementById('formContrasena').reset();
-        document.getElementById('errConfirmar').style.display = 'none';
-    }
-    var cfm = document.getElementById('confirmarPass');
-    if (cfm) cfm.addEventListener('input', function() {
-        var np = document.getElementById('nuevaPass').value;
-        document.getElementById('errConfirmar').style.display = (this.value && this.value !== np) ? 'block' : 'none';
-    });
-    var fc = document.getElementById('formContrasena');
-    if (fc) fc.addEventListener('submit', function(e) {
-        if (document.getElementById('nuevaPass').value !== document.getElementById('confirmarPass').value) {
-            e.preventDefault(); document.getElementById('errConfirmar').style.display = 'block';
-        }
-    });
-
-    var gs = document.getElementById('globalSearch');
-    if (gs) gs.addEventListener('input', function() {
-        var q = this.value.toLowerCase().trim();
-        var rows = document.querySelectorAll('table tbody tr'), vis = 0;
-        rows.forEach(function(tr) { var m = tr.innerText.toLowerCase().includes(q); tr.style.display = m ? '' : 'none'; if(m) vis++; });
-        var cnt = document.getElementById('conteo'); if (cnt) cnt.textContent = vis;
-    });
-
-    // ── Registro de Service Worker PWA para Tablets de Meseros y Cocina ──
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/sw.js').catch(function(err) {
-                console.log('SW registration note:', err);
-            });
-        });
-    }
-</script>
+<script src="~/js/layout.js" asp-append-version="true"></script>
 
 @* ── Google Analytics 4 / Tag Manager (Hook Pluggable Seguro) ── *@
 @if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GA_TRACKING_ID")))
 {
     var gaId = Environment.GetEnvironmentVariable("GA_TRACKING_ID");
     <script async src="https://www.googletagmanager.com/gtag/js?id=@gaId"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '@gaId');
-    </script>
+    <script src="~/js/analytics.js" data-ga-id="@gaId" asp-append-version="true"></script>
 }
 
 @await RenderSectionAsync("Scripts", required: false)
