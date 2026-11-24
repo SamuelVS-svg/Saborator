@@ -8,12 +8,12 @@
   --beige:          #E8DFD0;   /* bordes y detalles                 */
   --amarillo-suave: #FFC857;   /* acentos y hover                   */
   --amarillo:       #F4A817;   /* botones principales               */
-  --marron:         #6B4226;   /* header, footer, títulos           */
+  --marron:         #1F120C;   /* header, footer, títulos           */
   --marron-oscuro:  #2C1B14;   /* texto principal                   */
   --blanco:         #FFFFFF;   /* tarjetas y texto sobre marrón     */
 
   --bg:#FBF7EE; --surface:#FFFFFF; --surface-2:#F5EFEB; --text:#2C1B14; --muted:#6E5D53; --faint:#7B6A5F;
-  --line:#E8DFD0; --line-2:#DDD0BC; --brand:#6B4226; --brand-hover:#55341E; --ink:#6B4226; --brand-soft:rgba(107, 66, 38,.10);
+  --line:#E8DFD0; --line-2:#DDD0BC; --brand:#1F120C; --brand-hover:#55341E; --ink:#1F120C; --brand-soft:rgba(31, 18, 12,.10);
   --on-brand:#FFFFFF; --gold:#F4A817; --amber:#F4A817; --amber-ink:#7A5200; --amber-soft:rgba(244, 201, 93,.16); --warning:#7A5200;
   --success:#2A7348; --success-bg:#E3F1E8;
   --danger:#D6453D; --danger-ink:#B3322B; --danger-soft:#FBE4E2; --danger-bg:#FBE4E2;

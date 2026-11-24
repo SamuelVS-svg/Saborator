@@ -367,7 +367,7 @@
                         </label>
                         <div id="cuponInputContainer" style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                             <input type="text" id="inputCodigoCupon" class="input-field" placeholder="Ej: BURGER15" style="flex:1 1 130px;min-width:0;padding:0.55rem 0.75rem;font-size:0.88rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;" />
-                            <button type="button" id="btnAplicarCupon" onclick="aplicarCuponCheckout()" style="background:var(--brand, #6B4226);color:#FFFFFF;border:none;padding:0.55rem 1rem;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:background 150ms ease;">
+                            <button type="button" id="btnAplicarCupon" onclick="aplicarCuponCheckout()" style="background:var(--brand, #1F120C);color:#FFFFFF;border:none;padding:0.55rem 1rem;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:background 150ms ease;">
                                 Aplicar
                             </button>
                         </div>
@@ -456,7 +456,7 @@
         font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
         font-size: 2.75rem;
         font-weight: 400;
-        color: var(--brand, #6B4226);
+        color: var(--brand, #1F120C);
         margin: 0 0 0.5rem;
         line-height: 1.15;
     }
@@ -529,8 +529,8 @@
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: rgba(107, 66, 38, 0.08);
-        color: var(--brand, #6B4226);
+        background: rgba(31, 18, 12, 0.08);
+        color: var(--brand, #1F120C);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -543,7 +543,7 @@
     }
     .card-head h3 {
         font-size: 1.25rem;
-        color: var(--brand, #6B4226);
+        color: var(--brand, #1F120C);
         margin: 0 0 0.25rem;
         font-weight: 700;
     }
@@ -591,9 +591,9 @@
         background: var(--surface, #FFFFFF);
     }
     .delivery-tab.active {
-        border-color: var(--brand, #6B4226);
+        border-color: var(--brand, #1F120C);
         background: var(--surface, #FFFFFF);
-        box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.12);
+        box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.12);
     }
     .delivery-tab:active {
         transform: scale(0.97);
@@ -602,8 +602,8 @@
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background: rgba(107, 66, 38, 0.08);
-        color: var(--brand, #6B4226);
+        background: rgba(31, 18, 12, 0.08);
+        color: var(--brand, #1F120C);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -611,7 +611,7 @@
         flex-shrink: 0;
     }
     .delivery-tab.active .tab-icon {
-        background: var(--brand, #6B4226);
+        background: var(--brand, #1F120C);
         color: #FFFFFF;
     }
     .tab-title {
@@ -676,8 +676,8 @@
         transition: border-color 150ms ease, box-shadow 150ms ease;
     }
     .input-field:focus {
-        border-color: var(--brand, #6B4226);
-        box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.1);
+        border-color: var(--brand, #1F120C);
+        box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.1);
     }
 
     /* Métodos de Pago */
@@ -710,9 +710,9 @@
         background: var(--surface, #FFFFFF);
     }
     .payment-box.active {
-        border-color: var(--brand, #6B4226);
+        border-color: var(--brand, #1F120C);
         background: var(--surface, #FFFFFF);
-        box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.1);
+        box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.1);
     }
     .payment-box:active {
         transform: scale(0.98);
@@ -832,7 +832,7 @@
     .btn-chip-tarifa {
         background: #FFFFFF;
         border: 1px solid #F4A817;
-        color: #6B4226;
+        color: #1F120C;
         font-size: 0.72rem;
         font-weight: 700;
         padding: 4px 8px;
@@ -1198,7 +1198,7 @@
             if (cuponInputBox && !document.getElementById('inputCodigoCupon')) {
                 cuponInputBox.innerHTML = `
                     <input type="text" id="inputCodigoCupon" class="input-field" placeholder="Ej: BURGER15" style="padding:0.55rem 0.75rem;font-size:0.88rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;" />
-                    <button type="button" id="btnAplicarCupon" onclick="aplicarCuponCheckout()" style="background:var(--brand, #6B4226);color:#FFFFFF;border:none;padding:0.55rem 1rem;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:background 150ms ease;">
+                    <button type="button" id="btnAplicarCupon" onclick="aplicarCuponCheckout()" style="background:var(--brand, #1F120C);color:#FFFFFF;border:none;padding:0.55rem 1rem;border-radius:10px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;transition:background 150ms ease;">
                         Aplicar
                     </button>
                 `;

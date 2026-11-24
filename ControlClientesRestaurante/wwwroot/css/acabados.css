@@ -19,7 +19,7 @@ html .lnav .lnav-item:hover::after,
 html .lnav .lnav-menu-links a.lnav-item[aria-current="page"]::after { transform: scaleX(1); }
 html .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: var(--text, #2C1B14) !important; background: transparent !important; border: 0 !important; outline: 0; box-shadow: none !important; }
 html[data-theme="dark"] .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: #fff !important; }
-html .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--brand, #6B4226) !important; background: transparent !important; border: 0 !important; }
+html .lnav .lnav-menu-links a.lnav-item-reserva-mobile { color: var(--brand, #1F120C) !important; background: transparent !important; border: 0 !important; }
 html .lnav .lnav-menu-links a.lnav-item-reserva-mobile svg { stroke: currentColor !important; }
 
 /* Botones de icono sin caja; solo se tiñen al pasar el cursor */
@@ -30,7 +30,7 @@ html .lnav .lnav-toggle {
 }
 html .lnav .theme-toggle-btn:hover,
 html .lnav .lnav-cart-btn:hover,
-html .lnav .lnav-toggle:hover { background: var(--brand-soft, rgba(107, 66, 38, .1)) !important; }
+html .lnav .lnav-toggle:hover { background: var(--brand-soft, rgba(31, 18, 12, .1)) !important; }
 html[data-theme="dark"] .lnav .theme-toggle-btn:hover,
 html[data-theme="dark"] .lnav .lnav-cart-btn:hover,
 html[data-theme="dark"] .lnav .lnav-toggle:hover { background: rgba(255, 255, 255, .1) !important; color: #fff !important; }
@@ -44,7 +44,7 @@ html .lnav .lnav-btn-o:hover { text-decoration: underline; text-decoration-color
 html .lnav .lnav-btn-p { border-radius: 8px; border: 0; box-shadow: none; background: var(--gold, #F4A817); color: #2A170F !important; }
 html .lnav .lnav-btn-p:hover { background: #FFBF3F; box-shadow: none; transform: none; }
 @media (max-width: 1120px) {
-  html .lnav .lnav-menu-links { border-top: 1px solid var(--line, rgba(107, 66, 38, .12)) !important; gap: 1.1rem !important; }
+  html .lnav .lnav-menu-links { border-top: 1px solid var(--line, rgba(31, 18, 12, .12)) !important; gap: 1.1rem !important; }
   html[data-theme="dark"] .lnav .lnav-menu-links { border-top-color: rgba(255, 255, 255, .08) !important; }
   html .lnav .lnav-menu-links a.lnav-item { padding: .45rem .1rem !important; }
 }
@@ -200,7 +200,7 @@ html:not([data-theme]) .home-order { background: transparent; }
 
 /* ══ Barra superior en el café de la marca (inspirada en KFC: barra negra, texto blanco, botón de color fuerte) ══ */
 html:not([data-theme="dark"]) .lnav {
-  background: var(--brand, #6B4226);
+  background: var(--brand, #1F120C);
   border-bottom: 3px solid var(--gold, #F4A817);
   box-shadow: 0 6px 22px rgba(44, 27, 20, .22);
   backdrop-filter: none; -webkit-backdrop-filter: none;
@@ -210,7 +210,7 @@ html:not([data-theme="dark"]) .lnav .lnav-menu-links a,
 html:not([data-theme="dark"]) .lnav .lnav-item { color: rgba(255, 255, 255, .88) !important; }
 html:not([data-theme="dark"]) .lnav .lnav-menu-links a:hover,
 html:not([data-theme="dark"]) .lnav .lnav-item:hover { color: #fff !important; background: rgba(255, 255, 255, .1) !important; }
-html:not([data-theme="dark"]) .lnav .lnav-item[aria-current="page"] { color: var(--gold, #F4A817) !important; }
+html:not([data-theme="dark"]) .lnav .lnav-menu-links a.lnav-item[aria-current="page"] { color: var(--gold, #F4A817) !important; }
 html:not([data-theme="dark"]) .lnav .lnav-item svg { stroke: var(--gold, #F4A817); }
 html:not([data-theme="dark"]) .lnav .theme-toggle-btn,
 html:not([data-theme="dark"]) .lnav .lnav-cart-btn,

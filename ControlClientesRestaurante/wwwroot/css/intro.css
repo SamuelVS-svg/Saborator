@@ -59,7 +59,7 @@
     position: absolute;
     width: min(650px, 90vw);
     height: min(650px, 90vw);
-    background: radial-gradient(circle, rgba(244, 168, 23, 0.16) 0%, rgba(107, 66, 38, 0.22) 45%, transparent 72%);
+    background: radial-gradient(circle, rgba(244, 168, 23, 0.16) 0%, rgba(31, 18, 12, 0.22) 45%, transparent 72%);
     border-radius: 50%;
     filter: blur(40px);
     pointer-events: none;
@@ -479,8 +479,8 @@
 
 @media (hover: hover) and (pointer: fine) {
     .replay-intro-btn:hover {
-        color: var(--brand, #6B4226);
-        background: rgba(107, 66, 38, 0.05);
+        color: var(--brand, #1F120C);
+        background: rgba(31, 18, 12, 0.05);
     }
 }
 

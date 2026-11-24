@@ -275,7 +275,7 @@
             <!-- Filtros por categoría -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
                 <div class="d-flex flex-wrap gap-2" id="cartaCategoryFilter">
-                    <button type="button" class="btn-ghost active" onclick="filtrarCartaCategoria('todas', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;background:#6B4226;color:#FFFFFF;">Todas</button>
+                    <button type="button" class="btn-ghost active" onclick="filtrarCartaCategoria('todas', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;background:#1F120C;color:#FFFFFF;">Todas</button>
                     <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Hamburguesas & Carnes', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Hamburguesas &amp; Carnes</button>
                     <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Salchipapas Gourmet', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Salchipapas Gourmet</button>
                     <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Perros & Especiales', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Perros &amp; Especiales</button>
@@ -357,7 +357,7 @@
                         b.style.background = '';
                         b.style.color = '';
                     });
-                    if (btn) { btn.classList.add('active'); btn.style.background = '#6B4226'; btn.style.color = '#FFFFFF'; }
+                    if (btn) { btn.classList.add('active'); btn.style.background = '#1F120C'; btn.style.color = '#FFFFFF'; }
                 }
 
                 function filtrarCartaCategoria(cat, btn) {
@@ -737,7 +737,7 @@
                         <div>
                             <div style="display:flex;align-items:flex-start;margin-bottom:0.75rem;">
                                 <div style="display:flex;align-items:center;gap:0.85rem;width:100%;min-width:0;">
-                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #6B4226, #F4A817);color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(107, 66, 38,0.25);">
+                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #1F120C, #F4A817);color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(31, 18, 12,0.25);">
                                         @(string.IsNullOrEmpty(r.NombreCliente) ? "C" : r.NombreCliente.Substring(0, 1).ToUpper())
                                     </div>
                                     <div style="display:flex;flex-direction:column;gap:0.2rem;min-width:0;flex:1;">
@@ -1234,7 +1234,7 @@
                         <div>
                             <div style="display:flex;align-items:flex-start;margin-bottom:0.75rem;">
                                 <div style="display:flex;align-items:center;gap:0.85rem;width:100%;min-width:0;">
-                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #6B4226, #F4A817);color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(107, 66, 38,0.25);">
+                                    <div style="width:42px;height:42px;min-width:42px;min-height:42px;aspect-ratio:1/1;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg, #1F120C, #F4A817);color:#FFFFFF;font-weight:800;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(31, 18, 12,0.25);">
                                         ${escapeHtml(initial)}
                                     </div>
                                     <div style="display:flex;flex-direction:column;gap:0.2rem;min-width:0;flex:1;">

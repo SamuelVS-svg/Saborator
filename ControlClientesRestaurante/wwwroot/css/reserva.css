@@ -6,7 +6,7 @@
 .reserva-page {
     min-height: 100vh;
     background: var(--bg, #F6EBD3);
-    background-image: radial-gradient(circle at 1px 1px, rgba(107, 66, 38, 0.045) 1px, transparent 0);
+    background-image: radial-gradient(circle at 1px 1px, rgba(31, 18, 12, 0.045) 1px, transparent 0);
     background-size: 24px 24px;
     color: var(--text, #2C1B14);
     font-family: var(--font-ui, 'Inter', sans-serif);
@@ -45,7 +45,7 @@
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: linear-gradient(135deg, rgba(244, 168, 23, 0.35) 0%, rgba(107, 66, 38, 0.5) 100%);
+    background: linear-gradient(135deg, rgba(244, 168, 23, 0.35) 0%, rgba(31, 18, 12, 0.5) 100%);
     border: 1px solid rgba(244, 168, 23, 0.5);
     display: flex;
     align-items: center;
@@ -122,7 +122,7 @@
     font-weight: 400;
     line-height: 1.05;
     margin-bottom: 0.85rem;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
 }
 
 .reserva-title span {
@@ -157,15 +157,15 @@
     font-size: 0.82rem;
     font-weight: 600;
     color: var(--muted, #6E5C50);
-    background: var(--surface-2, rgba(107, 66, 38, 0.06));
+    background: var(--surface-2, rgba(31, 18, 12, 0.06));
     padding: 0.35rem 0.95rem;
     border-radius: 999px;
-    border: 1px solid var(--line, rgba(107, 66, 38, 0.12));
+    border: 1px solid var(--line, rgba(31, 18, 12, 0.12));
 }
 
 .step-chip.active {
     color: #FFFFFF;
-    background: var(--brand, #6B4226);
+    background: var(--brand, #1F120C);
     border-color: #F4C95D;
     box-shadow: 0 0 12px rgba(244, 168, 23, 0.35);
 }
@@ -184,7 +184,7 @@
 }
 
 .step-chip:not(.active) .step-num {
-    background: var(--line, rgba(107, 66, 38, 0.15));
+    background: var(--line, rgba(31, 18, 12, 0.15));
     color: var(--text, #2C1B14);
 }
 
@@ -255,7 +255,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     margin-bottom: 0.55rem;
 }
 
@@ -296,7 +296,7 @@
 
 /* ── BOTÓN SIGUIENTE PASO (DESBLOQUEO DE MESAS) ─────────── */
 .next-step-banner {
-    background: linear-gradient(135deg, rgba(244, 168, 23, 0.18) 0%, rgba(107, 66, 38, 0.25) 100%);
+    background: linear-gradient(135deg, rgba(244, 168, 23, 0.18) 0%, rgba(31, 18, 12, 0.25) 100%);
     border: 1.5px solid #F4C95D;
     border-radius: 14px;
     padding: 1.25rem 1.5rem;
@@ -330,7 +330,7 @@
     margin: 0 0 0.2rem;
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
 }
 
 .next-step-text p {
@@ -402,7 +402,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(244, 168, 23, 0.25) 0%, rgba(107, 66, 38, 0.4) 100%);
+    background: linear-gradient(135deg, rgba(244, 168, 23, 0.25) 0%, rgba(31, 18, 12, 0.4) 100%);
     border: 2px solid #F4C95D;
     color: #F4C95D;
     display: flex;
@@ -449,7 +449,7 @@
     font-weight: 800;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -489,8 +489,8 @@
 }
 
 .legend-dot.reservada {
-    background: rgba(107, 66, 38, 0.12);
-    border: 2px solid rgba(107, 66, 38, 0.3);
+    background: rgba(31, 18, 12, 0.12);
+    border: 2px solid rgba(31, 18, 12, 0.3);
 }
 
 :root[data-theme="dark"] .legend-dot.reservada {
@@ -605,8 +605,8 @@
 
 /* Mesa Ocupada / Reservada */
 .table-node.ocupada {
-    background: rgba(107, 66, 38, 0.06);
-    border-color: rgba(107, 66, 38, 0.2);
+    background: rgba(31, 18, 12, 0.06);
+    border-color: rgba(31, 18, 12, 0.2);
     opacity: 0.65;
     cursor: not-allowed;
 }
@@ -670,7 +670,7 @@
 .ticket-brand {
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
     font-size: 2rem;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     margin-bottom: 0.25rem;
 }
 
@@ -688,7 +688,7 @@
     font-size: 1.05rem;
     font-weight: 800;
     color: #1A080C;
-    background: rgba(107, 66, 38, 0.08);
+    background: rgba(31, 18, 12, 0.08);
     padding: 0.3rem 0.75rem;
     border-radius: 6px;
     display: inline-block;
@@ -720,7 +720,7 @@
 }
 
 .t-row .t-val.highlight {
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     font-size: 1.3rem;
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
 }
@@ -753,22 +753,22 @@
 }
 
 .ticket-input:focus {
-    border-color: var(--brand, #6B4226);
+    border-color: var(--brand, #1F120C);
     background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.12);
+    box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.12);
 }
 
 .btn-confirm-reserva {
     width: 100%;
     padding: 0.95rem 1.25rem;
     border-radius: 11px;
-    background: var(--brand, #6B4226);
+    background: var(--brand, #1F120C);
     border: none;
     color: #FFFFFF;
     font-weight: 800;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(107, 66, 38, 0.35);
+    box-shadow: 0 6px 18px rgba(31, 18, 12, 0.35);
     transition: background-color 160ms var(--ease, ease),
                 transform 140ms var(--ease, ease);
     margin-top: 0.5rem;
@@ -841,7 +841,7 @@
 .auth-modal-logo {
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
     font-size: 2.2rem;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     margin-bottom: 0.25rem;
 }
 
@@ -883,7 +883,7 @@
 
 .auth-tab-btn.active {
     background: #FFFFFF;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 

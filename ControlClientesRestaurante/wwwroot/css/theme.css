@@ -8,22 +8,22 @@
    ========================================================================== */
 
 :root {
-  --panel-dark:   #6B4226;                 /* Paneles que en oscuro son casi negros: en claro usan el café de marca */
+  --panel-dark:   #1F120C;                 /* Paneles que en oscuro son casi negros: en claro usan el café de marca */
   /* ── Paleta Sabor Casero (úsala por nombre) ── */
   --hueso:          #FBF7EE;   /* fondo principal                   */
   --crema:          #F5EFEB;   /* secciones alternas                */
   --beige:          #E8DFD0;   /* bordes y detalles                 */
   --amarillo-suave: #FFC857;   /* acentos y hover                   */
   --amarillo:       #F4A817;   /* botones principales               */
-  --marron:         #6B4226;   /* header, footer, títulos           */
+  --marron:         #1F120C;   /* header, footer, títulos           */
   --marron-oscuro:  #2C1B14;   /* texto principal                   */
   --blanco:         #FFFFFF;   /* tarjetas y texto sobre marrón     */
 
   /* ── Marca ─────────────────────────────────────────────────────────── */
-  --brand:        #6B4226;                 /* Marrón: botones y rellenos         */
-  --brand-hover:  #55341E;                 /* Hover del botón principal          */
-  --ink:          #6B4226;                 /* Marrón para texto, enlaces, bordes */
-  --brand-soft:   rgba(107, 66, 38,.10);     /* Fondos suaves y resaltados         */
+  --brand:        #1F120C;                 /* Marrón: botones y rellenos         */
+  --brand-hover:  #3A2218;                 /* Hover del botón principal          */
+  --ink:          #1F120C;                 /* Marrón para texto, enlaces, bordes */
+  --brand-soft:   rgba(31, 18, 12,.10);     /* Fondos suaves y resaltados         */
   --on-brand:     #FFFFFF;                 /* Texto sobre marrón                 */
   --gold:         #F4A817;                 /* Amarillo de acento                 */
 
@@ -650,7 +650,7 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
   left: 0;
   right: 0;
   z-index: 1000;
-  background: var(--brand, #6B4226);
+  background: var(--brand, #1F120C);
   color: var(--on-brand, #FFFFFF);
   border-bottom: 1.5px solid rgba(227, 167, 47, 0.35);
   box-shadow: 0 4px 24px rgba(38, 24, 18, 0.18);
@@ -904,7 +904,7 @@ html[data-theme="dark"] .theme-icon-moon { display: none; }
 .gourmet-mobile-menu {
   display: none;
   flex-direction: column;
-  background: var(--brand, #6B4226);
+  background: var(--brand, #1F120C);
   border-top: 1px solid rgba(227, 167, 47, 0.3);
   padding: 1rem 1.5rem;
   gap: 0.65rem;
@@ -1241,11 +1241,11 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
 }
 .avatar-preset-btn:hover {
   transform: translateY(-2px);
-  border-color: var(--brand, #6B4226);
+  border-color: var(--brand, #1F120C);
   box-shadow: 0 4px 12px var(--color-shadow, rgba(0,0,0,0.08));
 }
 .avatar-preset-btn.active {
-  border-color: var(--brand, #6B4226);
+  border-color: var(--brand, #1F120C);
   background: var(--brand-soft, rgba(107, 66, 38,0.08));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 25%, transparent);
 }
@@ -1288,11 +1288,11 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
 }
 .theme-card:hover {
   transform: translateY(-3px);
-  border-color: var(--brand, #6B4226);
+  border-color: var(--brand, #1F120C);
   box-shadow: 0 8px 20px -4px var(--color-shadow, rgba(0,0,0,0.1));
 }
 .theme-card.active {
-  border-color: var(--brand, #6B4226);
+  border-color: var(--brand, #1F120C);
   background: var(--brand-soft, rgba(107, 66, 38,0.06));
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 28%, transparent);
 }
@@ -1329,7 +1329,7 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
   font-weight: 800;
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--brand, #6B4226);
+  background: var(--brand, #1F120C);
   color: var(--on-brand, #FFFFFF);
 }
 
@@ -1345,7 +1345,7 @@ body, .main-content, .sb, .topbar, .gourmet-navbar, .gourmet-footer,
 }
 .avatar-dropzone:hover,
 .avatar-dropzone.dragover {
-  border-color: var(--brand, #6B4226);
+  border-color: var(--brand, #1F120C);
   background: var(--brand-soft, rgba(107, 66, 38,0.06));
 }
 

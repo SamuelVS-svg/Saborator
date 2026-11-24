@@ -18,7 +18,7 @@ ol, ul { padding-left: 2rem; margin-top: 0; margin-bottom: 1rem; }
 ol ol, ul ul, ol ul, ul ol { margin-bottom: 0; }
 b, strong { font-weight: bolder; }
 small { font-size: .875em; }
-a { color: var(--ink, #6B4226); text-decoration: underline; }
+a { color: var(--ink, #1F120C); text-decoration: underline; }
 a:hover { filter: brightness(.9); }
 img, svg { vertical-align: middle; }
 table { caption-side: bottom; border-collapse: collapse; }

@@ -379,7 +379,7 @@
 .modality-modal-title {
     font-family: var(--font-serif, 'Inter', system-ui, sans-serif);
     font-size: 2.2rem;
-    color: var(--brand, #6B4226);
+    color: var(--brand, #1F120C);
     margin: 0 0 0.5rem;
 }
 .modality-modal-sub {
@@ -411,9 +411,9 @@
     transform: translateY(-1px);
 }
 .mod-option-btn.active {
-    border-color: var(--brand, #6B4226);
+    border-color: var(--brand, #1F120C);
     background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.1);
+    box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.1);
 }
 .mod-opt-icon { font-size: 1.6rem; }
 .mod-opt-title { font-weight: 700; font-size: 0.95rem; color: #1E120C; }

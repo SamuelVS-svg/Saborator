@@ -103,16 +103,16 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     background: #FEE2E2;
-    color: #6B4226;
-    border: 1px solid rgba(107, 66, 38, 0.25);
+    color: #1F120C;
+    border: 1px solid rgba(31, 18, 12, 0.25);
     margin-bottom: 0.5rem;
 }
 
 :root[data-theme="dark"] .kfc-club-badge,
 [data-theme="dark"] .kfc-club-badge {
-    background: rgba(107, 66, 38, 0.18);
+    background: rgba(31, 18, 12, 0.18);
     color: #FF5A70;
-    border-color: rgba(107, 66, 38, 0.4);
+    border-color: rgba(31, 18, 12, 0.4);
 }
 
 .kfc-auth-title {
@@ -181,7 +181,7 @@
 
 .kfc-tab-btn.active {
     background: #FFFFFF;
-    color: #6B4226;
+    color: #1F120C;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -275,10 +275,10 @@
 }
 
 .kfc-input:focus {
-    border-color: #6B4226;
+    border-color: #1F120C;
     background: #FFFFFF;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(107, 66, 38, 0.15);
+    box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.15);
 }
 
 :root[data-theme="dark"] .kfc-input:focus,
@@ -317,14 +317,14 @@
 
 /* Botón Rojo Principal Estilo KFC */
 .btn-kfc-cta.red {
-    background: #6B4226;
+    background: #1F120C;
     color: #FFFFFF;
-    box-shadow: 0 6px 18px rgba(107, 66, 38, 0.32);
+    box-shadow: 0 6px 18px rgba(31, 18, 12, 0.32);
 }
 
 .btn-kfc-cta.red:hover {
     background: #55341E;
-    box-shadow: 0 10px 24px rgba(107, 66, 38, 0.42);
+    box-shadow: 0 10px 24px rgba(31, 18, 12, 0.42);
     transform: translateY(-1.5px);
 }
 
@@ -562,9 +562,9 @@
 
 /* ── Cambio entre "Ingresar" y "Crear cuenta" ── */
 .kfc-switch-view { text-align: center; font-size: 0.84rem; color: #6B7280; margin-top: 1rem; }
-.kfc-link-btn { background: none; border: none; padding: 0; font: inherit; font-weight: 800; color: #6B4226; text-decoration: underline; cursor: pointer; }
+.kfc-link-btn { background: none; border: none; padding: 0; font: inherit; font-weight: 800; color: #1F120C; text-decoration: underline; cursor: pointer; }
 .kfc-link-btn:hover { filter: brightness(0.85); }
-.kfc-link-btn:focus-visible { outline: 2px solid #6B4226; outline-offset: 2px; border-radius: 4px; }
+.kfc-link-btn:focus-visible { outline: 2px solid #1F120C; outline-offset: 2px; border-radius: 4px; }
 .kfc-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 @media (max-width: 480px) { .kfc-row-2 { grid-template-columns: 1fr; gap: 0; } }
 [data-theme="dark"] .kfc-switch-view { color: #BDB0A8; }
