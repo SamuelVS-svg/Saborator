@@ -197,3 +197,29 @@ html:not([data-theme]) .home-order { background: transparent; }
   html .lnav .theme-toggle-btn, html .lnav .lnav-cart-btn, html .lnav .lnav-toggle { width: 36px; height: 36px; }
   html .lnav .lnav-btn-o { padding-inline: .35rem; }
 }
+
+/* ══ Barra superior oscura con los colores de la marca (inspirada en KFC: barra negra, texto blanco, botón de color fuerte) ══ */
+html:not([data-theme="dark"]) .lnav {
+  background: #1F120C;
+  border-bottom: 3px solid var(--gold, #F4A817);
+  box-shadow: 0 6px 22px rgba(31, 18, 12, .25);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+html:not([data-theme="dark"]) .lnav .lnav-name { color: #fff; }
+html:not([data-theme="dark"]) .lnav .lnav-menu-links a,
+html:not([data-theme="dark"]) .lnav .lnav-item { color: rgba(255, 255, 255, .88) !important; }
+html:not([data-theme="dark"]) .lnav .lnav-menu-links a:hover,
+html:not([data-theme="dark"]) .lnav .lnav-item:hover { color: #fff !important; background: rgba(255, 255, 255, .1) !important; }
+html:not([data-theme="dark"]) .lnav .lnav-item[aria-current="page"] { color: var(--gold, #F4A817) !important; }
+html:not([data-theme="dark"]) .lnav .lnav-item svg { stroke: var(--gold, #F4A817); }
+html:not([data-theme="dark"]) .lnav .theme-toggle-btn,
+html:not([data-theme="dark"]) .lnav .lnav-cart-btn,
+html:not([data-theme="dark"]) .lnav .lnav-toggle { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .22); color: #fff; }
+html:not([data-theme="dark"]) .lnav .theme-toggle-btn:hover,
+html:not([data-theme="dark"]) .lnav .lnav-cart-btn:hover { background: rgba(244, 168, 23, .2); border-color: var(--gold, #F4A817); color: var(--gold, #F4A817); }
+html:not([data-theme="dark"]) .lnav .lnav-btn-o { background: var(--gold, #F4A817) !important; border-color: var(--gold, #F4A817) !important; color: #1F120C !important; font-weight: 800; }
+html:not([data-theme="dark"]) .lnav .lnav-btn-o:hover { background: #FFC04D !important; border-color: #FFC04D !important; color: #1F120C !important; }
+html:not([data-theme="dark"]) .lnav .lnav-btn-p { background: transparent !important; border: 1.5px solid rgba(255, 255, 255, .55) !important; color: #fff !important; box-shadow: none !important; }
+html:not([data-theme="dark"]) .lnav .lnav-btn-p:hover { background: rgba(255, 255, 255, .12) !important; color: #fff !important; }
+html:not([data-theme="dark"]) .lnav .lnav-user-tag { color: #fff; }
+html:not([data-theme="dark"]) .lnav .lnav-search-inline { background: #fff; border-color: rgba(255, 255, 255, .5); }
