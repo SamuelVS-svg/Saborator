@@ -177,7 +177,7 @@ function renderCheckoutCart() {
         htmlInputs += `
             <input type="hidden" name="productoIds" value="${item.id}" />
             <input type="hidden" name="cantidades" value="${item.cantidad}" />
-            <input type="hidden" name="notasLineas" value="" />
+            <input type="hidden" name="notasLineas" value="${String(item.nota || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}" />
         `;
     });
 

@@ -224,7 +224,8 @@
     }
     <!-- ══ CARTA / MENÚ GASTRONÓMICO COMPLETO ════════════════════ -->
     <section class="section-pad carta-section-wrap home-page @(pagina == "carta" ? "is-open" : "")" id="menu">
-        <div class="section-inner">
+        <div class="section-inner carta-kfc">
+            <link rel="stylesheet" href="~/css/carta.css" asp-append-version="true" />
             <div class="section-center" style="margin-bottom:2.5rem;">
                 <h2 class="section-title">Nuestra Carta</h2>
                 <p class="section-sub">Hamburguesas, salchipapas, perros y bebidas, recién hechos</p>
@@ -236,18 +237,19 @@
                 <input type="search" id="cartaBuscar" class="carta-buscar-input" placeholder="Buscar en la carta: hamburguesa, papas, bebida…" autocomplete="off" aria-label="Buscar en la carta" oninput="buscarEnCarta(this.value)" />
                 <button type="button" class="carta-buscar-limpiar" id="cartaBuscarLimpiar" aria-label="Borrar búsqueda" onclick="buscarEnCarta('', true)" hidden>&times;</button>
             </div>
-            <!-- Filtros por categoría -->
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-                <div class="d-flex flex-wrap gap-2" id="cartaCategoryFilter">
-                    <button type="button" class="btn-ghost active" onclick="filtrarCartaCategoria('todas', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;background:#1F120C;color:#FFFFFF;">Todas</button>
-                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Hamburguesas & Carnes', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Hamburguesas &amp; Carnes</button>
-                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Salchipapas Gourmet', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Salchipapas Gourmet</button>
-                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Perros & Especiales', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Perros &amp; Especiales</button>
-                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Acompañamientos', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Acompañamientos</button>
-                    <button type="button" class="btn-ghost" onclick="filtrarCartaCategoria('Bebidas', this)" style="padding:0.4rem 0.85rem;font-size:0.82rem;border-radius:999px;font-weight:700;">Bebidas</button>
-                </div>
-
-            </div>
+            <div class="carta-layout">
+                <!-- Categorías: columna izquierda en escritorio, fila deslizable en el celular -->
+                <aside class="carta-cats" aria-label="Categorías de la carta">
+                    <nav class="carta-cats-lista" id="cartaCategoryFilter">
+                        <button type="button" class="btn-ghost carta-cat active" onclick="filtrarCartaCategoria('todas', this)">Todas</button>
+                        <button type="button" class="btn-ghost carta-cat" onclick="filtrarCartaCategoria('Hamburguesas & Carnes', this)">Hamburguesas & Carnes</button>
+                        <button type="button" class="btn-ghost carta-cat" onclick="filtrarCartaCategoria('Salchipapas Gourmet', this)">Salchipapas Gourmet</button>
+                        <button type="button" class="btn-ghost carta-cat" onclick="filtrarCartaCategoria('Perros & Especiales', this)">Perros & Especiales</button>
+                        <button type="button" class="btn-ghost carta-cat" onclick="filtrarCartaCategoria('Acompañamientos', this)">Acompañamientos</button>
+                        <button type="button" class="btn-ghost carta-cat" onclick="filtrarCartaCategoria('Bebidas', this)">Bebidas</button>
+                    </nav>
+                </aside>
+                <div class="carta-productos">
 
             <!-- Grid de Platos de la Carta Minimalista -->
             <div class="menu-minimal-grid">
@@ -274,42 +276,70 @@
                         : (esAgua ? "/img/agua.webp?v=2" : null))))));
                     string imgSegura = bgImg ?? "/img/hamburguesa.jpg";
 
-                    <article class="dish-card-minimal" tabindex="0" aria-label="@p.Nombre"
-                             data-categoria="@p.Categoria">
+                    string imgCarta = esSalchi ? "/img/recorte/salchipapa.webp"
+                        : (esBurger ? "/img/recorte/hamburguesa.webp"
+                        : (esHotDog ? "/img/recorte/perrocaliente.webp"
+                        : (esPapas ? "/img/recorte/papasfrancesa.webp"
+                        : (esCoca ? "/img/recorte/cocacola.webp"
+                        : (esPepsi ? "/img/recorte/pepsi.webp"
+                        : (esAgua ? "/img/recorte/agua.webp" : imgSegura))))));
+                    string descProducto = string.IsNullOrEmpty(p.Descripcion) ? "Recién hecho y bien servido." : p.Descripcion;
+
+                    <article class="dish-card-minimal" tabindex="0" role="button" aria-label="Ver @p.Nombre"
+                             data-categoria="@p.Categoria" data-id="@p.Id" data-nombre="@p.Nombre" data-precio="@Convert.ToInt64(p.Precio)"
+                             data-img="@imgCarta" data-img-carrito="@imgSegura" data-desc="@descProducto" data-tag="@tagBadge" data-tiempo="@tiempo">
                         <div class="dish-minimal-media">
-                            <span class="dish-minimal-badge">@tagBadge</span>
-                            <img src="@imgSegura" alt="@p.Nombre" class="dish-minimal-img" loading="lazy" />
-                            <span class="dish-minimal-time">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                @tiempo
-                            </span>
+                            <img src="@imgCarta" alt="@p.Nombre" class="dish-minimal-img" loading="lazy" />
+                            <button type="button" class="btn-dish-add" aria-label="Agregar @p.Nombre al carrito"
+                                    onclick="cartAgregar(@p.Id, '@p.Nombre.Replace("'", "\\'")', @Convert.ToInt64(p.Precio), '@imgSegura', this)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <span>Agregar</span>
+                            </button>
                         </div>
-
                         <div class="dish-minimal-body">
-                            <div class="dish-minimal-header">
-                                <h3 class="dish-minimal-name">@p.Nombre</h3>
-                                <span class="dish-minimal-price">$@p.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
-                            </div>
-
-                            <p class="dish-minimal-desc">
-                                @(string.IsNullOrEmpty(p.Descripcion) ? "Recién hecho y bien servido." : p.Descripcion)
-                            </p>
-
-                            <div class="dish-minimal-footer">
-                                <button type="button" class="btn-dish-add" onclick="cartAgregar(@p.Id, '@p.Nombre.Replace("'", "\\'")', @Convert.ToInt64(p.Precio), '@imgSegura', this)">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    <span>Agregar</span>
-                                </button>
-                                <a asp-controller="Reserva" asp-action="Nueva" class="btn-dish-reserve-icon" title="Reservar mesa en salón" aria-label="Reservar mesa">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                                </a>
-                            </div>
+                            <span class="dish-minimal-badge">@tagBadge</span>
+                            <h3 class="dish-minimal-name">@p.Nombre</h3>
+                            <span class="dish-minimal-price">$@p.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
+                            <p class="dish-minimal-desc">@descProducto</p>
                         </div>
                     </article>
                 }
             </div>
 
             <p class="carta-sin-resultados" id="cartaSinResultados" hidden>No encontramos nada con esa búsqueda. Prueba con otra palabra, como <strong>hamburguesa</strong> o <strong>papas</strong>.</p>
+                </div>
+            </div>
+
+            <!-- Detalle del producto: foto, comentarios, cantidad y agregar -->
+            <div class="producto-modal" id="productoModal" role="dialog" aria-modal="true" aria-labelledby="productoNombre">
+                <div class="producto-caja">
+                    <button type="button" class="producto-cerrar" id="productoCerrar" aria-label="Cerrar">&times;</button>
+                    <div class="producto-cuerpo">
+                        <div class="producto-foto"><img id="productoImg" src="" alt="" /></div>
+                        <div class="producto-info">
+                            <span class="producto-etiqueta" id="productoEtiqueta"></span>
+                            <h2 class="producto-nombre" id="productoNombre"></h2>
+                            <div class="producto-precio" id="productoPrecio"></div>
+                            <p class="producto-desc" id="productoDesc"></p>
+                            <span class="producto-tiempo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="productoTiempoTxt"></span></span>
+                            <div class="producto-nota">
+                                <label for="productoNotaTxt">Comentarios del producto</label>
+                                <textarea id="productoNotaTxt" maxlength="140" placeholder="Preferencias, alergias o tus comentarios"></textarea>
+                                <small id="productoNotaContador">0/140</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="producto-pie">
+                        <div class="producto-cantidad">
+                            <button type="button" id="productoMenos" aria-label="Quitar uno">&minus;</button>
+                            <output id="productoCantidad" aria-live="polite">1</output>
+                            <button type="button" id="productoMas" aria-label="Agregar uno">+</button>
+                        </div>
+                        <button type="button" class="producto-agregar" id="productoAgregar">Agregar <span id="productoAgregarTotal"></span></button>
+                    </div>
+                </div>
+            </div>
+            <script src="~/js/pages/carta-producto.js" asp-append-version="true"></script>
 
 <script src="~/js/pages/home-index-catalogo.js" asp-append-version="true"></script>
 

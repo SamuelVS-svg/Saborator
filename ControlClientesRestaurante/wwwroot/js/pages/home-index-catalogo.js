@@ -2,12 +2,8 @@ let categoriaActiva = 'todas';
 const quitarAcentos = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 function marcarCategoria(btn) {
-    document.querySelectorAll('#cartaCategoryFilter .btn-ghost').forEach(b => {
-        b.classList.remove('active');
-        b.style.background = '';
-        b.style.color = '';
-    });
-    if (btn) { btn.classList.add('active'); btn.style.background = '#1F120C'; btn.style.color = '#FFFFFF'; }
+    document.querySelectorAll('#cartaCategoryFilter .carta-cat').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
 }
 
 function filtrarCartaCategoria(cat, btn) {
@@ -23,7 +19,7 @@ function buscarEnCarta(valor, enfocar) {
     const caja = document.getElementById('cartaBuscar');
     if (caja && caja.value !== valor) caja.value = valor;
     if (valor.trim()) marcarCategoria(null);
-    else { categoriaActiva = 'todas'; marcarCategoria(document.querySelector('#cartaCategoryFilter .btn-ghost')); }
+    else { categoriaActiva = 'todas'; marcarCategoria(document.querySelector('#cartaCategoryFilter .carta-cat')); }
     aplicarFiltrosCarta();
     if (enfocar && caja) caja.focus();
 }

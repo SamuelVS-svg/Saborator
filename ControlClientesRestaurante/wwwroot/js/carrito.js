@@ -56,7 +56,7 @@ function guardarCart() {
     actualizarUI();
 }
 
-function cartAgregar(id, nombre, precio, imgUrl, btn) {
+function cartAgregar(id, nombre, precio, imgUrl, btn, cantidad, nota) {
     // Asegurar imagen específica del producto seleccionado
     let foto = (typeof imgUrl === 'string' && imgUrl.startsWith('/')) 
         ? imgUrl 
@@ -64,17 +64,21 @@ function cartAgregar(id, nombre, precio, imgUrl, btn) {
 
     const precioNum = (typeof precio === 'number') ? precio : (parseFloat(precio) || 0);
 
+    const cant = Math.max(1, parseInt(cantidad, 10) || 1);
+    const notaTxt = (typeof nota === 'string') ? nota.trim().slice(0, 140) : '';
     const item = cart.find(x => x.id === id);
     if (item) {
-        item.cantidad += 1;
+        item.cantidad += cant;
         item.imgUrl = foto;
+        if (notaTxt) item.nota = notaTxt;      // comentario del producto (ej. "sin cebolla")
     } else {
         cart.push({
             id: id,
             nombre: nombre,
             precio: precioNum,
             imgUrl: foto,
-            cantidad: 1
+            cantidad: cant,
+            nota: notaTxt
         });
     }
     guardarCart();
@@ -177,6 +181,7 @@ function renderDrawerItems(subtotal, envio, totalFinal, ahorroCombos) {
                             <span class="drawer-item-name">${item.nombre}</span>
                             <button type="button" class="drawer-item-remove" onclick="cartEliminar(${item.id})" title="Eliminar">&times;</button>
                         </div>
+                        ${item.nota ? `<div class="drawer-item-nota">“${String(item.nota).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]))}”</div>` : ''}
                         <div class="drawer-item-bottom">
                             <div class="cart-stepper">
                                 <button type="button" class="cart-stepper-btn" onclick="cartCambiarCantidad(${item.id}, -1)">&minus;</button>
