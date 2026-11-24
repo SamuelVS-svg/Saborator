@@ -43,7 +43,7 @@
     height: 42px;
     border-radius: 12px;
     background: linear-gradient(135deg, var(--gold, #F4A817) 0%, #F4C95D 100%);
-    color: #1E120C;
+    color: #1F120C;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -118,7 +118,7 @@
     bottom: 0;
     width: 100%;
     max-width: 440px;
-    background: #1E120C;
+    background: #1F120C;
     border-left: 1px solid rgba(244, 168, 23, 0.3);
     z-index: 230;
     display: flex;
@@ -266,7 +266,7 @@
     cursor: pointer;
     transition: background 120ms ease;
 }
-.cart-stepper-btn:hover { background: var(--gold, #F4A817); color: #1E120C; }
+.cart-stepper-btn:hover { background: var(--gold, #F4A817); color: #1F120C; }
 .cart-stepper-count {
     font-size: 0.85rem;
     font-weight: 700;
@@ -312,7 +312,7 @@
     width: 100%;
     padding: 1rem;
     background: linear-gradient(135deg, var(--gold, #F4A817) 0%, #F4C95D 100%);
-    color: #1E120C;
+    color: #1F120C;
     border: none;
     border-radius: 14px;
     font-size: 1rem;
@@ -416,7 +416,7 @@
     box-shadow: 0 0 0 3px rgba(31, 18, 12, 0.1);
 }
 .mod-opt-icon { font-size: 1.6rem; }
-.mod-opt-title { font-weight: 700; font-size: 0.95rem; color: #1E120C; }
+.mod-opt-title { font-weight: 700; font-size: 0.95rem; color: #1F120C; }
 .mod-opt-desc { font-size: 0.78rem; color: var(--muted, #6E5C50); }
 
 /* Fila de ahorro por combo en el carrito */

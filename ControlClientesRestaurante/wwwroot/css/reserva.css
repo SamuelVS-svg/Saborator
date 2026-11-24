@@ -106,7 +106,7 @@
     border-radius: 9999px;
     background: rgba(244, 168, 23, 0.18);
     border: 1px solid rgba(244, 168, 23, 0.45);
-    color: var(--gold, #F4A817);
+    color: var(--gold-text, #9A6700);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.08em;

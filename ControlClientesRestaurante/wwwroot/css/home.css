@@ -511,7 +511,7 @@
     position: relative;
     border-radius: 20px;
     border: 1.5px solid rgba(244, 168, 23, 0.35);
-    background: #1E120C;
+    background: #1F120C;
     min-height: 420px;
     height: 100%;
     display: flex;
@@ -585,7 +585,7 @@
 }
 .kfc-bar-btn {
     background: var(--gold, #F4A817);
-    color: #1E120C;
+    color: #1F120C;
     border: none;
     font-size: 0.75rem;
     font-weight: 800;
@@ -734,7 +734,7 @@
     font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--gold, #F4A817);
+    color: var(--gold-text, #9A6700);
     background: rgba(244, 168, 23, 0.12);
     border: 1px solid rgba(244, 168, 23, 0.3);
     padding: 4px 11px;
@@ -965,7 +965,7 @@
 
 /* ══ ADAPTACIÓN AL MODO OSCURO (DATA-THEME DARK) ══════════════════════ */
 [data-theme="dark"] .modal-resena-box {
-    background: #1E120C;
+    background: #1F120C;
     border-color: rgba(244, 168, 23, 0.45);
     color: #FFFFFF;
     box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(244, 168, 23, 0.25);
@@ -997,7 +997,7 @@
     color: #FFFFFF;
 }
 [data-theme="dark"] .input-resena-field:focus {
-    background: #1E120C;
+    background: #1F120C;
     border-color: #F4A817;
     box-shadow: 0 0 0 3px rgba(244, 168, 23, 0.25);
 }
@@ -1103,7 +1103,7 @@
 }
 .resenas-section .sec-pill {
     background: rgba(244, 168, 23, 0.12);
-    color: var(--gold, #F4A817);
+    color: var(--gold-text, #9A6700);
     border: 1px solid rgba(244, 168, 23, 0.35);
     padding: 0.3rem 0.85rem;
     border-radius: 999px;

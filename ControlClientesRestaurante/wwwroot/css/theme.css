@@ -25,7 +25,23 @@
   --ink:          #1F120C;                 /* Marrón para texto, enlaces, bordes */
   --brand-soft:   rgba(31, 18, 12,.10);     /* Fondos suaves y resaltados         */
   --on-brand:     #FFFFFF;                 /* Texto sobre marrón                 */
-  --gold:         #F4A817;                 /* Amarillo de acento                 */
+  --gold:         #F4A817;                 /* Amarillo de acento (fondos, bordes, iconos; NO texto sobre claro) */
+  --gold-text:    #9A6700;                 /* Dorado legible como TEXTO sobre fondos claros (5:1)  */
+
+  /* ── Alias con nombre por rol (usar estos en estilos nuevos) ───────── */
+  --color-primary:  var(--brand);          /* Botones y rellenos de marca        */
+  --on-primary:     var(--on-brand);       /* Texto sobre --color-primary        */
+  --text-heading:   var(--text);           /* Títulos                            */
+  --accent:         var(--gold);           /* Acento dorado                      */
+  --accent-text:    var(--gold-text);      /* Acento como texto                  */
+
+  /* Nombres antiguos que se usaban sin estar definidos: ahora apuntan a un token real */
+  --brand-border:     var(--cream-line);
+  --brand-cream:      var(--cream);
+  --brand-muted:      var(--muted);
+  --color-border:     var(--line);
+  --color-surface-2:  var(--surface-2);
+  --color-text-muted: var(--muted);
 
   /* ── Fondos y texto (Paleta Crema / Beige Saborator) ─────────── */
   --bg:           #FBF7EE;                 /* Crema: fondo de página             */
@@ -102,13 +118,14 @@
 
 :root[data-theme="dark"],
 :root[data-theme="noche"] {
-  --panel-dark:   #1E120C;
+  --panel-dark:   #1F120C;
   --brand:        #8B5A36;
   --brand-hover:  #A56E43;
   --ink:          #FFBF3F;
   --brand-soft:   rgba(244, 201, 93,.16);
   --on-brand:     #FFFFFF;
   --gold:         #FFBF3F;
+  --gold-text:    #FFBF3F;
 
   --bg:           #24150E;
   --surface:      #2E1B12;
@@ -319,7 +336,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.028em;
   line-height: 1.15;
-  color: var(--text);
+  color: inherit; /* hereda del contenedor: en cabeceras oscuras quedan claros, en el resto usan --text del body */
 }
 
 .serif {
