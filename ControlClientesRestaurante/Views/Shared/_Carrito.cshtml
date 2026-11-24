@@ -2,7 +2,7 @@
 @* Carrito de compras: panel lateral, ventana de modalidad de entrega y su motor.
    Lo incluye _NavbarInicio, así que está disponible en todas las páginas con la barra pública. *@
 <link rel="stylesheet" href="~/css/carrito.css" asp-append-version="true" />
-<script>window.SABORATOR_COMBOS = @Html.Raw(_comboSvc.DisponiblesJson());</script>
+<script type="application/json" data-combos>@Html.Raw(_comboSvc.DisponiblesJson())</script>
 <script src="~/js/combos.js" asp-append-version="true"></script>
 <script src="~/js/carrito.js" asp-append-version="true"></script>
 

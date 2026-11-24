@@ -10,7 +10,7 @@
 }
 
 @inject ControlClientesRestaurante.Services.ComboService _comboSvc
-<script>window.SABORATOR_COMBOS = @Html.Raw(_comboSvc.DisponiblesJson());</script>
+<script type="application/json" data-combos>@Html.Raw(_comboSvc.DisponiblesJson())</script>
 <script src="~/js/combos.js" asp-append-version="true"></script>
 
 <div class="checkout-wrapper">

@@ -3,7 +3,12 @@
 // El servidor vuelve a calcularlo con los precios reales al confirmar el pedido; esto es solo para mostrarlo.
 (function () {
     'use strict';
-    var combos = window.SABORATOR_COMBOS || [];
+    // Los combos llegan del servidor en <script type="application/json" data-combos> (antes: window.SABORATOR_COMBOS en línea)
+    function leerCombos() {
+        var el = document.querySelector('script[data-combos]');
+        try { return el ? JSON.parse(el.textContent) : []; } catch (e) { return []; }
+    }
+    var combos = window.SABORATOR_COMBOS || leerCombos();
 
     function descuento(cart) {
         var tiene = {};
