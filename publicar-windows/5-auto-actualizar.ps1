@@ -14,6 +14,7 @@
 #   .\5-auto-actualizar.ps1                  # vigila la rama en la que estás
 #   .\5-auto-actualizar.ps1 -SoloVerificar   # solo dice qué haría, sin cambiar nada
 #   .\5-auto-actualizar.ps1 -SinRespaldo     # no respalda la base antes de actualizar
+#   .\5-auto-actualizar.ps1 -ConSqlite       # PC sin SQL Server (usa SQLite y no respalda)
 #   .\5-auto-actualizar.ps1 -Rama main -Intervalo 120
 # Para detenerlo: Ctrl + C (la app sigue corriendo). Lo que hace queda en auto-actualizar.log
 
@@ -21,6 +22,7 @@ param(
     [string]$Rama = "",
     [int]$Intervalo = 60,
     [switch]$SinRespaldo,
+    [switch]$ConSqlite,        # PC sin SQL Server: usa la base SQLite integrada (también omite el respaldo de SQL Server)
     [switch]$SoloVerificar
 )
 
@@ -83,6 +85,7 @@ function Construir {
 function Iniciar-App {
     $carpeta = $proyecto.Replace("'", "''")
     $orden   = "Set-Location '$carpeta'; dotnet run --no-build"
+    if ($ConSqlite) { $orden = "`$env:SABORATOR_FORZAR_SQLITE='true'; " + $orden }
     $script:lanzador = Start-Process powershell -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", $orden -WindowStyle Minimized -PassThru
     for ($i = 0; $i -lt 45; $i++) {
         Start-Sleep -Seconds 2
@@ -134,7 +137,7 @@ function Actualizar($rama) {
     $resumen = Texto (G log --oneline -1 "origin/$rama")
     Escribir "Actualizando a: $resumen"
 
-    if (-not $SinRespaldo -and (Test-Path $respaldo)) {
+    if (-not $SinRespaldo -and -not $ConSqlite -and (Test-Path $respaldo)) {
         & $respaldo
         if ($LASTEXITCODE -ne 0) {
             Escribir "El respaldo de la base falló: NO actualizo (usa -SinRespaldo si quieres omitirlo)."
