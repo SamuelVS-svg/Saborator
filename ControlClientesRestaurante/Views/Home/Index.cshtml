@@ -226,9 +226,6 @@
     <section class="section-pad carta-section-wrap home-page @(pagina == "carta" ? "is-open" : "")" id="menu">
         <div class="section-inner">
             <div class="section-center" style="margin-bottom:2.5rem;">
-                <div class="hero-tag" style="margin-bottom:0.75rem;">
-                    Nuestra Selección
-                </div>
                 <h2 class="section-title">Nuestra Carta</h2>
                 <p class="section-sub">Hamburguesas, salchipapas, perros y bebidas, recién hechos</p>
             </div>
@@ -236,42 +233,9 @@
             <!-- Buscador de la carta (también llega aquí lo que se escribe en la barra superior: /Carta?q=…) -->
             <div class="carta-buscar" role="search">
                 <svg class="carta-buscar-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="search" id="cartaBuscar" class="carta-buscar-input" placeholder="Buscar en la carta: hamburguesa, papas, combo…" autocomplete="off" aria-label="Buscar en la carta" oninput="buscarEnCarta(this.value)" />
+                <input type="search" id="cartaBuscar" class="carta-buscar-input" placeholder="Buscar en la carta: hamburguesa, papas, bebida…" autocomplete="off" aria-label="Buscar en la carta" oninput="buscarEnCarta(this.value)" />
                 <button type="button" class="carta-buscar-limpiar" id="cartaBuscarLimpiar" aria-label="Borrar búsqueda" onclick="buscarEnCarta('', true)" hidden>&times;</button>
             </div>
-            @if (combos.Count > 0)
-            {
-            <div class="combos-row" id="combosRow">
-                <h3 class="combos-title">Combos Saborator</h3>
-                <div class="combos-grid">
-                    @foreach (var c in combos)
-                    {
-                        <article class="combo-card @(c.HayStock ? "" : "agotado")">
-                            <div class="combo-card-photos" aria-hidden="true">
-                                @foreach (var img in c.Lineas.Select(l => l.Imagen).Distinct().Take(4))
-                                {
-                                    <img src="@img" alt="" loading="lazy" />
-                                }
-                            </div>
-                            <div class="combo-card-body">
-                                <span class="combo-tag">@c.Etiqueta</span>
-                                <h4>@c.Nombre</h4>
-                                <p>@c.Descripcion</p>
-                                <div class="combo-card-price">
-                                    <strong>$@c.Precio.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</strong>
-                                    @if (c.Ahorro > 0)
-                                    {
-                                        <del>$@c.PrecioNormal.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</del>
-                                        <span>Ahorras $@c.Ahorro.ToString("N0", ControlClientesRestaurante.Models.Formato.Co)</span>
-                                    }
-                                </div>
-                                <button type="button" class="btn-gold" onclick="pedirCombo('@c.Id')" disabled="@(!c.HayStock)">@(c.HayStock ? "Agregar combo" : "Agotado")</button>
-                            </div>
-                        </article>
-                    }
-                </div>
-            </div>
-            }
             <!-- Filtros por categoría -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
                 <div class="d-flex flex-wrap gap-2" id="cartaCategoryFilter">
