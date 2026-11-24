@@ -298,11 +298,5 @@ html .kfc-auth-title-grande {
 .btn-social-google-wrap #googleOfficialBtnInner { width: 100%; transform: scaleY(1.4); transform-origin: top left; }
 .btn-social-google-wrap:hover .btn-social-google { filter: brightness(.97); transform: translateY(-1px); box-shadow: 0 6px 14px -8px rgba(44, 27, 20, .5); }
 
-/* ══ Menú lateral del personal: misma paleta que la barra superior (café oscuro + dorado) y flecha centrada ══ */
-html:not([data-theme="dark"]) .sidebar {
-  background: #1F120C;
-  border-right: 3px solid var(--gold, #F4A817);
-  box-shadow: 2px 0 18px rgba(31, 18, 12, .28);
-}
-html:not([data-theme="dark"]) .sidebar .sb-arrow { border-color: #1F120C; }
+/* ══ Menú lateral del personal: flecha centrada en el borde, a media altura ══ */
 .sidebar .sb-arrow { top: 50%; }
