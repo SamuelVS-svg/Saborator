@@ -300,3 +300,43 @@ html .kfc-auth-title-grande {
 
 /* ══ Menú lateral del personal: flecha centrada en el borde, a media altura ══ */
 .sidebar .sb-arrow { top: 50%; }
+
+/* ══ Panel del personal: el menú lateral sigue el modo claro/oscuro igual que la barra del inicio ══ */
+/* Modo claro: fondo blanco, texto café, activo en dorado */
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar {
+  background: var(--surface, #fff);
+  color: var(--text, #2C1B14);
+  border-right: 1px solid rgba(232, 213, 176, .8);
+  box-shadow: 0 4px 20px rgba(44, 27, 20, .06);
+}
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-arrow { border-color: var(--surface, #fff); box-shadow: 0 2px 8px rgba(44, 27, 20, .25); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-logo { border-bottom-color: var(--line, #E8DFD0); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-logo-icon { background: rgba(244, 168, 23, .16); border-color: rgba(244, 168, 23, .35); color: #B9770E; }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-logo-text .name { color: var(--text, #2C1B14); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-logo-text .sub { color: var(--muted, #6E5D53); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar.open .sb-section { color: var(--faint, #7B6A5F); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item .ico,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item .sb-lbl,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item .lbl { color: var(--muted, #6E5D53) !important; }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item:hover { background: var(--brand-soft, rgba(31, 18, 12, .08)); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item:hover,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item:hover .ico,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item:hover .sb-lbl,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item:hover .lbl { color: var(--text, #2C1B14) !important; }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item.active { background: rgba(244, 168, 23, .16); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item.active,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item.active .sb-lbl,
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item.active .lbl { color: var(--text, #2C1B14) !important; }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-item.active .ico { color: #B9770E !important; }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-bottom { border-top-color: var(--line, #E8DFD0); }
+html:not([data-theme="dark"]):not([data-theme="noche"]) .sidebar .sb-bottom .sb-item:hover { background: rgba(214, 69, 61, .10); }
+
+/* Modo oscuro: mismo café casi negro de la barra del inicio */
+html[data-theme="dark"] .sidebar, html[data-theme="noche"] .sidebar {
+  background: #1A1316;
+  border-right: 1px solid rgba(58, 43, 50, .7);
+  box-shadow: 2px 0 18px rgba(0, 0, 0, .35);
+}
+html[data-theme="dark"] .sidebar .sb-arrow, html[data-theme="noche"] .sidebar .sb-arrow { border-color: #1A1316; }
+html[data-theme="dark"] .sidebar .sb-logo-icon, html[data-theme="noche"] .sidebar .sb-logo-icon { background: rgba(244, 168, 23, .12); border-color: rgba(244, 168, 23, .3); color: var(--gold, #F4A817); }
